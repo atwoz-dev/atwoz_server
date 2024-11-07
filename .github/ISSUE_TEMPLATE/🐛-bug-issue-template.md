@@ -1,5 +1,5 @@
 ---
-name: Bug Issue Template
+name: "\U0001F41B Bug Issue Template"
 about: Create a report to help us improve
 title: ''
 labels: bug
