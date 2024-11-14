@@ -9,6 +9,9 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-local}
       MYSQL_HOST: db
+      REDIS_HOST: redis
+      MYSQL_PORT: ${MYSQL_CONTAINER_PORT:-3306}
+      REDIS_PORT: ${REDIS_CONTAINER_PORT:-6379}
     ports:
       - "8080:8080"
     volumes:
@@ -26,7 +29,7 @@ services:
       MYSQL_USER: ${MYSQL_USER:-user}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-1234}
     ports:
-      - "3306:3306"
+      - "${MYSQL_HOST_PORT:-3308}:${MYSQL_CONTAINER_PORT:-3306}"
     volumes:
       - db_data:/var/lib/mysql
 
@@ -34,7 +37,7 @@ services:
     image: redis:7.2
     container_name: redis-cache
     ports:
-      - "6379:6379"
+      - "${REDIS_HOST_PORT:-6381}:${REDIS_CONTAINER_PORT:-6379}"
     volumes:
       - redis_data:/data
 
