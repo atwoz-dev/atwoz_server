@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spring-app
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-local}
+      MYSQL_HOST: db
+      REDIS_HOST: redis
+      MYSQL_PORT: ${MYSQL_CONTAINER_PORT:-3306}
+      REDIS_PORT: ${REDIS_CONTAINER_PORT:-6379}
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-1234}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-atwoz_local}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-1234}
+    ports:
+      - "${MYSQL_HOST_PORT:-3308}:${MYSQL_CONTAINER_PORT:-3306}"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  redis:
+    image: redis:7.2
+    container_name: redis-cache
+    ports:
+      - "${REDIS_HOST_PORT:-6381}:${REDIS_CONTAINER_PORT:-6379}"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  db_data:
+  redis_data:
