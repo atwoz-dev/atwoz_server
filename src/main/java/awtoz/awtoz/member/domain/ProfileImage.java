@@ -17,11 +17,11 @@ public class ProfileImage {
     private Long id;
 
     @Column(nullable = false)
-    private Long member_id;
+    private Long memberId;
 
     private String url;
 
-    private Boolean is_primary;
+    private Boolean isPrimary;
 
-    private Long sort_order;
+    private Long sortOrder;
 }

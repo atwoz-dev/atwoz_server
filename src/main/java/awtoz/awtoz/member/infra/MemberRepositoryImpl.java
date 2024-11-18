@@ -11,15 +11,10 @@ import org.springframework.stereotype.Repository;
 public class MemberRepositoryImpl implements MemberRepository {
 
     private final MemberJpaRepository jpaRepository;
-    private final ProfileImageJpaRepository profileImageJpaRepository;
+
 
     @Override
     public Member save(Member member) {
         return jpaRepository.save(member);
-    }
-
-    @Override
-    public ProfileImage saveRepProfileImage(ProfileImage profileImage) {
-        return profileImageJpaRepository.save(profileImage);
     }
 }

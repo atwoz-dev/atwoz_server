@@ -21,7 +21,6 @@ public class Member {
     private Long id;
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "memberId")
     private List<ProfileImage> profileImages = new ArrayList<>();
-
 }
