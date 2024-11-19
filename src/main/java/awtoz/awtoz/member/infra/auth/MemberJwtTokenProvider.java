@@ -29,7 +29,7 @@ public class MemberJwtTokenProvider implements MemberTokenProvider {
     private Key key;
 
     @PostConstruct
-    private void init() {
+    public void init() {
         key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 

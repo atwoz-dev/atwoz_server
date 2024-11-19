@@ -18,6 +18,13 @@ public class Member {
 
     private String phoneNumber;
 
+    private String nickName; // TODO : 값 타입으로 변경.
+    private String gender;
+    private String region;
+    private Integer age;
+    private Integer height;
+    private String mbti;
+
     @Enumerated(EnumType.STRING)
     private ActivityStatus activityStatus;
 
@@ -26,6 +33,15 @@ public class Member {
                 .phoneNumber(phoneNumber)
                 .activityStatus(ActivityStatus.WAITING) // 심사대기 상태로 생성.
                 .build();
+    }
+
+    public boolean isNeedProfile() {
+        if (this.nickName == null || gender == null || region == null || age == null || height == null || mbti == null) {
+            return true;
+        }
+
+        else
+            return false;
     }
 
 }

@@ -9,15 +9,15 @@ public record MemberLoginResponse(
         String accessToken,
         String refreshToken,
         boolean isSuspended,
-        boolean isDuplicated
+        boolean isNeedProfile
 ) {
     public static MemberLoginResponse fromMemberWithToken(Member member,String accessToken, String refreshToken, boolean isDuplicated) {
         if (member.getActivityStatus().equals(ActivityStatus.PERMANENT_STOP)) {
             return MemberLoginResponse.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
-                    .isSuspended(true)
-                    .isDuplicated(isDuplicated)
+                    .isSuspended(member.getActivityStatus().isPermanentStop())
+                    .isNeedProfile(isDuplicated)
                     .build();
         }
 
@@ -25,8 +25,8 @@ public record MemberLoginResponse(
             return MemberLoginResponse.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
-                    .isSuspended(false)
-                    .isDuplicated(isDuplicated)
+                    .isSuspended(member.getActivityStatus().isPermanentStop())
+                    .isNeedProfile(isDuplicated)
                     .build();
 
     }
