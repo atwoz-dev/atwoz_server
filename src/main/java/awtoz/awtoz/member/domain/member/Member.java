@@ -31,7 +31,7 @@ public class Member {
     public static Member createWithPhoneNumber(String phoneNumber) {
         return Member.builder()
                 .phoneNumber(phoneNumber)
-                .activityStatus(ActivityStatus.WAITING) // 심사대기 상태로 생성.
+                .activityStatus(ActivityStatus.ACTIVE)
                 .build();
     }
 
