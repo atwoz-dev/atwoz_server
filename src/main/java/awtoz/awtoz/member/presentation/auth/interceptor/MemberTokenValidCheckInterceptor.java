@@ -22,6 +22,7 @@ public class MemberTokenValidCheckInterceptor implements HandlerInterceptor {
         String token = MemberTokenExtractor.extractTokenFromRequest(request)
                 .orElseThrow(() -> new RuntimeException("토큰이 없습니다."));
 
+        System.out.println("----- Token ---- : " + token);
 
         // TODO : 토큰에서 정보를 추출하여, 컨텍스트에 담기.
         Long extractedMemberId = memberJwtTokenProvider.extract(token, "id", Long.class);
