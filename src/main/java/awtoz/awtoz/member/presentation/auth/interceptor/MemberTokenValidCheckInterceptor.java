@@ -1,5 +1,6 @@
 package awtoz.awtoz.member.presentation.auth.interceptor;
 
+import awtoz.awtoz.member.exception.auth.TokenNotExistException;
 import awtoz.awtoz.member.infra.auth.MemberJwtTokenProvider;
 import awtoz.awtoz.member.presentation.auth.support.MemberAuthContext;
 import awtoz.awtoz.member.presentation.auth.support.MemberTokenExtractor;
@@ -20,9 +21,7 @@ public class MemberTokenValidCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = MemberTokenExtractor.extractTokenFromRequest(request)
-                .orElseThrow(() -> new RuntimeException("토큰이 없습니다."));
-
-        System.out.println("----- Token ---- : " + token);
+                .orElseThrow(() -> new TokenNotExistException());
 
         // TODO : 토큰에서 정보를 추출하여, 컨텍스트에 담기.
         Long extractedMemberId = memberJwtTokenProvider.extract(token, "id", Long.class);

@@ -1,12 +1,12 @@
 package awtoz.awtoz.member.presentation.auth.support;
 
+import awtoz.awtoz.member.exception.auth.TokenNotExistException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
 @RequestScope
 @Component
 public class MemberAuthContext {
-    private static final Long ANONYMOUS_MEMBER = -1L;
 
     private Long memberId;
 
@@ -16,12 +16,8 @@ public class MemberAuthContext {
 
     public Long getPrincipal() {
         if (memberId == null) {
-            return ANONYMOUS_MEMBER;
+            throw new TokenNotExistException();
         }
         return memberId;
-    }
-
-    public void setAnonymous() {
-        this.memberId = ANONYMOUS_MEMBER;
     }
 }

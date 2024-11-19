@@ -1,6 +1,7 @@
 package awtoz.awtoz.member.infra.auth;
 
 import awtoz.awtoz.member.domain.auth.MemberTokenProvider;
+import awtoz.awtoz.member.exception.auth.*;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -41,7 +42,6 @@ public class MemberJwtTokenProvider implements MemberTokenProvider {
         claims.put("role", "member");
 
         return createToken(claims, accessTokenExpirationTime);
-
     }
 
     @Override
@@ -59,13 +59,15 @@ public class MemberJwtTokenProvider implements MemberTokenProvider {
                     .getBody()
                     .get(claimName, classType);
         } catch (SecurityException e) {
-            throw new RuntimeException("서명 값 Error");
+            throw new SignatureInvalidException();
         } catch (MalformedJwtException e) {
-            throw new RuntimeException("토큰 구조 비정상 Error");
+            throw new TokenFormInvalidException();
+        } catch (ExpiredJwtException e) {
+            throw new TokenExpiredException();
         } catch (UnsupportedJwtException e) {
-            throw new RuntimeException("지원하지 않는 토큰/서명");
+            throw new UnsupportedTokenException();
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("인자값 에러");
+            throw new TokenInvalidException();
         }
     }
 
