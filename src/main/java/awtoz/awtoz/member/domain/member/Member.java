@@ -35,6 +35,10 @@ public class Member {
                 .build();
     }
 
+    public boolean isPermanentStop() {
+        return activityStatus == ActivityStatus.PERMANENT_STOP;
+    }
+
     public boolean isNeedProfile() {
         if (this.nickName == null || gender == null || region == null || age == null || height == null || mbti == null) {
             return true;

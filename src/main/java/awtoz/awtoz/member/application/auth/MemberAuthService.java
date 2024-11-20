@@ -18,17 +18,11 @@ public class MemberAuthService {
     public MemberLoginResponse login(String phoneNumber) {
         Member member = createOrFindMemberByPhoneNumber(phoneNumber);
         String accessToken = memberJwtTokenProvider.createAccessToken(member.getId());
-        return MemberLoginResponse.fromMemberWithToken(member, accessToken, "", member.isNeedProfile());
+        return MemberLoginResponse.fromMemberWithToken(member, accessToken, "");
     }
 
     private Member createOrFindMemberByPhoneNumber(String phoneNumber) {
-        if (memberRepository.findByPhoneNumber(phoneNumber).isPresent()) {
-            return memberRepository.findByPhoneNumber(phoneNumber).get();
-        }
-
-        else {
-            return create(phoneNumber);
-        }
+        return memberRepository.findByPhoneNumber(phoneNumber).orElse(create(phoneNumber));
     }
 
     private Member create(String phoneNumber) {

@@ -46,7 +46,7 @@ public class LoginTest {
     @DisplayName("DB에 없는 유저가 회원가입 시도")
     void testLoginNewMember() {
         String phoneNumber = "01012345678";
-        Member mockMember = Member.createWithPhoneNumber("01012345678");
+        Member mockMember = Member.createWithPhoneNumber(phoneNumber);
 
 
         Mockito.when(memberRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.ofNullable(null));

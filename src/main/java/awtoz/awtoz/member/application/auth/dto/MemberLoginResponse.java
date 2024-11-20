@@ -1,6 +1,5 @@
 package awtoz.awtoz.member.application.auth.dto;
 
-import awtoz.awtoz.member.domain.member.ActivityStatus;
 import awtoz.awtoz.member.domain.member.Member;
 import lombok.Builder;
 
@@ -11,23 +10,13 @@ public record MemberLoginResponse(
         boolean isSuspended,
         boolean isNeedProfile
 ) {
-    public static MemberLoginResponse fromMemberWithToken(Member member,String accessToken, String refreshToken, boolean isDuplicated) {
-        if (member.getActivityStatus().equals(ActivityStatus.PERMANENT_STOP)) {
-            return MemberLoginResponse.builder()
-                    .accessToken(accessToken)
-                    .refreshToken(refreshToken)
-                    .isSuspended(member.getActivityStatus().isPermanentStop())
-                    .isNeedProfile(isDuplicated)
-                    .build();
-        }
+    public static MemberLoginResponse fromMemberWithToken(Member member,String accessToken, String refreshToken) {
 
-        else
-            return MemberLoginResponse.builder()
-                    .accessToken(accessToken)
-                    .refreshToken(refreshToken)
-                    .isSuspended(member.getActivityStatus().isPermanentStop())
-                    .isNeedProfile(isDuplicated)
-                    .build();
-
+        return MemberLoginResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .isSuspended(member.isPermanentStop())
+                .isNeedProfile(member.isNeedProfile())
+                .build();
     }
 }
