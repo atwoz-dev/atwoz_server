@@ -23,6 +23,7 @@ public class HeartTransaction {
     private Long memberId;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(50)")
     private TransactionType transactionType;
 
     @Embedded
