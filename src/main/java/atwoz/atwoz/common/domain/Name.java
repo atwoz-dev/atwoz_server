@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 @EqualsAndHashCode
 public class Name {
 
-    private static final String NAME_REGEX = "^[a-zA-Z0-9]{1,10}$";
+    private static final String NAME_REGEX = "^[a-zA-Z0-9가-\uD7AF]{1,10}$";
     private static final Pattern NAME_PATTERN = Pattern.compile(NAME_REGEX);
 
     @Column(name = "name")
