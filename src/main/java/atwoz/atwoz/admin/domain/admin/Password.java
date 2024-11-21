@@ -2,15 +2,14 @@ package atwoz.atwoz.admin.domain.admin;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.regex.Pattern;
 
-import static lombok.AccessLevel.PROTECTED;
-
 @Embeddable
-@NoArgsConstructor(access = PROTECTED, force = true)
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @EqualsAndHashCode
 public class Password {
 
@@ -32,6 +31,6 @@ public class Password {
     }
 
     private boolean isValidPassword(String value) {
-        return value == null || !PASSWORD_PATTERN.matcher(value).matches();
+        return value != null && PASSWORD_PATTERN.matcher(value).matches();
     }
 }

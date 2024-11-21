@@ -1,16 +1,15 @@
-package atwoz.atwoz.admin.domain.admin;
+package atwoz.atwoz.common.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.regex.Pattern;
 
-import static lombok.AccessLevel.PROTECTED;
-
 @Embeddable
-@NoArgsConstructor(access = PROTECTED, force = true)
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @EqualsAndHashCode
 public class Email {
 
@@ -22,7 +21,7 @@ public class Email {
 
     private Email(String address) {
         if (!isValidEmail(address)) {
-            throw new IllegalArgumentException("유효하지 않은 이메일 주소 형식입니다: " + address);
+            throw new IllegalArgumentException("유효하지 않은 이메일 주소 형식입니다.");
         }
         this.address = address;
     }
@@ -32,6 +31,6 @@ public class Email {
     }
 
     private boolean isValidEmail(String address) {
-        return address == null || !EMAIL_PATTERN.matcher(address).matches();
+        return address != null && EMAIL_PATTERN.matcher(address).matches();
     }
 }
