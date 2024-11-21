@@ -7,7 +7,6 @@ import lombok.Builder;
 public record MemberLoginResponse(
         String accessToken,
         String refreshToken,
-        boolean isSuspended,
         boolean isNeedProfile
 ) {
     public static MemberLoginResponse fromMemberWithToken(Member member,String accessToken, String refreshToken) {
@@ -15,7 +14,6 @@ public record MemberLoginResponse(
         return MemberLoginResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .isSuspended(member.isPermanentStop())
                 .isNeedProfile(member.isNeedProfile())
                 .build();
     }

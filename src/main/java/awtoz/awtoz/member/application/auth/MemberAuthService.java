@@ -1,6 +1,7 @@
 package awtoz.awtoz.member.application.auth;
 
 import awtoz.awtoz.member.application.auth.dto.MemberLoginResponse;
+import awtoz.awtoz.member.exception.auth.MemberPermanentStopException;
 import awtoz.awtoz.member.infra.auth.MemberJwtTokenProvider;
 import awtoz.awtoz.member.domain.member.Member;
 import awtoz.awtoz.member.domain.member.MemberRepository;
@@ -17,6 +18,11 @@ public class MemberAuthService {
 
     public MemberLoginResponse login(String phoneNumber) {
         Member member = createOrFindMemberByPhoneNumber(phoneNumber);
+
+        if (member.isPermanentStop()) {
+            throw new MemberPermanentStopException();
+        }
+
         String accessToken = memberJwtTokenProvider.createAccessToken(member.getId());
         return MemberLoginResponse.fromMemberWithToken(member, accessToken, "");
     }
