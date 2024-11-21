@@ -21,7 +21,7 @@ public class Email {
 
     private Email(String address) {
         if (!isValidEmail(address)) {
-            throw new IllegalArgumentException("유효하지 않은 이메일 주소 형식입니다.");
+            throw new InvalidEmailException("유효하지 않은 이메일 주소 형식입니다.");
         }
         this.address = address;
     }

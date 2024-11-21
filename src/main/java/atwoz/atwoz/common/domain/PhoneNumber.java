@@ -21,7 +21,7 @@ public class PhoneNumber {
 
     private PhoneNumber(String value) {
         if (!isValidPhoneNumber(value)) {
-            throw new IllegalArgumentException("유효하지 않은 전화번호 형식입니다.");
+            throw new InvalidPhoneNumberException("유효하지 않은 전화번호 형식입니다.");
         }
         this.value = value;
     }
