@@ -32,11 +32,11 @@ public class Admin {
     private String comment;
 
     @Enumerated(STRING)
-    @Column(length = 50)
+    @Column(columnDefinition = "VARCHAR(50)")
     private AdminRole role;
 
     @Enumerated(STRING)
-    @Column(length = 50)
+    @Column(columnDefinition = "VARCHAR(50)")
     private ApprovalStatus approvalStatus;
 
     @Builder
