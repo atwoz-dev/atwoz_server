@@ -24,13 +24,13 @@ public class HeartAmount {
 
     private static void validateUsingAmount(Long amount) {
         if (amount > 0) {
-            throw new InvalidHeartAmountException("사용량은 0 이하의 값이어야 합니다.");
+            throw new InvalidHeartAmountException("사용량은 0 이하의 값이어야 합니다. amount: " + amount);
         }
     }
 
     private static void validateGainingAmount(Long amount) {
         if (amount <= 0) {
-            throw new InvalidHeartAmountException("얻는 값은 1 이상의 값이어야 합니다.");
+            throw new InvalidHeartAmountException("얻는 값은 1 이상의 값이어야 합니다. amount: " + amount);
         }
     }
 }

@@ -54,13 +54,13 @@ public class HeartTransaction {
 
     private static void validateUsingTransaction(TransactionType transactionType) {
         if (!transactionType.isUsingType()) {
-            throw new InvalidHeartTransactionTypeException("하트를 사용하는 트랜잭션 타입이 아닙니다.");
+            throw new InvalidHeartTransactionTypeException("하트를 사용하는 트랜잭션 타입이 아닙니다. transactionType: " + transactionType);
         }
     }
 
     private static void validateGainingTransaction(TransactionType transactionType) {
         if (!transactionType.isGainingType()) {
-            throw new InvalidHeartTransactionTypeException("하트를 획득하는 트랜잭션 타입이 아닙니다.");
+            throw new InvalidHeartTransactionTypeException("하트를 획득하는 트랜잭션 타입이 아닙니다. transactionType: " + transactionType);
         }
     }
 }
