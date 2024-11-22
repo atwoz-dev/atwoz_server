@@ -20,7 +20,7 @@ public class HeartBalance {
     }
 
     private static void validateBalance(Long balance) {
-        if (balance >= 0) {
+        if (balance < 0) {
             throw new InvalidHeartBalanceException("하트 잔액은 0 이상의 값이어야 합니다. balance: " + balance);
         }
     }
