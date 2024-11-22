@@ -17,35 +17,30 @@ class AdminTest {
     private static final Password PASSWORD = Password.of("password123^^");
     private static final Name NAME = Name.of("홍길동");
     private static final PhoneNumber PHONE_NUMBER = PhoneNumber.of("010-1234-5678");
-    private static final String COMMENT = "비고";
 
     @Test
-    @DisplayName("Admin을 생성합니다.")
-    void createAdmin() {
-        // when
+    @DisplayName("유효한 값 타입들로 Admin을 생성합니다.")
+    void createAdminWithValidValueTypes() {
         Admin admin = Admin.builder()
                 .email(EMAIL)
                 .password(PASSWORD)
                 .name(NAME)
                 .phoneNumber(PHONE_NUMBER)
-                .comment(COMMENT)
                 .build();
 
-        // then
         assertThat(admin).isNotNull();
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"email", "password", "name", "phoneNumber"})
     @DisplayName("Admin의 값 타입이 null이면 예외를 던집니다.")
-    void cannotCreateAdminWithNullValueType(String fieldName) {
+    void createAdminWithNullValueTypeThrowsException(String fieldName) {
         assertThatThrownBy(() ->
                 Admin.builder()
                         .email(fieldName.equals("email") ? null : EMAIL)
                         .password(fieldName.equals("password") ? null : PASSWORD)
                         .name(fieldName.equals("name") ? null : NAME)
                         .phoneNumber(fieldName.equals("phoneNumber") ? null : PHONE_NUMBER)
-                        .comment(COMMENT)
                         .build())
                 .isInstanceOf(IllegalArgumentException.class);
     }
