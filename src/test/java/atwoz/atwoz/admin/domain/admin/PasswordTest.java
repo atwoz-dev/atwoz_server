@@ -10,7 +10,7 @@ class PasswordTest {
 
     @Test
     @DisplayName("비밀번호가 10자이고, 문자, 숫자, 특수문자를 포함한 경우 유효합니다.")
-    void isValidWhenPasswordHas10CharactersIncludingLettersNumbersAndSpecialCharacters() {
+    void isValidWhenPasswordHasTenCharactersIncludingLettersNumbersAndSpecialCharacters() {
         // given
         String validPassword = "pw345678^^";
 
@@ -24,7 +24,7 @@ class PasswordTest {
 
     @Test
     @DisplayName("비밀번호가 20자이고, 문자, 숫자, 특수문자를 포함한 경우 유효합니다.")
-    void isValidWhenPasswordHas20CharactersIncludingLettersNumbersAndSpecialCharacters() {
+    void isValidWhenPasswordHasTwentyCharactersIncludingLettersNumbersAndSpecialCharacters() {
         // given
         String validPassword = "password9012345678^^";
 
