@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.regex.Pattern;
@@ -13,9 +14,10 @@ import java.util.regex.Pattern;
 @EqualsAndHashCode
 public class PhoneNumber {
 
-    private static final String PHONE_NUMBER_REGEX = "^010-\\d{4}-\\d{4}$";
+    private static final String PHONE_NUMBER_REGEX = "^(0\\d{1,2})-\\d{3,4}-\\d{4}$";
     private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile(PHONE_NUMBER_REGEX);
 
+    @Getter
     @Column(name = "phone_number")
     private final String value;
 
