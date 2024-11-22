@@ -4,12 +4,14 @@ import awtoz.awtoz.heart.exception.InvalidHeartBalanceException;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Embeddable
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HeartBalance {
+    @Getter
     private Long balance;
 
     public static HeartBalance from(Long balance) {
