@@ -38,7 +38,7 @@ public class HeartTransaction {
                 .memberId(memberId)
                 .transactionType(transactionType)
                 .heartAmount(HeartAmount.use(amount))
-                .heartBalance(HeartBalance.of(balance))
+                .heartBalance(HeartBalance.from(balance))
                 .build();
     }
 
@@ -48,7 +48,7 @@ public class HeartTransaction {
                 .memberId(memberId)
                 .transactionType(transactionType)
                 .heartAmount(HeartAmount.gain(amount))
-                .heartBalance(HeartBalance.of(balance))
+                .heartBalance(HeartBalance.from(balance))
                 .build();
     }
 

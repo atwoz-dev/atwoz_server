@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class HeartBalance {
     private Long balance;
 
-    public static HeartBalance of(Long balance) {
+    public static HeartBalance from(Long balance) {
         validateBalance(balance);
         return new HeartBalance(balance);
     }
