@@ -79,4 +79,15 @@ class NameTest {
         assertThatThrownBy(() -> Name.of(invalidName))
                 .isInstanceOf(InvalidNameException.class);
     }
+
+    @Test
+    @DisplayName("이름에 공백이 포함된 경우 유효하지 않습니다.")
+    void isInvalidWhenNameContainsWhitespace() {
+        // given
+        String invalidName = "John Doe";
+
+        // when & then
+        assertThatThrownBy(() -> Name.of(invalidName))
+                .isInstanceOf(InvalidNameException.class);
+    }
 }
