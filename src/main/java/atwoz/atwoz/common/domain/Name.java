@@ -21,7 +21,7 @@ public class Name {
 
     private Name(String value) {
         if (!isValidName(value)) {
-            throw new InvalidNameException("이름은 문자와 숫자만 포함해야하며, 최대 10자까지 설정 가능합니다.");
+            throw new InvalidNameException(value);
         }
         this.value = value;
     }

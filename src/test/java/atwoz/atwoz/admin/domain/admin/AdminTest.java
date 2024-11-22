@@ -40,13 +40,13 @@ class AdminTest {
     @DisplayName("Admin의 값 타입이 null이면 예외를 던집니다.")
     void cannotCreateAdminWithNullValueType(String fieldName) {
         assertThatThrownBy(() ->
-            Admin.builder()
-                    .email(fieldName.equals("email") ? null : EMAIL)
-                    .password(fieldName.equals("password") ? null : PASSWORD)
-                    .name(fieldName.equals("name") ? null : NAME)
-                    .phoneNumber(fieldName.equals("phoneNumber") ? null : PHONE_NUMBER)
-                    .comment(COMMENT)
-                    .build())
-        .isInstanceOf(IllegalArgumentException.class);
+                Admin.builder()
+                        .email(fieldName.equals("email") ? null : EMAIL)
+                        .password(fieldName.equals("password") ? null : PASSWORD)
+                        .name(fieldName.equals("name") ? null : NAME)
+                        .phoneNumber(fieldName.equals("phoneNumber") ? null : PHONE_NUMBER)
+                        .comment(COMMENT)
+                        .build())
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
