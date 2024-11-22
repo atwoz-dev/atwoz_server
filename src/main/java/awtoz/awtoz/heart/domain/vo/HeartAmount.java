@@ -4,12 +4,14 @@ import awtoz.awtoz.heart.exception.InvalidHeartAmountException;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Embeddable
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HeartAmount {
+    @Getter
     private Long amount;
 
     public static HeartAmount use(Long amount) {
