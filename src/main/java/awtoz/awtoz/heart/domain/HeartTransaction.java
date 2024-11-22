@@ -42,12 +42,6 @@ public class HeartTransaction {
                 .build();
     }
 
-    private static void validateUsingTransaction(TransactionType transactionType) {
-        if (!transactionType.isUsingType()) {
-            throw new InvalidHeartTransactionTypeException("하트를 사용하는 트랜잭션 타입이 아닙니다.");
-        }
-    }
-
     public static HeartTransaction gainHeart(Long memberId, TransactionType transactionType, Long amount, Long balance) {
         validateGainingTransaction(transactionType);
         return HeartTransaction.builder()
@@ -56,6 +50,12 @@ public class HeartTransaction {
                 .heartAmount(HeartAmount.gain(amount))
                 .heartBalance(HeartBalance.of(balance))
                 .build();
+    }
+
+    private static void validateUsingTransaction(TransactionType transactionType) {
+        if (!transactionType.isUsingType()) {
+            throw new InvalidHeartTransactionTypeException("하트를 사용하는 트랜잭션 타입이 아닙니다.");
+        }
     }
 
     private static void validateGainingTransaction(TransactionType transactionType) {

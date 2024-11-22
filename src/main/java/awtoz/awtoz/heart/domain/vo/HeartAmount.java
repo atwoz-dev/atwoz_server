@@ -17,15 +17,15 @@ public class HeartAmount {
         return new HeartAmount(amount);
     }
 
+    public static HeartAmount gain(Long amount) {
+        validateGainingAmount(amount);
+        return new HeartAmount(amount);
+    }
+
     private static void validateUsingAmount(Long amount) {
         if (amount > 0) {
             throw new InvalidHeartAmountException("사용량은 0 이하의 값이어야 합니다.");
         }
-    }
-
-    public static HeartAmount gain(Long amount) {
-        validateGainingAmount(amount);
-        return new HeartAmount(amount);
     }
 
     private static void validateGainingAmount(Long amount) {
