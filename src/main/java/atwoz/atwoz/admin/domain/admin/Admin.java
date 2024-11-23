@@ -32,27 +32,19 @@ public class Admin {
     private String comment;
 
     @Enumerated(STRING)
-    @Column(columnDefinition = "VARCHAR(50)")
+    @Column(columnDefinition = "varchar(50)")
     private AdminRole role;
 
     @Enumerated(STRING)
-    @Column(columnDefinition = "VARCHAR(50)")
+    @Column(columnDefinition = "varchar(50)")
     private ApprovalStatus approvalStatus;
 
     @Builder
     private Admin(Email email, Password password, Name name, PhoneNumber phoneNumber, String comment) {
-        if (email == null) {
-            throw new IllegalArgumentException("Email은 null일 수 없습니다.");
-        }
-        if (password == null) {
-            throw new IllegalArgumentException("Password는 null일 수 없습니다.");
-        }
-        if (name == null) {
-            throw new IllegalArgumentException("Name은 null일 수 없습니다.");
-        }
-        if (phoneNumber == null) {
-            throw new IllegalArgumentException("PhoneNumber는 null일 수 없습니다.");
-        }
+        validateEmailIsNotNull(email);
+        validatePasswordIsNotNull(password);
+        validateNameIsNotNull(name);
+        validatePhoneNumberIsNotNull(phoneNumber);
         this.email = email;
         this.password = password;
         this.name = name;
@@ -60,5 +52,29 @@ public class Admin {
         this.comment = comment;
         this.role = AdminRole.GENERAL;
         this.approvalStatus = ApprovalStatus.PENDING;
+    }
+
+    private void validateEmailIsNotNull(Email email) {
+        if (email == null) {
+            throw new IllegalArgumentException("Email은 null일 수 없습니다.");
+        }
+    }
+
+    private void validatePasswordIsNotNull(Password password) {
+        if (password == null) {
+            throw new IllegalArgumentException("Password는 null일 수 없습니다.");
+        }
+    }
+
+    private void validateNameIsNotNull(Name name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Name은 null일 수 없습니다.");
+        }
+    }
+
+    private void validatePhoneNumberIsNotNull(PhoneNumber phoneNumber) {
+        if (phoneNumber == null) {
+            throw new IllegalArgumentException("PhoneNumber는 null일 수 없습니다.");
+        }
     }
 }

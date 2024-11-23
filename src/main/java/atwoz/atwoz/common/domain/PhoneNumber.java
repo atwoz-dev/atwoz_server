@@ -11,20 +11,18 @@ import java.util.regex.Pattern;
 
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+@Getter
 @EqualsAndHashCode
 public class PhoneNumber {
 
     private static final String PHONE_NUMBER_REGEX = "^(0\\d{1,2})-\\d{3,4}-\\d{4}$";
     private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile(PHONE_NUMBER_REGEX);
 
-    @Getter
     @Column(name = "phone_number")
     private final String value;
 
     private PhoneNumber(String value) {
-        if (!isValidPhoneNumber(value)) {
-            throw new InvalidPhoneNumberException(value);
-        }
+        validatePhoneNumber(value);
         this.value = value;
     }
 
@@ -32,7 +30,9 @@ public class PhoneNumber {
         return new PhoneNumber(value);
     }
 
-    private boolean isValidPhoneNumber(String value) {
-        return value != null && PHONE_NUMBER_PATTERN.matcher(value).matches();
+    private void validatePhoneNumber(String value) {
+        if (value == null || !PHONE_NUMBER_PATTERN.matcher(value).matches()) {
+            throw new InvalidPhoneNumberException(value);
+        }
     }
 }
