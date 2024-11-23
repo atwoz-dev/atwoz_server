@@ -15,7 +15,7 @@ class PhoneNumberTest {
         String validPhoneNumber = "010-1234-5678";
 
         // when
-        PhoneNumber phoneNumber = PhoneNumber.of(validPhoneNumber);
+        PhoneNumber phoneNumber = PhoneNumber.from(validPhoneNumber);
 
         // then
         assertThat(phoneNumber).isNotNull();
@@ -29,7 +29,7 @@ class PhoneNumberTest {
         String invalidPhoneNumber = "110-1234-5678";
 
         // when & then
-        assertThatThrownBy(() -> PhoneNumber.of(invalidPhoneNumber))
+        assertThatThrownBy(() -> PhoneNumber.from(invalidPhoneNumber))
                 .isInstanceOf(InvalidPhoneNumberException.class);
     }
 
@@ -40,7 +40,7 @@ class PhoneNumberTest {
         String invalidPhoneNumber = "010-123456-7890";
 
         // when & then
-        assertThatThrownBy(() -> PhoneNumber.of(invalidPhoneNumber))
+        assertThatThrownBy(() -> PhoneNumber.from(invalidPhoneNumber))
                 .isInstanceOf(InvalidPhoneNumberException.class);
     }
 
@@ -51,7 +51,7 @@ class PhoneNumberTest {
         String invalidPhoneNumber = "010-1234-567890";
 
         // when & then
-        assertThatThrownBy(() -> PhoneNumber.of(invalidPhoneNumber))
+        assertThatThrownBy(() -> PhoneNumber.from(invalidPhoneNumber))
                 .isInstanceOf(InvalidPhoneNumberException.class);
     }
 
@@ -62,7 +62,7 @@ class PhoneNumberTest {
         String invalidPhoneNumber = null;
 
         // when & then
-        assertThatThrownBy(() -> PhoneNumber.of(invalidPhoneNumber))
+        assertThatThrownBy(() -> PhoneNumber.from(invalidPhoneNumber))
                 .isInstanceOf(InvalidPhoneNumberException.class);
     }
 
@@ -73,7 +73,7 @@ class PhoneNumberTest {
         String invalidPhoneNumber = "010-1234-aaaa";
 
         // when & then
-        assertThatThrownBy(() -> PhoneNumber.of(invalidPhoneNumber))
+        assertThatThrownBy(() -> PhoneNumber.from(invalidPhoneNumber))
                 .isInstanceOf(InvalidPhoneNumberException.class);
     }
 }

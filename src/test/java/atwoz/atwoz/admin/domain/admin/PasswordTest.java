@@ -15,7 +15,7 @@ class PasswordTest {
         String validPassword = "pw345678^^";
 
         // when
-        Password password = Password.of(validPassword);
+        Password password = Password.from(validPassword);
 
         // then
         assertThat(password).isNotNull();
@@ -29,7 +29,7 @@ class PasswordTest {
         String validPassword = "password9012345678^^";
 
         // when
-        Password password = Password.of(validPassword);
+        Password password = Password.from(validPassword);
 
         // then
         assertThat(password).isNotNull();
@@ -43,7 +43,7 @@ class PasswordTest {
         String invalidPassword = "pw123^^";
 
         // when & then
-        assertThatThrownBy(() -> Password.of(invalidPassword))
+        assertThatThrownBy(() -> Password.from(invalidPassword))
                 .isInstanceOf(InvalidPasswordException.class);
     }
 
@@ -54,7 +54,7 @@ class PasswordTest {
         String invalidPassword = "abcdefghijklmnopqrstuvwxyz1234567890^^";
 
         // when & then
-        assertThatThrownBy(() -> Password.of(invalidPassword))
+        assertThatThrownBy(() -> Password.from(invalidPassword))
                 .isInstanceOf(InvalidPasswordException.class);
     }
 
@@ -65,7 +65,7 @@ class PasswordTest {
         String invalidPassword = null;
 
         // when & then
-        assertThatThrownBy(() -> Password.of(invalidPassword))
+        assertThatThrownBy(() -> Password.from(invalidPassword))
                 .isInstanceOf(InvalidPasswordException.class);
     }
 
@@ -76,7 +76,7 @@ class PasswordTest {
         String invalidPassword = "1234567890^^";
 
         // when & then
-        assertThatThrownBy(() -> Password.of(invalidPassword))
+        assertThatThrownBy(() -> Password.from(invalidPassword))
                 .isInstanceOf(InvalidPasswordException.class);
     }
 
@@ -87,7 +87,7 @@ class PasswordTest {
         String invalidPassword = "password^^";
 
         // when & then
-        assertThatThrownBy(() -> Password.of(invalidPassword))
+        assertThatThrownBy(() -> Password.from(invalidPassword))
                 .isInstanceOf(InvalidPasswordException.class);
     }
 
@@ -98,7 +98,7 @@ class PasswordTest {
         String invalidPassword = "password1234";
 
         // when & then
-        assertThatThrownBy(() -> Password.of(invalidPassword))
+        assertThatThrownBy(() -> Password.from(invalidPassword))
                 .isInstanceOf(InvalidPasswordException.class);
     }
 
@@ -109,7 +109,7 @@ class PasswordTest {
         String invalidPassword = "비밀번호1234^^";
 
         // when & then
-        assertThatThrownBy(() -> Password.of(invalidPassword))
+        assertThatThrownBy(() -> Password.from(invalidPassword))
                 .isInstanceOf(InvalidPasswordException.class);
     }
 }

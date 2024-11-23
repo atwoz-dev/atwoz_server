@@ -28,7 +28,7 @@ public class Password {
         this.value = value;
     }
 
-    public static Password of(String value) {
+    public static Password from(String value) {
         return new Password(value);
     }
 

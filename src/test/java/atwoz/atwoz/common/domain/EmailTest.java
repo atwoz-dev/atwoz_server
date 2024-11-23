@@ -15,7 +15,7 @@ class EmailTest {
         String validEmail = "example@me.com";
 
         // when
-        Email email = Email.of(validEmail);
+        Email email = Email.from(validEmail);
 
         // then
         assertThat(email).isNotNull();
@@ -29,7 +29,7 @@ class EmailTest {
         String invalidEmail = "@me.com";
 
         // when & then
-        assertThatThrownBy(() -> Email.of(invalidEmail))
+        assertThatThrownBy(() -> Email.from(invalidEmail))
                 .isInstanceOf(InvalidEmailException.class);
     }
 
@@ -40,7 +40,7 @@ class EmailTest {
         String invalidEmail = "exampleme.com";
 
         // when & then
-        assertThatThrownBy(() -> Email.of(invalidEmail))
+        assertThatThrownBy(() -> Email.from(invalidEmail))
                 .isInstanceOf(InvalidEmailException.class);
     }
 
@@ -51,7 +51,7 @@ class EmailTest {
         String invalidEmail = "example@";
 
         // when & then
-        assertThatThrownBy(() -> Email.of(invalidEmail))
+        assertThatThrownBy(() -> Email.from(invalidEmail))
                 .isInstanceOf(InvalidEmailException.class);
     }
 
@@ -62,7 +62,7 @@ class EmailTest {
         String invalidEmail = "example@me";
 
         // when & then
-        assertThatThrownBy(() -> Email.of(invalidEmail))
+        assertThatThrownBy(() -> Email.from(invalidEmail))
                 .isInstanceOf(InvalidEmailException.class);
     }
 
@@ -73,7 +73,7 @@ class EmailTest {
         String invalidEmail = "홍길동@me.com";
 
         // when & then
-        assertThatThrownBy(() -> Email.of(invalidEmail))
+        assertThatThrownBy(() -> Email.from(invalidEmail))
                 .isInstanceOf(InvalidEmailException.class);
     }
 }

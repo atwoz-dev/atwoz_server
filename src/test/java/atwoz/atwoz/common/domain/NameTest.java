@@ -15,7 +15,7 @@ class NameTest {
         String validName = "김";
 
         // when
-        Name name = Name.of(validName);
+        Name name = Name.from(validName);
 
         // then
         assertThat(name).isNotNull();
@@ -29,7 +29,7 @@ class NameTest {
         String validName = "1234567890";
 
         // when
-        Name name = Name.of(validName);
+        Name name = Name.from(validName);
 
         // then
         assertThat(name).isNotNull();
@@ -43,7 +43,7 @@ class NameTest {
         String invalidName = "";
 
         // when & then
-        assertThatThrownBy(() -> Name.of(invalidName))
+        assertThatThrownBy(() -> Name.from(invalidName))
                 .isInstanceOf(InvalidNameException.class);
     }
 
@@ -54,7 +54,7 @@ class NameTest {
         String invalidName = null;
 
         // when & then
-        assertThatThrownBy(() -> Name.of(invalidName))
+        assertThatThrownBy(() -> Name.from(invalidName))
                 .isInstanceOf(InvalidNameException.class);
     }
 
@@ -65,7 +65,7 @@ class NameTest {
         String invalidName = "12345678910";
 
         // when & then
-        assertThatThrownBy(() -> Name.of(invalidName))
+        assertThatThrownBy(() -> Name.from(invalidName))
                 .isInstanceOf(InvalidNameException.class);
     }
 
@@ -76,7 +76,7 @@ class NameTest {
         String invalidName = "홍길동123^^";
 
         // when & then
-        assertThatThrownBy(() -> Name.of(invalidName))
+        assertThatThrownBy(() -> Name.from(invalidName))
                 .isInstanceOf(InvalidNameException.class);
     }
 
@@ -87,7 +87,7 @@ class NameTest {
         String invalidName = "John Doe";
 
         // when & then
-        assertThatThrownBy(() -> Name.of(invalidName))
+        assertThatThrownBy(() -> Name.from(invalidName))
                 .isInstanceOf(InvalidNameException.class);
     }
 }

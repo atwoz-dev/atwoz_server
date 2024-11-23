@@ -28,7 +28,7 @@ public class PhoneNumber {
         this.value = value;
     }
 
-    public static PhoneNumber of(String value) {
+    public static PhoneNumber from(String value) {
         return new PhoneNumber(value);
     }
 

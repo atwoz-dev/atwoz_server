@@ -13,10 +13,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class AdminTest {
 
-    private static final Email EMAIL = Email.of("example@me.com");
-    private static final Password PASSWORD = Password.of("password123^^");
-    private static final Name NAME = Name.of("홍길동");
-    private static final PhoneNumber PHONE_NUMBER = PhoneNumber.of("010-1234-5678");
+    private static final Email EMAIL = Email.from("example@me.com");
+    private static final Password PASSWORD = Password.from("password123^^");
+    private static final Name NAME = Name.from("홍길동");
+    private static final PhoneNumber PHONE_NUMBER = PhoneNumber.from("010-1234-5678");
 
     @Test
     @DisplayName("유효한 값 타입들로 Admin을 생성합니다.")
