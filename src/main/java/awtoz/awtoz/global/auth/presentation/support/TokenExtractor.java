@@ -1,17 +1,16 @@
-package awtoz.awtoz.member.presentation.auth.support;
+package awtoz.awtoz.global.auth.presentation.support;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
-public class MemberTokenExtractor {
+public class TokenExtractor {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
     private static final int BEARER_PREFIX_INDEX = 0;
     private static final int TOKEN_PREFIX_INDEX = 1;
-
 
 
     public static Optional<String> extractTokenFromRequest(HttpServletRequest request) {
@@ -20,8 +19,7 @@ public class MemberTokenExtractor {
             return Optional.empty();
         }
 
-        else
-            return extractTokenFromHeader(header.split(" "));
+        return extractTokenFromHeader(header.split(" "));
     }
 
     private static Optional<String> extractTokenFromHeader(String[] header) {

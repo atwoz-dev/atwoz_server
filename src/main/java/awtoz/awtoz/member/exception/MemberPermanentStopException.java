@@ -1,4 +1,4 @@
-package awtoz.awtoz.member.exception.auth;
+package awtoz.awtoz.member.exception;
 
 public class MemberPermanentStopException extends RuntimeException {
     public MemberPermanentStopException() {

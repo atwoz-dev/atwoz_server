@@ -1,10 +1,10 @@
-package awtoz.awtoz.member.application.auth;
+package awtoz.awtoz.member.application;
 
-import awtoz.awtoz.member.application.auth.dto.MemberLoginResponse;
-import awtoz.awtoz.member.exception.auth.MemberPermanentStopException;
-import awtoz.awtoz.member.infra.auth.MemberJwtTokenProvider;
+import awtoz.awtoz.global.auth.infra.JwtTokenProvider;
+import awtoz.awtoz.member.application.dto.MemberLoginResponse;
 import awtoz.awtoz.member.domain.member.Member;
 import awtoz.awtoz.member.domain.member.MemberRepository;
+import awtoz.awtoz.member.exception.MemberPermanentStopException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +13,7 @@ import org.springframework.stereotype.Service;
 public class MemberAuthService {
 
     private final MemberRepository memberRepository;
-    private final MemberJwtTokenProvider memberJwtTokenProvider;
-
+    private final JwtTokenProvider jwtTokenProvider;
 
     public MemberLoginResponse login(String phoneNumber) {
         Member member = createOrFindMemberByPhoneNumber(phoneNumber);
@@ -23,7 +22,7 @@ public class MemberAuthService {
             throw new MemberPermanentStopException();
         }
 
-        String accessToken = memberJwtTokenProvider.createAccessToken(member.getId());
+        String accessToken = jwtTokenProvider.createAccessToken(member.getId());
         return MemberLoginResponse.fromMemberWithToken(member, accessToken, "");
     }
 

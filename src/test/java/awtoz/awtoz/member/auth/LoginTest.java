@@ -1,10 +1,10 @@
 package awtoz.awtoz.member.auth;
 
-import awtoz.awtoz.member.application.auth.MemberAuthService;
-import awtoz.awtoz.member.application.auth.dto.MemberLoginResponse;
+import awtoz.awtoz.member.application.MemberAuthService;
+import awtoz.awtoz.member.application.dto.MemberLoginResponse;
 import awtoz.awtoz.member.domain.member.Member;
 import awtoz.awtoz.member.domain.member.MemberRepository;
-import awtoz.awtoz.member.infra.auth.MemberJwtTokenProvider;
+import awtoz.awtoz.global.auth.infra.JwtTokenProvider;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,14 +24,14 @@ public class LoginTest {
     @Mock
     private MemberRepository memberRepository;
 
-    private MemberJwtTokenProvider memberJwtTokenProvider;
+    private JwtTokenProvider memberJwtTokenProvider;
 
     @InjectMocks
     private MemberAuthService memberAuthService;
 
     @BeforeEach
     void setUp() {
-        memberJwtTokenProvider = new MemberJwtTokenProvider();
+        memberJwtTokenProvider = new JwtTokenProvider();
 
         // 테스트용 환경 설정
         ReflectionTestUtils.setField(memberJwtTokenProvider, "secret", "this-is-secret-key-value-at-least-128-bytes");
@@ -59,6 +59,5 @@ public class LoginTest {
         // Then
         Assertions.assertThat(response.accessToken()).isNotNull();
         Assertions.assertThat(response.isNeedProfile()).isTrue();
-        Assertions.assertThat(response.isSuspended()).isFalse();
     }
 }

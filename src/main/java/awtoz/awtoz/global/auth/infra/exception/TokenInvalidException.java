@@ -1,4 +1,4 @@
-package awtoz.awtoz.member.exception.auth;
+package awtoz.awtoz.global.auth.infra.exception;
 
 public class TokenInvalidException extends RuntimeException {
     public TokenInvalidException() {

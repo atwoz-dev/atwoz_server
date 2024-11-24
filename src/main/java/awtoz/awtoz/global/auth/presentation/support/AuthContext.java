@@ -1,12 +1,12 @@
-package awtoz.awtoz.member.presentation.auth.support;
+package awtoz.awtoz.global.auth.presentation.support;
 
-import awtoz.awtoz.member.exception.auth.TokenNotExistException;
+import awtoz.awtoz.global.auth.infra.exception.TokenNotExistException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
 @RequestScope
 @Component
-public class MemberAuthContext {
+public class AuthContext {
 
     private Long memberId;
 

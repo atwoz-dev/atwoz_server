@@ -1,7 +1,7 @@
-package awtoz.awtoz.member.infra.auth;
+package awtoz.awtoz.global.auth.infra;
 
-import awtoz.awtoz.member.domain.auth.MemberTokenProvider;
-import awtoz.awtoz.member.exception.auth.*;
+import awtoz.awtoz.global.auth.domain.TokenProvider;
+import awtoz.awtoz.global.auth.infra.exception.*;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -9,15 +9,13 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.security.SignatureException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
 @NoArgsConstructor
 @Component
-public class MemberJwtTokenProvider implements MemberTokenProvider {
+public class JwtTokenProvider implements TokenProvider {
 
 
     // TODO : 환경변수 설정 필요.

@@ -1,4 +1,4 @@
-package awtoz.awtoz.member.application.auth.dto;
+package awtoz.awtoz.member.application.dto;
 
 import awtoz.awtoz.member.domain.member.Member;
 import lombok.Builder;

@@ -1,7 +1,7 @@
-package awtoz.awtoz.member.presentation.auth.resolver;
+package awtoz.awtoz.global.auth.presentation.resolver;
 
-import awtoz.awtoz.member.presentation.auth.support.AuthMember;
-import awtoz.awtoz.member.presentation.auth.support.MemberAuthContext;
+import awtoz.awtoz.global.auth.presentation.support.AuthMember;
+import awtoz.awtoz.global.auth.presentation.support.AuthContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -12,8 +12,8 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
 @RequiredArgsConstructor
-public class MemberAuthResolver implements HandlerMethodArgumentResolver {
-    private final MemberAuthContext memberAuthContext;
+public class AuthResolver implements HandlerMethodArgumentResolver {
+    private final AuthContext authContext;
 
 
     @Override
@@ -23,6 +23,6 @@ public class MemberAuthResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        return memberAuthContext.getPrincipal();
+        return authContext.getPrincipal();
     }
 }
