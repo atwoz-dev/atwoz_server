@@ -10,9 +10,9 @@ class PhoneNumberTest {
 
     @Test
     @DisplayName("전화번호가 형식에 맞는 경우 유효합니다.")
-    void isValidWhenFormatIsValid() {
+    void isValidWhenFormatIsCorrect() {
         // given
-        String validPhoneNumber = "010-1234-5678";
+        String validPhoneNumber = "01012345678";
 
         // when
         PhoneNumber phoneNumber = PhoneNumber.from(validPhoneNumber);
@@ -23,10 +23,10 @@ class PhoneNumberTest {
     }
 
     @Test
-    @DisplayName("전화번호가 0으로 시작하지 않는 경우 유효하지 않습니다.")
-    void isInvalidWhenPhoneNumberDoesNotStartWithZero() {
+    @DisplayName("전화번호가 010으로 시작하지 않는 경우 유효하지 않습니다.")
+    void isInvalidWhenPhoneNumberDoesNotStartWith010() {
         // given
-        String invalidPhoneNumber = "110-1234-5678";
+        String invalidPhoneNumber = "01234567890";
 
         // when & then
         assertThatThrownBy(() -> PhoneNumber.from(invalidPhoneNumber))
@@ -34,21 +34,10 @@ class PhoneNumberTest {
     }
 
     @Test
-    @DisplayName("전화번호 가운데가 네 자리보다 큰 경우 유효하지 않습니다.")
-    void isInvalidWhenMiddlePartOfPhoneNumberExceedsFourDigits() {
+    @DisplayName("전화번호가 11자리보다 큰 경우 유효하지 않습니다.")
+    void isInvalidWhenPhoneNumberExceedsElevenDigits() {
         // given
-        String invalidPhoneNumber = "010-123456-7890";
-
-        // when & then
-        assertThatThrownBy(() -> PhoneNumber.from(invalidPhoneNumber))
-                .isInstanceOf(InvalidPhoneNumberException.class);
-    }
-
-    @Test
-    @DisplayName("전화번호 마지막이 네 자리보다 큰 경우 유효하지 않습니다.")
-    void isInvalidWhenLastPartOfPhoneNumberExceedsFourDigits() {
-        // given
-        String invalidPhoneNumber = "010-1234-567890";
+        String invalidPhoneNumber = "010123456789";
 
         // when & then
         assertThatThrownBy(() -> PhoneNumber.from(invalidPhoneNumber))
@@ -67,10 +56,21 @@ class PhoneNumberTest {
     }
 
     @Test
-    @DisplayName("전화번호에 허용되지 않는 문자가 포함된 경우 유효하지 않습니다.")
-    void isInvalidWhenPhoneNumberContainsInvalidCharacters() {
+    @DisplayName("전화번호가 빈 문자열인 경우 유효하지 않습니다.")
+    void isInvalidWhenPhoneNumberIsEmpty() {
         // given
-        String invalidPhoneNumber = "010-1234-aaaa";
+        String invalidPhoneNumber = "";
+
+        // when & then
+        assertThatThrownBy(() -> PhoneNumber.from(invalidPhoneNumber))
+                .isInstanceOf(InvalidPhoneNumberException.class);
+    }
+
+    @Test
+    @DisplayName("전화번호에 숫자가 아닌 값이 포함된 경우 유효하지 않습니다.")
+    void isInvalidWhenPhoneNumberContainsNonNumericCharacters() {
+        // given
+        String invalidPhoneNumber = "010-1234-5678";
 
         // when & then
         assertThatThrownBy(() -> PhoneNumber.from(invalidPhoneNumber))
