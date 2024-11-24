@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 @EqualsAndHashCode
 public class PhoneNumber {
 
-    private static final String PHONE_NUMBER_REGEX = "^(0\\d{1,2})-\\d{3,4}-\\d{4}$";
+    private static final String PHONE_NUMBER_REGEX = "^010\\d{8}$";
     private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile(PHONE_NUMBER_REGEX);
 
     @Column(name = "phone_number")
