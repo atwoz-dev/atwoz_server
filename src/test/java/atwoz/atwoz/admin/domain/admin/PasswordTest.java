@@ -106,7 +106,7 @@ class PasswordTest {
     @DisplayName("비밀번호에 영어 대소문자 이외의 문자가 포함된 경우 유효하지 않습니다.")
     void isInvalidWhenPasswordContainsNonAlphabetCharacters() {
         // given
-        String invalidPassword = "비밀번호1234^^";
+        String invalidPassword = "비밀번호abcd1234^^";
 
         // when & then
         assertThatThrownBy(() -> Password.from(invalidPassword))
