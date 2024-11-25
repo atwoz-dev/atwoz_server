@@ -13,7 +13,7 @@ class HeartAmountTest {
 
     @Nested
     @DisplayName("use 메서드 테스트")
-    class useTest {
+    class UseTest {
         @Test
         @DisplayName("amount값 0으로 하트 사용하는 HeartAmount 생성 성공")
         void useTestWithZeroValue() {
@@ -50,7 +50,7 @@ class HeartAmountTest {
 
     @Nested
     @DisplayName("gain 메서드 테스트")
-    class gainTest {
+    class GainTest {
 
         @Test
         @DisplayName("amount값 양수로 하트 얻는 HeartAmount 생성 성공")

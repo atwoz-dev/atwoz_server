@@ -13,7 +13,7 @@ class HeartTransactionTest {
 
     @Nested
     @DisplayName("useHeart 메서드 테스트")
-    class useHeartTest {
+    class UseHeartTest {
         @Test
         @DisplayName("정상값으로 하트 사용하는 HeartTransaction 생성 성공")
         void useHeartTestWithValidParams() {
@@ -45,7 +45,7 @@ class HeartTransactionTest {
 
     @Nested
     @DisplayName("gainHeart 메서드 테스트")
-    class gainHeartTest {
+    class GainHeartTest {
         @Test
         @DisplayName("정상값으로 하트 얻는 HeartTransaction 생성 성공")
         void gainHeartTestWithValidParams() {
@@ -74,5 +74,4 @@ class HeartTransactionTest {
                     .isInstanceOf(InvalidHeartTransactionTypeException.class);
         }
     }
-
 }
