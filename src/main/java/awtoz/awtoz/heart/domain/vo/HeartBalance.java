@@ -15,11 +15,11 @@ public class HeartBalance {
     private Long balance;
 
     public static HeartBalance from(Long balance) {
-        validateBalance(balance);
+        validateBalanceIsGreaterThanZero(balance);
         return new HeartBalance(balance);
     }
 
-    private static void validateBalance(Long balance) {
+    private static void validateBalanceIsGreaterThanZero(Long balance) {
         if (balance < 0) {
             throw new InvalidHeartBalanceException("하트 잔액은 0 이상의 값이어야 합니다. balance: " + balance);
         }

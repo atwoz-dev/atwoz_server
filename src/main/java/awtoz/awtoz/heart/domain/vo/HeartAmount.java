@@ -15,22 +15,22 @@ public class HeartAmount {
     private Long amount;
 
     public static HeartAmount use(Long amount) {
-        validateUsingAmount(amount);
+        validateAmountIsZeroOrLess(amount);
         return new HeartAmount(amount);
     }
 
     public static HeartAmount gain(Long amount) {
-        validateGainingAmount(amount);
+        validateAmountIsGreaterThanZero(amount);
         return new HeartAmount(amount);
     }
 
-    private static void validateUsingAmount(Long amount) {
+    private static void validateAmountIsZeroOrLess(Long amount) {
         if (amount > 0) {
             throw new InvalidHeartAmountException("사용량은 0 이하의 값이어야 합니다. amount: " + amount);
         }
     }
 
-    private static void validateGainingAmount(Long amount) {
+    private static void validateAmountIsGreaterThanZero(Long amount) {
         if (amount <= 0) {
             throw new InvalidHeartAmountException("얻는 값은 1 이상의 값이어야 합니다. amount: " + amount);
         }
