@@ -1,14 +1,16 @@
 package awtoz.awtoz.common.auth.presentation.support;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
+@Slf4j
 public class TokenExtractor {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String BEARER_PREFIX = "Bearer ";
+    private static final String BEARER_PREFIX = "Bearer";
     private static final int BEARER_PREFIX_INDEX = 0;
     private static final int TOKEN_PREFIX_INDEX = 1;
 

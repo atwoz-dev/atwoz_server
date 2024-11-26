@@ -11,6 +11,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -19,9 +20,10 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class TokenFilter extends OncePerRequestFilter {
 
-    private static final List<String> EXCLUDE_URLS = List.of("/member/auth/login");
+    private static final List<String> EXCLUDE_URLS = List.of("/members/auth/login");
     private static final String ADMIN_URL = "/admin";
     private final AuthContext authContext;
     private final TokenExceptionHandler tokenExceptionHandler;
@@ -45,14 +47,15 @@ public class TokenFilter extends OncePerRequestFilter {
                 throw new UnauthorizedException();
 
             authContext.setAuthentication(memberId);
+            filterChain.doFilter(request, response);
+
         } catch (RuntimeException e) {
             tokenExceptionHandler.handleException(response, e);
         }
-
-        filterChain.doFilter(request, response);
     }
 
     private boolean isExcluded(HttpServletRequest request) {
+
         return EXCLUDE_URLS.contains(request.getRequestURI());
     }
 
