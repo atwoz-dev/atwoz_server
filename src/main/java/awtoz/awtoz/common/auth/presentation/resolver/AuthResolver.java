@@ -1,7 +1,7 @@
-package awtoz.awtoz.global.auth.presentation.resolver;
+package awtoz.awtoz.common.auth.presentation.resolver;
 
-import awtoz.awtoz.global.auth.presentation.support.AuthMember;
-import awtoz.awtoz.global.auth.presentation.support.AuthContext;
+import awtoz.awtoz.common.auth.presentation.support.AuthMember;
+import awtoz.awtoz.common.auth.presentation.support.AuthContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;

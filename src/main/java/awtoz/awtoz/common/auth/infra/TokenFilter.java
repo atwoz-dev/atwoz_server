@@ -1,10 +1,11 @@
-package awtoz.awtoz.global.auth.infra;
+package awtoz.awtoz.common.auth.infra;
 
 
-import awtoz.awtoz.global.auth.domain.TokenProvider;
-import awtoz.awtoz.global.auth.presentation.support.AuthContext;
-import awtoz.awtoz.global.auth.presentation.support.TokenExtractor;
-import awtoz.awtoz.global.auth.infra.exception.TokenNotExistException;
+import awtoz.awtoz.common.auth.domain.Role;
+import awtoz.awtoz.common.auth.exception.UnauthorizedException;
+import awtoz.awtoz.common.auth.infra.exception.TokenNotExistException;
+import awtoz.awtoz.common.auth.presentation.support.AuthContext;
+import awtoz.awtoz.common.auth.presentation.support.TokenExtractor;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,9 +22,10 @@ import java.util.List;
 public class TokenFilter extends OncePerRequestFilter {
 
     private static final List<String> EXCLUDE_URLS = List.of("/member/auth/login");
+    private static final String ADMIN_URL = "/admin";
     private final AuthContext authContext;
     private final TokenExceptionHandler tokenExceptionHandler;
-    private final TokenProvider tokenProvider;
+    private final JwtTokenProvider tokenProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -36,10 +38,14 @@ public class TokenFilter extends OncePerRequestFilter {
             String token = TokenExtractor.extractTokenFromRequest(request)
                     .orElseThrow(() -> new TokenNotExistException());
 
-            Long memberId = tokenProvider.extract(token, "id", Long.class);
-            authContext.setAuthentication(memberId);
+            Long memberId = tokenProvider.extractId(token);
+            Role role = tokenProvider.extractRole(token);
 
-        } catch (Exception e) {
+            if (isIncludedAdminURI(request) && role != Role.ADMIN)
+                throw new UnauthorizedException();
+
+            authContext.setAuthentication(memberId);
+        } catch (RuntimeException e) {
             tokenExceptionHandler.handleException(response, e);
         }
 
@@ -48,5 +54,9 @@ public class TokenFilter extends OncePerRequestFilter {
 
     private boolean isExcluded(HttpServletRequest request) {
         return EXCLUDE_URLS.contains(request.getRequestURI());
+    }
+
+    private boolean isIncludedAdminURI(HttpServletRequest request) {
+        return request.getRequestURI().startsWith(ADMIN_URL);
     }
 }

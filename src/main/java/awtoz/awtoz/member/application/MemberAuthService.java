@@ -1,6 +1,7 @@
 package awtoz.awtoz.member.application;
 
-import awtoz.awtoz.global.auth.infra.JwtTokenProvider;
+import awtoz.awtoz.common.auth.domain.Role;
+import awtoz.awtoz.common.auth.infra.JwtTokenProvider;
 import awtoz.awtoz.member.application.dto.MemberLoginResponse;
 import awtoz.awtoz.member.domain.member.Member;
 import awtoz.awtoz.member.domain.member.MemberRepository;
@@ -22,7 +23,7 @@ public class MemberAuthService {
             throw new MemberPermanentStopException();
         }
 
-        String accessToken = jwtTokenProvider.createAccessToken(member.getId());
+        String accessToken = jwtTokenProvider.createAccessToken(member.getId(), Role.MEMBER);
         return MemberLoginResponse.fromMemberWithToken(member, accessToken, "");
     }
 
@@ -31,7 +32,7 @@ public class MemberAuthService {
     }
 
     private Member create(String phoneNumber) {
-        Member member = memberRepository.save(Member.createWithPhoneNumber(phoneNumber));
+        Member member = memberRepository.save(Member.createFromPhoneNumber(phoneNumber));
         return member;
     }
 }

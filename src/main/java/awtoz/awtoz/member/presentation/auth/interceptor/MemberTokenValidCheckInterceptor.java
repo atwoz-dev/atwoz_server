@@ -1,9 +1,9 @@
 package awtoz.awtoz.member.presentation.auth.interceptor;
 
-import awtoz.awtoz.global.auth.infra.exception.TokenNotExistException;
-import awtoz.awtoz.global.auth.infra.JwtTokenProvider;
-import awtoz.awtoz.global.auth.presentation.support.AuthContext;
-import awtoz.awtoz.global.auth.presentation.support.TokenExtractor;
+import awtoz.awtoz.common.auth.infra.exception.TokenNotExistException;
+import awtoz.awtoz.common.auth.infra.JwtTokenProvider;
+import awtoz.awtoz.common.auth.presentation.support.AuthContext;
+import awtoz.awtoz.common.auth.presentation.support.TokenExtractor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

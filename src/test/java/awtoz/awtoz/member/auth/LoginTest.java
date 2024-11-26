@@ -4,7 +4,7 @@ import awtoz.awtoz.member.application.MemberAuthService;
 import awtoz.awtoz.member.application.dto.MemberLoginResponse;
 import awtoz.awtoz.member.domain.member.Member;
 import awtoz.awtoz.member.domain.member.MemberRepository;
-import awtoz.awtoz.global.auth.infra.JwtTokenProvider;
+import awtoz.awtoz.common.auth.infra.JwtTokenProvider;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,7 +46,7 @@ public class LoginTest {
     @DisplayName("DB에 없는 유저가 회원가입 시도")
     void testLoginNewMember() {
         String phoneNumber = "01012345678";
-        Member mockMember = Member.createWithPhoneNumber(phoneNumber);
+        Member mockMember = Member.createFromPhoneNumber(phoneNumber);
 
 
         Mockito.when(memberRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.ofNullable(null));

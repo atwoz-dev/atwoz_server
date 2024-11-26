@@ -1,4 +1,4 @@
-package awtoz.awtoz.global.auth.presentation.support;
+package awtoz.awtoz.common.auth.presentation.support;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

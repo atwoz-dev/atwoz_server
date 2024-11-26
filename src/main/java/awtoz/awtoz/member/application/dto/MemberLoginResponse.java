@@ -14,7 +14,7 @@ public record MemberLoginResponse(
         return MemberLoginResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .isNeedProfile(member.isNeedProfile())
+                .isNeedProfile(member.isProfileSettingNeeded())
                 .build();
     }
 }

@@ -1,7 +1,7 @@
-package awtoz.awtoz.global.auth.config;
+package awtoz.awtoz.common.auth.config;
 
 import awtoz.awtoz.member.presentation.auth.interceptor.MemberTokenValidCheckInterceptor;
-import awtoz.awtoz.global.auth.presentation.resolver.AuthResolver;
+import awtoz.awtoz.common.auth.presentation.resolver.AuthResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

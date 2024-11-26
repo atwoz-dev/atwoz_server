@@ -1,51 +1,60 @@
 package awtoz.awtoz.member.domain.member;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Builder
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Embedded
+    private NickName nickName;
+
     private String phoneNumber;
 
-    private String nickName; // TODO : 값 타입으로 변경.
-    private String gender;
     private String region;
+
     private Integer age;
+
     private Integer height;
-    private String mbti;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(50)")
+    private Gender gender;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(50)")
+    private Mbti mbti;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(50)")
     private ActivityStatus activityStatus;
 
-    public static Member createWithPhoneNumber(String phoneNumber) {
+    public static Member createFromPhoneNumber(String phoneNumber) {
         return Member.builder()
                 .phoneNumber(phoneNumber)
                 .activityStatus(ActivityStatus.ACTIVE)
                 .build();
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public boolean isPermanentStop() {
         return activityStatus == ActivityStatus.PERMANENT_STOP;
     }
 
-    public boolean isNeedProfile() {
+    public boolean isProfileSettingNeeded() {
         if (this.nickName == null || gender == null || region == null || age == null || height == null || mbti == null) {
             return true;
         }
-
-        else
-            return false;
+        return false;
     }
 
 }

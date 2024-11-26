@@ -1,4 +1,4 @@
-package awtoz.awtoz.global.auth.presentation.support;
+package awtoz.awtoz.common.auth.presentation.support;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.util.StringUtils;

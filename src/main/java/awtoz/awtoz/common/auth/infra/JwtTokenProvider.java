@@ -1,7 +1,7 @@
-package awtoz.awtoz.global.auth.infra;
+package awtoz.awtoz.common.auth.infra;
 
-import awtoz.awtoz.global.auth.domain.TokenProvider;
-import awtoz.awtoz.global.auth.infra.exception.*;
+import awtoz.awtoz.common.auth.domain.Role;
+import awtoz.awtoz.common.auth.infra.exception.*;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -15,8 +15,9 @@ import java.util.Date;
 
 @NoArgsConstructor
 @Component
-public class JwtTokenProvider implements TokenProvider {
+public class JwtTokenProvider {
 
+    private static final String ROLE = "role";
 
     // TODO : 환경변수 설정 필요.
     private String secret = "this-is-secret-key-value-at-least-128-bytes";
@@ -32,36 +33,38 @@ public class JwtTokenProvider implements TokenProvider {
         key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    @Override
-    public String createAccessToken(Long id) {
+    public String createAccessToken(Long id, Role role) {
         Claims claims = Jwts.claims();
-        claims.put("id", id);
-        claims.put("token_type", "access_token");
-        claims.put("role", "member");
+        claims.put(ROLE, role);
 
-        return createToken(claims, accessTokenExpirationTime);
+        return createToken(claims, id, accessTokenExpirationTime);
     }
 
-    @Override
     public String createRefreshToken(Long id) {
         return "";
     }
 
-    @Override
-    public <T> T extract(String token, String claimName, Class<T> classType) {
+    public Long extractId(String token) {
+        return Long.parseLong(parseClaims(token).getSubject());
+    }
+
+    public Role extractRole(String token) {
+        return parseClaims(token).get(ROLE, Role.class);
+    }
+
+    private Claims parseClaims(String token) {
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(secret.getBytes())
                     .build()
                     .parseClaimsJws(token)
-                    .getBody()
-                    .get(claimName, classType);
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            throw new TokenExpiredException();
         } catch (SecurityException e) {
             throw new SignatureInvalidException();
         } catch (MalformedJwtException e) {
             throw new TokenFormInvalidException();
-        } catch (ExpiredJwtException e) {
-            throw new TokenExpiredException();
         } catch (UnsupportedJwtException e) {
             throw new UnsupportedTokenException();
         } catch (IllegalArgumentException e) {
@@ -69,8 +72,9 @@ public class JwtTokenProvider implements TokenProvider {
         }
     }
 
-    private String createToken(Claims claims, int expirationTime) {
+    private String createToken(Claims claims, Long id, int expirationTime) {
         return Jwts.builder()
+                .setSubject(id.toString())
                 .setClaims(claims)
                 .setIssuedAt(issuedAt())
                 .setExpiration(expiredAt(expirationTime))

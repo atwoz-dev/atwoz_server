@@ -1,4 +1,4 @@
-package awtoz.awtoz.global.auth.infra;
+package awtoz.awtoz.common.auth.infra;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;

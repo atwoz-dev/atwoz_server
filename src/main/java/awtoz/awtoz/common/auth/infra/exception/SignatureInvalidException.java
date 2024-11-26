@@ -1,4 +1,4 @@
-package awtoz.awtoz.global.auth.infra.exception;
+package awtoz.awtoz.common.auth.infra.exception;
 
 public class SignatureInvalidException extends RuntimeException {
     public SignatureInvalidException() {

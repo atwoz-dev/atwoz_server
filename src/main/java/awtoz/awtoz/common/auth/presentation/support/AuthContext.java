@@ -1,6 +1,6 @@
-package awtoz.awtoz.global.auth.presentation.support;
+package awtoz.awtoz.common.auth.presentation.support;
 
-import awtoz.awtoz.global.auth.infra.exception.TokenNotExistException;
+import awtoz.awtoz.common.auth.infra.exception.TokenNotExistException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
