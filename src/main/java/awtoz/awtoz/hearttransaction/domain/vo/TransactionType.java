@@ -1,4 +1,4 @@
-package awtoz.awtoz.heart.domain.vo;
+package awtoz.awtoz.hearttransaction.domain.vo;
 
 
 public enum TransactionType {

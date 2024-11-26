@@ -1,7 +1,7 @@
-package awtoz.awtoz.heart.domain;
+package awtoz.awtoz.hearttransaction.domain;
 
-import awtoz.awtoz.heart.domain.vo.TransactionType;
-import awtoz.awtoz.heart.exception.InvalidHeartTransactionTypeException;
+import awtoz.awtoz.hearttransaction.domain.vo.TransactionType;
+import awtoz.awtoz.hearttransaction.exception.InvalidHeartTransactionTypeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

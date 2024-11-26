@@ -1,6 +1,6 @@
-package awtoz.awtoz.heart.domain.vo;
+package awtoz.awtoz.hearttransaction.domain.vo;
 
-import awtoz.awtoz.heart.exception.InvalidHeartBalanceException;
+import awtoz.awtoz.hearttransaction.exception.InvalidHeartBalanceException;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
