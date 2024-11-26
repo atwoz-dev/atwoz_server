@@ -3,17 +3,14 @@ package awtoz.awtoz.heart.domain;
 import awtoz.awtoz.heart.domain.vo.HeartAmount;
 import awtoz.awtoz.heart.domain.vo.HeartBalance;
 import awtoz.awtoz.heart.domain.vo.TransactionType;
+import awtoz.awtoz.heart.exception.InvalidHeartAmountException;
 import awtoz.awtoz.heart.exception.InvalidHeartTransactionTypeException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class HeartTransaction {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,35 +29,24 @@ public class HeartTransaction {
     @Embedded
     private HeartBalance heartBalance;
 
-    public static HeartTransaction useHeart(Long memberId, TransactionType transactionType, Long amount, Long balance) {
-        validateUsingTransaction(transactionType);
-        return HeartTransaction.builder()
-                .memberId(memberId)
-                .transactionType(transactionType)
-                .heartAmount(HeartAmount.use(amount))
-                .heartBalance(HeartBalance.from(balance))
-                .build();
+    public static HeartTransaction of(Long memberId, TransactionType transactionType, HeartAmount heartAmount, HeartBalance heartBalance) {
+        return new HeartTransaction(memberId, transactionType, heartAmount, heartBalance);
     }
 
-    public static HeartTransaction gainHeart(Long memberId, TransactionType transactionType, Long amount, Long balance) {
-        validateGainingTransaction(transactionType);
-        return HeartTransaction.builder()
-                .memberId(memberId)
-                .transactionType(transactionType)
-                .heartAmount(HeartAmount.gain(amount))
-                .heartBalance(HeartBalance.from(balance))
-                .build();
+    private HeartTransaction(Long memberId, TransactionType transactionType, HeartAmount heartAmount, HeartBalance heartBalance) {
+        validateHeartTransaction(transactionType, heartAmount);
+        this.memberId = memberId;
+        this.transactionType = transactionType;
+        this.heartAmount = heartAmount;
+        this.heartBalance = heartBalance;
     }
 
-    private static void validateUsingTransaction(TransactionType transactionType) {
-        if (!transactionType.isUsingType()) {
-            throw new InvalidHeartTransactionTypeException("하트를 사용하는 트랜잭션 타입이 아닙니다. transactionType: " + transactionType);
+    private void validateHeartTransaction(TransactionType transactionType, HeartAmount heartAmount) {
+        if (transactionType.isUsingType() && !heartAmount.isUsingAmount()) {
+            throw new InvalidHeartAmountException("잘못된 하트 사용량 입니다. transactionType: " + transactionType + ", heartAmount: " + heartAmount);
         }
-    }
-
-    private static void validateGainingTransaction(TransactionType transactionType) {
-        if (!transactionType.isGainingType()) {
-            throw new InvalidHeartTransactionTypeException("하트를 획득하는 트랜잭션 타입이 아닙니다. transactionType: " + transactionType);
+        if (transactionType.isGainingType() && !heartAmount.isGainingAmount()) {
+            throw new InvalidHeartAmountException("잘못된 하트 획득량 입니다. transactionType: " + transactionType + ", heartAmount: " + heartAmount);
         }
     }
 }
