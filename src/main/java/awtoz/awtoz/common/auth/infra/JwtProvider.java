@@ -86,26 +86,13 @@ public class JwtProvider {
     }
 
     private String createToken(Claims claims, Long id, int expirationTime) {
+        Date now = new Date();
+
         return Jwts.builder()
                 .setClaims(claims)
-                .setIssuedAt(issuedAt())
-                .setExpiration(expiredAt(expirationTime))
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + expirationTime * 1000L))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-    }
-
-    private Date issuedAt() {
-        LocalDateTime now = LocalDateTime.now();
-
-        return Date.from(now.atZone(ZoneId.systemDefault())
-                .toInstant());
-    }
-
-    private Date expiredAt(int expirationTime) {
-        LocalDateTime now = LocalDateTime.now();
-
-        return Date.from(now.plusDays(expirationTime)
-                .atZone(ZoneId.systemDefault())
-                .toInstant());
     }
 }
