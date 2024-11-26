@@ -8,20 +8,16 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.TestPropertySource;
 
-@TestPropertySource(locations = "classpath:application.yml")
+
 public class JwtProviderTest {
-
 
     private JwtProvider jwtProvider;
     private JwtProvider shortTimeJwtProvider;
 
-
     private String secret = "this-is-secret-key-value-at-least-128-bytes";
     private int accessTokenExpirationTime = 86400;
     private int refreshTokenExpirationTime = 86400;
-
 
     @BeforeEach
     void setUp() {
@@ -29,6 +25,7 @@ public class JwtProviderTest {
         jwtProvider.init();
 
         shortTimeJwtProvider = new JwtProvider(secret, 0, refreshTokenExpirationTime);
+        shortTimeJwtProvider.init();
     }
 
     @Test
