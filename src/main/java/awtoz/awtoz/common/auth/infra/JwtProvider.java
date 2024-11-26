@@ -6,6 +6,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -15,16 +16,20 @@ import java.util.Date;
 
 @NoArgsConstructor
 @Component
-public class JwtTokenProvider {
+public class JwtProvider {
 
     private static final String ROLE = "role";
 
     // TODO : 환경변수 설정 필요.
-    private String secret = "this-is-secret-key-value-at-least-128-bytes";
+    @Value("${jwt.secret}")
+    private String secret;
 
     // TODO : 토큰 별 시간 정의 필요.
-    private int accessTokenExpirationTime = 60 * 60 * 24;
-//    private int refreshTokenExpirationTime = 60 * 60 * 24;
+    @Value("${jwt.access_token.expiration}")
+    private int accessTokenExpirationTime;
+
+    @Value("${jwt.refresh_token.expiration}")
+    private int refreshTokenExpirationTime;
 
     private Key key;
 
@@ -33,8 +38,16 @@ public class JwtTokenProvider {
         key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
+    public JwtProvider(String secret, int accessTokenExpirationTime, int refreshTokenExpirationTime) {
+        this.secret = secret;
+        this.accessTokenExpirationTime = accessTokenExpirationTime;
+        this.refreshTokenExpirationTime = refreshTokenExpirationTime;
+        key = Keys.hmacShaKeyFor(secret.getBytes());
+    }
+
     public String createAccessToken(Long id, Role role) {
         Claims claims = Jwts.claims();
+        claims.setSubject(id.toString());
         claims.put(ROLE, role);
 
         return createToken(claims, id, accessTokenExpirationTime);
@@ -49,7 +62,7 @@ public class JwtTokenProvider {
     }
 
     public Role extractRole(String token) {
-        return parseClaims(token).get(ROLE, Role.class);
+        return Role.valueOf(parseClaims(token).get(ROLE, String.class));
     }
 
     private Claims parseClaims(String token) {
@@ -74,7 +87,6 @@ public class JwtTokenProvider {
 
     private String createToken(Claims claims, Long id, int expirationTime) {
         return Jwts.builder()
-                .setSubject(id.toString())
                 .setClaims(claims)
                 .setIssuedAt(issuedAt())
                 .setExpiration(expiredAt(expirationTime))

@@ -25,7 +25,7 @@ public class TokenFilter extends OncePerRequestFilter {
     private static final String ADMIN_URL = "/admin";
     private final AuthContext authContext;
     private final TokenExceptionHandler tokenExceptionHandler;
-    private final JwtTokenProvider tokenProvider;
+    private final JwtProvider tokenProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

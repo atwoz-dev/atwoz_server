@@ -13,7 +13,7 @@ public class Member {
     private Long id;
 
     @Embedded
-    private NickName nickName;
+    private Nickname nickname;
 
     private String phoneNumber;
 
@@ -51,7 +51,7 @@ public class Member {
     }
 
     public boolean isProfileSettingNeeded() {
-        if (this.nickName == null || gender == null || region == null || age == null || height == null || mbti == null) {
+        if (this.nickname == null || gender == null || region == null || age == null || height == null || mbti == null) {
             return true;
         }
         return false;
