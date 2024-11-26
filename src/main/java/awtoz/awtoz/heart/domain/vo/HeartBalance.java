@@ -5,7 +5,7 @@ import jakarta.persistence.Embeddable;
 
 @Embeddable
 public final class HeartBalance {
-    private static Long MIN_HEART_BALANCE = 0L;
+    private static final Long MIN_HEART_BALANCE = 0L;
     private final Long purchaseHeartBalance;
     private final Long missionHeartBalance;
 
