@@ -34,9 +34,37 @@ public class HeartTransaction {
 
     private HeartTransaction(Long memberId, TransactionType transactionType, HeartAmount heartAmount, HeartBalance heartBalance) {
         validateHeartTransaction(transactionType, heartAmount);
+        setMemberId(memberId);
+        setTransactionType(transactionType);
+        setHeartAmount(heartAmount);
+        setHeartBalance(heartBalance);
+    }
+
+    private void setMemberId(Long memberId) {
+        if (memberId == null) {
+            throw new IllegalArgumentException("memberId는 null이 될 수 없습니다.");
+        }
         this.memberId = memberId;
+    }
+
+    private void setTransactionType(TransactionType transactionType) {
+        if (transactionType == null) {
+            throw new IllegalArgumentException("transactionType은 null이 될 수 없습니다.");
+        }
         this.transactionType = transactionType;
+    }
+
+    private void setHeartAmount(HeartAmount heartAmount) {
+        if (heartAmount == null) {
+            throw new IllegalArgumentException("heartAmount는 null이 될 수 없습니다.");
+        }
         this.heartAmount = heartAmount;
+    }
+
+    private void setHeartBalance(HeartBalance heartBalance) {
+        if (heartBalance == null) {
+            throw new IllegalArgumentException("heartBalance는 null이 될 수 없습니다.");
+        }
         this.heartBalance = heartBalance;
     }
 
