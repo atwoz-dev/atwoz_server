@@ -6,3 +6,10 @@ spring:
     password:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+
+jwt:
+  secret: ${JWT_SECRET:this-is-secret-key-value-at-least-128-bytes}
+  access_token:
+    expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:86400}
+  refresh_token:
+    expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:86400}
