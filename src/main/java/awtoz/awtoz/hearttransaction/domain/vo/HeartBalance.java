@@ -9,6 +9,10 @@ public final class HeartBalance {
     private final Long purchaseHeartBalance;
     private final Long missionHeartBalance;
 
+    public static HeartBalance init() {
+        return new HeartBalance();
+    }
+
     public HeartBalance useHeart(HeartAmount heartChangeAmount) {
         validateBalanceIsUsable(heartChangeAmount);
         Long purchaseHeartBalanceAfterUsing = usePurchaseHeart(heartChangeAmount);
@@ -32,10 +36,26 @@ public final class HeartBalance {
         this.missionHeartBalance = MIN_HEART_BALANCE;
     }
 
+    private void validateBalanceIsUsable(HeartAmount heartChangeAmount) {
+        Long totalHeartBalance = this.purchaseHeartBalance + this.missionHeartBalance;
+        if (totalHeartBalance + heartChangeAmount.getAmount() < MIN_HEART_BALANCE) {
+            throw new InvalidHeartBalanceException("하트 잔액이 부족합니다. totalHeartBalance: " + totalHeartBalance + ", amount: " + amount);
+        }
+    }
+
     private HeartBalance(Long purchaseHeartBalance, Long missionHeartBalance) {
         validateMinHeartBalance(purchaseHeartBalance, missionHeartBalance);
         this.purchaseHeartBalance = purchaseHeartBalance;
         this.missionHeartBalance = missionHeartBalance;
+    }
+
+    private void validateMinHeartBalance(Long purchaseHeartBalance, Long missionHeartBalance) {
+        if (purchaseHeartBalance < MIN_HEART_BALANCE) {
+            throw new InvalidHeartBalanceException("하트 잔액이 최소값 미만입니다. purchaseHeartBalance: " + purchaseHeartBalance);
+        }
+        if (missionHeartBalance < MIN_HEART_BALANCE) {
+            throw new InvalidHeartBalanceException("하트 잔액이 최소값 미만입니다. missionHeartBalance: " + missionHeartBalance);
+        }
     }
 
     private Long usePurchaseHeart(HeartAmount heartChangeAmount) {
@@ -50,21 +70,5 @@ public final class HeartBalance {
 
     private Long useMissionHeart(HeartAmount heartChangeAmount) {
         return Math.max(this.missionHeartBalance + heartChangeAmount.getAmount(), 0L);
-    }
-
-    private void validateMinHeartBalance(Long purchaseHeartBalance, Long missionHeartBalance) {
-        if (purchaseHeartBalance < MIN_HEART_BALANCE) {
-            throw new InvalidHeartBalanceException("하트 잔액이 최소값 미만입니다. purchaseHeartBalance: " + purchaseHeartBalance);
-        }
-        if (missionHeartBalance < MIN_HEART_BALANCE) {
-            throw new InvalidHeartBalanceException("하트 잔액이 최소값 미만입니다. missionHeartBalance: " + missionHeartBalance);
-        }
-    }
-
-    private void validateBalanceIsUsable(HeartAmount heartChangeAmount) {
-        Long totalHeartBalance = this.purchaseHeartBalance + this.missionHeartBalance;
-        if (totalHeartBalance + heartChangeAmount.getAmount() < MIN_HEART_BALANCE) {
-            throw new InvalidHeartBalanceException("하트 잔액이 부족합니다. totalHeartBalance: " + totalHeartBalance + ", amount: " + amount);
-        }
     }
 }
