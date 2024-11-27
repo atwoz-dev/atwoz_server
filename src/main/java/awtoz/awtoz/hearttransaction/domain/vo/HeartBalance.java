@@ -39,7 +39,7 @@ public final class HeartBalance {
     private void validateBalanceIsUsable(HeartAmount heartChangeAmount) {
         Long totalHeartBalance = this.purchaseHeartBalance + this.missionHeartBalance;
         if (totalHeartBalance + heartChangeAmount.getAmount() < MIN_HEART_BALANCE) {
-            throw new InvalidHeartBalanceException("하트 잔액이 부족합니다. totalHeartBalance: " + totalHeartBalance + ", amount: " + amount);
+            throw new InvalidHeartBalanceException("하트 잔액이 부족합니다. totalHeartBalance: " + totalHeartBalance + ", amount: " + heartChangeAmount.getAmount());
         }
     }
 
