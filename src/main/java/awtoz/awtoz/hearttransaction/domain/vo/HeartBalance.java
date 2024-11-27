@@ -45,7 +45,7 @@ public final class HeartBalance {
     private HeartAmount calculateRemainingHeartChangeAmount(HeartAmount heartChangeAmount, Long purchaseHeartBalanceAfterUsing) {
         Long usedPurchaseHeart = this.purchaseHeartBalance - purchaseHeartBalanceAfterUsing;
         Long remainingHeartChangeAmount = heartChangeAmount.getAmount() + usedPurchaseHeart;
-        return HeartAmount.createUsedAmount(remainingHeartChangeAmount);
+        return HeartAmount.from(remainingHeartChangeAmount);
     }
 
     private Long useMissionHeart(HeartAmount heartChangeAmount) {

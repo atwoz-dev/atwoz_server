@@ -1,6 +1,5 @@
 package awtoz.awtoz.hearttransaction.domain.vo;
 
-import awtoz.awtoz.hearttransaction.exception.InvalidHeartAmountException;
 import jakarta.persistence.Embeddable;
 import lombok.*;
 
@@ -16,13 +15,7 @@ public final class HeartAmount {
         this.amount = 0L;
     }
 
-    public static HeartAmount createUsedAmount(Long amount) {
-        validateUsingAmount(amount);
-        return new HeartAmount(amount);
-    }
-
-    public static HeartAmount createGainedAmount(Long amount) {
-        validateGainingAmount(amount);
+    public static HeartAmount from(Long amount) {
         return new HeartAmount(amount);
     }
 
@@ -32,17 +25,5 @@ public final class HeartAmount {
 
     public boolean isGainingAmount() {
         return this.amount >= MIN_GAINING_AMOUNT;
-    }
-
-    private static void validateUsingAmount(Long amount) {
-        if (amount > MAX_USING_AMOUNT) {
-            throw new InvalidHeartAmountException("잘못된 하트 사용량 입니다. amount: " + amount);
-        }
-    }
-
-    private static void validateGainingAmount(Long amount) {
-        if (amount < MIN_GAINING_AMOUNT) {
-            throw new InvalidHeartAmountException("잘못된 하트 획득량 입니다. amount: " + amount);
-        }
     }
 }
