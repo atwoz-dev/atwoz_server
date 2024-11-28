@@ -41,40 +41,32 @@ public class Admin {
 
     @Builder
     private Admin(Email email, Password password, Name name, PhoneNumber phoneNumber, String comment) {
-        validateEmailIsNotNull(email);
-        validatePasswordIsNotNull(password);
-        validateNameIsNotNull(name);
-        validatePhoneNumberIsNotNull(phoneNumber);
-        this.email = email;
-        this.password = password;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
+        setEmail(email);
+        setPassword(password);
+        setName(name);
+        setPhoneNumber(phoneNumber);
         this.comment = comment;
         this.role = AdminRole.GENERAL;
         this.approvalStatus = ApprovalStatus.PENDING;
     }
 
-    private void validateEmailIsNotNull(Email email) {
-        if (email == null) {
-            throw new IllegalArgumentException("Email은 null일 수 없습니다.");
-        }
+    private void setEmail(Email email) {
+        if (email == null) throw new IllegalArgumentException("Email은 null일 수 없습니다.");
+        this.email = email;
     }
 
-    private void validatePasswordIsNotNull(Password password) {
-        if (password == null) {
-            throw new IllegalArgumentException("Password는 null일 수 없습니다.");
-        }
+    private void setPassword(Password password) {
+        if (password == null) throw new IllegalArgumentException("Password는 null일 수 없습니다.");
+        this.password = password;
     }
 
-    private void validateNameIsNotNull(Name name) {
-        if (name == null) {
-            throw new IllegalArgumentException("Name은 null일 수 없습니다.");
-        }
+    private void setName(Name name) {
+        if (name == null) throw new IllegalArgumentException("Name은 null일 수 없습니다.");
+        this.name = name;
     }
 
-    private void validatePhoneNumberIsNotNull(PhoneNumber phoneNumber) {
-        if (phoneNumber == null) {
-            throw new IllegalArgumentException("PhoneNumber는 null일 수 없습니다.");
-        }
+    private void setPhoneNumber(PhoneNumber phoneNumber) {
+        if (phoneNumber == null) throw new IllegalArgumentException("PhoneNumber는 null일 수 없습니다.");
+        this.phoneNumber = phoneNumber;
     }
 }
