@@ -27,7 +27,8 @@ public class TokenFilter extends OncePerRequestFilter {
     private static final String ADMIN_URL = "/admin";
     private final AuthContext authContext;
     private final TokenExceptionHandler tokenExceptionHandler;
-    private final JwtProvider tokenProvider;
+    private final JwtProvider jwtProvider;
+    private final JwtParser jwtParser;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -40,8 +41,8 @@ public class TokenFilter extends OncePerRequestFilter {
             String token = TokenExtractor.extractTokenFromRequest(request)
                     .orElseThrow(() -> new TokenNotExistException());
 
-            Long memberId = tokenProvider.extractId(token);
-            Role role = tokenProvider.extractRole(token);
+            Long memberId = jwtParser.getIdFrom(token);
+            Role role = jwtParser.getRoleFrom(token);
 
             if (isIncludedAdminURI(request) && role != Role.ADMIN)
                 throw new UnauthorizedException();
