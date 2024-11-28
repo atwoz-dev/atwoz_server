@@ -17,7 +17,7 @@ public final class HeartBalance {
         validateBalanceIsUsable(heartChangeAmount);
         Long purchaseHeartBalanceAfterUsing = usePurchaseHeart(heartChangeAmount);
         HeartAmount remainingHeartChangeAmount = calculateRemainingHeartChangeAmount(heartChangeAmount, purchaseHeartBalanceAfterUsing);
-        Long missionHeartBalanceAfterUsing = useMissionHeart(heartChangeAmount);
+        Long missionHeartBalanceAfterUsing = useMissionHeart(remainingHeartChangeAmount);
         return new HeartBalance(purchaseHeartBalanceAfterUsing, missionHeartBalanceAfterUsing);
     }
 
