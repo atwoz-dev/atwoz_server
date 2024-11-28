@@ -9,6 +9,8 @@ import atwoz.atwoz.member.exception.MemberPermanentStopException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+
 @Service
 @RequiredArgsConstructor
 public class MemberAuthService {
@@ -23,7 +25,7 @@ public class MemberAuthService {
             throw new MemberPermanentStopException();
         }
 
-        String accessToken = jwtProvider.createAccessToken(member.getId(), Role.MEMBER);
+        String accessToken = jwtProvider.createAccessToken(member.getId(), Role.MEMBER, Instant.now());
         return MemberLoginResponse.fromMemberWithToken(member, accessToken, "");
     }
 

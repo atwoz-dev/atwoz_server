@@ -16,10 +16,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.Instant;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -66,16 +68,22 @@ public class MemberLoginTest {
     @DisplayName("기존 유저가 로그인할 경우, 토큰 발급")
     void shouldCreateTokenWhenUserIsRegistered() {
         String phoneNumber = "01012345678";
+        Instant fixedInstant = Instant.parse("2024-01-01T00:00:00Z");
 
-        Mockito.when(memberRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.of(member));
-        Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER))).thenReturn("accessToken");
+        try (MockedStatic<Instant> mockedInstant = Mockito.mockStatic(Instant.class)) {
+            mockedInstant.when(Instant::now).thenReturn(fixedInstant);
 
-        // When
-        String token = memberAuthService.login(phoneNumber).accessToken();
+            Mockito.when(memberRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.of(member));
+            Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
+                    .thenReturn("accessToken");
 
-        // Then
-        Assertions.assertThat(token).isNotNull();
-        Assertions.assertThat(token).isEqualTo("accessToken");
+            // When
+            String token = memberAuthService.login(phoneNumber).accessToken();
+
+            // Then
+            Assertions.assertThat(token).isNotNull();
+            Assertions.assertThat(token).isEqualTo("accessToken");
+        }
     }
 
     @Test
@@ -83,17 +91,23 @@ public class MemberLoginTest {
     void shouldCreateNewMemberAndTokenWhenUserIsNotRegistered() {
         // Given
         String phoneNumber = "01012345678";
+        Instant fixedInstant = Instant.parse("2024-01-01T00:00:00Z");
 
-        Mockito.when(memberRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.ofNullable(null));
-        Mockito.when(memberRepository.save(Mockito.any(Member.class))).thenReturn(member);
-        Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER))).thenReturn("accessToken");
+        try (MockedStatic<Instant> mockedInstant = Mockito.mockStatic(Instant.class)) {
+            mockedInstant.when(Instant::now).thenReturn(fixedInstant);
 
-        // When
-        MemberLoginResponse response = memberAuthService.login(phoneNumber);
+            Mockito.when(memberRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
+            Mockito.when(memberRepository.save(Mockito.any(Member.class))).thenReturn(member);
+            Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
+                    .thenReturn("accessToken");
 
-        // Then
-        Assertions.assertThat(response.accessToken()).isNotNull();
-        Assertions.assertThat(response.accessToken()).isEqualTo("accessToken");
-        Assertions.assertThat(response.isProfileSettingNeeded()).isTrue();
+            // When
+            MemberLoginResponse response = memberAuthService.login(phoneNumber);
+
+            // Then
+            Assertions.assertThat(response.accessToken()).isNotNull();
+            Assertions.assertThat(response.accessToken()).isEqualTo("accessToken");
+            Assertions.assertThat(response.isProfileSettingNeeded()).isTrue();
+        }
     }
 }

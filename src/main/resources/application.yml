@@ -30,7 +30,7 @@ server:
 
 jwt:
   secret: ${JWT_SECRET:this-is-secret-key-value-at-least-128-bytes}
-  access_token:
-    expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:86400}
-  refresh_token:
-    expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:86400}
+  access-token:
+    expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:1800}  # 30분
+  refresh-token:
+    expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:1209600}  # 2주
