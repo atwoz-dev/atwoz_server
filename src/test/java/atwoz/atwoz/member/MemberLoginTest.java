@@ -20,6 +20,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.Instant;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -68,7 +69,7 @@ public class MemberLoginTest {
         String phoneNumber = "01012345678";
 
         Mockito.when(memberRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.of(member));
-        Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER))).thenReturn("accessToken");
+        Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Instant.now())).thenReturn("accessToken");
 
         // When
         String token = memberAuthService.login(phoneNumber).accessToken();
@@ -86,7 +87,7 @@ public class MemberLoginTest {
 
         Mockito.when(memberRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.ofNullable(null));
         Mockito.when(memberRepository.save(Mockito.any(Member.class))).thenReturn(member);
-        Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER))).thenReturn("accessToken");
+        Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Instant.now())).thenReturn("accessToken");
 
         // When
         MemberLoginResponse response = memberAuthService.login(phoneNumber);
