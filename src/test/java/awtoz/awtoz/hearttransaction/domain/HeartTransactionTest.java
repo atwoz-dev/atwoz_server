@@ -1,10 +1,14 @@
 package awtoz.awtoz.hearttransaction.domain;
 
+import awtoz.awtoz.hearttransaction.domain.vo.HeartAmount;
+import awtoz.awtoz.hearttransaction.domain.vo.HeartBalance;
 import awtoz.awtoz.hearttransaction.domain.vo.TransactionType;
-import awtoz.awtoz.hearttransaction.exception.InvalidHeartTransactionTypeException;
+import awtoz.awtoz.hearttransaction.exception.InvalidHeartAmountException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,66 +16,83 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class HeartTransactionTest {
 
     @Nested
-    @DisplayName("useHeart 메서드 테스트")
-    class UseHeartTest {
+    @DisplayName("of 메서드 테스트")
+    class OfMethodTest {
+        @ParameterizedTest
+        @ValueSource(strings = {"memberId is null", "transactionType is null", "heartAmount is null", "heartBalance is null"})
+        @DisplayName("of 메서드에서 필드 값이 null이면 예외를 던집니다.")
+        void ofMethodWithNullFieldThrowsException(String fieldName) {
+            // given
+            Long memberId = fieldName.equals("memberId is null") ? null : 1L;
+            TransactionType transactionType = fieldName.equals("transactionType is null") ? null : TransactionType.MISSION;
+            HeartAmount heartAmount = fieldName.equals("heartAmount is null") ? null : HeartAmount.from(10L);
+            HeartBalance heartBalance = fieldName.equals("heartBalance is null") ? null : HeartBalance.init();
+
+            // when & then
+            assertThatThrownBy(() -> HeartTransaction.of(memberId, transactionType, heartAmount, heartBalance))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
         @Test
-        @DisplayName("정상값으로 하트 사용하는 HeartTransaction 생성 성공")
-        void useHeartTestWithValidParams() {
+        @DisplayName("사용 타입인데 heartAmount가 사용량이면 성공")
+        void shouldCreateHeartTransactionSuccessWhenTypeIsUsingTypeAndAmountIsUsingType() {
             // given
             Long memberId = 1L;
             TransactionType transactionType = TransactionType.MESSAGE;
-            Long amount = -1L;
-            Long balance = 1L;
+            HeartAmount heartAmount = HeartAmount.from(-10L);
+            HeartBalance heartBalance = HeartBalance.init();
+
             // when
-            HeartTransaction heartTransaction = HeartTransaction.useHeart(memberId, transactionType, amount, balance);
+            HeartTransaction heartTransaction = HeartTransaction.of(memberId, transactionType, heartAmount, heartBalance);
+
             // then
             assertThat(heartTransaction).isNotNull();
         }
 
         @Test
-        @DisplayName("잘못된 트랜잭션 타입으로 하트 사용하는 HeartTransaction 생성 실패")
-        void useHeartTestWithInvalidTransactionType() {
+        @DisplayName("획득 타입인데 heartAmount가 획득량이면 성공")
+        void shouldCreateHeartTransactionSuccessWhenTypeIsGainingTypeAndAmountIsGainingType() {
             // given
             Long memberId = 1L;
             TransactionType transactionType = TransactionType.MISSION;
-            Long amount = -1L;
-            Long balance = 1L;
-            // when
-            // then
-            assertThatThrownBy(() -> HeartTransaction.useHeart(memberId, transactionType, amount, balance))
-                    .isInstanceOf(InvalidHeartTransactionTypeException.class);
-        }
-    }
+            HeartAmount heartAmount = HeartAmount.from(10L);
+            HeartBalance heartBalance = HeartBalance.init();
 
-    @Nested
-    @DisplayName("gainHeart 메서드 테스트")
-    class GainHeartTest {
-        @Test
-        @DisplayName("정상값으로 하트 얻는 HeartTransaction 생성 성공")
-        void gainHeartTestWithValidParams() {
-            // given
-            Long memberId = 1L;
-            TransactionType transactionType = TransactionType.MISSION;
-            Long amount = 1L;
-            Long balance = 1L;
             // when
-            HeartTransaction heartTransaction = HeartTransaction.gainHeart(memberId, transactionType, amount, balance);
+            HeartTransaction heartTransaction = HeartTransaction.of(memberId, transactionType, heartAmount, heartBalance);
+
             // then
             assertThat(heartTransaction).isNotNull();
         }
 
         @Test
-        @DisplayName("잘못된 트랜잭션 타입으로 하트 얻는 HeartTransaction 생성 실패")
-        void gainHeartTestWithInvalidTransactionType() {
+        @DisplayName("사용 타입인데 heartAmount가 사용량이 아니면 실패")
+        void shouldCreateHeartTransactionFailWhenTypeIsUsingTypeButAmountIsNotUsingType() {
             // given
             Long memberId = 1L;
             TransactionType transactionType = TransactionType.MESSAGE;
-            Long amount = 1L;
-            Long balance = 1L;
+            HeartAmount heartAmount = HeartAmount.from(10L);
+            HeartBalance heartBalance = HeartBalance.init();
+
             // when
             // then
-            assertThatThrownBy(() -> HeartTransaction.gainHeart(memberId, transactionType, amount, balance))
-                    .isInstanceOf(InvalidHeartTransactionTypeException.class);
+            assertThatThrownBy(() -> HeartTransaction.of(memberId, transactionType, heartAmount, heartBalance))
+                    .isInstanceOf(InvalidHeartAmountException.class);
+        }
+
+        @Test
+        @DisplayName("획득 타입인데 heartAmount가 획득량이 아니면 실패")
+        void shouldCreateHeartTransactionFailWhenTypeIsGainingTypeButAmountIsNotGainingType() {
+            // given
+            Long memberId = 1L;
+            TransactionType transactionType = TransactionType.MISSION;
+            HeartAmount heartAmount = HeartAmount.from(-10L);
+            HeartBalance heartBalance = HeartBalance.init();
+
+            // when
+            // then
+            assertThatThrownBy(() -> HeartTransaction.of(memberId, transactionType, heartAmount, heartBalance))
+                    .isInstanceOf(InvalidHeartAmountException.class);
         }
     }
 }
