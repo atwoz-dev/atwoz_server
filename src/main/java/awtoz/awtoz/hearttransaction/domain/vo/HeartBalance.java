@@ -1,12 +1,16 @@
 package awtoz.awtoz.hearttransaction.domain.vo;
 
+import awtoz.awtoz.hearttransaction.exception.InvalidHeartAmountException;
 import awtoz.awtoz.hearttransaction.exception.InvalidHeartBalanceException;
 import jakarta.persistence.Embeddable;
+import lombok.Getter;
 
 @Embeddable
 public final class HeartBalance {
     private static final Long MIN_HEART_BALANCE = 0L;
+    @Getter
     private final Long purchaseHeartBalance;
+    @Getter
     private final Long missionHeartBalance;
 
     public static HeartBalance init() {
@@ -14,6 +18,7 @@ public final class HeartBalance {
     }
 
     public HeartBalance useHeart(HeartAmount heartChangeAmount) {
+        validateUsingAmount(heartChangeAmount);
         validateBalanceIsUsable(heartChangeAmount);
         Long purchaseHeartBalanceAfterUsing = usePurchaseHeart(heartChangeAmount);
         HeartAmount remainingHeartChangeAmount = calculateRemainingHeartChangeAmount(heartChangeAmount, purchaseHeartBalanceAfterUsing);
@@ -22,11 +27,13 @@ public final class HeartBalance {
     }
 
     public HeartBalance gainPurchaseHeart(HeartAmount heartChangeAmount) {
+        validateGainingAmount(heartChangeAmount);
         Long purchaseHeartBalanceAfterGaining = this.purchaseHeartBalance + heartChangeAmount.getAmount();
         return new HeartBalance(purchaseHeartBalanceAfterGaining, this.missionHeartBalance);
     }
 
     public HeartBalance gainMissionHeart(HeartAmount heartChangeAmount) {
+        validateGainingAmount(heartChangeAmount);
         Long missionHeartBalanceAfterGaining = this.missionHeartBalance + heartChangeAmount.getAmount();
         return new HeartBalance(this.purchaseHeartBalance, missionHeartBalanceAfterGaining);
     }
@@ -70,5 +77,17 @@ public final class HeartBalance {
 
     private Long useMissionHeart(HeartAmount heartChangeAmount) {
         return Math.max(this.missionHeartBalance + heartChangeAmount.getAmount(), 0L);
+    }
+
+    private void validateUsingAmount(HeartAmount heartChangeAmount) {
+        if (!heartChangeAmount.isUsingAmount()) {
+            throw new InvalidHeartAmountException("잘못된 하트 획득량 입니다. amount: " + heartChangeAmount.getAmount());
+        }
+    }
+
+    private void validateGainingAmount(HeartAmount heartChangeAmount) {
+        if (!heartChangeAmount.isGainingAmount()) {
+            throw new InvalidHeartAmountException("잘못된 하트 획득량 입니다. amount: " + heartChangeAmount.getAmount());
+        }
     }
 }
