@@ -1,10 +1,10 @@
-package awtoz.awtoz;
+package atwoz.atwoz;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AwtozApplicationTests {
+class AtwozApplicationTests {
 
 	@Test
 	void contextLoads() {
