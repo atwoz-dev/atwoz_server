@@ -33,11 +33,11 @@ public class HeartTransaction {
     }
 
     private HeartTransaction(Long memberId, TransactionType transactionType, HeartAmount heartAmount, HeartBalance heartBalance) {
-        validateHeartTransaction(transactionType, heartAmount);
         setMemberId(memberId);
         setTransactionType(transactionType);
         setHeartAmount(heartAmount);
         setHeartBalance(heartBalance);
+        validateHeartTransaction(transactionType, heartAmount);
     }
 
     private void setMemberId(Long memberId) {
