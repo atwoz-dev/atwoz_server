@@ -1,4 +1,4 @@
-package atwoz.atwoz.common.domain;
+package atwoz.atwoz.common.vo;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
