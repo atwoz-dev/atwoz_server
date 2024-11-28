@@ -1,5 +1,7 @@
 package atwoz.atwoz.member.domain.member;
 
+import atwoz.atwoz.common.domain.BaseEntity;
+import atwoz.atwoz.common.domain.SoftDeleteBaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Member {
+public class Member extends SoftDeleteBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
