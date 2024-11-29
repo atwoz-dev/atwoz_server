@@ -1,7 +1,9 @@
-package awtoz.awtoz.hearttransaction.domain.vo;
+package atwoz.atwoz.hearttransaction.domain.vo;
 
-import awtoz.awtoz.hearttransaction.exception.InvalidHeartAmountException;
-import awtoz.awtoz.hearttransaction.exception.InvalidHeartBalanceException;
+import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
+import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
+import atwoz.atwoz.hearttransaction.exception.InvalidHeartAmountException;
+import atwoz.atwoz.hearttransaction.exception.InvalidHeartBalanceException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

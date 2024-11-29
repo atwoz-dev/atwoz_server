@@ -1,4 +1,4 @@
-package awtoz.awtoz.hearttransaction.exception;
+package atwoz.atwoz.hearttransaction.exception;
 
 public class InvalidHeartBalanceException extends RuntimeException {
     public InvalidHeartBalanceException(String message) {

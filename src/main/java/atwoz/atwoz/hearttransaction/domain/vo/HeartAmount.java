@@ -1,4 +1,4 @@
-package awtoz.awtoz.hearttransaction.domain.vo;
+package atwoz.atwoz.hearttransaction.domain.vo;
 
 import jakarta.persistence.Embeddable;
 import lombok.*;

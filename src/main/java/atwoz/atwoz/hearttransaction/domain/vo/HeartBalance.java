@@ -1,7 +1,7 @@
-package awtoz.awtoz.hearttransaction.domain.vo;
+package atwoz.atwoz.hearttransaction.domain.vo;
 
-import awtoz.awtoz.hearttransaction.exception.InvalidHeartAmountException;
-import awtoz.awtoz.hearttransaction.exception.InvalidHeartBalanceException;
+import atwoz.atwoz.hearttransaction.exception.InvalidHeartAmountException;
+import atwoz.atwoz.hearttransaction.exception.InvalidHeartBalanceException;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 

@@ -1,9 +1,9 @@
-package awtoz.awtoz.hearttransaction.domain;
+package atwoz.atwoz.hearttransaction.domain;
 
-import awtoz.awtoz.hearttransaction.domain.vo.HeartAmount;
-import awtoz.awtoz.hearttransaction.domain.vo.HeartBalance;
-import awtoz.awtoz.hearttransaction.domain.vo.TransactionType;
-import awtoz.awtoz.hearttransaction.exception.InvalidHeartAmountException;
+import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
+import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
+import atwoz.atwoz.hearttransaction.domain.vo.TransactionType;
+import atwoz.atwoz.hearttransaction.exception.InvalidHeartAmountException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
