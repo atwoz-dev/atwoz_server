@@ -1,4 +1,4 @@
-package atwoz.atwoz.common.domain;
+package atwoz.atwoz.common.vo;
 
 public class InvalidEmailException extends RuntimeException {
     public InvalidEmailException(String address) {

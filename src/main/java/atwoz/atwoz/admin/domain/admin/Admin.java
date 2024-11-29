@@ -1,9 +1,9 @@
 package atwoz.atwoz.admin.domain.admin;
 
-import atwoz.atwoz.common.domain.Email;
-import atwoz.atwoz.common.domain.Name;
-import atwoz.atwoz.common.domain.PhoneNumber;
-import atwoz.atwoz.common.domain.SoftDeleteBaseEntity;
+import atwoz.atwoz.common.vo.Email;
+import atwoz.atwoz.common.vo.Name;
+import atwoz.atwoz.common.vo.PhoneNumber;
+
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
