@@ -23,7 +23,16 @@ import java.util.List;
 @Slf4j
 public class TokenFilter extends OncePerRequestFilter {
 
-    private static final List<String> EXCLUDE_URLS = List.of("/members/auth/login");
+    private static final List<String> EXCLUDE_URLS = List.of(
+            // login
+            "/members/auth/login",
+            // swagger
+            "/v3/api-docs/**",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/swagger-resources/**",
+            "/webjars/**"
+    );
     private static final String ADMIN_URL = "/admin";
     private final AuthContext authContext;
     private final TokenExceptionHandler tokenExceptionHandler;
