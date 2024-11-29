@@ -1,5 +1,6 @@
 package atwoz.atwoz.hearttransaction.domain;
 
+import atwoz.atwoz.common.domain.BaseEntity;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
 import atwoz.atwoz.hearttransaction.domain.vo.TransactionType;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class HeartTransaction {
+public class HeartTransaction extends BaseEntity {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
