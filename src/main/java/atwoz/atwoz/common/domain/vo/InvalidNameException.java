@@ -1,4 +1,4 @@
-package atwoz.atwoz.common.vo;
+package atwoz.atwoz.common.domain.vo;
 
 public class InvalidNameException extends RuntimeException {
     public InvalidNameException(String name) {

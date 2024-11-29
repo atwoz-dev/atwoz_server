@@ -1,8 +1,8 @@
 package atwoz.atwoz.admin.domain.admin;
 
-import atwoz.atwoz.common.vo.Email;
-import atwoz.atwoz.common.vo.Name;
-import atwoz.atwoz.common.vo.PhoneNumber;
+import atwoz.atwoz.common.domain.vo.Email;
+import atwoz.atwoz.common.domain.vo.Name;
+import atwoz.atwoz.common.domain.vo.PhoneNumber;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
