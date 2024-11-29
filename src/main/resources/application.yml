@@ -34,3 +34,11 @@ jwt:
     expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:1800}  # 30분
   refresh-token:
     expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:1209600}  # 2주
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: ${SPRINGDOC_ENABLED:true}
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: ${SWAGGER_UI_ENABLED:true}
