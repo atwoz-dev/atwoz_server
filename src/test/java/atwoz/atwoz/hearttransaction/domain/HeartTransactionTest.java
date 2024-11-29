@@ -1,6 +1,5 @@
 package atwoz.atwoz.hearttransaction.domain;
 
-import atwoz.atwoz.hearttransaction.domain.HeartTransaction;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
 import atwoz.atwoz.hearttransaction.domain.vo.TransactionType;
