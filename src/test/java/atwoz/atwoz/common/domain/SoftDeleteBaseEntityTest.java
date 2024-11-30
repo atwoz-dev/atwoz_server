@@ -28,8 +28,8 @@ public class SoftDeleteBaseEntityTest {
     }
 
     @Test
-    @DisplayName("SoftDeleteBaseEntity를 상속받은 엔티티 삭제 시 isDeleted 값이 true로 변경")
-    void deleteSoftDeleteBaseEntityTest() {
+    @DisplayName("SoftDeleteBaseEntity를 상속받은 엔티티에 @SQLDelete로 soft delete 적용하고 삭제 시 isDeleted 값이 true로 변경")
+    void deleteSoftDeleteBaseEntityWithSQLDeleteTest() {
         // given
         SoftDeleteBaseEntityTestEntity entity = new SoftDeleteBaseEntityTestEntity();
         entityManager.persist(entity);
