@@ -1,4 +1,4 @@
-package atwoz.atwoz.common.vo;
+package atwoz.atwoz.common.domain.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

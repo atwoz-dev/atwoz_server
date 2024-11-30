@@ -1,8 +1,9 @@
 package atwoz.atwoz.admin.domain.admin;
 
-import atwoz.atwoz.common.vo.Email;
-import atwoz.atwoz.common.vo.Name;
-import atwoz.atwoz.common.vo.PhoneNumber;
+import atwoz.atwoz.common.domain.SoftDeleteBaseEntity;
+import atwoz.atwoz.common.domain.vo.Email;
+import atwoz.atwoz.common.domain.vo.Name;
+import atwoz.atwoz.common.domain.vo.PhoneNumber;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -12,7 +13,7 @@ import static jakarta.persistence.EnumType.STRING;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Admin {
+public class Admin extends SoftDeleteBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
