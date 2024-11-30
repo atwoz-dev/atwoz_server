@@ -1,13 +1,18 @@
 package atwoz.atwoz.common.domain;
 
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 public class SoftDeleteBaseEntityTest {
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Test
     @DisplayName("SoftDeleteBaseEntity를 상속받은 엔티티 isDeleted 기본값은 false")
@@ -23,15 +28,18 @@ public class SoftDeleteBaseEntityTest {
     }
 
     @Test
-    @DisplayName("softDelete 메서드 호출시 isDeleted 값이 true로 변경")
-    void softDeleteTest() {
+    @DisplayName("SoftDeleteBaseEntity를 상속받은 엔티티 삭제 시 isDeleted 값이 true로 변경")
+    void deleteSoftDeleteBaseEntityTest() {
         // given
         SoftDeleteBaseEntityTestEntity entity = new SoftDeleteBaseEntityTestEntity();
+        entityManager.persist(entity);
 
         // when
-        entity.softDelete();
+        entityManager.remove(entity);
+        entityManager.flush();
+        SoftDeleteBaseEntityTestEntity deletedEntity = entityManager.find(SoftDeleteBaseEntityTestEntity.class, entity.getId());
 
         // then
-        assertThat(entity.isDeleted()).isTrue();
+        assertThat(deletedEntity.isDeleted()).isTrue();
     }
 }
