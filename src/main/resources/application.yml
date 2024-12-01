@@ -3,8 +3,6 @@ spring:
     active: ${SPRING_PROFILES_ACTIVE:local}
 
 
-
-
   datasource:
     url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:atwoz_local}
     username: ${MYSQL_USER:user}

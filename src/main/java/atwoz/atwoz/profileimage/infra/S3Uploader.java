@@ -1,17 +1,15 @@
-package awtoz.awtoz.global.config;
+package atwoz.atwoz.profileimage.infra;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import lombok.extern.slf4j.Slf4j;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-@Configuration
-@Slf4j
-public class S3Config {
+@Component
+public class S3Uploader {
     @Value("${cloud.aws.credentials.access-key}")
     private String accessKey;
 
@@ -21,14 +19,22 @@ public class S3Config {
     @Value("${cloud.aws.region.static}")
     private String region;
 
-    @Bean
-    public AmazonS3Client amazonS3Client() {
+    @Value("${cloud.aws.bucket}")
+    private String bucket;
+
+    private AmazonS3Client s3Client;
+
+    @PostConstruct
+    public void init() {
         BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(accessKey, secretKey);
 
-        return (AmazonS3Client) AmazonS3ClientBuilder.standard()
+        s3Client = (AmazonS3Client) AmazonS3ClientBuilder.standard()
                 .withRegion(region)
                 .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
                 .build();
+    }
+
+    public void uploadFile() {
 
     }
 }
