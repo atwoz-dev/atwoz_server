@@ -3,6 +3,7 @@ package atwoz.atwoz.heartusagepolicy.domain;
 
 import atwoz.atwoz.common.domain.BaseEntity;
 import atwoz.atwoz.hearttransaction.domain.vo.TransactionType;
+import atwoz.atwoz.hearttransaction.exception.InvalidHeartTransactionTypeException;
 import atwoz.atwoz.member.domain.member.Gender;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -17,7 +18,7 @@ public class HeartUsagePolicy extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
-    private UsageType usageType;
+    private TransactionType transactionType;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
@@ -26,25 +27,28 @@ public class HeartUsagePolicy extends BaseEntity {
     @Embedded
     private HeartPriceAmount heartPriceAmount;
 
-    public static HeartUsagePolicy of(UsageType usage, Gender gender, HeartPriceAmount heartPriceAmount) {
+    public static HeartUsagePolicy of(TransactionType usage, Gender gender, HeartPriceAmount heartPriceAmount) {
         return new HeartUsagePolicy(usage, gender, heartPriceAmount);
     }
 
-    private HeartUsagePolicy(UsageType usageType, Gender gender, HeartPriceAmount heartPriceAmount) {
-        setUsageType(usageType);
+    private HeartUsagePolicy(TransactionType transactionType, Gender gender, HeartPriceAmount heartPriceAmount) {
+        setTransactionType(transactionType);
         setGender(gender);
         setHeartPriceAmount(heartPriceAmount);
     }
 
     public TransactionType getTransactionType() {
-        return UsageTypeMapper.toTransactionType(usageType);
+        return this.transactionType;
     }
 
-    private void setUsageType(UsageType usageType) {
-        if (usageType == null) {
-            throw new IllegalArgumentException("UsageType는 null이 될 수 없습니다.");
+    private void setTransactionType(TransactionType transactionType) {
+        if (transactionType == null) {
+            throw new IllegalArgumentException("TransactionType은 null이 될 수 없습니다.");
         }
-        this.usageType = usageType;
+        if (!transactionType.isUsingType()) {
+            throw new InvalidHeartTransactionTypeException("TransactionType이 UsingType이 아닙니다. transactionType: " + transactionType);
+        }
+        this.transactionType = transactionType;
     }
 
     private void setGender(Gender gender) {
