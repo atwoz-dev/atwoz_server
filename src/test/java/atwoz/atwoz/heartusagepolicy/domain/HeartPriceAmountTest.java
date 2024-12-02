@@ -21,7 +21,7 @@ class HeartPriceAmountTest {
     }
 
     @Test
-    @DisplayName("price 값이 1 이상이면 InvalidHeartPriceAmountException 발생")
+    @DisplayName("price 값이 1 이상이면 HeartPriceAmount 객체 생성 성공")
     void fromTestWhenPriceIsPositive() {
         // given
         Long price = 1L;
