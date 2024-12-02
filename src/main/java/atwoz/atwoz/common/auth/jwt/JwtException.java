@@ -1,4 +1,4 @@
-package atwoz.atwoz.common.auth.infra.exception;
+package atwoz.atwoz.common.auth.jwt;
 
 public class JwtException extends RuntimeException {
     public JwtException(String message) {
