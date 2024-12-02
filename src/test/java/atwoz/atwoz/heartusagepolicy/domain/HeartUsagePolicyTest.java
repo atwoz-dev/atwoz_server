@@ -1,6 +1,7 @@
 package atwoz.atwoz.heartusagepolicy.domain;
 
 import atwoz.atwoz.hearttransaction.domain.vo.TransactionType;
+import atwoz.atwoz.hearttransaction.exception.InvalidHeartTransactionTypeException;
 import atwoz.atwoz.member.domain.member.Gender;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,11 +22,11 @@ class HeartUsagePolicyTest {
         @DisplayName("HeartUsagePolicy 객체를 생성하는 테스트")
         void ofTest() {
             // given
-            UsageType usageType = UsageType.MESSAGE;
+            TransactionType transactionType = TransactionType.MESSAGE;
             Gender gender = Gender.MALE;
             HeartPriceAmount heartPriceAmount = HeartPriceAmount.from(10L);
             // when
-            HeartUsagePolicy heartUsagePolicy = HeartUsagePolicy.of(usageType, gender, heartPriceAmount);
+            HeartUsagePolicy heartUsagePolicy = HeartUsagePolicy.of(transactionType, gender, heartPriceAmount);
             // then
             assertThat(heartUsagePolicy).isNotNull();
         }
@@ -35,12 +36,24 @@ class HeartUsagePolicyTest {
         @DisplayName("of 메서드에서 필드 값이 null이면 예외를 던집니다.")
         void ofMethodWithNullFieldThrowsException(String fieldName) {
             // given
-            UsageType usageType = fieldName.equals("usageType is null") ? null : UsageType.MESSAGE;
+            TransactionType transactionType = fieldName.equals("usageType is null") ? null : TransactionType.MESSAGE;
             Gender gender = fieldName.equals("gender is null") ? null : Gender.MALE;
             HeartPriceAmount heartPriceAmount = fieldName.equals("heartPriceAmount is null") ? null : HeartPriceAmount.from(10L);
             // when & then
-            assertThatThrownBy(() -> HeartUsagePolicy.of(usageType, gender, heartPriceAmount))
+            assertThatThrownBy(() -> HeartUsagePolicy.of(transactionType, gender, heartPriceAmount))
                     .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        @DisplayName("transaction type이 using type이 아닌 경우 예외 발생")
+        void ofMethodWithNotUsingTransactionTypeThrowsException() {
+            // given
+            TransactionType transactionType = TransactionType.MISSION;
+            Gender gender = Gender.MALE;
+            HeartPriceAmount heartPriceAmount = HeartPriceAmount.from(10L);
+            // when & then
+            assertThatThrownBy(() -> HeartUsagePolicy.of(transactionType, gender, heartPriceAmount))
+                    .isInstanceOf(InvalidHeartTransactionTypeException.class);
         }
     }
 
@@ -52,15 +65,14 @@ class HeartUsagePolicyTest {
         @DisplayName("HeartUsagePolicy 객체의 TransactionType을 반환하는 테스트")
         void getTransactionTypeTest() {
             // given
-            UsageType usageType = UsageType.MESSAGE;
-            TransactionType expectedTransactionType = UsageTypeMapper.toTransactionType(usageType);
+            TransactionType transactionType = TransactionType.MESSAGE;
             Gender gender = Gender.MALE;
             HeartPriceAmount heartPriceAmount = HeartPriceAmount.from(10L);
-            HeartUsagePolicy heartUsagePolicy = HeartUsagePolicy.of(usageType, gender, heartPriceAmount);
+            HeartUsagePolicy heartUsagePolicy = HeartUsagePolicy.of(transactionType, gender, heartPriceAmount);
             // when
-            TransactionType transactionType = heartUsagePolicy.getTransactionType();
+            TransactionType returnedTransactionType = heartUsagePolicy.getTransactionType();
             // then
-            assertThat(transactionType).isEqualTo(expectedTransactionType);
+            assertThat(transactionType).isEqualTo(returnedTransactionType);
         }
     }
 }
