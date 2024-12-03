@@ -1,31 +1,30 @@
 package atwoz.atwoz.common.auth;
 
-import atwoz.atwoz.common.auth.exception.InvalidAuthorizationHeaderException;
 import atwoz.atwoz.common.auth.exception.MissingAuthorizationHeaderException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.stereotype.Component;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Optional;
 
-@Component
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AccessTokenExtractor {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
 
-    public String extract(HttpServletRequest request) {
-        String authorizationHeader = getAuthorizationHeader(request)
+    public static Optional<String> extractFrom(HttpServletRequest request) {
+        String authorizationHeader = getAuthorizationHeaderFrom(request)
                 .orElseThrow(MissingAuthorizationHeaderException::new);
 
-        return parseAccessToken(authorizationHeader)
-                .orElseThrow(InvalidAuthorizationHeaderException::new);
+        return parseAccessTokenFrom(authorizationHeader);
     }
 
-    private Optional<String> getAuthorizationHeader(HttpServletRequest request) {
+    private static Optional<String> getAuthorizationHeaderFrom(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(AUTHORIZATION_HEADER));
     }
 
-    private Optional<String> parseAccessToken(String header) {
+    private static Optional<String> parseAccessTokenFrom(String header) {
         if (header.startsWith(BEARER_PREFIX)) {
             return Optional.of(header.substring(BEARER_PREFIX.length()).trim());
         }

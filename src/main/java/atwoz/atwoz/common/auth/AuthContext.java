@@ -9,9 +9,11 @@ import org.springframework.web.context.annotation.RequestScope;
 public class AuthContext {
 
     private Long memberId;
+    private Role role;
 
-    public void setAuthentication(Long memberId) {
+    public void setAuthentication(Long memberId, Role role) {
         this.memberId = memberId;
+        this.role = role;
     }
 
     public Long getPrincipal() {
