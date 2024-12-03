@@ -1,10 +1,7 @@
 package atwoz.atwoz.common.auth.filter;
 
 
-import atwoz.atwoz.common.auth.AccessTokenExtractor;
-import atwoz.atwoz.common.auth.AuthContext;
-import atwoz.atwoz.common.auth.RefreshTokenExtractor;
-import atwoz.atwoz.common.auth.Role;
+import atwoz.atwoz.common.auth.*;
 import atwoz.atwoz.common.auth.exception.UnauthorizedException;
 import atwoz.atwoz.common.auth.jwt.JwtParser;
 import atwoz.atwoz.common.auth.jwt.JwtProvider;
@@ -12,73 +9,80 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
-
-    private static final Set<String> EXCLUDED_URIS = Set.of(
-            "/members/auth/login",
-            "/admin/login", "/admin/signup",
-            "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**"
-    );
 
     private final JwtProvider jwtProvider;
     private final JwtParser jwtParser;
-
     private final AuthContext authContext;
     private final TokenExceptionHandler tokenExceptionHandler;
+    private PathMatcherHelper pathMatcher;
 
+    public JwtFilter(JwtProvider jwtProvider, JwtParser jwtParser, AuthContext authContext, TokenExceptionHandler tokenExceptionHandler) {
+        setPathMatcher();
+        this.jwtProvider = jwtProvider;
+        this.jwtParser = jwtParser;
+        this.authContext = authContext;
+        this.tokenExceptionHandler = tokenExceptionHandler;
+    }
+
+    // TODO: 상황에 따라 다른 처리? (만료, 위조 등)
+    // TODO: 필터 내부에서 응답 처리
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // URI 체크
-        if (isExcluded(request.getRequestURI())) {
+        if (isExcludedUri(request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // TODO: error handling
-
-        // Refresh token 처리
         Optional<String> refreshToken = RefreshTokenExtractor.extractFrom(request);
         if (refreshToken.isPresent()) {
-            String reissuedAccessToken = handleRefreshToken(refreshToken.get());
-            // 재발급 받은 access token을 응답으로 내려줌
+            handleRefreshToken(refreshToken.get(), response);
             return;
         }
 
-        // Access token 처리
         Optional<String> accessToken = AccessTokenExtractor.extractFrom(request);
         if (accessToken.isPresent()) {
             handleAccessToken(accessToken.get());
             filterChain.doFilter(request, response);
         }
 
-        throw new UnauthorizedException("Access token이 존재하지 않습니다.");
+        throw new UnauthorizedException("토큰이 존재하지 않습니다.");
     }
 
-    private boolean isExcluded(String uri) {
-        AntPathMatcher pathMatcher = new AntPathMatcher();
-        return EXCLUDED_URIS.stream().anyMatch(pattern -> pathMatcher.match(pattern, uri));
+    private void setPathMatcher() {
+        List<String> excludedPaths = List.of(
+                "/members/auth/login",
+                "/admin/login", "/admin/signup",
+                "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**"
+        );
+        pathMatcher = new PathMatcherHelper(excludedPaths);
     }
 
-    private String handleRefreshToken(String token) {
+    private boolean isExcludedUri(String uri) {
+        return pathMatcher.matches(uri);
+    }
+
+    private void handleRefreshToken(String token, HttpServletResponse response) {
         if (jwtParser.isInvalid(token)) {
             throw new UnauthorizedException("유효하지 않은 refresh token입니다.");
         }
 
-        // Access token 재발급
+        String reissuedAccessToken = reissueAccessToken(token);
+        response.setHeader("Authorization", "Bearer " + reissuedAccessToken);
+    }
+
+    private String reissueAccessToken(String token) {
         Long id = jwtParser.getIdFrom(token);
         Role role = jwtParser.getRoleFrom(token);
         return jwtProvider.createAccessToken(id, role, Instant.now());
@@ -91,7 +95,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         Long id = jwtParser.getIdFrom(token);
         Role role = jwtParser.getRoleFrom(token);
-
-        authContext.setAuthentication(id, role);  // todo: authContext 수정
+        authContext.setAuthentication(id, role);
     }
 }
