@@ -1,9 +1,7 @@
-package atwoz.atwoz.common.auth.infra;
+package atwoz.atwoz.common.auth.jwt;
 
 import atwoz.atwoz.common.auth.Role;
-import atwoz.atwoz.common.auth.jwt.JwtException;
-import atwoz.atwoz.common.auth.jwt.JwtParser;
-import atwoz.atwoz.common.auth.jwt.JwtProvider;
+import io.jsonwebtoken.JwtException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

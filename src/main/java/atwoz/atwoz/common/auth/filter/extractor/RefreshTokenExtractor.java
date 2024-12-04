@@ -11,11 +11,11 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RefreshTokenExtractor {
 
-    private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
+    private static final String COOKIE_NAME = "refresh_token";
 
     public static Optional<String> extractFrom(HttpServletRequest request) {
         return Arrays.stream(request.getCookies())
-                .filter(cookie -> REFRESH_TOKEN_COOKIE_NAME.equals(cookie.getName()))
+                .filter(cookie -> COOKIE_NAME.equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst();
     }

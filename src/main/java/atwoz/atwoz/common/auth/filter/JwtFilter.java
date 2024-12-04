@@ -10,6 +10,7 @@ import atwoz.atwoz.common.auth.jwt.JwtParser;
 import atwoz.atwoz.common.auth.jwt.JwtProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -38,12 +39,10 @@ public class JwtFilter extends OncePerRequestFilter {
     private final ResponseHandler responseHandler;
     private final AuthContext authContext;
 
-    // TODO: refresh token 재발급 로직
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (isExcluded(request.getRequestURI())) {
             filterChain.doFilter(request, response);
-            return;
         }
 
         try {
@@ -73,8 +72,51 @@ public class JwtFilter extends OncePerRequestFilter {
         if (isInvalid(token)) {
             throw new UnauthorizedException("유효하지 않은 refresh token입니다.");
         }
+
+        if (isExpired(token)) {
+            String reissuedRefreshToken = reissueRefreshToken(token);
+            sendReissuedRefreshToken(response, reissuedRefreshToken);
+            return;
+        }
+
         String reissuedAccessToken = reissueAccessToken(token);
-        setAuthorizationHeader(response, reissuedAccessToken);
+        sendReissuedAccessToken(response, reissuedAccessToken);
+    }
+
+    private void handleAccessToken(String token) {
+        if (isInvalid(token)) {
+            throw new UnauthorizedException("유효하지 않은 access token입니다.");
+        }
+
+        if (isExpired(token)) {
+            Long id = jwtParser.getIdFrom(token);
+            Role role = jwtParser.getRoleFrom(token);
+            authContext.setAuthentication(id, role);
+        }
+    }
+
+    private boolean isInvalid(String token) {
+        return jwtParser.isInvalid(token);
+    }
+
+    private boolean isExpired(String token) {
+        return jwtParser.isExpired(token);
+    }
+
+    private String reissueRefreshToken(String token) {
+        Long id = jwtParser.getIdFrom(token);
+        Role role = jwtParser.getRoleFrom(token);
+        return jwtProvider.createRefreshToken(id, role, Instant.now());
+    }
+
+    private void sendReissuedRefreshToken(HttpServletResponse response, String reissuedRefreshToken) {
+        Cookie cookie = new Cookie("refresh_token", reissuedRefreshToken);
+        cookie.setMaxAge(60 * 60 * 24 * 7 * 4);  // 4주
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+
+        response.addCookie(cookie);
     }
 
     private String reissueAccessToken(String token) {
@@ -83,21 +125,8 @@ public class JwtFilter extends OncePerRequestFilter {
         return jwtProvider.createAccessToken(id, role, Instant.now());
     }
 
-    private void setAuthorizationHeader(HttpServletResponse response, String reissuedAccessToken) {
+    private void sendReissuedAccessToken(HttpServletResponse response, String reissuedAccessToken) {
         response.setHeader("Authorization", "Bearer " + reissuedAccessToken);
-    }
-
-    private void handleAccessToken(String token) {
-        if (isInvalid(token)) {
-            throw new UnauthorizedException("유효하지 않은 access token입니다.");
-        }
-        Long id = jwtParser.getIdFrom(token);
-        Role role = jwtParser.getRoleFrom(token);
-        authContext.setAuthentication(id, role);
-    }
-
-    private boolean isInvalid(String token) {
-        return jwtParser.isInvalid(token);
     }
 
     private void setUnauthorizedResponse(HttpServletResponse response, String message) {
