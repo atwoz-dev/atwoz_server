@@ -3,7 +3,7 @@ package atwoz.atwoz.common.auth.filter;
 
 import atwoz.atwoz.common.auth.AuthContext;
 import atwoz.atwoz.common.auth.Role;
-import atwoz.atwoz.common.auth.exception.UnauthorizedException;
+import atwoz.atwoz.common.auth.exception.TokenException;
 import atwoz.atwoz.common.auth.filter.extractor.AccessTokenExtractor;
 import atwoz.atwoz.common.auth.filter.extractor.RefreshTokenExtractor;
 import atwoz.atwoz.common.auth.jwt.JwtParser;
@@ -26,7 +26,7 @@ import java.util.Optional;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JwtFilter extends OncePerRequestFilter {
+public class TokenFilter extends OncePerRequestFilter {
 
     private static final List<String> EXCLUDED_URIS = List.of(
             "/members/auth/login",
@@ -59,7 +59,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
 
             setUnauthorizedResponse(response, "토큰이 존재하지 않습니다.");
-        } catch (UnauthorizedException e) {
+        } catch (TokenException e) {
             setUnauthorizedResponse(response, e.getMessage());
         }
     }
@@ -69,14 +69,14 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private void handleRefreshToken(String token, HttpServletResponse response) {
-        if (isInvalid(token)) {
-            throw new UnauthorizedException("유효하지 않은 refresh token입니다.");
-        }
-
         if (isExpired(token)) {
             String reissuedRefreshToken = reissueRefreshToken(token);
             sendReissuedRefreshToken(response, reissuedRefreshToken);
             return;
+        }
+
+        if (isInvalid(token)) {
+            throw new TokenException("유효하지 않은 refresh token입니다.");
         }
 
         String reissuedAccessToken = reissueAccessToken(token);
@@ -84,15 +84,17 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private void handleAccessToken(String token) {
-        if (isInvalid(token)) {
-            throw new UnauthorizedException("유효하지 않은 access token입니다.");
+        if (isExpired(token)) {
+            throw new TokenException("만료된 access token입니다.");
         }
 
-        if (isExpired(token)) {
-            Long id = jwtParser.getIdFrom(token);
-            Role role = jwtParser.getRoleFrom(token);
-            authContext.setAuthentication(id, role);
+        if (isInvalid(token)) {
+            throw new TokenException("유효하지 않은 access token입니다.");
         }
+
+        Long id = jwtParser.getIdFrom(token);
+        Role role = jwtParser.getRoleFrom(token);
+        authContext.setAuthentication(id, role);
     }
 
     private boolean isInvalid(String token) {

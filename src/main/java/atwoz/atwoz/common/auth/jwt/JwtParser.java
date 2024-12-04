@@ -22,8 +22,6 @@ public class JwtParser {
     }
 
     public boolean isValid(String token) {
-        if (isExpired(token)) return false;
-
         try {
             parseJws(token);
             return true;
