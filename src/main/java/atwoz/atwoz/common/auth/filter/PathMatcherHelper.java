@@ -17,8 +17,9 @@ public class PathMatcherHelper {
                 .toList();
     }
 
-    public boolean matches(String uri) {
+    public boolean isExcluded(String uri) {
         PathContainer path = PathContainer.parsePath(uri);
+
         return excludePatterns.stream()
                 .anyMatch(pattern -> pattern.matches(path));
     }

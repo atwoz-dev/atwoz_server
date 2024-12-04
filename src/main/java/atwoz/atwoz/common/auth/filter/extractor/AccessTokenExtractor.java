@@ -13,21 +13,8 @@ public class AccessTokenExtractor {
     private static final String BEARER_PREFIX = "Bearer ";
 
     public static Optional<String> extractFrom(HttpServletRequest request) {
-        Optional<String> authorizationHeader = getAuthorizationHeaderFrom(request);
-        if (authorizationHeader.isPresent()) {
-            return parseAccessTokenFrom(authorizationHeader.get());
-        }
-        return Optional.empty();
-    }
-
-    private static Optional<String> getAuthorizationHeaderFrom(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(AUTHORIZATION_HEADER));
-    }
-
-    private static Optional<String> parseAccessTokenFrom(String header) {
-        if (header.startsWith(BEARER_PREFIX)) {
-            return Optional.of(header.substring(BEARER_PREFIX.length()).trim());
-        }
-        return Optional.empty();
+        return Optional.ofNullable(request.getHeader(AUTHORIZATION_HEADER))
+                .filter(header -> header.startsWith(BEARER_PREFIX))
+                .map(header -> header.substring(BEARER_PREFIX.length()).trim());
     }
 }

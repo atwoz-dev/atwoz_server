@@ -38,9 +38,10 @@ public class JwtFilter extends OncePerRequestFilter {
     private final ResponseHandler responseHandler;
     private final AuthContext authContext;
 
+    // TODO: refresh token 재발급 로직
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (isExcludedUri(request.getRequestURI())) {
+        if (isExcluded(request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -64,12 +65,12 @@ public class JwtFilter extends OncePerRequestFilter {
         }
     }
 
-    private boolean isExcludedUri(String uri) {
-        return pathMatcher.matches(uri);
+    private boolean isExcluded(String uri) {
+        return pathMatcher.isExcluded(uri);
     }
 
     private void handleRefreshToken(String token, HttpServletResponse response) {
-        if (jwtParser.isInvalid(token)) {
+        if (isInvalid(token)) {
             throw new UnauthorizedException("유효하지 않은 refresh token입니다.");
         }
         String reissuedAccessToken = reissueAccessToken(token);
@@ -87,12 +88,16 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private void handleAccessToken(String token) {
-        if (jwtParser.isInvalid(token)) {
+        if (isInvalid(token)) {
             throw new UnauthorizedException("유효하지 않은 access token입니다.");
         }
         Long id = jwtParser.getIdFrom(token);
         Role role = jwtParser.getRoleFrom(token);
         authContext.setAuthentication(id, role);
+    }
+
+    private boolean isInvalid(String token) {
+        return jwtParser.isInvalid(token);
     }
 
     private void setUnauthorizedResponse(HttpServletResponse response, String message) {
