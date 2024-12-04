@@ -1,6 +1,5 @@
-package atwoz.atwoz.common.auth;
+package atwoz.atwoz.common.auth.filter.extractor;
 
-import atwoz.atwoz.common.auth.exception.MissingAuthorizationHeaderException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -14,10 +13,11 @@ public class AccessTokenExtractor {
     private static final String BEARER_PREFIX = "Bearer ";
 
     public static Optional<String> extractFrom(HttpServletRequest request) {
-        String authorizationHeader = getAuthorizationHeaderFrom(request)
-                .orElseThrow(MissingAuthorizationHeaderException::new);
-
-        return parseAccessTokenFrom(authorizationHeader);
+        Optional<String> authorizationHeader = getAuthorizationHeaderFrom(request);
+        if (authorizationHeader.isPresent()) {
+            return parseAccessTokenFrom(authorizationHeader.get());
+        }
+        return Optional.empty();
     }
 
     private static Optional<String> getAuthorizationHeaderFrom(HttpServletRequest request) {

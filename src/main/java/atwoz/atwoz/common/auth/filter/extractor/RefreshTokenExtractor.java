@@ -1,4 +1,4 @@
-package atwoz.atwoz.common.auth;
+package atwoz.atwoz.common.auth.filter.extractor;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
