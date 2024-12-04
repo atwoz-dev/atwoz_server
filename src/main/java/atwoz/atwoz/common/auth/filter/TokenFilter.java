@@ -119,6 +119,8 @@ public class TokenFilter extends OncePerRequestFilter {
         cookie.setSecure(true);
 
         response.addCookie(cookie);
+
+        // TODO: 응답 상태 코드는? 쿠키 세팅하는 로직까지해서 reesponse handler로 넘기기?
     }
 
     private String reissueAccessToken(String token) {
@@ -128,6 +130,7 @@ public class TokenFilter extends OncePerRequestFilter {
     }
 
     private void sendReissuedAccessToken(HttpServletResponse response, String reissuedAccessToken) {
+        // TODO: 응답 상태 코드는? 아래 로직까지해서 reesponse handler로 넘기기?
         response.setHeader("Authorization", "Bearer " + reissuedAccessToken);
     }
 
