@@ -23,7 +23,7 @@ public class ImageUrl {
     }
 
     private void validateUrl(String value) {
-        if (value == null) {
+        if (value == null || value.isEmpty()) {
             throw new InvalidImageUrlException();
         }
     }

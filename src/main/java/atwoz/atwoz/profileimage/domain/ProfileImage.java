@@ -24,17 +24,21 @@ public class ProfileImage extends BaseEntity {
     @Embedded
     private ImageUrl imageUrl;
 
+    private Boolean isPrimary = false;
 
-    private boolean isPrimary = false;
-
-    private int order;
-
-    public static ProfileImage of(Long memberId, String url, boolean isPrimary, int order) {
+    public static ProfileImage of(Long memberId, String url, boolean isPrimary) {
         return ProfileImage.builder()
                 .memberId(MemberId.from(memberId))
                 .imageUrl(ImageUrl.from(url))
                 .isPrimary(isPrimary)
-                .order(order)
                 .build();
+    }
+
+    public String getUrl() {
+        return imageUrl.getValue();
+    }
+
+    public Boolean isPrimary() {
+        return isPrimary;
     }
 }
