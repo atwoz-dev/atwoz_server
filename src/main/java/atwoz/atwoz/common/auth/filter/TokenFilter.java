@@ -48,7 +48,7 @@ public class TokenFilter extends OncePerRequestFilter {
         try {
             Optional<String> refreshToken = RefreshTokenExtractor.extractFrom(request);
             if (refreshToken.isPresent()) {
-                handleRefreshToken(refreshToken.get(), response);
+                handleRefreshToken(response, refreshToken.get());
                 return;
             }
 
@@ -68,32 +68,30 @@ public class TokenFilter extends OncePerRequestFilter {
         return pathMatcher.isExcluded(uri);
     }
 
-    private void handleRefreshToken(String token, HttpServletResponse response) {
-        if (isExpired(token)) {
-            String reissuedRefreshToken = reissueRefreshToken(token);
-            sendReissuedRefreshToken(response, reissuedRefreshToken);
+    private void handleRefreshToken(HttpServletResponse response, String refreshToken) {
+        if (isExpired(refreshToken)) {
+            rotateRefreshToken(response, refreshToken);
             return;
         }
 
-        if (isInvalid(token)) {
+        if (isInvalid(refreshToken)) {
             throw new TokenException("유효하지 않은 refresh token입니다.");
         }
 
-        String reissuedAccessToken = reissueAccessToken(token);
-        sendReissuedAccessToken(response, reissuedAccessToken);
+        rotateRefreshToken(response, refreshToken);
     }
 
-    private void handleAccessToken(String token) {
-        if (isExpired(token)) {
+    private void handleAccessToken(String accessToken) {
+        if (isExpired(accessToken)) {
             throw new TokenException("만료된 access token입니다.");
         }
 
-        if (isInvalid(token)) {
+        if (isInvalid(accessToken)) {
             throw new TokenException("유효하지 않은 access token입니다.");
         }
 
-        Long id = jwtParser.getIdFrom(token);
-        Role role = jwtParser.getRoleFrom(token);
+        Long id = jwtParser.getIdFrom(accessToken);
+        Role role = jwtParser.getRoleFrom(accessToken);
         authContext.setAuthentication(id, role);
     }
 
@@ -105,22 +103,28 @@ public class TokenFilter extends OncePerRequestFilter {
         return jwtParser.isExpired(token);
     }
 
+    private void rotateRefreshToken(HttpServletResponse response, String refreshToken) {
+        String reissuedRefreshToken = reissueRefreshToken(refreshToken);
+        addRefreshTokenToCookie(response, reissuedRefreshToken);
+
+        String reissuedAccessToken = reissueAccessToken(refreshToken);
+        addAccessTokenToHeader(response, reissuedAccessToken);
+    }
+
     private String reissueRefreshToken(String token) {
         Long id = jwtParser.getIdFrom(token);
         Role role = jwtParser.getRoleFrom(token);
         return jwtProvider.createRefreshToken(id, role, Instant.now());
     }
 
-    private void sendReissuedRefreshToken(HttpServletResponse response, String reissuedRefreshToken) {
-        Cookie cookie = new Cookie("refresh_token", reissuedRefreshToken);
+    private void addRefreshTokenToCookie(HttpServletResponse response, String refreshToken) {
+        Cookie cookie = new Cookie("refresh_token", refreshToken);
         cookie.setMaxAge(60 * 60 * 24 * 7 * 4);  // 4주
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
 
         response.addCookie(cookie);
-
-        // TODO: 응답 상태 코드는? 쿠키 세팅하는 로직까지해서 reesponse handler로 넘기기?
     }
 
     private String reissueAccessToken(String token) {
@@ -129,9 +133,9 @@ public class TokenFilter extends OncePerRequestFilter {
         return jwtProvider.createAccessToken(id, role, Instant.now());
     }
 
-    private void sendReissuedAccessToken(HttpServletResponse response, String reissuedAccessToken) {
-        // TODO: 응답 상태 코드는? 아래 로직까지해서 reesponse handler로 넘기기?
-        response.setHeader("Authorization", "Bearer " + reissuedAccessToken);
+    private void addAccessTokenToHeader(HttpServletResponse response, String accessToken) {
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setHeader("Authorization", "Bearer " + accessToken);
     }
 
     private void setUnauthorizedResponse(HttpServletResponse response, String message) {
