@@ -66,6 +66,7 @@ public class TokenFilter extends OncePerRequestFilter {
                 addAccessTokenToHeader(response, reissueAccessToken(refreshToken));
                 return;
             } else {
+                // TODO: 기존 refresh token 무효화
                 setUnauthorizedResponse(response, "유효하지 않은 refresh token입니다.");
                 return;
             }
