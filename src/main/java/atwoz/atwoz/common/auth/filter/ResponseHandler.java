@@ -53,7 +53,7 @@ public class ResponseHandler {
             writer.write(jsonBody);
             writer.flush();
         } catch (IOException e) {
-            log.error("응답 바디 세팅에 실패했습니다: {}", e.getMessage());
+            log.error("응답 바디 설정에 실패했습니다: {}", e.getMessage());
         }
     }
 

@@ -3,7 +3,6 @@ package atwoz.atwoz.common.auth.filter;
 
 import atwoz.atwoz.common.auth.AuthContext;
 import atwoz.atwoz.common.auth.Role;
-import atwoz.atwoz.common.auth.exception.TokenException;
 import atwoz.atwoz.common.auth.filter.extractor.AccessTokenExtractor;
 import atwoz.atwoz.common.auth.filter.extractor.RefreshTokenExtractor;
 import atwoz.atwoz.common.auth.jwt.JwtParser;
@@ -45,76 +44,48 @@ public class TokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         }
 
-        try {
-            Optional<String> refreshToken = RefreshTokenExtractor.extractFrom(request);
-            if (refreshToken.isPresent()) {
-                handleRefreshToken(response, refreshToken.get());
+        Optional<String> optionalAccessToken = AccessTokenExtractor.extractFrom(request);
+        if (optionalAccessToken.isPresent()) {
+            String accessToken = optionalAccessToken.get();
+
+            if (isValid(accessToken)) {
+                setAuthenticationContext(accessToken);
+                filterChain.doFilter(request, response);
+            } else {
+                setUnauthorizedResponse(response, "유효하지 않은 access token입니다.");
                 return;
             }
-
-            Optional<String> accessToken = AccessTokenExtractor.extractFrom(request);
-            if (accessToken.isPresent()) {
-                handleAccessToken(accessToken.get());
-                filterChain.doFilter(request, response);
-            }
-
-            setUnauthorizedResponse(response, "토큰이 존재하지 않습니다.");
-        } catch (TokenException e) {
-            setUnauthorizedResponse(response, e.getMessage());
         }
+
+        Optional<String> optionalRefreshToken = RefreshTokenExtractor.extractFrom(request);
+        if (optionalRefreshToken.isPresent()) {
+            String refreshToken = optionalRefreshToken.get();
+
+            if (isValid(refreshToken)) {
+                addRefreshTokenToCookie(response, reissueRefreshToken(refreshToken));
+                addAccessTokenToHeader(response, reissueAccessToken(refreshToken));
+                return;
+            } else {
+                setUnauthorizedResponse(response, "유효하지 않은 refresh token입니다.");
+                return;
+            }
+        }
+
+        setUnauthorizedResponse(response, "토큰이 존재하지 않습니다.");
     }
 
     private boolean isExcluded(String uri) {
         return pathMatcher.isExcluded(uri);
     }
 
-    private void handleRefreshToken(HttpServletResponse response, String refreshToken) {
-        if (isExpired(refreshToken)) {
-            rotateRefreshToken(response, refreshToken);
-            return;
-        }
-
-        if (isInvalid(refreshToken)) {
-            throw new TokenException("유효하지 않은 refresh token입니다.");
-        }
-
-        rotateRefreshToken(response, refreshToken);
+    private boolean isValid(String token) {
+        return jwtParser.isValid(token);
     }
 
-    private void handleAccessToken(String accessToken) {
-        if (isExpired(accessToken)) {
-            throw new TokenException("만료된 access token입니다.");
-        }
-
-        if (isInvalid(accessToken)) {
-            throw new TokenException("유효하지 않은 access token입니다.");
-        }
-
+    private void setAuthenticationContext(String accessToken) {
         Long id = jwtParser.getIdFrom(accessToken);
         Role role = jwtParser.getRoleFrom(accessToken);
         authContext.setAuthentication(id, role);
-    }
-
-    private boolean isInvalid(String token) {
-        return jwtParser.isInvalid(token);
-    }
-
-    private boolean isExpired(String token) {
-        return jwtParser.isExpired(token);
-    }
-
-    private void rotateRefreshToken(HttpServletResponse response, String refreshToken) {
-        String reissuedRefreshToken = reissueRefreshToken(refreshToken);
-        addRefreshTokenToCookie(response, reissuedRefreshToken);
-
-        String reissuedAccessToken = reissueAccessToken(refreshToken);
-        addAccessTokenToHeader(response, reissuedAccessToken);
-    }
-
-    private String reissueRefreshToken(String token) {
-        Long id = jwtParser.getIdFrom(token);
-        Role role = jwtParser.getRoleFrom(token);
-        return jwtProvider.createRefreshToken(id, role, Instant.now());
     }
 
     private void addRefreshTokenToCookie(HttpServletResponse response, String refreshToken) {
@@ -127,15 +98,20 @@ public class TokenFilter extends OncePerRequestFilter {
         response.addCookie(cookie);
     }
 
+    private void addAccessTokenToHeader(HttpServletResponse response, String accessToken) {
+        response.setHeader("Authorization", "Bearer " + accessToken);
+    }
+
+    private String reissueRefreshToken(String token) {
+        Long id = jwtParser.getIdFrom(token);
+        Role role = jwtParser.getRoleFrom(token);
+        return jwtProvider.createRefreshToken(id, role, Instant.now());
+    }
+
     private String reissueAccessToken(String token) {
         Long id = jwtParser.getIdFrom(token);
         Role role = jwtParser.getRoleFrom(token);
         return jwtProvider.createAccessToken(id, role, Instant.now());
-    }
-
-    private void addAccessTokenToHeader(HttpServletResponse response, String accessToken) {
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setHeader("Authorization", "Bearer " + accessToken);
     }
 
     private void setUnauthorizedResponse(HttpServletResponse response, String message) {

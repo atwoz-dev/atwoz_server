@@ -1,7 +1,10 @@
 package atwoz.atwoz.common.auth.jwt;
 
 import atwoz.atwoz.common.auth.Role;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -27,19 +30,6 @@ public class JwtParser {
             return true;
         } catch (JwtException e) {
             return false;
-        }
-    }
-
-    public boolean isInvalid(String token) {
-        return !isValid(token);
-    }
-
-    public boolean isExpired(String token) {
-        try {
-            parseJws(token);
-            return false;
-        } catch (ExpiredJwtException e) {
-            return true;
         }
     }
 
