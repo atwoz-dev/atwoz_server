@@ -1,6 +1,6 @@
-package atwoz.atwoz.common.auth.presentation.support;
+package atwoz.atwoz.common.auth;
 
-import atwoz.atwoz.common.auth.infra.exception.TokenNotExistException;
+import atwoz.atwoz.common.auth.exception.TokenNotExistException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
@@ -9,9 +9,11 @@ import org.springframework.web.context.annotation.RequestScope;
 public class AuthContext {
 
     private Long memberId;
+    private Role role;
 
-    public void setAuthentication(Long memberId) {
+    public void setAuthentication(Long memberId, Role role) {
         this.memberId = memberId;
+        this.role = role;
     }
 
     public Long getPrincipal() {

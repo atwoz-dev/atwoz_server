@@ -1,6 +1,6 @@
-package atwoz.atwoz.common.auth.infra;
+package atwoz.atwoz.common.auth.jwt;
 
-import atwoz.atwoz.common.auth.domain.Role;
+import atwoz.atwoz.common.auth.Role;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;

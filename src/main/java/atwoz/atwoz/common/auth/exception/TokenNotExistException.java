@@ -1,4 +1,4 @@
-package atwoz.atwoz.common.auth.infra.exception;
+package atwoz.atwoz.common.auth.exception;
 
 public class TokenNotExistException extends RuntimeException {
     public TokenNotExistException() {
