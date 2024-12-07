@@ -15,4 +15,9 @@ public class ProfileImageRepositoryImpl implements ProfileImageRepository {
     public ProfileImage save(ProfileImage profileImage) {
         return profileImageJpaRepository.save(profileImage);
     }
+
+    @Override
+    public boolean existsByMemberIdAndIsPrimary(Long memberId) {
+        return profileImageJpaRepository.existsByMemberIdAndIsPrimary(memberId, true);
+    }
 }

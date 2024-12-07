@@ -57,10 +57,6 @@ public class S3Uploader {
         }
     }
 
-    public void deleteFile(String fileName) {
-
-    }
-
     private ObjectMetadata getObjectMetadata(MultipartFile file) {
         ObjectMetadata objectMetadata = new ObjectMetadata();
 
