@@ -3,6 +3,8 @@ package atwoz.atwoz.profileimage.domain;
 import atwoz.atwoz.common.domain.BaseEntity;
 import atwoz.atwoz.profileimage.domain.vo.ImageUrl;
 import atwoz.atwoz.profileimage.domain.vo.MemberId;
+import atwoz.atwoz.profileimage.exception.InvalidIsPrimaryException;
+import atwoz.atwoz.profileimage.exception.InvalidOrderException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,7 +28,12 @@ public class ProfileImage extends BaseEntity {
 
     private Boolean isPrimary = false;
 
-    public static ProfileImage of(Long memberId, String url, boolean isPrimary) {
+    @Column(name = "profile_order")
+    private Integer order = null;
+
+    public static ProfileImage of(Long memberId, String url, Integer order, Boolean isPrimary) {
+        validateOrderAndIsPrimary(order, isPrimary);
+
         return ProfileImage.builder()
                 .memberId(MemberId.from(memberId))
                 .imageUrl(ImageUrl.from(url))
@@ -38,7 +45,25 @@ public class ProfileImage extends BaseEntity {
         return imageUrl.getValue();
     }
 
+    public Long getMemberId() {
+        return memberId.getValue();
+    }
+
+    public Integer getOrder() {
+        return order;
+    }
+
     public Boolean isPrimary() {
         return isPrimary;
+    }
+
+    private static void validateOrderAndIsPrimary(Integer order, Boolean isPrimary) {
+        if (order == null) {
+            throw new InvalidOrderException();
+        }
+
+        if (isPrimary == null) {
+            throw new InvalidIsPrimaryException();
+        }
     }
 }

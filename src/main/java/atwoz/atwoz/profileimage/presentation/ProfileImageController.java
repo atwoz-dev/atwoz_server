@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -23,9 +25,8 @@ public class ProfileImageController {
     private final ProfileImageService profileImageService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BaseResponse<ProfileImageUploadResponse>> uploadProfileImage(
-            @ModelAttribute ProfileImageUploadRequest request, @AuthMember Long memberId) {
-        BaseResponse<ProfileImageUploadResponse> response = new BaseResponse(StatusType.OK, profileImageService.save(memberId, request.image(), request.isPrimary()));
+    public ResponseEntity<BaseResponse<List<ProfileImageUploadResponse>>> uploadProfileImage(@ModelAttribute List<ProfileImageUploadRequest> request, @AuthMember Long memberId) {
+        BaseResponse<List<ProfileImageUploadResponse>> response = new BaseResponse(StatusType.OK, profileImageService.save(memberId, request));
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

@@ -7,9 +7,15 @@ import atwoz.atwoz.profileimage.domain.ProfileImageRepository;
 import atwoz.atwoz.profileimage.exception.InvalidImageFileException;
 import atwoz.atwoz.profileimage.exception.PrimaryImageAlreadyExistsException;
 import atwoz.atwoz.profileimage.infra.S3Uploader;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -18,17 +24,32 @@ public class ProfileImageService {
     private final ProfileImageRepository profileImageRepository;
     private final S3Uploader s3Uploader;
 
+    @Transactional
+    public List<ProfileImageUploadResponse> save(Long memberId, List<ProfileImageUploadRequest> requestList) {
+        List<CompletableFuture<ProfileImage>> futureList = new ArrayList<>();
+        for (ProfileImageUploadRequest request : requestList) {
+            futureList.add(uploadImageAsync(memberId, request));
+        }
 
-    public ProfileImageUploadResponse save(Long memberId, MultipartFile file, Boolean isPrimary) {
+        List<ProfileImage> resultFuture = CompletableFuture.allOf(futureList.toArray(CompletableFuture[]::new))
+                .thenApply(v -> futureList.stream()
+                        .map(CompletableFuture::join)
+                        .toList()).join();
 
-        checkPrimaryImageAlreadyExists(memberId, isPrimary);
-        validateImageType(file);
-        String imageUrl = s3Uploader.uploadFile(file);
+        profileImageRepository.saveAll(resultFuture);
 
-        ProfileImage profileImage = ProfileImage.of(memberId, imageUrl, isPrimary);
-        profileImageRepository.save(profileImage);
+        return ProfileImageUploadResponse.from(resultFuture);
+    }
 
-        return ProfileImageUploadResponse.from(profileImage);
+    @Async
+    protected CompletableFuture<ProfileImage> uploadImageAsync(Long memberId, ProfileImageUploadRequest request) {
+        checkPrimaryImageAlreadyExists(memberId, request.isPrimary());
+        validateImageType(request.image());
+        String imageUrl = s3Uploader.uploadFile(request.image());
+
+        ProfileImage profileImage = ProfileImage.of(memberId, imageUrl, request.order(), request.isPrimary());
+
+        return CompletableFuture.completedFuture(profileImage);
     }
 
     private void validateImageType(MultipartFile file) {
@@ -42,4 +63,6 @@ public class ProfileImageService {
             throw new PrimaryImageAlreadyExistsException();
         }
     }
+
+
 }

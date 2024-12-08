@@ -1,5 +1,7 @@
 package atwoz.atwoz.profileimage.domain;
 
+import atwoz.atwoz.profileimage.exception.InvalidIsPrimaryException;
+import atwoz.atwoz.profileimage.exception.InvalidOrderException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,12 +14,39 @@ public class ProfileImageTest {
         // Given
         Long memberId = 1L;
         String imageUrl = "url";
-        boolean isPrimary = true;
+        Boolean isPrimary = true;
+        Integer order = 1;
 
         // When
-        ProfileImage profileImage = ProfileImage.of(memberId, imageUrl, isPrimary);
+        ProfileImage profileImage = ProfileImage.of(memberId, imageUrl, order, isPrimary);
 
         // Then
         Assertions.assertThat(profileImage).isNotNull();
+    }
+
+    @Test
+    @DisplayName("order 값이 NULL인 경우, 유효하지 않음.")
+    void isInvalidWhenOrderIsNull() {
+        // Given
+        Long memberId = 1L;
+        String imageUrl = "url";
+        Boolean isPrimary = true;
+        Integer order = null;
+
+        // When & Then
+        Assertions.assertThatThrownBy(() -> ProfileImage.of(memberId, imageUrl, order, isPrimary)).isInstanceOf(InvalidOrderException.class);
+    }
+
+    @Test
+    @DisplayName("isPrimary 값이 NULL인 경우, 유효하지 않음")
+    void isInvalidWhenPrimaryIsNull() {
+        // Given
+        Long memberId = 1L;
+        String imageUrl = "url";
+        Boolean isPrimary = null;
+        Integer order = 1;
+
+        // When & Then
+        Assertions.assertThatThrownBy(() -> ProfileImage.of(memberId, imageUrl, order, isPrimary)).isInstanceOf(InvalidIsPrimaryException.class);
     }
 }
