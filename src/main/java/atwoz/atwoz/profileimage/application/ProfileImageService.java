@@ -31,14 +31,14 @@ public class ProfileImageService {
             futureList.add(uploadImageAsync(memberId, request));
         }
 
-        List<ProfileImage> resultFuture = CompletableFuture.allOf(futureList.toArray(CompletableFuture[]::new))
+        List<ProfileImage> profileImageList = CompletableFuture.allOf(futureList.toArray(CompletableFuture[]::new))
                 .thenApply(v -> futureList.stream()
                         .map(CompletableFuture::join)
                         .toList()).join();
 
-        profileImageRepository.saveAll(resultFuture);
+        profileImageRepository.saveAll(profileImageList);
 
-        return ProfileImageUploadResponse.from(resultFuture);
+        return ProfileImageUploadResponse.from(profileImageList);
     }
 
     @Async
