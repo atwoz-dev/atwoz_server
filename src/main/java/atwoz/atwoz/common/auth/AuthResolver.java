@@ -11,16 +11,16 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @Component
 @RequiredArgsConstructor
 public class AuthResolver implements HandlerMethodArgumentResolver {
-    private final AuthContext authContext;
 
+    private final AuthContext authContext;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AuthMember.class);
+        return parameter.hasParameterAnnotation(AuthPrincipal.class);
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        return authContext.getPrincipal();
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+        return authContext;
     }
 }

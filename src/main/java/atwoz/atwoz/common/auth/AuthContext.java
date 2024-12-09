@@ -4,22 +4,22 @@ import atwoz.atwoz.common.auth.exception.TokenNotExistException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
-@RequestScope
 @Component
+@RequestScope
 public class AuthContext {
 
-    private Long memberId;
+    private Long id;
     private Role role;
 
     public void setAuthentication(Long memberId, Role role) {
-        this.memberId = memberId;
+        this.id = memberId;
         this.role = role;
     }
 
     public Long getPrincipal() {
-        if (memberId == null) {
+        if (id == null) {
             throw new TokenNotExistException();
         }
-        return memberId;
+        return id;
     }
 }

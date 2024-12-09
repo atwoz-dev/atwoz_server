@@ -9,14 +9,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @Configuration
-public class MemberAuthConfig implements WebMvcConfigurer {
+@RequiredArgsConstructor
+public class AuthConfig implements WebMvcConfigurer {
+
     private final AuthResolver authResolver;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(authResolver);
     }
-
 }
