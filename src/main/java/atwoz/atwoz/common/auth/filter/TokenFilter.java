@@ -1,8 +1,8 @@
 package atwoz.atwoz.common.auth.filter;
 
 
-import atwoz.atwoz.common.auth.AuthContext;
-import atwoz.atwoz.common.auth.Role;
+import atwoz.atwoz.common.auth.context.AuthContext;
+import atwoz.atwoz.common.auth.context.Role;
 import atwoz.atwoz.common.auth.filter.extractor.AccessTokenExtractor;
 import atwoz.atwoz.common.auth.filter.extractor.RefreshTokenExtractor;
 import atwoz.atwoz.common.auth.jwt.JwtParser;
@@ -67,6 +67,7 @@ public class TokenFilter extends OncePerRequestFilter {
                 return;
             } else {
                 // TODO: 기존 refresh token 무효화
+                invalidateRefreshToken(refreshToken);
                 setUnauthorizedResponse(response, "유효하지 않은 refresh token입니다.");
                 return;
             }
@@ -86,7 +87,7 @@ public class TokenFilter extends OncePerRequestFilter {
     private void setAuthenticationContext(String accessToken) {
         Long id = jwtParser.getIdFrom(accessToken);
         Role role = jwtParser.getRoleFrom(accessToken);
-        authContext.setAuthentication(id, role);
+        authContext.authenticate(id, role);
     }
 
     private void addRefreshTokenToCookie(HttpServletResponse response, String refreshToken) {
@@ -113,6 +114,10 @@ public class TokenFilter extends OncePerRequestFilter {
         Long id = jwtParser.getIdFrom(token);
         Role role = jwtParser.getRoleFrom(token);
         return jwtProvider.createAccessToken(id, role, Instant.now());
+    }
+
+    private void invalidateRefreshToken(String refreshToken) {
+        // TODO: 메서드 구현
     }
 
     private void setUnauthorizedResponse(HttpServletResponse response, String message) {

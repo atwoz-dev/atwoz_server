@@ -1,6 +1,6 @@
 package atwoz.atwoz.common.auth.jwt;
 
-import atwoz.atwoz.common.auth.Role;
+import atwoz.atwoz.common.auth.context.Role;
 import io.jsonwebtoken.JwtException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

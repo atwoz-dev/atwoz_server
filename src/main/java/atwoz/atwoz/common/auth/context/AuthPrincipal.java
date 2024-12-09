@@ -1,4 +1,4 @@
-package atwoz.atwoz.common.auth;
+package atwoz.atwoz.common.auth.context;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

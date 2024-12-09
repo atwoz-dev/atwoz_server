@@ -1,4 +1,4 @@
-package atwoz.atwoz.common.auth;
+package atwoz.atwoz.common.auth.context;
 
 import lombok.Getter;
 

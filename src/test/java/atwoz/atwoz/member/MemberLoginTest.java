@@ -1,7 +1,7 @@
 package atwoz.atwoz.member;
 
 
-import atwoz.atwoz.common.auth.Role;
+import atwoz.atwoz.common.auth.context.Role;
 import atwoz.atwoz.common.auth.jwt.JwtProvider;
 import atwoz.atwoz.member.application.MemberAuthService;
 import atwoz.atwoz.member.application.dto.MemberLoginResponse;
