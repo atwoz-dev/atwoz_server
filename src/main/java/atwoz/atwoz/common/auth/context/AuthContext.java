@@ -8,7 +8,7 @@ import org.springframework.web.context.annotation.RequestScope;
 
 @Component
 @RequestScope
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class AuthContext {
 

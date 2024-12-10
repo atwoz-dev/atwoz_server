@@ -45,35 +45,25 @@ public class TokenFilter extends OncePerRequestFilter {
         }
 
         Optional<String> optionalAccessToken = AccessTokenExtractor.extractFrom(request);
-        if (optionalAccessToken.isPresent()) {
-            String accessToken = optionalAccessToken.get();
 
-            if (isValid(accessToken)) {
-                setAuthenticationContext(accessToken);
-                filterChain.doFilter(request, response);
-            } else {
-                setUnauthorizedResponse(response, "유효하지 않은 access token입니다.");
-                return;
-            }
+        if (optionalAccessToken.isEmpty()) {
+            setUnauthorizedResponse(response, "Access token이 존재하지 않습니다.");
+            return;
         }
 
-        Optional<String> optionalRefreshToken = RefreshTokenExtractor.extractFrom(request);
-        if (optionalRefreshToken.isPresent()) {
-            String refreshToken = optionalRefreshToken.get();
+        String accessToken = optionalAccessToken.get();
 
-            if (isValid(refreshToken)) {
-                addRefreshTokenToCookie(response, reissueRefreshToken(refreshToken));
-                addAccessTokenToHeader(response, reissueAccessToken(refreshToken));
-                return;
-            } else {
-                // TODO: 기존 refresh token 무효화
-                invalidateRefreshToken(refreshToken);
-                setUnauthorizedResponse(response, "유효하지 않은 refresh token입니다.");
-                return;
-            }
+        if (isValid(accessToken)) {
+            setAuthenticationContext(accessToken);
+            filterChain.doFilter(request, response);
         }
 
-        setUnauthorizedResponse(response, "토큰이 존재하지 않습니다.");
+        if (isExpired(accessToken)) {
+            handleExpiredAccessToken(request, response);
+            return;
+        }
+
+        setUnauthorizedResponse(response, "유효하지 않은 access token입니다.");
     }
 
     private boolean isExcluded(String uri) {
@@ -84,10 +74,37 @@ public class TokenFilter extends OncePerRequestFilter {
         return jwtParser.isValid(token);
     }
 
+    private boolean isExpired(String token) {
+        return jwtParser.isExpired(token);
+    }
+
     private void setAuthenticationContext(String accessToken) {
         Long id = jwtParser.getIdFrom(accessToken);
         Role role = jwtParser.getRoleFrom(accessToken);
         authContext.authenticate(id, role);
+    }
+
+    private void handleExpiredAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        Optional<String> optionalRefreshToken = RefreshTokenExtractor.extractFrom(request);
+
+        if (optionalRefreshToken.isEmpty()) {
+            setUnauthorizedResponse(response, "Refresh token이 존재하지 않습니다.");
+            return;
+        }
+
+        String refreshToken = optionalRefreshToken.get();
+
+        if (isValid(refreshToken)) {
+            String reissuedAccessToken = reissueAccessToken(refreshToken);
+            addAccessTokenToHeader(response, reissuedAccessToken);
+
+            String reissuedRefreshToken = reissueRefreshToken(refreshToken);
+            addRefreshTokenToCookie(response, reissuedRefreshToken);
+        } else {
+            // TODO: 기존 refresh token 무효화 메서드 구현
+            invalidateRefreshToken(refreshToken);
+            setUnauthorizedResponse(response, "유효하지 않은 refresh token입니다.");
+        }
     }
 
     private void addRefreshTokenToCookie(HttpServletResponse response, String refreshToken) {
