@@ -108,6 +108,7 @@ public class TokenFilter extends OncePerRequestFilter {
 
             String reissuedRefreshToken = reissueRefreshToken(refreshToken);
             addRefreshTokenToCookie(response, reissuedRefreshToken);
+            return;
         }
 
         if (isInvalid(refreshToken) || isExpired(refreshToken)) {
