@@ -6,6 +6,7 @@ import atwoz.atwoz.profileimage.domain.ProfileImage;
 import atwoz.atwoz.profileimage.domain.ProfileImageRepository;
 import atwoz.atwoz.profileimage.exception.InvalidImageFileException;
 import atwoz.atwoz.profileimage.exception.PrimaryImageAlreadyExistsException;
+import atwoz.atwoz.profileimage.exception.ProfileImageNotFoundException;
 import atwoz.atwoz.profileimage.infra.S3Uploader;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,16 @@ public class ProfileImageService {
         return ProfileImageUploadResponse.from(profileImageList);
     }
 
+    @Transactional
+    public void delete(Long memberId, Long profileImageId) {
+        ProfileImage profileImage = profileImageRepository.findById(profileImageId).orElseThrow();
+        /**
+         * 삭제 로직.
+         * 1. S3 에서 제거.
+         * 2. 레포에서 제거.
+         */
+    }
+
     @Async
     protected CompletableFuture<ProfileImage> uploadImageAsync(Long memberId, ProfileImageUploadRequest request) {
         checkPrimaryImageAlreadyExists(memberId, request.getIsPrimary());
@@ -60,5 +71,9 @@ public class ProfileImageService {
         if (isPrimary && profileImageRepository.existsByMemberIdAndIsPrimary(memberId)) {
             throw new PrimaryImageAlreadyExistsException();
         }
+    }
+
+    private ProfileImage findByProfileImageId(Long profileImageId) {
+        return profileImageRepository.findById(profileImageId).orElseThrow(() -> new ProfileImageNotFoundException());
     }
 }

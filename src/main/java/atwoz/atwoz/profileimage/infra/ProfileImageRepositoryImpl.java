@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,5 +29,10 @@ public class ProfileImageRepositoryImpl implements ProfileImageRepository {
     @Override
     public void saveAll(List<ProfileImage> profileImages) {
         profileImageJdbcRepository.saveAll(profileImages);
+    }
+
+    @Override
+    public Optional<ProfileImage> findById(Long id) {
+        return profileImageJpaRepository.findById(id);
     }
 }
