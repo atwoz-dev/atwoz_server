@@ -37,6 +37,7 @@ public class ProfileImage extends BaseEntity {
         return ProfileImage.builder()
                 .memberId(MemberId.from(memberId))
                 .imageUrl(ImageUrl.from(url))
+                .order(order)
                 .isPrimary(isPrimary)
                 .build();
     }

@@ -37,18 +37,16 @@ public class ProfileImageService {
                         .toList()).join();
 
         profileImageRepository.saveAll(profileImageList);
-
         return ProfileImageUploadResponse.from(profileImageList);
     }
 
     @Async
     protected CompletableFuture<ProfileImage> uploadImageAsync(Long memberId, ProfileImageUploadRequest request) {
-        checkPrimaryImageAlreadyExists(memberId, request.isPrimary());
-        validateImageType(request.image());
-        String imageUrl = s3Uploader.uploadFile(request.image());
+        checkPrimaryImageAlreadyExists(memberId, request.getIsPrimary());
+        validateImageType(request.getImage());
+        String imageUrl = s3Uploader.uploadFile(request.getImage());
 
-        ProfileImage profileImage = ProfileImage.of(memberId, imageUrl, request.order(), request.isPrimary());
-
+        ProfileImage profileImage = ProfileImage.of(memberId, imageUrl, request.getOrder(), request.getIsPrimary());
         return CompletableFuture.completedFuture(profileImage);
     }
 
@@ -63,6 +61,4 @@ public class ProfileImageService {
             throw new PrimaryImageAlreadyExistsException();
         }
     }
-
-
 }

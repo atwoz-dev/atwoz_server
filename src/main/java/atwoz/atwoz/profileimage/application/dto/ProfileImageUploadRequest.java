@@ -1,14 +1,13 @@
 package atwoz.atwoz.profileimage.application.dto;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
-public record ProfileImageUploadRequest(
-        MultipartFile image,
-        Boolean isPrimary,
-        Integer order
-) {
+@Getter
+@Setter
+public class ProfileImageUploadRequest {
+    MultipartFile image;
+    Boolean isPrimary;
+    Integer order;
 }
-
-
-
-

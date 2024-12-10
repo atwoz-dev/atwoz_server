@@ -30,6 +30,8 @@ public class S3Uploader {
 
     private AmazonS3Client s3Client;
 
+    private String prefixUrl;
+
     @PostConstruct
     public void init() {
         BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(accessKey, secretKey);
@@ -42,6 +44,8 @@ public class S3Uploader {
                 .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
                 .withClientConfiguration(clientConfiguration)
                 .build();
+
+        prefixUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/";
     }
 
     public String uploadFile(MultipartFile file) {
@@ -50,7 +54,7 @@ public class S3Uploader {
 
         try {
             s3Client.putObject(bucket, fileName, file.getInputStream(), objectMetadata);
-            return fileName;
+            return prefixUrl + fileName;
 
         } catch (Exception e) {
             throw new FIleUploadFailException();
