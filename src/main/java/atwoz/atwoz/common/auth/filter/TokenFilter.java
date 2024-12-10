@@ -42,6 +42,7 @@ public class TokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (isExcluded(request.getRequestURI())) {
             filterChain.doFilter(request, response);
+            return;
         }
 
         Optional<String> optionalAccessToken = AccessTokenExtractor.extractFrom(request);
@@ -56,6 +57,7 @@ public class TokenFilter extends OncePerRequestFilter {
         if (isValid(accessToken)) {
             setAuthenticationContext(accessToken);
             filterChain.doFilter(request, response);
+            return;
         }
 
         if (isExpired(accessToken)) {
@@ -63,7 +65,9 @@ public class TokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        setUnauthorizedResponse(response, "유효하지 않은 access token입니다.");
+        if (isInvalid(accessToken)) {
+            setUnauthorizedResponse(response, "유효하지 않은 access token입니다.");
+        }
     }
 
     private boolean isExcluded(String uri) {
@@ -72,6 +76,10 @@ public class TokenFilter extends OncePerRequestFilter {
 
     private boolean isValid(String token) {
         return jwtParser.isValid(token);
+    }
+
+    private boolean isInvalid(String token) {
+        return !jwtParser.isValid(token);
     }
 
     private boolean isExpired(String token) {
@@ -100,7 +108,9 @@ public class TokenFilter extends OncePerRequestFilter {
 
             String reissuedRefreshToken = reissueRefreshToken(refreshToken);
             addRefreshTokenToCookie(response, reissuedRefreshToken);
-        } else {
+        }
+
+        if (isInvalid(refreshToken) || isExpired(refreshToken)) {
             // TODO: 기존 refresh token 무효화 메서드 구현
             invalidateRefreshToken(refreshToken);
             setUnauthorizedResponse(response, "유효하지 않은 refresh token입니다.");
