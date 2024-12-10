@@ -3,13 +3,11 @@ package atwoz.atwoz.profileimage;
 import atwoz.atwoz.profileimage.application.ProfileImageService;
 import atwoz.atwoz.profileimage.application.dto.ProfileImageUploadRequest;
 import atwoz.atwoz.profileimage.application.dto.ProfileImageUploadResponse;
-import atwoz.atwoz.profileimage.domain.ProfileImage;
 import atwoz.atwoz.profileimage.domain.ProfileImageRepository;
 import atwoz.atwoz.profileimage.exception.InvalidImageFileException;
 import atwoz.atwoz.profileimage.exception.PrimaryImageAlreadyExistsException;
 import atwoz.atwoz.profileimage.infra.S3Uploader;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,9 +23,6 @@ import java.util.List;
 @ExtendWith(MockitoExtension.class)
 public class ProfileImageUploadTest {
 
-    private ProfileImage profileImage;
-    private List<ProfileImageUploadRequest> requestList;
-
     @InjectMocks
     private ProfileImageService profileImageService;
 
@@ -36,11 +31,6 @@ public class ProfileImageUploadTest {
 
     @Mock
     private S3Uploader s3Uploader;
-
-    @BeforeEach
-    void setup() {
-        profileImage = ProfileImage.of(1L, "url", 1,true);
-    }
 
     @Test
     @DisplayName("이미지 파일이 아닌 경우, 단일 업로드 실패.")
@@ -77,11 +67,12 @@ public class ProfileImageUploadTest {
         Long memberId = 1L;
         List<ProfileImageUploadRequest> request = List.of(new ProfileImageUploadRequest(imageFile, true, 1));
 
-        Mockito.when(profileImageRepository.save(Mockito.any(ProfileImage.class))).thenReturn(profileImage);
         Mockito.when(s3Uploader.uploadFile(Mockito.any(MultipartFile.class))).thenReturn("imageUrl");
 
-        // Then
+        // When
         List<ProfileImageUploadResponse> profileImageUploadResponse = profileImageService.save(memberId, request);
+
+        // Then
         Assertions.assertThat(profileImageUploadResponse).isNotNull();
         Assertions.assertThat(profileImageUploadResponse.getFirst().isPrimary()).isTrue();
     }
@@ -94,11 +85,12 @@ public class ProfileImageUploadTest {
         Long memberId = 1L;
         List<ProfileImageUploadRequest> request = List.of(new ProfileImageUploadRequest(imageFile, false, 1));
 
-        Mockito.when(profileImageRepository.save(Mockito.any(ProfileImage.class))).thenReturn(profileImage);
         Mockito.when(s3Uploader.uploadFile(Mockito.any(MultipartFile.class))).thenReturn("imageUrl");
 
-        // Then
+        // When
         List<ProfileImageUploadResponse> profileImageUploadResponse = profileImageService.save(memberId, request);
+
+        // Then
         Assertions.assertThat(profileImageUploadResponse).isNotNull();
         Assertions.assertThat(profileImageUploadResponse.getFirst().isPrimary()).isFalse();
     }

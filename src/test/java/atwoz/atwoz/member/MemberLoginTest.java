@@ -41,7 +41,6 @@ public class MemberLoginTest {
 
     @BeforeEach
     void setUp() {
-
         member = Member.createFromPhoneNumber("01012345678");
         ReflectionTestUtils.setField(member, "id", 1L);
         ReflectionTestUtils.setField(member, "activityStatus", ActivityStatus.ACTIVE);
