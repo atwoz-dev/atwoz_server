@@ -65,9 +65,7 @@ public class TokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (isInvalid(accessToken)) {
-            setUnauthorizedResponse(response, "유효하지 않은 access token입니다.");
-        }
+        setUnauthorizedResponse(response, "유효하지 않은 access token입니다.");
     }
 
     private boolean isExcluded(String uri) {
@@ -76,10 +74,6 @@ public class TokenFilter extends OncePerRequestFilter {
 
     private boolean isValid(String token) {
         return jwtParser.isValid(token);
-    }
-
-    private boolean isInvalid(String token) {
-        return !jwtParser.isValid(token);
     }
 
     private boolean isExpired(String token) {
@@ -111,11 +105,9 @@ public class TokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (isInvalid(refreshToken) || isExpired(refreshToken)) {
-            // TODO: 기존 refresh token 무효화 메서드 구현
-            invalidateRefreshToken(refreshToken);
-            setUnauthorizedResponse(response, "유효하지 않은 refresh token입니다.");
-        }
+        // TODO: 기존 refresh token 무효화 메서드 구현
+        invalidateRefreshToken(refreshToken);
+        setUnauthorizedResponse(response, "유효하지 않은 refresh token입니다.");
     }
 
     private void addRefreshTokenToCookie(HttpServletResponse response, String refreshToken) {

@@ -25,8 +25,6 @@ public class JwtParser {
         try {
             parseJws(token);
             return true;
-        } catch (ExpiredJwtException e) {
-            return true;
         } catch (JwtException e) {
             return false;
         }
