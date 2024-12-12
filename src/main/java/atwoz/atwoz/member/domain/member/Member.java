@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.domain.member;
 
-import atwoz.atwoz.common.domain.BaseEntity;
 import atwoz.atwoz.common.domain.SoftDeleteBaseEntity;
+import atwoz.atwoz.member.domain.member.vo.Nickname;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

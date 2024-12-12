@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.domain.member;
+package atwoz.atwoz.member.domain.member.vo;
 
 import atwoz.atwoz.member.exception.InvalidNickNameException;
 import jakarta.persistence.Column;
