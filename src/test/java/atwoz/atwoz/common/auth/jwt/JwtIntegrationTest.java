@@ -1,7 +1,8 @@
-package atwoz.atwoz.common.auth.infra;
+package atwoz.atwoz.common.auth.jwt;
 
-import atwoz.atwoz.common.auth.domain.Role;
-import atwoz.atwoz.common.auth.infra.exception.JwtException;
+import atwoz.atwoz.common.auth.context.Role;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-class JwtProviderParserIntegrationTest {
+class JwtIntegrationTest {
 
     @Value("${jwt.access-token.expiration}")
     private long accessTokenExpiration;
@@ -86,6 +87,7 @@ class JwtProviderParserIntegrationTest {
         String token = "invalid token";
 
         // when & then
+        assertThat(jwtParser.isValid(token)).isFalse();
         assertThatThrownBy(() -> jwtParser.getRoleFrom(token)).isInstanceOf(JwtException.class);
     }
 
@@ -96,6 +98,7 @@ class JwtProviderParserIntegrationTest {
         String token = "invalid token";
 
         // when & then
+        assertThat(jwtParser.isValid(token)).isFalse();
         assertThatThrownBy(() -> jwtParser.getExpirationFrom(token)).isInstanceOf(JwtException.class);
     }
 
@@ -111,7 +114,8 @@ class JwtProviderParserIntegrationTest {
         String token = jwtProvider.createAccessToken(id, role, before);
 
         // then
-        assertThatThrownBy(() -> jwtParser.getExpirationFrom(token)).isInstanceOf(JwtException.class);
+        assertThat(jwtParser.isExpired(token)).isTrue();
+        assertThatThrownBy(() -> jwtParser.getExpirationFrom(token)).isInstanceOf(ExpiredJwtException.class);
     }
 
     @Test
@@ -126,6 +130,7 @@ class JwtProviderParserIntegrationTest {
         String token = jwtProvider.createRefreshToken(id, role, before);
 
         // then
-        assertThatThrownBy(() -> jwtParser.getExpirationFrom(token)).isInstanceOf(JwtException.class);
+        assertThat(jwtParser.isExpired(token)).isTrue();
+        assertThatThrownBy(() -> jwtParser.getExpirationFrom(token)).isInstanceOf(ExpiredJwtException.class);
     }
 }
