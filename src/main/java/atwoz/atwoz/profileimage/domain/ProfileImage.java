@@ -31,13 +31,13 @@ public class ProfileImage extends BaseEntity {
     @Column(name = "profile_order")
     private Integer order = null;
 
-    public static ProfileImage of(Long memberId, String url, Integer order, Boolean isPrimary) {
+    public static ProfileImage of(MemberId memberId, ImageUrl url, Integer order, Boolean isPrimary) {
         validateOrder(order);
         validateIsPrimary(isPrimary);
 
         return ProfileImage.builder()
-                .memberId(MemberId.from(memberId))
-                .imageUrl(ImageUrl.from(url))
+                .memberId(memberId)
+                .imageUrl(url)
                 .order(order)
                 .isPrimary(isPrimary)
                 .build();

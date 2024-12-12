@@ -4,6 +4,8 @@ import atwoz.atwoz.profileimage.application.dto.ProfileImageUploadRequest;
 import atwoz.atwoz.profileimage.application.dto.ProfileImageUploadResponse;
 import atwoz.atwoz.profileimage.domain.ProfileImage;
 import atwoz.atwoz.profileimage.domain.ProfileImageRepository;
+import atwoz.atwoz.profileimage.domain.vo.ImageUrl;
+import atwoz.atwoz.profileimage.domain.vo.MemberId;
 import atwoz.atwoz.profileimage.exception.InvalidImageFileException;
 import atwoz.atwoz.profileimage.exception.InvalidPrimaryProfileImageCountException;
 import atwoz.atwoz.profileimage.exception.PrimaryImageAlreadyExistsException;
@@ -30,7 +32,7 @@ public class ProfileImageService {
 
         List<CompletableFuture<ProfileImage>> future = requestList.stream()
                 .map(request -> uploadImageAsync(request.getImage())
-                        .thenApply(imageUrl -> ProfileImage.of(memberId, imageUrl, request.getOrder(), request.getIsPrimary()))).toList();
+                        .thenApply(imageUrl -> ProfileImage.of(MemberId.from(memberId), ImageUrl.from(imageUrl), request.getOrder(), request.getIsPrimary()))).toList();
 
         List<ProfileImage> profileImageList = gatherProfileImages(future);
 
