@@ -32,20 +32,24 @@ public class ProfileImageService {
                 .map(request -> uploadImageAsync(request.getImage())
                         .thenApply(imageUrl -> ProfileImage.of(memberId, imageUrl, request.getOrder(), request.getIsPrimary()))).toList();
 
-        List<ProfileImage> profileImageList = CompletableFuture.allOf(future.toArray(CompletableFuture[]::new))
-                .thenApply(v -> future.stream()
-                        .map(CompletableFuture::join)
-                        .toList())
-                .join();
+        List<ProfileImage> profileImageList = gatherProfileImages(future);
 
         profileImageRepository.saveAll(profileImageList);
-        return ProfileImageUploadResponse.from(profileImageList);
+        return ProfileImageUploadResponse.toResponse(profileImageList);
     }
 
     @Async
     protected CompletableFuture<String> uploadImageAsync(MultipartFile image) {
         String imageUrl = s3Uploader.uploadFile(image);
         return CompletableFuture.completedFuture(imageUrl);
+    }
+
+    private List<ProfileImage> gatherProfileImages(List<CompletableFuture<ProfileImage>> futures) {
+        return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
+                .thenApply(v -> futures.stream()
+                        .map(CompletableFuture::join)
+                        .toList())
+                .join();
     }
 
     private void validateRequestList(Long memberId, List<ProfileImageUploadRequest> requestList) {
@@ -69,7 +73,7 @@ public class ProfileImageService {
     }
 
     private void checkPrimaryImageAlreadyExists(Long memberId, Boolean isPrimary) {
-        if (isPrimary && profileImageRepository.existsByMemberIdAndIsPrimary(memberId)) {
+        if (isPrimary && profileImageRepository.existsPrimaryImageByMemberId(memberId)) {
             throw new PrimaryImageAlreadyExistsException();
         }
     }

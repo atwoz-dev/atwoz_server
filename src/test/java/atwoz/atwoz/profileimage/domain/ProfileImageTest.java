@@ -38,6 +38,19 @@ public class ProfileImageTest {
     }
 
     @Test
+    @DisplayName("order 값이 음수인 경우, 유효하지 않음")
+    void isInvalidWhenOrderIsNegative() {
+        // Given
+        Long memberId = 1L;
+        String imageUrl = "url";
+        Boolean isPrimary = false;
+        Integer order = -1;
+
+        // When & Then
+        Assertions.assertThatThrownBy(() -> ProfileImage.of(memberId, imageUrl, order, isPrimary)).isInstanceOf(InvalidOrderException.class);
+    }
+
+    @Test
     @DisplayName("isPrimary 값이 NULL인 경우, 유효하지 않음")
     void isInvalidWhenPrimaryIsNull() {
         // Given

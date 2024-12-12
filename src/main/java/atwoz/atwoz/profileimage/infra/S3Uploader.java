@@ -54,11 +54,11 @@ public class S3Uploader {
 
         try {
             s3Client.putObject(bucket, fileName, file.getInputStream(), objectMetadata);
-            return prefixUrl + fileName;
-
         } catch (Exception e) {
             throw new FIleUploadFailException();
         }
+
+        return prefixUrl + fileName;
     }
 
     private ObjectMetadata getObjectMetadata(MultipartFile file) {

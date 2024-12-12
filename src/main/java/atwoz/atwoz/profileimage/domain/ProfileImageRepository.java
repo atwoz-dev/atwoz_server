@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface ProfileImageRepository {
     ProfileImage save(ProfileImage profileImage);
-    boolean existsByMemberIdAndIsPrimary(Long memberId);
+    boolean existsPrimaryImageByMemberId(Long memberId);
     void saveAll(List<ProfileImage> profileImages);
 }

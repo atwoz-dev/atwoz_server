@@ -20,7 +20,7 @@ public record ProfileImageUploadResponse(
                 .build();
     }
 
-    static public List<ProfileImageUploadResponse> from(List<ProfileImage> profileImages) {
+    static public List<ProfileImageUploadResponse> toResponse(List<ProfileImage> profileImages) {
         return profileImages.stream().map(ProfileImageUploadResponse::from).collect(Collectors.toList());
     }
 }
