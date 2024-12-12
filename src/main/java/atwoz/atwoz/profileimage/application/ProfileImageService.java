@@ -5,6 +5,7 @@ import atwoz.atwoz.profileimage.application.dto.ProfileImageUploadResponse;
 import atwoz.atwoz.profileimage.domain.ProfileImage;
 import atwoz.atwoz.profileimage.domain.ProfileImageRepository;
 import atwoz.atwoz.profileimage.exception.InvalidImageFileException;
+import atwoz.atwoz.profileimage.exception.InvalidPrimaryProfileImageCountException;
 import atwoz.atwoz.profileimage.exception.PrimaryImageAlreadyExistsException;
 import atwoz.atwoz.profileimage.infra.S3Uploader;
 import jakarta.transaction.Transactional;
@@ -13,7 +14,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -26,28 +26,40 @@ public class ProfileImageService {
 
     @Transactional
     public List<ProfileImageUploadResponse> save(Long memberId, List<ProfileImageUploadRequest> requestList) {
-        List<CompletableFuture<ProfileImage>> futureList = new ArrayList<>();
-        for (ProfileImageUploadRequest request : requestList) {
-            futureList.add(uploadImageAsync(memberId, request));
-        }
+        validateRequestList(memberId, requestList);
 
-        List<ProfileImage> profileImageList = CompletableFuture.allOf(futureList.toArray(CompletableFuture[]::new))
-                .thenApply(v -> futureList.stream()
+        List<CompletableFuture<ProfileImage>> future = requestList.stream()
+                .map(request -> uploadImageAsync(request.getImage())
+                        .thenApply(imageUrl -> ProfileImage.of(memberId, imageUrl, request.getOrder(), request.getIsPrimary()))).toList();
+
+        List<ProfileImage> profileImageList = CompletableFuture.allOf(future.toArray(CompletableFuture[]::new))
+                .thenApply(v -> future.stream()
                         .map(CompletableFuture::join)
-                        .toList()).join();
+                        .toList())
+                .join();
 
         profileImageRepository.saveAll(profileImageList);
         return ProfileImageUploadResponse.from(profileImageList);
     }
 
     @Async
-    protected CompletableFuture<ProfileImage> uploadImageAsync(Long memberId, ProfileImageUploadRequest request) {
-        checkPrimaryImageAlreadyExists(memberId, request.getIsPrimary());
-        validateImageType(request.getImage());
-        String imageUrl = s3Uploader.uploadFile(request.getImage());
+    protected CompletableFuture<String> uploadImageAsync(MultipartFile image) {
+        String imageUrl = s3Uploader.uploadFile(image);
+        return CompletableFuture.completedFuture(imageUrl);
+    }
 
-        ProfileImage profileImage = ProfileImage.of(memberId, imageUrl, request.getOrder(), request.getIsPrimary());
-        return CompletableFuture.completedFuture(profileImage);
+    private void validateRequestList(Long memberId, List<ProfileImageUploadRequest> requestList) {
+        long primaryCount = requestList.stream().filter(ProfileImageUploadRequest::getIsPrimary)
+                .count();
+
+        if (primaryCount > 1) {
+            throw new InvalidPrimaryProfileImageCountException();
+        }
+
+        for (ProfileImageUploadRequest request : requestList) {
+            validateImageType(request.getImage());
+            checkPrimaryImageAlreadyExists(memberId, request.getIsPrimary());
+        }
     }
 
     private void validateImageType(MultipartFile file) {
