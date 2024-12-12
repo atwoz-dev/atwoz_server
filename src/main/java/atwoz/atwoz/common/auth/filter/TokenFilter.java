@@ -5,8 +5,10 @@ import atwoz.atwoz.common.auth.context.AuthContext;
 import atwoz.atwoz.common.auth.context.Role;
 import atwoz.atwoz.common.auth.filter.extractor.AccessTokenExtractor;
 import atwoz.atwoz.common.auth.filter.extractor.RefreshTokenExtractor;
+import atwoz.atwoz.common.auth.filter.response.ResponseHandler;
 import atwoz.atwoz.common.auth.jwt.JwtParser;
 import atwoz.atwoz.common.auth.jwt.JwtProvider;
+import atwoz.atwoz.common.presentation.StatusType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -21,6 +23,8 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+
+import static atwoz.atwoz.common.presentation.StatusType.*;
 
 @Slf4j
 @Component
@@ -48,7 +52,7 @@ public class TokenFilter extends OncePerRequestFilter {
         Optional<String> optionalAccessToken = AccessTokenExtractor.extractFrom(request);
 
         if (optionalAccessToken.isEmpty()) {
-            setUnauthorizedResponse(response, "Access token이 존재하지 않습니다.");
+            setUnauthorizedResponse(response, MISSING_ACCESS_TOKEN);
             return;
         }
 
@@ -65,7 +69,7 @@ public class TokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        setUnauthorizedResponse(response, "유효하지 않은 access token입니다.");
+        setUnauthorizedResponse(response, INVALID_ACCESS_TOKEN);
     }
 
     private boolean isExcluded(String uri) {
@@ -90,7 +94,7 @@ public class TokenFilter extends OncePerRequestFilter {
         Optional<String> optionalRefreshToken = RefreshTokenExtractor.extractFrom(request);
 
         if (optionalRefreshToken.isEmpty()) {
-            setUnauthorizedResponse(response, "Refresh token이 존재하지 않습니다.");
+            setUnauthorizedResponse(response, MISSING_REFRESH_TOKEN);
             return;
         }
 
@@ -107,7 +111,7 @@ public class TokenFilter extends OncePerRequestFilter {
 
         // TODO: 기존 refresh token 무효화 메서드 구현
         invalidateRefreshToken(refreshToken);
-        setUnauthorizedResponse(response, "유효하지 않은 refresh token입니다.");
+        setUnauthorizedResponse(response, INVALID_REFRESH_TOKEN);
     }
 
     private void addRefreshTokenToCookie(HttpServletResponse response, String refreshToken) {
@@ -140,8 +144,8 @@ public class TokenFilter extends OncePerRequestFilter {
         // TODO: 메서드 구현
     }
 
-    private void setUnauthorizedResponse(HttpServletResponse response, String message) {
-        log.error("토큰 인증이 실패했습니다: {}", message);
-        responseHandler.setResponse(response, ResponseHandler.StatusCode.UNAUTHORIZED, message);
+    private void setUnauthorizedResponse(HttpServletResponse response, StatusType statusType) {
+        log.error("토큰 인증에 실패했습니다: {}", statusType.getMessage());
+        responseHandler.setResponse(response, statusType);
     }
 }

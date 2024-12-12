@@ -2,8 +2,10 @@ package atwoz.atwoz.common.auth.filter;
 
 import atwoz.atwoz.common.auth.context.AuthContext;
 import atwoz.atwoz.common.auth.context.Role;
+import atwoz.atwoz.common.auth.filter.response.ResponseHandler;
 import atwoz.atwoz.common.auth.jwt.JwtParser;
 import atwoz.atwoz.common.auth.jwt.JwtProvider;
+import atwoz.atwoz.common.presentation.StatusType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -21,7 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 import java.time.Instant;
 
-import static atwoz.atwoz.common.auth.filter.ResponseHandler.StatusCode.UNAUTHORIZED;
+import static atwoz.atwoz.common.presentation.StatusType.MISSING_REFRESH_TOKEN;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -84,7 +86,7 @@ class TokenFilterTest {
         tokenFilter.doFilterInternal(request, response, filterChain);
 
         // then
-        verify(responseHandler).setResponse(response, UNAUTHORIZED, "Access token이 존재하지 않습니다.");
+        verify(responseHandler).setResponse(response, StatusType.MISSING_ACCESS_TOKEN);
         verifyNoInteractions(jwtProvider, jwtParser, authContext, filterChain);
     }
 
@@ -123,7 +125,7 @@ class TokenFilterTest {
         tokenFilter.doFilterInternal(request, response, filterChain);
 
         // then
-        verify(responseHandler).setResponse(response, UNAUTHORIZED, "유효하지 않은 access token입니다.");
+        verify(responseHandler).setResponse(response, StatusType.INVALID_ACCESS_TOKEN);
         verifyNoInteractions(jwtProvider, authContext, filterChain);
     }
 
@@ -158,7 +160,7 @@ class TokenFilterTest {
             tokenFilter.doFilterInternal(request, response, filterChain);
 
             // then
-            verify(responseHandler).setResponse(response, UNAUTHORIZED, "Refresh token이 존재하지 않습니다.");
+            verify(responseHandler).setResponse(response, MISSING_REFRESH_TOKEN);
             verifyNoInteractions(jwtProvider, authContext, filterChain);
         }
 
@@ -200,7 +202,7 @@ class TokenFilterTest {
             tokenFilter.doFilterInternal(request, response, filterChain);
 
             // then
-            verify(responseHandler).setResponse(response, UNAUTHORIZED, "유효하지 않은 refresh token입니다.");
+            verify(responseHandler).setResponse(response, StatusType.INVALID_REFRESH_TOKEN);
             verifyNoInteractions(jwtProvider, authContext, filterChain);
         }
 
@@ -215,7 +217,7 @@ class TokenFilterTest {
             tokenFilter.doFilterInternal(request, response, filterChain);
 
             // then
-            verify(responseHandler).setResponse(response, UNAUTHORIZED, "유효하지 않은 refresh token입니다.");
+            verify(responseHandler).setResponse(response, StatusType.INVALID_REFRESH_TOKEN);
             verifyNoInteractions(jwtProvider, authContext, filterChain);
         }
     }

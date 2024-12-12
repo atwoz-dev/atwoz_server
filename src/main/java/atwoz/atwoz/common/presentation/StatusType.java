@@ -27,10 +27,10 @@ public enum StatusType {
     CANNOT_BE_EDITED(400, "400600", "Cannot be edited"),
 
     UNAUTHORIZED(401, "401", "Unauthorized"),
-    UNAUTHORIZED_INVALID_JWT(401, "401001", "Unauthorized Invalid JWT"),
-    UNAUTHORIZED_EXPIRED_JWT(401, "401002", "Unauthorized Expired JWT"),
-    UNAUTHORIZED_UNSUPPORTED_JWT(401, "401003", "Unauthorized Unsupported JWT"),
-    UNAUTHORIZED_SIGNATURE_JWT(401, "401004", "Unauthorized Signature JWT"),
+    MISSING_ACCESS_TOKEN(401, "401001", "Missing Access Token"),
+    INVALID_ACCESS_TOKEN(401, "401002", "Invalid Access Token"),
+    MISSING_REFRESH_TOKEN(401, "401003", "Missing Refresh Token"),
+    INVALID_REFRESH_TOKEN(401, "401004", "Invalid Refresh Token"),
 
     FORBIDDEN(403, "403", "Forbidden"),
     HANDLE_ACCESS_DENIED(403, "403001", "Access is Denied"),

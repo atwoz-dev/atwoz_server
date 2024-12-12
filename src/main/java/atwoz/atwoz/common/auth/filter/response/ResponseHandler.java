@@ -1,9 +1,9 @@
-package atwoz.atwoz.common.auth.filter;
+package atwoz.atwoz.common.auth.filter.response;
 
+import atwoz.atwoz.common.presentation.StatusType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -23,22 +23,9 @@ public class ResponseHandler {
 
     private final ObjectMapper objectMapper;
 
-    @Getter
-    enum StatusCode {
-        UNAUTHORIZED(401, "Unauthorized");
-
-        private final int status;
-        private final String code;
-
-        StatusCode(int status, String code) {
-            this.status = status;
-            this.code = code;
-        }
-    }
-
-    public void setResponse(HttpServletResponse response, StatusCode statusCode, String message) {
-        setResponseHeader(response, statusCode.getStatus(), APPLICATION_JSON, UTF_8);
-        setResponseBody(response, statusCode.getStatus(), statusCode.getCode(), message);
+    public void setResponse(HttpServletResponse response, StatusType statusType) {
+        setResponseHeader(response, statusType.getStatus(), APPLICATION_JSON, UTF_8);
+        setResponseBody(response, statusType.getStatus(), statusType.getCode(), statusType.getMessage());
     }
 
     private void setResponseHeader(HttpServletResponse response, int status, String contentType, String characterEncoding) {
