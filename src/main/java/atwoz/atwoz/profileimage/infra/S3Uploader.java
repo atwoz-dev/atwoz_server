@@ -1,7 +1,11 @@
 package atwoz.atwoz.profileimage.infra;
 
-import atwoz.atwoz.profileimage.exception.FIleUploadFailException;
+import atwoz.atwoz.profileimage.exception.FileUploadFailException;
+import atwoz.atwoz.profileimage.exception.s3.S3AmazonException;
+import atwoz.atwoz.profileimage.exception.s3.S3ClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -12,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @Component
@@ -54,8 +59,12 @@ public class S3Uploader {
 
         try {
             s3Client.putObject(bucket, fileName, file.getInputStream(), objectMetadata);
-        } catch (Exception e) {
-            throw new FIleUploadFailException();
+        } catch (IOException e) {
+            throw new FileUploadFailException(e);
+        } catch (AmazonServiceException e) {
+            throw new S3AmazonException(e);
+        } catch (SdkClientException e) {
+            throw new S3ClientException(e);
         }
 
         return prefixUrl + fileName;
