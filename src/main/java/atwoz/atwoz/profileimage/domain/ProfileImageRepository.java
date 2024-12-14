@@ -8,4 +8,6 @@ public interface ProfileImageRepository {
     boolean existsByMemberIdAndIsPrimary(Long memberId);
     void saveAll(List<ProfileImage> profileImages);
     Optional<ProfileImage> findById(Long id);
+    Optional<ProfileImage> findByIdAndMemberId(Long id, Long memberId);
+    void delete(ProfileImage profileImage);
 }

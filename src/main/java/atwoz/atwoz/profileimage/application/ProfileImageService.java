@@ -42,13 +42,12 @@ public class ProfileImageService {
     }
 
     @Transactional
-    public void delete(Long memberId, Long profileImageId) {
-        ProfileImage profileImage = profileImageRepository.findById(profileImageId).orElseThrow();
-        /**
-         * 삭제 로직.
-         * 1. S3 에서 제거.
-         * 2. 레포에서 제거.
-         */
+    public void delete(Long id, Long memberId) {
+        ProfileImage profileImage = profileImageRepository.findByIdAndMemberId(id, memberId).orElseThrow();
+        // S3에서 제거.
+        s3Uploader.deleteFile(profileImage.getUrl());
+        // 레포에서 제거.
+        profileImageRepository.delete(profileImage);
     }
 
     @Async
@@ -73,7 +72,7 @@ public class ProfileImageService {
         }
     }
 
-    private ProfileImage findByProfileImageId(Long profileImageId) {
-        return profileImageRepository.findById(profileImageId).orElseThrow(() -> new ProfileImageNotFoundException());
+    private ProfileImage findByIdAndMemberId(Long memberId, Long profileImageId) {
+        return profileImageRepository.findByIdAndMemberId(profileImageId, memberId).orElseThrow(() -> new ProfileImageNotFoundException());
     }
 }

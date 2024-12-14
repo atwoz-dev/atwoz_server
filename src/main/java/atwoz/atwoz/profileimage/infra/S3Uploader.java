@@ -62,7 +62,8 @@ public class S3Uploader {
     }
 
     public void deleteFile(String fileName) {
-
+        String uuid = fileName.substring(fileName.lastIndexOf('/') + 1);
+        s3Client.deleteObject(bucket, uuid);
     }
 
     private ObjectMetadata getObjectMetadata(MultipartFile file) {
