@@ -1,4 +1,4 @@
-package atwoz.atwoz.common.auth.presentation.support;
+package atwoz.atwoz.common.auth.context;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,5 +7,5 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AuthMember {
+public @interface AuthPrincipal {
 }
