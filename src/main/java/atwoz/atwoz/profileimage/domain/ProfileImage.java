@@ -31,12 +31,13 @@ public class ProfileImage extends BaseEntity {
     @Column(name = "profile_order")
     private Integer order = null;
 
-    public static ProfileImage of(Long memberId, String url, Integer order, Boolean isPrimary) {
-        validateOrderAndIsPrimary(order, isPrimary);
+    public static ProfileImage of(MemberId memberId, ImageUrl url, Integer order, Boolean isPrimary) {
+        validateOrder(order);
+        validateIsPrimary(isPrimary);
 
         return ProfileImage.builder()
-                .memberId(MemberId.from(memberId))
-                .imageUrl(ImageUrl.from(url))
+                .memberId(memberId)
+                .imageUrl(url)
                 .order(order)
                 .isPrimary(isPrimary)
                 .build();
@@ -63,6 +64,18 @@ public class ProfileImage extends BaseEntity {
             throw new InvalidOrderException();
         }
 
+        if (isPrimary == null) {
+            throw new InvalidIsPrimaryException();
+        }
+    }
+
+    private static void validateOrder(Integer order) {
+        if (order == null || order <= 0) {
+            throw new InvalidOrderException();
+        }
+    }
+
+    private static void validateIsPrimary(Boolean isPrimary) {
         if (isPrimary == null) {
             throw new InvalidIsPrimaryException();
         }

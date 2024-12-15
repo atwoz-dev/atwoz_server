@@ -23,7 +23,7 @@ public class MemberId {
     }
 
     private void validateMemberId(Long value) {
-        if (value == null) {
+        if (value == null || value <= 0) {
             throw new InvalidMemberIdException();
         }
     }

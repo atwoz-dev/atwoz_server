@@ -1,5 +1,7 @@
 package atwoz.atwoz.profileimage.domain;
 
+import atwoz.atwoz.profileimage.domain.vo.ImageUrl;
+import atwoz.atwoz.profileimage.domain.vo.MemberId;
 import atwoz.atwoz.profileimage.exception.InvalidIsPrimaryException;
 import atwoz.atwoz.profileimage.exception.InvalidOrderException;
 import org.assertj.core.api.Assertions;
@@ -18,7 +20,7 @@ public class ProfileImageTest {
         Integer order = 1;
 
         // When
-        ProfileImage profileImage = ProfileImage.of(memberId, imageUrl, order, isPrimary);
+        ProfileImage profileImage = ProfileImage.of(MemberId.from(memberId), ImageUrl.from(imageUrl), order, isPrimary);
 
         // Then
         Assertions.assertThat(profileImage).isNotNull();
@@ -34,7 +36,20 @@ public class ProfileImageTest {
         Integer order = null;
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> ProfileImage.of(memberId, imageUrl, order, isPrimary)).isInstanceOf(InvalidOrderException.class);
+        Assertions.assertThatThrownBy(() -> ProfileImage.of(MemberId.from(memberId), ImageUrl.from(imageUrl), order, isPrimary)).isInstanceOf(InvalidOrderException.class);
+    }
+
+    @Test
+    @DisplayName("order 값이 음수인 경우, 유효하지 않음")
+    void isInvalidWhenOrderIsNegative() {
+        // Given
+        Long memberId = 1L;
+        String imageUrl = "url";
+        Boolean isPrimary = false;
+        Integer order = -1;
+
+        // When & Then
+        Assertions.assertThatThrownBy(() -> ProfileImage.of(MemberId.from(memberId), ImageUrl.from(imageUrl), order, isPrimary)).isInstanceOf(InvalidOrderException.class);
     }
 
     @Test
@@ -47,6 +62,6 @@ public class ProfileImageTest {
         Integer order = 1;
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> ProfileImage.of(memberId, imageUrl, order, isPrimary)).isInstanceOf(InvalidIsPrimaryException.class);
+        Assertions.assertThatThrownBy(() -> ProfileImage.of(MemberId.from(memberId), ImageUrl.from(imageUrl), order, isPrimary)).isInstanceOf(InvalidIsPrimaryException.class);
     }
 }
