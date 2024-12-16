@@ -70,9 +70,13 @@ public class S3Uploader {
         return prefixUrl + fileName;
     }
 
-    public void deleteFile(String fileName) {
-        String uuid = fileName.substring(fileName.lastIndexOf('/') + 1);
-        s3Client.deleteObject(bucket, uuid);
+    public void deleteFile(String url) {
+        String key = getKey(url);
+        s3Client.deleteObject(bucket, key);
+    }
+
+    private String getKey(String url) {
+        return url.substring(prefixUrl.length());
     }
 
     private ObjectMetadata getObjectMetadata(MultipartFile file) {

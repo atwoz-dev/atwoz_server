@@ -11,10 +11,10 @@ import atwoz.atwoz.profileimage.exception.InvalidPrimaryProfileImageCountExcepti
 import atwoz.atwoz.profileimage.exception.PrimaryImageAlreadyExistsException;
 import atwoz.atwoz.profileimage.exception.ProfileImageNotFoundException;
 import atwoz.atwoz.profileimage.infra.S3Uploader;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -43,10 +43,8 @@ public class ProfileImageService {
 
     @Transactional
     public void delete(Long id, Long memberId) {
-        ProfileImage profileImage = profileImageRepository.findByIdAndMemberId(id, memberId).orElseThrow();
-        // S3에서 제거.
+        ProfileImage profileImage = findByIdAndMemberId(id, memberId);
         s3Uploader.deleteFile(profileImage.getUrl());
-        // 레포에서 제거.
         profileImageRepository.delete(profileImage);
     }
 
