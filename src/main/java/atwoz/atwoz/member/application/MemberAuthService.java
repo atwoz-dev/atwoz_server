@@ -36,7 +36,6 @@ public class MemberAuthService {
     }
 
     private Member create(String phoneNumber) {
-        Member member = memberRepository.save(Member.createFromPhoneNumber(phoneNumber));
-        return member;
+        return memberRepository.save(Member.createFromPhoneNumber(phoneNumber));
     }
 }

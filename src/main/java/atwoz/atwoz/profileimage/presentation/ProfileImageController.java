@@ -25,13 +25,13 @@ public class ProfileImageController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BaseResponse<List<ProfileImageUploadResponse>>> uploadProfileImage(@ModelAttribute ProfileImageUploadRequestWrapper request, @AuthPrincipal AuthContext authContext) {
-        BaseResponse<List<ProfileImageUploadResponse>> response = new BaseResponse(StatusType.OK, profileImageService.save(authContext.getId(), request.getRequests()));
+        BaseResponse<List<ProfileImageUploadResponse>> response = new BaseResponse<>(StatusType.OK, profileImageService.save(authContext.getId(), request.getRequests()));
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<BaseResponse> deleteProfileImage(@PathVariable Long id, @AuthPrincipal AuthContext authContext) {
+    public ResponseEntity<BaseResponse<Void>> deleteProfileImage(@PathVariable Long id, @AuthPrincipal AuthContext authContext) {
         profileImageService.delete(id, authContext.getId());
-        return new ResponseEntity<>(new BaseResponse(StatusType.OK), HttpStatus.OK);
+        return new ResponseEntity<>(new BaseResponse<>(StatusType.OK), HttpStatus.OK);
     }
 }
