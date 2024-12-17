@@ -30,6 +30,8 @@ public class Member extends SoftDeleteBaseEntity {
 
     private Integer height;
 
+    private boolean isVip;
+
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
     private Gender gender;
@@ -86,5 +88,9 @@ public class Member extends SoftDeleteBaseEntity {
 
     public HeartBalance getHeartBalance() {
         return this.heartBalance;
+    }
+
+    public boolean isVipMember() {
+        return this.isVip;
     }
 }
