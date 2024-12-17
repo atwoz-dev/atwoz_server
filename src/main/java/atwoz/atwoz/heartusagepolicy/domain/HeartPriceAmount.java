@@ -12,6 +12,14 @@ public class HeartPriceAmount {
         return new HeartPriceAmount(price);
     }
 
+    public Long getAmount() {
+        return price * -1;
+    }
+
+    public Long getPrice() {
+        return price;
+    }
+
     protected HeartPriceAmount() {
         this.price = MIN_PRICE;
     }
