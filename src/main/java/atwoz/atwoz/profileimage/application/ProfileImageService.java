@@ -6,10 +6,7 @@ import atwoz.atwoz.profileimage.domain.ProfileImage;
 import atwoz.atwoz.profileimage.domain.ProfileImageRepository;
 import atwoz.atwoz.profileimage.domain.vo.ImageUrl;
 import atwoz.atwoz.profileimage.domain.vo.MemberId;
-import atwoz.atwoz.profileimage.exception.InvalidImageFileException;
-import atwoz.atwoz.profileimage.exception.InvalidPrimaryProfileImageCountException;
-import atwoz.atwoz.profileimage.exception.PrimaryImageAlreadyExistsException;
-import atwoz.atwoz.profileimage.exception.ProfileImageNotFoundException;
+import atwoz.atwoz.profileimage.exception.*;
 import atwoz.atwoz.profileimage.infra.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -88,7 +85,11 @@ public class ProfileImageService {
         }
     }
 
-    private ProfileImage findByIdAndMemberId(Long memberId, Long profileImageId) {
-        return profileImageRepository.findByIdAndMemberId(profileImageId, memberId).orElseThrow(() -> new ProfileImageNotFoundException());
+    private ProfileImage findByIdAndMemberId(Long profileImageId, Long memberId) {
+        ProfileImage profileImage = profileImageRepository.findById(profileImageId).orElseThrow(() -> new ProfileImageNotFoundException());
+        if (profileImage.getMemberId() != memberId) {
+            throw new ProfileImageMemberIdMismatchException();
+        }
+        return profileImage;
     }
 }

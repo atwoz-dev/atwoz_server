@@ -37,11 +37,6 @@ public class ProfileImageRepositoryImpl implements ProfileImageRepository {
     }
 
     @Override
-    public Optional<ProfileImage> findByIdAndMemberId(Long id, Long memberId) {
-        return profileImageJpaRepository.findByIdAndMemberId(id, MemberId.from(memberId));
-    }
-
-    @Override
     public void delete(ProfileImage profileImage) {
         profileImageJpaRepository.delete(profileImage);
     }

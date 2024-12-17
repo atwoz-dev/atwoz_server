@@ -6,6 +6,7 @@ import atwoz.atwoz.profileimage.domain.ProfileImage;
 import atwoz.atwoz.profileimage.domain.ProfileImageRepository;
 import atwoz.atwoz.profileimage.domain.vo.ImageUrl;
 import atwoz.atwoz.profileimage.domain.vo.MemberId;
+import atwoz.atwoz.profileimage.exception.ProfileImageMemberIdMismatchException;
 import atwoz.atwoz.profileimage.exception.ProfileImageNotFoundException;
 import atwoz.atwoz.profileimage.infra.S3Uploader;
 import org.assertj.core.api.Assertions;
@@ -37,10 +38,22 @@ public class ProfileImageDeleteTest {
         // Given
         Long profileImageId = 1L;
         Long memberId = 1L;
-        Mockito.when(profileImageRepository.findByIdAndMemberId(profileImageId, memberId)).thenReturn(Optional.empty());
+        Mockito.when(profileImageRepository.findById(profileImageId)).thenReturn(Optional.empty());
 
         // When & Then
         Assertions.assertThatThrownBy(() -> profileImageService.delete(profileImageId, memberId)).isInstanceOf(ProfileImageNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("프로필 이미지가 존재하지만 해당 유저의 이미지가 아닌 경우, 이미지 삭제 실패")
+    public void isFailWhenMemberIdNotEquals() {
+        // Given
+        Long profileImageId = 1L;
+        Long memberId = 1L;
+        Mockito.when(profileImageRepository.findById(profileImageId)).thenReturn(Optional.of(ProfileImage.of(MemberId.from(2L), ImageUrl.from("url"), 1, true)));
+
+        // When & Then
+        Assertions.assertThatThrownBy(() -> profileImageService.delete(profileImageId, memberId)).isInstanceOf(ProfileImageMemberIdMismatchException.class);
     }
 
     @Test
@@ -49,7 +62,7 @@ public class ProfileImageDeleteTest {
         // Given
         Long profileImageId = 1L;
         Long memberId = 1L;
-        Mockito.when(profileImageRepository.findByIdAndMemberId(profileImageId, memberId))
+        Mockito.when(profileImageRepository.findById(profileImageId))
                 .thenReturn(Optional.of(ProfileImage.of(MemberId.from(memberId), ImageUrl.from("url"), 1, true)));
 
         // When & Then

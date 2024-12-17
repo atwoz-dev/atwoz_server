@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/members/auth")
+@RequestMapping("/member/auth")
 public class MemberAuthController {
 
     private final MemberAuthService memberAuthService;

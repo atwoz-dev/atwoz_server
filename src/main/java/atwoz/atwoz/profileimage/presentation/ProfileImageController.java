@@ -8,7 +8,6 @@ import atwoz.atwoz.profileimage.application.ProfileImageService;
 import atwoz.atwoz.profileimage.application.dto.ProfileImageUploadRequestWrapper;
 import atwoz.atwoz.profileimage.application.dto.ProfileImageUploadResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Slf4j
+@RequestMapping("/profileimage")
 public class ProfileImageController {
 
     private final ProfileImageService profileImageService;
