@@ -8,6 +8,7 @@ import atwoz.atwoz.member.domain.member.MemberRepository;
 import atwoz.atwoz.member.exception.MemberPermanentStopException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
@@ -18,6 +19,7 @@ public class MemberAuthService {
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
 
+    @Transactional
     public MemberLoginResponse login(String phoneNumber) {
         Member member = createOrFindMemberByPhoneNumber(phoneNumber);
 
@@ -34,7 +36,6 @@ public class MemberAuthService {
     }
 
     private Member create(String phoneNumber) {
-        Member member = memberRepository.save(Member.createFromPhoneNumber(phoneNumber));
-        return member;
+        return memberRepository.save(Member.createFromPhoneNumber(phoneNumber));
     }
 }

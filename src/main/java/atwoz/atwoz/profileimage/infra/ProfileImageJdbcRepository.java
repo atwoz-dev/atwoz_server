@@ -1,12 +1,11 @@
 package atwoz.atwoz.profileimage.infra;
 
 import atwoz.atwoz.profileimage.domain.ProfileImage;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,7 @@ public class ProfileImageJdbcRepository {
         LocalDateTime now = LocalDateTime.now();
 
         for (ProfileImage profileImage : profileImages) {
-            batchArgs.add(new Object[] {
+            batchArgs.add(new Object[]{
                     profileImage.getMemberId(),
                     profileImage.getUrl(),
                     profileImage.getOrder(),

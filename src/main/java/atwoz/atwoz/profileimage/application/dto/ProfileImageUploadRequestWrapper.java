@@ -1,11 +1,11 @@
 package atwoz.atwoz.profileimage.application.dto;
 
+import lombok.Getter;
+
+import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class ProfileImageUploadRequestWrapper {
-    private List<ProfileImageUploadRequest> requests;
-
-    public List<ProfileImageUploadRequest> getRequests() {
-        return requests;
-    }
+    private final List<ProfileImageUploadRequest> requests = new ArrayList<>();
 }

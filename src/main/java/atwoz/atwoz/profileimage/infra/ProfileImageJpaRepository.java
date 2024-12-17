@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProfileImageJpaRepository extends JpaRepository<ProfileImage, Long> {
     boolean existsByMemberIdAndIsPrimary(MemberId memberId, Boolean isPrimary);
+    void delete(ProfileImage profileImage);
 }

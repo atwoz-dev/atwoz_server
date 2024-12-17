@@ -6,14 +6,12 @@ import atwoz.atwoz.profileimage.domain.ProfileImage;
 import atwoz.atwoz.profileimage.domain.ProfileImageRepository;
 import atwoz.atwoz.profileimage.domain.vo.ImageUrl;
 import atwoz.atwoz.profileimage.domain.vo.MemberId;
-import atwoz.atwoz.profileimage.exception.InvalidImageFileException;
-import atwoz.atwoz.profileimage.exception.InvalidPrimaryProfileImageCountException;
-import atwoz.atwoz.profileimage.exception.PrimaryImageAlreadyExistsException;
+import atwoz.atwoz.profileimage.exception.*;
 import atwoz.atwoz.profileimage.infra.S3Uploader;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -38,6 +36,13 @@ public class ProfileImageService {
 
         profileImageRepository.saveAll(profileImageList);
         return ProfileImageUploadResponse.toResponse(profileImageList);
+    }
+
+    @Transactional
+    public void delete(Long id, Long memberId) {
+        ProfileImage profileImage = findByIdAndMemberId(id, memberId);
+        s3Uploader.deleteFile(profileImage.getUrl());
+        profileImageRepository.delete(profileImage);
     }
 
     @Async
@@ -78,5 +83,13 @@ public class ProfileImageService {
         if (isPrimary && profileImageRepository.existsPrimaryImageByMemberId(memberId)) {
             throw new PrimaryImageAlreadyExistsException();
         }
+    }
+
+    private ProfileImage findByIdAndMemberId(Long profileImageId, Long memberId) {
+        ProfileImage profileImage = profileImageRepository.findById(profileImageId).orElseThrow(() -> new ProfileImageNotFoundException());
+        if (profileImage.getMemberId() != memberId) {
+            throw new ProfileImageMemberIdMismatchException();
+        }
+        return profileImage;
     }
 }
