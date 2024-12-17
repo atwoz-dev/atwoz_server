@@ -5,6 +5,7 @@ import lombok.*;
 
 @Embeddable
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@EqualsAndHashCode
 public final class HeartAmount {
     private static final Long MAX_USING_AMOUNT = 0L;
     private static final Long MIN_GAINING_AMOUNT = 1L;
