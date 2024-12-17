@@ -6,12 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: spring-app
-    environment:
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-local}
-      MYSQL_HOST: db
-      REDIS_HOST: redis
-      MYSQL_PORT: ${MYSQL_CONTAINER_PORT:-3306}
-      REDIS_PORT: ${REDIS_CONTAINER_PORT:-6379}
+    env_file:
+      - .env
     ports:
       - "8080:8080"
     volumes:
