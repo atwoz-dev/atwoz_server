@@ -1,6 +1,8 @@
 package atwoz.atwoz.member.domain.member;
 
 import atwoz.atwoz.common.domain.SoftDeleteBaseEntity;
+import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
+import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
 import atwoz.atwoz.member.domain.member.vo.Nickname;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -40,10 +42,14 @@ public class Member extends SoftDeleteBaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private ActivityStatus activityStatus;
 
+    @Embedded
+    private HeartBalance heartBalance;
+
     public static Member createFromPhoneNumber(String phoneNumber) {
         return Member.builder()
                 .phoneNumber(phoneNumber)
                 .activityStatus(ActivityStatus.ACTIVE)
+                .heartBalance(HeartBalance.init())
                 .build();
     }
 
@@ -62,4 +68,22 @@ public class Member extends SoftDeleteBaseEntity {
         return false;
     }
 
+    public void useHeart(HeartAmount heartAmount) {
+        HeartBalance balanceAfterUsingHeart = this.heartBalance.useHeart(heartAmount);
+        this.heartBalance = balanceAfterUsingHeart;
+    }
+
+    public void gainPurchaseHeart(HeartAmount heartAmount) {
+        HeartBalance balanceAfterGainingHeart = this.heartBalance.gainPurchaseHeart(heartAmount);
+        this.heartBalance = balanceAfterGainingHeart;
+    }
+
+    public void gainMissionHeart(HeartAmount heartAmount) {
+        HeartBalance balanceAfterGainingHeart = this.heartBalance.gainMissionHeart(heartAmount);
+        this.heartBalance = balanceAfterGainingHeart;
+    }
+
+    public HeartBalance getHeartBalance() {
+        return this.heartBalance;
+    }
 }
