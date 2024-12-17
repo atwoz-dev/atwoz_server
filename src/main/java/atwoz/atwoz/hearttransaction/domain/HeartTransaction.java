@@ -7,6 +7,7 @@ import atwoz.atwoz.hearttransaction.domain.vo.TransactionType;
 import atwoz.atwoz.hearttransaction.exception.InvalidHeartAmountException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -24,6 +25,7 @@ public class HeartTransaction extends BaseEntity {
     private TransactionType transactionType;
 
     @Embedded
+    @Getter
     private HeartAmount heartAmount;
 
     @Embedded
