@@ -50,6 +50,7 @@ public class Member extends SoftDeleteBaseEntity {
                 .phoneNumber(phoneNumber)
                 .activityStatus(ActivityStatus.ACTIVE)
                 .heartBalance(HeartBalance.init())
+                .isVip(false)
                 .build();
     }
 
