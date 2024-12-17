@@ -93,4 +93,8 @@ public class Member extends SoftDeleteBaseEntity {
     public boolean isVipMember() {
         return this.isVip;
     }
+
+    public Gender getGender() {
+        return this.gender;
+    }
 }
