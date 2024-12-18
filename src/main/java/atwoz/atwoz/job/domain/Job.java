@@ -16,8 +16,6 @@ public class Job extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String code;
-
 
     public Job(String name) {
         validateName(name);
