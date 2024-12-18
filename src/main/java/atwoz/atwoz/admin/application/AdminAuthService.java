@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AdminAuthService {
 
-    private final PasswordHasher passwordHasher;
     private final AdminRepository adminRepository;
+    private final PasswordHasher passwordHasher;
 
     @Transactional
     public AdminSignUpResponse signUp(AdminSignUpRequest request) {

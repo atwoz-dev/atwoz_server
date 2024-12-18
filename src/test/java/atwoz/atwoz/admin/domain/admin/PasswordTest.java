@@ -23,10 +23,11 @@ class PasswordTest {
     void isValidWhenPasswordHasTenCharactersIncludingLettersNumbersAndSpecialCharacters() {
         // given
         String validPassword = "pw345678^^";
-        when(passwordHasher.hash(anyString())).thenAnswer(invocation -> {
-            String raw = invocation.getArgument(0, String.class);
-            return "hashed" + raw;
-        });
+        when(passwordHasher.hash(anyString()))
+                .thenAnswer(invocation -> {
+                    String raw = invocation.getArgument(0, String.class);
+                    return "hashed" + raw;
+                });
 
         // when
         Password password = Password.fromRaw(validPassword, passwordHasher);
@@ -41,10 +42,11 @@ class PasswordTest {
     void isValidWhenPasswordHasTwentyCharactersIncludingLettersNumbersAndSpecialCharacters() {
         // given
         String validPassword = "password9012345678^^";
-        when(passwordHasher.hash(anyString())).thenAnswer(invocation -> {
-            String raw = invocation.getArgument(0, String.class);
-            return "hashed" + raw;
-        });
+        when(passwordHasher.hash(anyString()))
+                .thenAnswer(invocation -> {
+                    String raw = invocation.getArgument(0, String.class);
+                    return "hashed" + raw;
+                });
 
         // when
         Password password = Password.fromRaw(validPassword, passwordHasher);
