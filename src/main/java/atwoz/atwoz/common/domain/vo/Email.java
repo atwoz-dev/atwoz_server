@@ -2,15 +2,16 @@ package atwoz.atwoz.common.domain.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.regex.Pattern;
 
+import static lombok.AccessLevel.PROTECTED;
+
 @Embeddable
-@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+@NoArgsConstructor(access = PROTECTED, force = true)
 @Getter
 @EqualsAndHashCode
 public class Email {
@@ -21,18 +22,14 @@ public class Email {
     @Column(name = "email")
     private final String address;
 
-    private Email(String address) {
-        validateEmail(address);
-        this.address = address;
-    }
-
     public static Email from(String address) {
         return new Email(address);
     }
 
-    private void validateEmail(String address) {
+    private Email(String address) {
         if (address == null || !EMAIL_PATTERN.matcher(address).matches()) {
             throw new InvalidEmailException(address);
         }
+        this.address = address;
     }
 }

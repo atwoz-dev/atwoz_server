@@ -21,18 +21,14 @@ public class PhoneNumber {
     @Column(name = "phone_number")
     private final String value;
 
-    private PhoneNumber(String value) {
-        validatePhoneNumber(value);
-        this.value = value;
-    }
-
     public static PhoneNumber from(String value) {
         return new PhoneNumber(value);
     }
 
-    private void validatePhoneNumber(String value) {
+    private PhoneNumber(String value) {
         if (value == null || !PHONE_NUMBER_PATTERN.matcher(value).matches()) {
             throw new InvalidPhoneNumberException(value);
         }
+        this.value = value;
     }
 }
