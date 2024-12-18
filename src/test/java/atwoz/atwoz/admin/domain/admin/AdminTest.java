@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class AdminTest {
 
     private static final Email EMAIL = Email.from("example@me.com");
-    private static final Password PASSWORD = Password.from("password123^^");
+    private static final Password PASSWORD = Password.fromHashed("hashed-password");
     private static final Name NAME = Name.from("홍길동");
     private static final PhoneNumber PHONE_NUMBER = PhoneNumber.from("01012345678");
 
