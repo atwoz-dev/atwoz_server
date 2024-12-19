@@ -1,5 +1,6 @@
 package atwoz.atwoz.common.domain.vo;
 
+import atwoz.atwoz.common.domain.vo.exception.InvalidEmailException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.EqualsAndHashCode;

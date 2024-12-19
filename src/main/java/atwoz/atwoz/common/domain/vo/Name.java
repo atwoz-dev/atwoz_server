@@ -1,5 +1,6 @@
 package atwoz.atwoz.common.domain.vo;
 
+import atwoz.atwoz.common.domain.vo.exception.InvalidNameException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.EqualsAndHashCode;
@@ -9,7 +10,6 @@ import lombok.NoArgsConstructor;
 import java.util.regex.Pattern;
 
 import static lombok.AccessLevel.PROTECTED;
-
 
 @Embeddable
 @NoArgsConstructor(access = PROTECTED, force = true)
