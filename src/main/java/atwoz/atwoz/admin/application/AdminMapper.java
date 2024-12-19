@@ -1,7 +1,7 @@
 package atwoz.atwoz.admin.application;
 
-import atwoz.atwoz.admin.application.dto.AdminSignUpRequest;
-import atwoz.atwoz.admin.application.dto.AdminSignUpResponse;
+import atwoz.atwoz.admin.application.dto.AdminSignupRequest;
+import atwoz.atwoz.admin.application.dto.AdminSignupResponse;
 import atwoz.atwoz.admin.domain.admin.Admin;
 import atwoz.atwoz.admin.domain.admin.Password;
 import atwoz.atwoz.common.domain.vo.Email;
@@ -14,7 +14,7 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 public class AdminMapper {
 
-    public static Admin toAdmin(AdminSignUpRequest request, Password password) {
+    public static Admin toAdmin(AdminSignupRequest request, Password password) {
         return Admin.builder()
                 .email(Email.from(request.email()))
                 .password(password)
@@ -23,8 +23,8 @@ public class AdminMapper {
                 .build();
     }
 
-    public static AdminSignUpResponse toSignUpResponse(Admin admin) {
-        return new AdminSignUpResponse(
+    public static AdminSignupResponse toSignUpResponse(Admin admin) {
+        return new AdminSignupResponse(
                 admin.getId(),
                 admin.getEmail().getAddress(),
                 admin.getName().getValue(),

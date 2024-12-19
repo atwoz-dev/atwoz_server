@@ -1,7 +1,7 @@
 package atwoz.atwoz.admin.application;
 
-import atwoz.atwoz.admin.application.dto.AdminSignUpRequest;
-import atwoz.atwoz.admin.application.dto.AdminSignUpResponse;
+import atwoz.atwoz.admin.application.dto.AdminSignupRequest;
+import atwoz.atwoz.admin.application.dto.AdminSignupResponse;
 import atwoz.atwoz.admin.application.exception.DuplicateEmailException;
 import atwoz.atwoz.admin.domain.admin.Admin;
 import atwoz.atwoz.admin.domain.admin.Password;
@@ -20,19 +20,19 @@ public class AdminAuthService {
     private final PasswordHasher passwordHasher;
 
     @Transactional
-    public AdminSignUpResponse signUp(AdminSignUpRequest request) {
+    public AdminSignupResponse signUp(AdminSignupRequest request) {
         validateEmailUniqueness(request);
         Admin newAdmin = createAdmin(request);
         return AdminMapper.toSignUpResponse(newAdmin);
     }
 
-    private void validateEmailUniqueness(AdminSignUpRequest request) {
+    private void validateEmailUniqueness(AdminSignupRequest request) {
         String email = request.email();
         adminRepository.findByEmail(Email.from(email))
                 .ifPresent(admin -> { throw new DuplicateEmailException(email); });
     }
 
-    private Admin createAdmin(AdminSignUpRequest request) {
+    private Admin createAdmin(AdminSignupRequest request) {
         Password password = Password.fromRaw(request.password(), passwordHasher);
         Admin newAdmin = AdminMapper.toAdmin(request, password);
         return adminRepository.save(newAdmin);

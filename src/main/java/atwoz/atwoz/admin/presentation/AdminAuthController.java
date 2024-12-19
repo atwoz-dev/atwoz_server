@@ -1,8 +1,8 @@
 package atwoz.atwoz.admin.presentation;
 
 import atwoz.atwoz.admin.application.AdminAuthService;
-import atwoz.atwoz.admin.application.dto.AdminSignUpRequest;
-import atwoz.atwoz.admin.application.dto.AdminSignUpResponse;
+import atwoz.atwoz.admin.application.dto.AdminSignupRequest;
+import atwoz.atwoz.admin.application.dto.AdminSignupResponse;
 import atwoz.atwoz.common.presentation.BaseResponse;
 import atwoz.atwoz.common.presentation.StatusType;
 import jakarta.validation.Valid;
@@ -20,9 +20,9 @@ public class AdminAuthController {
 
     private final AdminAuthService adminAuthService;
 
-    @PostMapping("/sign-up")
-    public ResponseEntity<BaseResponse<AdminSignUpResponse>> signUp(@Valid @RequestBody AdminSignUpRequest request) {
-        AdminSignUpResponse data = adminAuthService.signUp(request);
+    @PostMapping("/signup")
+    public ResponseEntity<BaseResponse<AdminSignupResponse>> signUp(@Valid @RequestBody AdminSignupRequest request) {
+        AdminSignupResponse data = adminAuthService.signUp(request);
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, data));
     }
 }

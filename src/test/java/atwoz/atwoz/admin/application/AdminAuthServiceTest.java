@@ -1,7 +1,7 @@
 package atwoz.atwoz.admin.application;
 
-import atwoz.atwoz.admin.application.dto.AdminSignUpRequest;
-import atwoz.atwoz.admin.application.dto.AdminSignUpResponse;
+import atwoz.atwoz.admin.application.dto.AdminSignupRequest;
+import atwoz.atwoz.admin.application.dto.AdminSignupResponse;
 import atwoz.atwoz.admin.application.exception.DuplicateEmailException;
 import atwoz.atwoz.admin.domain.admin.Admin;
 import atwoz.atwoz.admin.domain.admin.InvalidPasswordException;
@@ -41,7 +41,7 @@ class AdminAuthServiceTest {
         // given
         String email = "test@example.com";
         String rawPassword = "password123^^";
-        AdminSignUpRequest request = new AdminSignUpRequest(email, rawPassword, "홍길동", "01012345678");
+        AdminSignupRequest request = new AdminSignupRequest(email, rawPassword, "홍길동", "01012345678");
 
         when(adminRepository.findByEmail(Email.from(email)))
                 .thenReturn(Optional.empty());
@@ -55,7 +55,7 @@ class AdminAuthServiceTest {
                 });
 
         // when
-        AdminSignUpResponse response = adminAuthService.signUp(request);
+        AdminSignupResponse response = adminAuthService.signUp(request);
 
         // then
         assertThat(response).isNotNull();
@@ -72,7 +72,7 @@ class AdminAuthServiceTest {
     void throwDuplicateEmailExceptionWhenEmailAlreadyExists() {
         // given
         String email = "exists@example.com";
-        AdminSignUpRequest request = new AdminSignUpRequest(email, "password123^^", "홍길동", "01012345678");
+        AdminSignupRequest request = new AdminSignupRequest(email, "password123^^", "홍길동", "01012345678");
 
         when(adminRepository.findByEmail(Email.from(email)))
                 .thenReturn(Optional.of(mock(Admin.class)));
@@ -91,7 +91,7 @@ class AdminAuthServiceTest {
         // given
         String email = "test2@example.com";
         String invalidPassword = "short12^^";
-        AdminSignUpRequest request = new AdminSignUpRequest(email, invalidPassword, "홍길동", "01012345678");
+        AdminSignupRequest request = new AdminSignupRequest(email, invalidPassword, "홍길동", "01012345678");
 
         when(adminRepository.findByEmail(Email.from(email)))
                 .thenReturn(Optional.empty());
