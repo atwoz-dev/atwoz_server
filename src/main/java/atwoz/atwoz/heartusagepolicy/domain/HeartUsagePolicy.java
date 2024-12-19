@@ -41,6 +41,14 @@ public class HeartUsagePolicy extends BaseEntity {
         return this.transactionType;
     }
 
+    public Long getAmount() {
+        return this.heartPriceAmount.getAmount();
+    }
+
+    public Long getPrice() {
+        return this.heartPriceAmount.getPrice();
+    }
+
     private void setTransactionType(TransactionType transactionType) {
         if (transactionType == null) {
             throw new IllegalArgumentException("TransactionType은 null이 될 수 없습니다.");

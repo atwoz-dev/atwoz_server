@@ -3,9 +3,11 @@ package atwoz.atwoz.hearttransaction.domain.vo;
 import atwoz.atwoz.hearttransaction.exception.InvalidHeartAmountException;
 import atwoz.atwoz.hearttransaction.exception.InvalidHeartBalanceException;
 import jakarta.persistence.Embeddable;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Embeddable
+@EqualsAndHashCode
 public final class HeartBalance {
     private static final Long MIN_HEART_BALANCE = 0L;
     @Getter
@@ -81,7 +83,7 @@ public final class HeartBalance {
 
     private void validateUsingAmount(HeartAmount heartChangeAmount) {
         if (!heartChangeAmount.isUsingAmount()) {
-            throw new InvalidHeartAmountException("잘못된 하트 획득량 입니다. amount: " + heartChangeAmount.getAmount());
+            throw new InvalidHeartAmountException("잘못된 하트 사용량 입니다. amount: " + heartChangeAmount.getAmount());
         }
     }
 
