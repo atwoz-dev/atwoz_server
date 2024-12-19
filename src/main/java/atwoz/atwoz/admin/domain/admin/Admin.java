@@ -5,10 +5,7 @@ import atwoz.atwoz.common.domain.vo.Email;
 import atwoz.atwoz.common.domain.vo.Name;
 import atwoz.atwoz.common.domain.vo.PhoneNumber;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import static jakarta.persistence.EnumType.STRING;
 
@@ -53,23 +50,19 @@ public class Admin extends SoftDeleteBaseEntity {
         this.approvalStatus = ApprovalStatus.PENDING;
     }
 
-    private void setEmail(Email email) {
-        if (email == null) throw new IllegalArgumentException("Email은 null일 수 없습니다.");
+    private void setEmail(@NonNull Email email) {
         this.email = email;
     }
 
-    private void setPassword(Password password) {
-        if (password == null) throw new IllegalArgumentException("Password는 null일 수 없습니다.");
+    private void setPassword(@NonNull Password password) {
         this.password = password;
     }
 
-    private void setName(Name name) {
-        if (name == null) throw new IllegalArgumentException("Name은 null일 수 없습니다.");
+    private void setName(@NonNull Name name) {
         this.name = name;
     }
 
-    private void setPhoneNumber(PhoneNumber phoneNumber) {
-        if (phoneNumber == null) throw new IllegalArgumentException("PhoneNumber는 null일 수 없습니다.");
+    private void setPhoneNumber(@NonNull PhoneNumber phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 }
