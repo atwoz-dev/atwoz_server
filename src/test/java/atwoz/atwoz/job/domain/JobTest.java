@@ -20,7 +20,7 @@ public class JobTest {
 
     @Test
     @DisplayName("직업명이 null이 아닌 경우, 유효하다.")
-    public void isValidWhenJobCodeAndJobNameAreNotNull() {
+    public void isValidWhenJobNameIsNotNull() {
         // Given
         String name = "JOB_NAME";
 
