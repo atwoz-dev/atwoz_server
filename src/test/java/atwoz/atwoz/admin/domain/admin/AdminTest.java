@@ -42,6 +42,6 @@ class AdminTest {
                         .name(fieldName.equals("name") ? null : NAME)
                         .phoneNumber(fieldName.equals("phoneNumber") ? null : PHONE_NUMBER)
                         .build())
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(NullPointerException.class);
     }
 }
