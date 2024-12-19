@@ -9,6 +9,14 @@ public record BaseResponse<T>(
         String message,
         T data
 ) {
+    public static <T> BaseResponse<T> from(StatusType statusType) {
+        return new BaseResponse<>(statusType);
+    }
+
+    public static <T> BaseResponse<T> of(StatusType statusType, T data) {
+        return new BaseResponse<>(statusType, data);
+    }
+
     public BaseResponse(StatusType statusType) {
         this(statusType.getStatus(), statusType.getCode(), statusType.getMessage(), null);
     }

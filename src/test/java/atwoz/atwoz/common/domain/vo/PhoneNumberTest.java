@@ -1,5 +1,6 @@
 package atwoz.atwoz.common.domain.vo;
 
+import atwoz.atwoz.common.domain.vo.exception.InvalidPhoneNumberException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
