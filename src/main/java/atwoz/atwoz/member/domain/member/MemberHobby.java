@@ -28,6 +28,14 @@ public class MemberHobby extends BaseEntity {
         this.hobbyId = hobbyId;
     }
 
+    public Long getMemberId() {
+        return memberId;
+    }
+
+    public Long getHobbyId() {
+        return hobbyId;
+    }
+
     private static void validateMemberId(Long memberId) {
         if (memberId == null) {
             throw new InvalidMemberIdException();

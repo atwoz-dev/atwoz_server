@@ -38,4 +38,22 @@ public class MemberHobbyTest {
                         .build())
                 .isInstanceOf(InvalidMemberIdException.class);
     }
+
+    @Test
+    @DisplayName("멤버 ID와 취미 ID가 null이 아닌 경우, 유효하다.")
+    public void isValidWhenMemberIdAndHobbyIdIsNotNull() {
+        // Given
+        Long hobbyId = 1L;
+        Long memberId = 1L;
+
+        // When
+        MemberHobby memberHobby = MemberHobby.builder()
+                .hobbyId(hobbyId)
+                .memberId(memberId)
+                .build();
+
+        // Then
+        Assertions.assertThat(memberHobby.getMemberId()).isEqualTo(memberId);
+        Assertions.assertThat(memberHobby.getHobbyId()).isEqualTo(hobbyId);
+    }
 }
