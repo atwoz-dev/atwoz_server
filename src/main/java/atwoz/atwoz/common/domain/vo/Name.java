@@ -6,6 +6,7 @@ import jakarta.persistence.Embeddable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.util.regex.Pattern;
 
@@ -27,8 +28,8 @@ public class Name {
         return new Name(value);
     }
 
-    private Name(String value) {
-        if (value == null || !NAME_PATTERN.matcher(value).matches()) {
+    private Name(@NonNull String value) {
+        if (!NAME_PATTERN.matcher(value).matches()) {
             throw new InvalidNameException(value);
         }
         this.value = value;

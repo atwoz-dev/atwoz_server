@@ -6,6 +6,7 @@ import jakarta.persistence.Embeddable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.util.regex.Pattern;
 
@@ -23,8 +24,8 @@ public class Password {
     @Column(name = "password")
     private final String hashedValue;
 
-    public static Password fromRaw(String rawValue, PasswordHasher hasher) {
-        if (rawValue == null || !PASSWORD_PATTERN.matcher(rawValue).matches()) {
+    public static Password fromRaw(@NonNull String rawValue, PasswordHasher hasher) {
+        if (!PASSWORD_PATTERN.matcher(rawValue).matches()) {
             throw new InvalidPasswordException(rawValue);
         }
         String hashedValue = hasher.hash(rawValue);
@@ -32,13 +33,13 @@ public class Password {
     }
 
     public static Password fromHashed(String hashedValue) {
-        if (hashedValue == null || hashedValue.isBlank()) {
-            throw new InvalidPasswordException(hashedValue);
-        }
         return new Password(hashedValue);
     }
 
-    private Password(String hashedValue) {
+    private Password(@NonNull String hashedValue) {
+        if (hashedValue.isBlank()) {
+            throw new InvalidPasswordException(hashedValue);
+        }
         this.hashedValue = hashedValue;
     }
 }
