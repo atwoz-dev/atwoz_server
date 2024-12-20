@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class HeartAmountTest {
 
@@ -43,6 +43,16 @@ class HeartAmountTest {
             HeartAmount heartAmount = HeartAmount.from(amount);
             // then
             assertThat(heartAmount.getAmount()).isEqualTo(amount);
+        }
+
+        @Test
+        @DisplayName("amount가 null이면 NullPointerException 발생")
+        void throwsNullPointExceptionWhenAmountIsNull() {
+            // given
+            Long amount = null;
+            // when & then
+            assertThatThrownBy(() -> HeartAmount.from(amount))
+                    .isInstanceOf(NullPointerException.class);
         }
     }
 
