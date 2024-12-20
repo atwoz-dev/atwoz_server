@@ -29,6 +29,7 @@ public class HeartTransaction extends BaseEntity {
     private HeartAmount heartAmount;
 
     @Embedded
+    @Getter
     private HeartBalance heartBalance;
 
     public static HeartTransaction of(Long memberId, TransactionType transactionType, HeartAmount heartAmount, HeartBalance heartBalance) {
