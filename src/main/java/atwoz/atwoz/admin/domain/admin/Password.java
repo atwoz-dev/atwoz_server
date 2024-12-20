@@ -1,16 +1,19 @@
 package atwoz.atwoz.admin.domain.admin;
 
+import atwoz.atwoz.admin.domain.service.PasswordHasher;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.util.regex.Pattern;
 
+import static lombok.AccessLevel.PROTECTED;
+
 @Embeddable
-@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+@NoArgsConstructor(access = PROTECTED, force = true)
 @Getter
 @EqualsAndHashCode
 public class Password {
@@ -19,20 +22,24 @@ public class Password {
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(PASSWORD_REGEX);
 
     @Column(name = "password")
-    private final String value;
+    private final String hashedValue;
 
-    private Password(String value) {
-        validatePassword(value);
-        this.value = value;
-    }
-
-    public static Password from(String value) {
-        return new Password(value);
-    }
-
-    private void validatePassword(String value) {
-        if (value == null || !PASSWORD_PATTERN.matcher(value).matches()) {
-            throw new InvalidPasswordException(value);
+    public static Password fromRaw(@NonNull String rawValue, PasswordHasher hasher) {
+        if (!PASSWORD_PATTERN.matcher(rawValue).matches()) {
+            throw new InvalidPasswordException(rawValue);
         }
+        String hashedValue = hasher.hash(rawValue);
+        return new Password(hashedValue);
+    }
+
+    public static Password fromHashed(String hashedValue) {
+        return new Password(hashedValue);
+    }
+
+    private Password(@NonNull String hashedValue) {
+        if (hashedValue.isBlank()) {
+            throw new InvalidPasswordException(hashedValue);
+        }
+        this.hashedValue = hashedValue;
     }
 }

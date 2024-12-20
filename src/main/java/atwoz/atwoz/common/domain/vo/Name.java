@@ -1,17 +1,19 @@
 package atwoz.atwoz.common.domain.vo;
 
+import atwoz.atwoz.common.domain.vo.exception.InvalidNameException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.util.regex.Pattern;
 
+import static lombok.AccessLevel.PROTECTED;
 
 @Embeddable
-@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+@NoArgsConstructor(access = PROTECTED, force = true)
 @Getter
 @EqualsAndHashCode
 public class Name {
@@ -22,18 +24,14 @@ public class Name {
     @Column(name = "name")
     private final String value;
 
-    private Name(String value) {
-        validateName(value);
-        this.value = value;
-    }
-
     public static Name from(String value) {
         return new Name(value);
     }
 
-    private void validateName(String value) {
-        if (value == null || !NAME_PATTERN.matcher(value).matches()) {
+    private Name(@NonNull String value) {
+        if (!NAME_PATTERN.matcher(value).matches()) {
             throw new InvalidNameException(value);
         }
+        this.value = value;
     }
 }

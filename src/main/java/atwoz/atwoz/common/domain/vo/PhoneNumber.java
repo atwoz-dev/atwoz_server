@@ -1,11 +1,9 @@
 package atwoz.atwoz.common.domain.vo;
 
+import atwoz.atwoz.common.domain.vo.exception.InvalidPhoneNumberException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.regex.Pattern;
 
@@ -21,18 +19,14 @@ public class PhoneNumber {
     @Column(name = "phone_number")
     private final String value;
 
-    private PhoneNumber(String value) {
-        validatePhoneNumber(value);
-        this.value = value;
-    }
-
     public static PhoneNumber from(String value) {
         return new PhoneNumber(value);
     }
 
-    private void validatePhoneNumber(String value) {
-        if (value == null || !PHONE_NUMBER_PATTERN.matcher(value).matches()) {
+    private PhoneNumber(@NonNull String value) {
+        if (!PHONE_NUMBER_PATTERN.matcher(value).matches()) {
             throw new InvalidPhoneNumberException(value);
         }
+        this.value = value;
     }
 }
