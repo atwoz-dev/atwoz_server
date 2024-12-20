@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,13 +41,18 @@ class HeartUsageServiceImplTest {
     void shouldThrowExceptionWhenHeartUsagePolicyNotFound() {
         // given
         Member member = Member.createFromPhoneNumber("01012345678");
+        Gender gender = Gender.MALE;
+        setField(member, "gender", gender);
         TransactionType transactionType = TransactionType.MESSAGE;
-        when(heartUsagePolicyRepository.findByGenderAndTransactionType(any(), eq(transactionType)))
+        when(heartUsagePolicyRepository.findByGenderAndTransactionType(eq(gender), eq(transactionType)))
                 .thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> heartUsageService.useHeart(member, transactionType))
                 .isInstanceOf(HeartUsagePolicyNotFoundException.class);
+
+        verify(heartUsagePolicyRepository, atMostOnce()).findByGenderAndTransactionType(eq(gender), eq(transactionType));
+        verify(heartTransactionRepository, never()).save(any(HeartTransaction.class));
     }
 
     @Test
@@ -84,6 +89,9 @@ class HeartUsageServiceImplTest {
         // then
         assertThat(heartTransaction.getHeartAmount()).isEqualTo(expectedHeartAmount);
         assertThat(heartTransaction.getHeartBalance()).isEqualTo(heartBalanceBeforeUsingHeart);
+
+        verify(heartUsagePolicyRepository, atMostOnce()).findByGenderAndTransactionType(eq(gender), eq(transactionType));
+        verify(heartTransactionRepository, atMostOnce()).save(any(HeartTransaction.class));
     }
 
     @Test
@@ -120,5 +128,8 @@ class HeartUsageServiceImplTest {
         // then
         assertThat(heartTransaction.getHeartAmount()).isEqualTo(expectedHeartAmount);
         assertThat(heartTransaction.getHeartBalance()).isEqualTo(expectedHeartBalance);
+
+        verify(heartUsagePolicyRepository, atMostOnce()).findByGenderAndTransactionType(eq(gender), eq(transactionType));
+        verify(heartTransactionRepository, atMostOnce()).save(any(HeartTransaction.class));
     }
 }
