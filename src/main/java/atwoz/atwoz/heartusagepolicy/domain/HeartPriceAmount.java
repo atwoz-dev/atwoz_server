@@ -13,7 +13,7 @@ public class HeartPriceAmount {
     }
 
     public Long getAmount() {
-        return price * -1;
+        return -price;
     }
 
     public Long getPrice() {
