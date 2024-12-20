@@ -2,6 +2,7 @@ package atwoz.atwoz.heartusagepolicy.domain;
 
 import atwoz.atwoz.heartusagepolicy.exception.InvalidHeartPriceAmountException;
 import jakarta.persistence.Embeddable;
+import lombok.NonNull;
 
 @Embeddable
 public class HeartPriceAmount {
@@ -29,7 +30,7 @@ public class HeartPriceAmount {
         this.price = price;
     }
 
-    private void validateMinPrice(Long price) {
+    private void validateMinPrice(@NonNull Long price) {
         if (price < MIN_PRICE) {
             throw new InvalidHeartPriceAmountException("price 값이 최소값보다 낮습니다. price=" + price);
         }

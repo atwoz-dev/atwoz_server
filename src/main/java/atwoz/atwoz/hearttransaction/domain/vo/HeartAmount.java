@@ -4,7 +4,6 @@ import jakarta.persistence.Embeddable;
 import lombok.*;
 
 @Embeddable
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode
 public final class HeartAmount {
     private static final Long MAX_USING_AMOUNT = 0L;
@@ -26,5 +25,9 @@ public final class HeartAmount {
 
     public boolean isGainingAmount() {
         return this.amount >= MIN_GAINING_AMOUNT;
+    }
+
+    private HeartAmount(@NonNull Long amount) {
+        this.amount = amount;
     }
 }

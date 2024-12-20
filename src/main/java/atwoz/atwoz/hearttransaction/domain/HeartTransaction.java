@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -44,31 +45,19 @@ public class HeartTransaction extends BaseEntity {
         validateHeartTransaction(transactionType, heartAmount);
     }
 
-    private void setMemberId(Long memberId) {
-        if (memberId == null) {
-            throw new IllegalArgumentException("memberId는 null이 될 수 없습니다.");
-        }
+    private void setMemberId(@NonNull Long memberId) {
         this.memberId = memberId;
     }
 
-    private void setTransactionType(TransactionType transactionType) {
-        if (transactionType == null) {
-            throw new IllegalArgumentException("transactionType은 null이 될 수 없습니다.");
-        }
+    private void setTransactionType(@NonNull TransactionType transactionType) {
         this.transactionType = transactionType;
     }
 
-    private void setHeartAmount(HeartAmount heartAmount) {
-        if (heartAmount == null) {
-            throw new IllegalArgumentException("heartAmount는 null이 될 수 없습니다.");
-        }
+    private void setHeartAmount(@NonNull HeartAmount heartAmount) {
         this.heartAmount = heartAmount;
     }
 
-    private void setHeartBalance(HeartBalance heartBalance) {
-        if (heartBalance == null) {
-            throw new IllegalArgumentException("heartBalance는 null이 될 수 없습니다.");
-        }
+    private void setHeartBalance(@NonNull HeartBalance heartBalance) {
         this.heartBalance = heartBalance;
     }
 
