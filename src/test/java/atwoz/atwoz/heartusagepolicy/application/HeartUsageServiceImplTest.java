@@ -1,10 +1,12 @@
-package atwoz.atwoz.heartusagepolicy.domain;
+package atwoz.atwoz.heartusagepolicy.application;
 
 import atwoz.atwoz.hearttransaction.domain.HeartTransaction;
 import atwoz.atwoz.hearttransaction.domain.HeartTransactionRepository;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
 import atwoz.atwoz.hearttransaction.domain.vo.TransactionType;
+import atwoz.atwoz.heartusagepolicy.domain.HeartUsagePolicy;
+import atwoz.atwoz.heartusagepolicy.domain.HeartUsagePolicyRepository;
 import atwoz.atwoz.heartusagepolicy.exception.HeartUsagePolicyNotFoundException;
 import atwoz.atwoz.member.domain.member.Gender;
 import atwoz.atwoz.member.domain.member.Member;
