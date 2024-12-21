@@ -30,4 +30,14 @@ class HeartPriceAmountTest {
         // then
         assertThat(heartPriceAmount).isNotNull();
     }
+
+    @Test
+    @DisplayName("price가 null이면 NullPointerException 발생")
+    void throwsNullPointExceptionWhenPriceIsNull() {
+        // given
+        Long price = null;
+        // when & then
+        assertThatThrownBy(() -> HeartPriceAmount.from(price))
+                .isInstanceOf(NullPointerException.class);
+    }
 }

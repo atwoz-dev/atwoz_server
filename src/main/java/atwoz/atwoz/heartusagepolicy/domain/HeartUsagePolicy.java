@@ -8,6 +8,7 @@ import atwoz.atwoz.member.domain.member.Gender;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,27 +42,26 @@ public class HeartUsagePolicy extends BaseEntity {
         return this.transactionType;
     }
 
-    private void setTransactionType(TransactionType transactionType) {
-        if (transactionType == null) {
-            throw new IllegalArgumentException("TransactionType은 null이 될 수 없습니다.");
-        }
+    public Long getAmount() {
+        return this.heartPriceAmount.getAmount();
+    }
+
+    public Long getPrice() {
+        return this.heartPriceAmount.getPrice();
+    }
+
+    private void setTransactionType(@NonNull TransactionType transactionType) {
         if (!transactionType.isUsingType()) {
             throw new InvalidHeartTransactionTypeException("TransactionType이 UsingType이 아닙니다. transactionType: " + transactionType);
         }
         this.transactionType = transactionType;
     }
 
-    private void setGender(Gender gender) {
-        if (gender == null) {
-            throw new IllegalArgumentException("Gender는 null이 될 수 없습니다.");
-        }
+    private void setGender(@NonNull Gender gender) {
         this.gender = gender;
     }
 
-    private void setHeartPriceAmount(HeartPriceAmount heartPriceAmount) {
-        if (heartPriceAmount == null) {
-            throw new IllegalArgumentException("HeartItemPrice는 null이 될 수 없습니다.");
-        }
+    private void setHeartPriceAmount(@NonNull HeartPriceAmount heartPriceAmount) {
         this.heartPriceAmount = heartPriceAmount;
     }
 }

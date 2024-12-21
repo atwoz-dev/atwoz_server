@@ -30,7 +30,7 @@ class HeartTransactionTest {
 
             // when & then
             assertThatThrownBy(() -> HeartTransaction.of(memberId, transactionType, heartAmount, heartBalance))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(NullPointerException.class);
         }
 
         @Test

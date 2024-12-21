@@ -41,7 +41,7 @@ class HeartUsagePolicyTest {
             HeartPriceAmount heartPriceAmount = fieldName.equals("heartPriceAmount is null") ? null : HeartPriceAmount.from(10L);
             // when & then
             assertThatThrownBy(() -> HeartUsagePolicy.of(transactionType, gender, heartPriceAmount))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(NullPointerException.class);
         }
 
         @Test
