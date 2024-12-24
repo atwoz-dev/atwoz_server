@@ -40,7 +40,7 @@ public class ProfileImageService {
         List<ProfileImage> profileImageList = gatherProfileImages(future);
 
         profileImageRepository.saveAll(profileImageList);
-        return ProfileImageUploadResponse.toResponse(profileImageList);
+        return ProfileImageMapper.toList(profileImageList);
     }
 
     @Transactional
