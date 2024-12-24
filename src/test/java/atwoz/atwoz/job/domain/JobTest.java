@@ -15,12 +15,23 @@ public class JobTest {
 
         // When & Then
         Assertions.assertThatThrownBy(() -> new Job(name))
+                .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    @DisplayName("직업명이 단순 빈 문자열인 경우, 유효하지 않다.")
+    public void invalidWhenJobNameIsEmpty() {
+        //Given
+        String name = "";
+
+        // When & Then
+        Assertions.assertThatThrownBy(() -> new Job(name))
                 .isInstanceOf(InvalidJobNameException.class);
     }
 
     @Test
     @DisplayName("직업명이 null이 아닌 경우, 유효하다.")
-    public void isValidWhenJobCodeAndJobNameAreNotNull() {
+    public void isValidWhenJobNameIsNotNull() {
         // Given
         String name = "JOB_NAME";
 

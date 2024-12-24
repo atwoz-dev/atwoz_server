@@ -1,5 +1,6 @@
 package atwoz.atwoz.profileimage.application.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class ProfileImageUploadRequest {
     MultipartFile image;
+
+    @NotNull(message = "대표 프로필 여부를 입력해주세요.")
     Boolean isPrimary;
+
+    @NotNull(message = "해당 이미지의 순서를 입력해주세요.")
     Integer order;
 }

@@ -2,7 +2,6 @@ package atwoz.atwoz.profileimage.infra;
 
 import atwoz.atwoz.profileimage.domain.ProfileImage;
 import atwoz.atwoz.profileimage.domain.ProfileImageRepository;
-import atwoz.atwoz.profileimage.domain.vo.MemberId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -23,7 +22,7 @@ public class ProfileImageRepositoryImpl implements ProfileImageRepository {
 
     @Override
     public boolean existsPrimaryImageByMemberId(Long memberId) {
-        return profileImageJpaRepository.existsByMemberIdAndIsPrimary(MemberId.from(memberId), true);
+        return profileImageJpaRepository.existsByMemberIdAndIsPrimary(memberId, true);
     }
 
     @Override
