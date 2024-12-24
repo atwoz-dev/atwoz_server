@@ -28,7 +28,7 @@ public class Job extends BaseEntity {
     }
 
     private void setName(@NonNull String name) {
-        if (name.trim().isEmpty())
+        if (name.isBlank())
             throw new InvalidJobNameException();
         this.name = name;
     }

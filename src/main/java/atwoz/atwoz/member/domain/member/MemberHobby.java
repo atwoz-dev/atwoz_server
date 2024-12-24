@@ -17,10 +17,12 @@ public class MemberHobby extends BaseEntity {
     private Long memberId;
     private Long hobbyId;
 
-    @Builder
-    private MemberHobby(Long memberId, Long hobbyId) {
-        setMemberId(memberId);
-        setHobbyId(hobbyId);
+    public static MemberHobby of(Long memberId, Long hobbyId) {
+        MemberHobby memberHobby = new MemberHobby();
+        memberHobby.setMemberId(memberId);
+        memberHobby.setHobbyId(hobbyId);
+
+        return memberHobby;
     }
 
     private void setMemberId(@NonNull Long memberId) {

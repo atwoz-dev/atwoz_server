@@ -15,10 +15,7 @@ public class MemberHobbyTest {
         Long memberId = 1L;
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> MemberHobby.builder()
-                        .hobbyId(hobbyId)
-                        .memberId(memberId)
-                        .build())
+        Assertions.assertThatThrownBy(() -> MemberHobby.of(memberId, hobbyId))
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -30,10 +27,7 @@ public class MemberHobbyTest {
         Long memberId = null;
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> MemberHobby.builder()
-                        .hobbyId(hobbyId)
-                        .memberId(memberId)
-                        .build())
+        Assertions.assertThatThrownBy(() -> MemberHobby.of(memberId, hobbyId))
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -45,10 +39,7 @@ public class MemberHobbyTest {
         Long memberId = 1L;
 
         // When
-        MemberHobby memberHobby = MemberHobby.builder()
-                .hobbyId(hobbyId)
-                .memberId(memberId)
-                .build();
+        MemberHobby memberHobby = MemberHobby.of(memberId, hobbyId);
 
         // Then
         Assertions.assertThat(memberHobby.getMemberId()).isEqualTo(memberId);

@@ -27,7 +27,7 @@ public class Hobby extends BaseEntity {
     }
 
     private void setName(@NonNull String name) {
-        if (name.trim().isEmpty())
+        if (name.isBlank())
             throw new InvalidHobbyNameException();
         this.name = name;
     }
