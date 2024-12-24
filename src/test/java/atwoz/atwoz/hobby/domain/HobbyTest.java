@@ -15,6 +15,17 @@ public class HobbyTest {
 
         // When & Then
         Assertions.assertThatThrownBy(() -> new Hobby(name))
+                .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    @DisplayName("취미명이 단순 빈 문자열인 경우, 유효하지 않다.")
+    public void inValidWhenHobbyNameIsEmpty() {
+        // Given
+        String name = " ";
+
+        // When & Then
+        Assertions.assertThatThrownBy(() -> new Hobby(name))
                 .isInstanceOf(InvalidHobbyNameException.class);
     }
 

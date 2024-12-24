@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,17 +19,17 @@ public class Hobby extends BaseEntity {
     private String name;
 
     public Hobby(String name) {
-        validateName(name);
-        this.name = name;
+        setName(name);
     }
 
     public String getName() {
         return name;
     }
 
-    private static void validateName(String name) {
-        if (name == null) {
+    private void setName(@NonNull String name) {
+        if (name.trim().isEmpty())
             throw new InvalidHobbyNameException();
-        }
+        this.name = name;
     }
+
 }

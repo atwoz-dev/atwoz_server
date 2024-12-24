@@ -1,8 +1,6 @@
 package atwoz.atwoz.member.domain;
 
 import atwoz.atwoz.member.domain.member.MemberHobby;
-import atwoz.atwoz.member.exception.InvalidHobbyIdException;
-import atwoz.atwoz.member.exception.InvalidMemberIdException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +19,7 @@ public class MemberHobbyTest {
                         .hobbyId(hobbyId)
                         .memberId(memberId)
                         .build())
-                .isInstanceOf(InvalidHobbyIdException.class);
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -36,7 +34,7 @@ public class MemberHobbyTest {
                         .hobbyId(hobbyId)
                         .memberId(memberId)
                         .build())
-                .isInstanceOf(InvalidMemberIdException.class);
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test

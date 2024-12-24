@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,14 +27,10 @@ public class Job extends BaseEntity {
         return name;
     }
 
-    private void setName(String name) {
-        validateName(name);
+    private void setName(@NonNull String name) {
+        if (name.trim().isEmpty())
+            throw new InvalidJobNameException();
         this.name = name;
     }
 
-    private static void validateName(String name) {
-        if (name == null || name.trim().isEmpty()) {
-            throw new InvalidJobNameException();
-        }
-    }
 }
