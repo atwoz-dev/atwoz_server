@@ -2,17 +2,11 @@ package atwoz.atwoz.profileimage.domain;
 
 import atwoz.atwoz.common.domain.BaseEntity;
 import atwoz.atwoz.profileimage.domain.vo.ImageUrl;
-import atwoz.atwoz.profileimage.domain.vo.MemberId;
-import atwoz.atwoz.profileimage.exception.InvalidIsPrimaryException;
 import atwoz.atwoz.profileimage.exception.InvalidOrderException;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProfileImage extends BaseEntity {
@@ -20,27 +14,22 @@ public class ProfileImage extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Embedded
-    private MemberId memberId;
+    private Long memberId;
 
     @Embedded
     private ImageUrl imageUrl;
 
-    private Boolean isPrimary = false;
+    private boolean isPrimary;
 
     @Column(name = "profile_order")
-    private Integer order = null;
+    private int order;
 
-    public static ProfileImage of(MemberId memberId, ImageUrl url, Integer order, Boolean isPrimary) {
-        validateOrder(order);
-        validateIsPrimary(isPrimary);
-
-        return ProfileImage.builder()
-                .memberId(memberId)
-                .imageUrl(url)
-                .order(order)
-                .isPrimary(isPrimary)
-                .build();
+    @Builder
+    private ProfileImage(Long memberId, ImageUrl imageUrl, int order, boolean isPrimary) {
+        setMemberId(memberId);
+        setImageUrl(imageUrl);
+        setOrder(order);
+        setPrimary(isPrimary);
     }
 
     public String getUrl() {
@@ -48,7 +37,7 @@ public class ProfileImage extends BaseEntity {
     }
 
     public Long getMemberId() {
-        return memberId.getValue();
+        return memberId;
     }
 
     public Integer getOrder() {
@@ -59,25 +48,26 @@ public class ProfileImage extends BaseEntity {
         return isPrimary;
     }
 
-    private static void validateOrderAndIsPrimary(Integer order, Boolean isPrimary) {
-        if (order == null) {
-            throw new InvalidOrderException();
-        }
-
-        if (isPrimary == null) {
-            throw new InvalidIsPrimaryException();
-        }
+    private void setMemberId(@NonNull Long memberId) {
+        this.memberId = memberId;
     }
 
-    private static void validateOrder(Integer order) {
-        if (order == null || order <= 0) {
-            throw new InvalidOrderException();
-        }
+    private void setOrder(int order) {
+        validateOrder(order);
+        this.order = order;
     }
 
-    private static void validateIsPrimary(Boolean isPrimary) {
-        if (isPrimary == null) {
-            throw new InvalidIsPrimaryException();
+    private void setPrimary(boolean isPrimary) {
+        this.isPrimary = isPrimary;
+    }
+
+    private void setImageUrl(ImageUrl imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    private void validateOrder(int order) {
+        if (order < 0) {
+            throw new InvalidOrderException();
         }
     }
 }

@@ -15,19 +15,24 @@ public class Job extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
     private String name;
 
     public Job(String name) {
-        validateName(name);
-        this.name = name;
+        setName(name);
     }
 
     public String getName() {
         return name;
     }
 
+    private void setName(String name) {
+        validateName(name);
+        this.name = name;
+    }
+
     private static void validateName(String name) {
-        if (name == null) {
+        if (name == null || name.trim().isEmpty()) {
             throw new InvalidJobNameException();
         }
     }

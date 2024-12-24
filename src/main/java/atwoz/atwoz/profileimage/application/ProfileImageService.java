@@ -5,7 +5,6 @@ import atwoz.atwoz.profileimage.application.dto.ProfileImageUploadResponse;
 import atwoz.atwoz.profileimage.domain.ProfileImage;
 import atwoz.atwoz.profileimage.domain.ProfileImageRepository;
 import atwoz.atwoz.profileimage.domain.vo.ImageUrl;
-import atwoz.atwoz.profileimage.domain.vo.MemberId;
 import atwoz.atwoz.profileimage.exception.*;
 import atwoz.atwoz.profileimage.infra.S3Uploader;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,13 @@ public class ProfileImageService {
 
         List<CompletableFuture<ProfileImage>> future = requestList.stream()
                 .map(request -> uploadImageAsync(request.getImage())
-                        .thenApply(imageUrl -> ProfileImage.of(MemberId.from(memberId), ImageUrl.from(imageUrl), request.getOrder(), request.getIsPrimary()))).toList();
+                        .thenApply(imageUrl -> ProfileImage.builder()
+                                .memberId(memberId)
+                                .imageUrl(ImageUrl.from(imageUrl))
+                                .order(request.getOrder())
+                                .isPrimary(request.getIsPrimary())
+                                .build())
+                ).toList();
 
         List<ProfileImage> profileImageList = gatherProfileImages(future);
 

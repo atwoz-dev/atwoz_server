@@ -31,5 +31,4 @@ public class Hobby extends BaseEntity {
             throw new InvalidHobbyNameException();
         }
     }
-
 }

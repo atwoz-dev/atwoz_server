@@ -5,7 +5,6 @@ import atwoz.atwoz.profileimage.application.ProfileImageService;
 import atwoz.atwoz.profileimage.domain.ProfileImage;
 import atwoz.atwoz.profileimage.domain.ProfileImageRepository;
 import atwoz.atwoz.profileimage.domain.vo.ImageUrl;
-import atwoz.atwoz.profileimage.domain.vo.MemberId;
 import atwoz.atwoz.profileimage.exception.ProfileImageMemberIdMismatchException;
 import atwoz.atwoz.profileimage.exception.ProfileImageNotFoundException;
 import atwoz.atwoz.profileimage.infra.S3Uploader;
@@ -50,7 +49,13 @@ public class ProfileImageDeleteTest {
         // Given
         Long profileImageId = 1L;
         Long memberId = 1L;
-        Mockito.when(profileImageRepository.findById(profileImageId)).thenReturn(Optional.of(ProfileImage.of(MemberId.from(2L), ImageUrl.from("url"), 1, true)));
+        ProfileImage profileImage = ProfileImage.builder()
+                .memberId(2L)
+                .imageUrl(ImageUrl.from("url"))
+                .order(1)
+                .isPrimary(true)
+                .build();
+        Mockito.when(profileImageRepository.findById(profileImageId)).thenReturn(Optional.of(profileImage));
 
         // When & Then
         Assertions.assertThatThrownBy(() -> profileImageService.delete(profileImageId, memberId)).isInstanceOf(ProfileImageMemberIdMismatchException.class);
@@ -62,8 +67,14 @@ public class ProfileImageDeleteTest {
         // Given
         Long profileImageId = 1L;
         Long memberId = 1L;
+        ProfileImage profileImage = ProfileImage.builder()
+                .memberId(memberId)
+                .imageUrl(ImageUrl.from("url"))
+                .order(1)
+                .isPrimary(true)
+                .build();
         Mockito.when(profileImageRepository.findById(profileImageId))
-                .thenReturn(Optional.of(ProfileImage.of(MemberId.from(memberId), ImageUrl.from("url"), 1, true)));
+                .thenReturn(Optional.of(profileImage));
 
         // When & Then
         Assertions.assertThatCode(() -> profileImageService.delete(profileImageId, memberId)).doesNotThrowAnyException();

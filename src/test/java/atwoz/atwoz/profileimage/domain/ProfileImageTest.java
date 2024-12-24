@@ -1,8 +1,6 @@
 package atwoz.atwoz.profileimage.domain;
 
 import atwoz.atwoz.profileimage.domain.vo.ImageUrl;
-import atwoz.atwoz.profileimage.domain.vo.MemberId;
-import atwoz.atwoz.profileimage.exception.InvalidIsPrimaryException;
 import atwoz.atwoz.profileimage.exception.InvalidOrderException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -16,27 +14,37 @@ public class ProfileImageTest {
         // Given
         Long memberId = 1L;
         String imageUrl = "url";
-        Boolean isPrimary = true;
-        Integer order = 1;
+        boolean isPrimary = true;
+        int order = 1;
 
         // When
-        ProfileImage profileImage = ProfileImage.of(MemberId.from(memberId), ImageUrl.from(imageUrl), order, isPrimary);
+        ProfileImage profileImage = ProfileImage.builder()
+                .memberId(memberId)
+                .isPrimary(isPrimary)
+                .order(order)
+                .imageUrl(ImageUrl.from(imageUrl))
+                .build();
 
         // Then
         Assertions.assertThat(profileImage).isNotNull();
     }
 
     @Test
-    @DisplayName("order 값이 NULL인 경우, 유효하지 않음.")
-    void isInvalidWhenOrderIsNull() {
+    @DisplayName("멤버 아이디의 값이 NULL인 경우, 유효하지 않음")
+    void isInvalidWhenMemberIdIsNegative() {
         // Given
-        Long memberId = 1L;
+        Long memberId = null;
         String imageUrl = "url";
-        Boolean isPrimary = true;
-        Integer order = null;
+        boolean isPrimary = false;
+        int order = -1;
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> ProfileImage.of(MemberId.from(memberId), ImageUrl.from(imageUrl), order, isPrimary)).isInstanceOf(InvalidOrderException.class);
+        Assertions.assertThatThrownBy(() -> ProfileImage.builder()
+                .memberId(memberId)
+                .imageUrl(ImageUrl.from(imageUrl))
+                .isPrimary(isPrimary)
+                .order(order)
+                .build()).isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -45,23 +53,17 @@ public class ProfileImageTest {
         // Given
         Long memberId = 1L;
         String imageUrl = "url";
-        Boolean isPrimary = false;
-        Integer order = -1;
+        boolean isPrimary = false;
+        int order = -1;
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> ProfileImage.of(MemberId.from(memberId), ImageUrl.from(imageUrl), order, isPrimary)).isInstanceOf(InvalidOrderException.class);
-    }
+        Assertions.assertThatThrownBy(() -> ProfileImage.builder()
+                        .memberId(memberId)
+                        .imageUrl(ImageUrl.from(imageUrl))
+                        .isPrimary(isPrimary)
+                        .order(order)
+                        .build())
+                .isInstanceOf(InvalidOrderException.class);
 
-    @Test
-    @DisplayName("isPrimary 값이 NULL인 경우, 유효하지 않음")
-    void isInvalidWhenPrimaryIsNull() {
-        // Given
-        Long memberId = 1L;
-        String imageUrl = "url";
-        Boolean isPrimary = null;
-        Integer order = 1;
-
-        // When & Then
-        Assertions.assertThatThrownBy(() -> ProfileImage.of(MemberId.from(memberId), ImageUrl.from(imageUrl), order, isPrimary)).isInstanceOf(InvalidIsPrimaryException.class);
     }
 }
