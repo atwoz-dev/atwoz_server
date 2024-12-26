@@ -1,6 +1,8 @@
 package atwoz.atwoz.heartpurchaseoption.domain;
 
 import atwoz.atwoz.common.domain.SoftDeleteBaseEntity;
+import atwoz.atwoz.heartpurchaseoption.exception.InvalidHeartPurchaseAmountException;
+import atwoz.atwoz.heartpurchaseoption.exception.InvalidHeartPurchaseOptionException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -41,7 +43,7 @@ public class HeartPurchaseOption extends SoftDeleteBaseEntity {
 
     private void setName(@NonNull String name) {
         if (name.isBlank()) {
-            throw new IllegalArgumentException("name 값이 비어있습니다.");
+            throw new InvalidHeartPurchaseOptionException("name 값이 비어있습니다.");
         }
         this.name = name;
     }
