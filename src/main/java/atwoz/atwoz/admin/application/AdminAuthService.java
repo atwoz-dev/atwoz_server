@@ -32,7 +32,7 @@ public class AdminAuthService {
     public AdminSignupResponse signup(AdminSignupRequest request) {
         validateEmailUniqueness(request);
         Admin newAdmin = createAdmin(request);
-        return AdminMapper.toSignupResponse(newAdmin);
+        return AdminAuthMapper.toSignupResponse(newAdmin);
     }
 
     // TODO: refresh token redis 관련 로직 추가
@@ -44,7 +44,7 @@ public class AdminAuthService {
         Instant now = Instant.now();
         String accessToken = createAccessToken(admin.getId(), now);
         String refreshToken = createRefreshToken(admin.getId(), now);
-        return AdminMapper.toLoginResponse(accessToken, refreshToken);
+        return AdminAuthMapper.toLoginResponse(accessToken, refreshToken);
     }
 
     private void validateEmailUniqueness(AdminSignupRequest request) {
@@ -55,7 +55,7 @@ public class AdminAuthService {
 
     private Admin createAdmin(AdminSignupRequest request) {
         Password password = Password.fromRaw(request.password(), passwordHasher);
-        Admin newAdmin = AdminMapper.toAdmin(request, password);
+        Admin newAdmin = AdminAuthMapper.toAdmin(request, password);
         return adminRepository.save(newAdmin);
     }
 

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
-public class AdminMapper {
+public class AdminAuthMapper {
 
     public static Admin toAdmin(AdminSignupRequest request, Password password) {
         return Admin.builder()
