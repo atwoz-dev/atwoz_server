@@ -22,7 +22,7 @@ public class AdminAuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<BaseResponse<AdminSignupResponse>> signUp(@Valid @RequestBody AdminSignupRequest request) {
-        AdminSignupResponse data = adminAuthService.signUp(request);
+        AdminSignupResponse data = adminAuthService.signup(request);
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, data));
     }
 }
