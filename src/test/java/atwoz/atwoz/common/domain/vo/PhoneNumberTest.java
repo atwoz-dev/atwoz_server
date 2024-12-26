@@ -53,7 +53,7 @@ class PhoneNumberTest {
 
         // when & then
         assertThatThrownBy(() -> PhoneNumber.from(invalidPhoneNumber))
-                .isInstanceOf(InvalidPhoneNumberException.class);
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test

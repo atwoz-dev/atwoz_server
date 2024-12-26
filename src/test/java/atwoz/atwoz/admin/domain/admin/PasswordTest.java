@@ -86,7 +86,7 @@ class PasswordTest {
 
         // when & then
         assertThatThrownBy(() -> Password.fromRaw(invalidPassword, passwordHasher))
-                .isInstanceOf(InvalidPasswordException.class);
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test

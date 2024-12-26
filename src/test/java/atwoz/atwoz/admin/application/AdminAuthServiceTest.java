@@ -37,7 +37,7 @@ class AdminAuthServiceTest {
 
     @Test
     @DisplayName("중복되지 않은 이메일과 유효한 비밀번호로 회원가입 할 수 있습니다.")
-    void canSignUpWhenRequestIsValid() {
+    void canSignupWhenRequestIsValid() {
         // given
         String email = "test@example.com";
         String rawPassword = "password123^^";
@@ -55,7 +55,7 @@ class AdminAuthServiceTest {
                 });
 
         // when
-        AdminSignupResponse response = adminAuthService.signUp(request);
+        AdminSignupResponse response = adminAuthService.signup(request);
 
         // then
         assertThat(response).isNotNull();
@@ -78,7 +78,7 @@ class AdminAuthServiceTest {
                 .thenReturn(Optional.of(mock(Admin.class)));
 
         // when & then
-        assertThatThrownBy(() -> adminAuthService.signUp(request))
+        assertThatThrownBy(() -> adminAuthService.signup(request))
                 .isInstanceOf(DuplicateEmailException.class);
 
         verify(adminRepository, never()).save(any(Admin.class));
@@ -97,7 +97,7 @@ class AdminAuthServiceTest {
                 .thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> adminAuthService.signUp(request))
+        assertThatThrownBy(() -> adminAuthService.signup(request))
                 .isInstanceOf(InvalidPasswordException.class);
 
         verify(adminRepository).findByEmail(Email.from(email));
