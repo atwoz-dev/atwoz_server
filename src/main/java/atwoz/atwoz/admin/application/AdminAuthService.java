@@ -30,7 +30,7 @@ public class AdminAuthService {
 
     @Transactional
     public AdminSignupResponse signup(AdminSignupRequest request) {
-        validateEmailUniqueness(request);
+        validateEmailUniqueness(request.email());
         Admin newAdmin = createAdmin(request);
         return AdminAuthMapper.toSignupResponse(newAdmin);
     }
@@ -38,7 +38,7 @@ public class AdminAuthService {
     // TODO: refresh token redis 관련 로직 추가
     @Transactional(readOnly = true)
     public AdminLoginResponse login(AdminLoginRequest request) {
-        Admin admin = findAdminWith(request.email());
+        Admin admin = findAdminBy(request.email());
         validatePassword(request.password(), admin.getHashedPassword());
 
         Instant now = Instant.now();
@@ -47,10 +47,9 @@ public class AdminAuthService {
         return AdminAuthMapper.toLoginResponse(accessToken, refreshToken);
     }
 
-    private void validateEmailUniqueness(AdminSignupRequest request) {
-        String email = request.email();
+    private void validateEmailUniqueness(String email) {
         adminRepository.findByEmail(Email.from(email))
-                .ifPresent(admin -> { throw new DuplicateEmailException(email); });
+                .ifPresent(admin -> { throw new DuplicateEmailException(); });
     }
 
     private Admin createAdmin(AdminSignupRequest request) {
@@ -59,7 +58,7 @@ public class AdminAuthService {
         return adminRepository.save(newAdmin);
     }
 
-    private Admin findAdminWith(String email) {
+    private Admin findAdminBy(String email) {
         return adminRepository.findByEmail(Email.from(email))
                 .orElseThrow(AdminNotFoundException::new);
     }
