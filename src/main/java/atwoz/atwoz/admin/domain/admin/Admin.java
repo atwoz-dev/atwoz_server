@@ -11,22 +11,25 @@ import static jakarta.persistence.EnumType.STRING;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
 public class Admin extends SoftDeleteBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long id;
 
     @Embedded
+    @Getter
     private Email email;
 
     @Embedded
     private Password password;
 
     @Embedded
+    @Getter
     private Name name;
 
     @Embedded
+    @Getter
     private PhoneNumber phoneNumber;
 
     private String comment;
@@ -64,5 +67,9 @@ public class Admin extends SoftDeleteBaseEntity {
 
     private void setPhoneNumber(@NonNull PhoneNumber phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getHashedPassword() {
+        return password.getHashedValue();
     }
 }

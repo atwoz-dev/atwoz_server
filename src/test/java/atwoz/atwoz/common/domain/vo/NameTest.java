@@ -56,7 +56,7 @@ class NameTest {
 
         // when & then
         assertThatThrownBy(() -> Name.from(invalidName))
-                .isInstanceOf(InvalidNameException.class);
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test

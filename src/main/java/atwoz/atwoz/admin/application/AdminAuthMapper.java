@@ -1,5 +1,6 @@
 package atwoz.atwoz.admin.application;
 
+import atwoz.atwoz.admin.application.dto.AdminLoginResponse;
 import atwoz.atwoz.admin.application.dto.AdminSignupRequest;
 import atwoz.atwoz.admin.application.dto.AdminSignupResponse;
 import atwoz.atwoz.admin.domain.admin.Admin;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
-public class AdminMapper {
+public class AdminAuthMapper {
 
     public static Admin toAdmin(AdminSignupRequest request, Password password) {
         return Admin.builder()
@@ -23,12 +24,16 @@ public class AdminMapper {
                 .build();
     }
 
-    public static AdminSignupResponse toSignUpResponse(Admin admin) {
+    public static AdminSignupResponse toSignupResponse(Admin admin) {
         return new AdminSignupResponse(
                 admin.getId(),
                 admin.getEmail().getAddress(),
                 admin.getName().getValue(),
                 admin.getPhoneNumber().getValue()
         );
+    }
+
+    public static AdminLoginResponse toLoginResponse(String accessToken, String refreshToken) {
+        return new AdminLoginResponse(accessToken, refreshToken);
     }
 }
