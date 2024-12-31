@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.domain.member;
 
+import atwoz.atwoz.member.exception.InvalidMemberEnumValueException;
 import lombok.Getter;
 
 @Getter
@@ -11,5 +12,14 @@ public enum Gender {
 
     Gender(String description) {
         this.description = description;
+    }
+
+    public static Gender from(String value) {
+        if (value == null) return null;
+        try {
+            return Gender.valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidMemberEnumValueException(value);
+        }
     }
 }

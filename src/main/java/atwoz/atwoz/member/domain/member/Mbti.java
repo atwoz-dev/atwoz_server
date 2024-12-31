@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.domain.member;
 
+import atwoz.atwoz.member.exception.InvalidMemberEnumValueException;
 import lombok.Getter;
 
 @Getter
@@ -13,5 +14,14 @@ public enum Mbti {
 
     Mbti(String description) {
         this.description = description;
+    }
+
+    public static Mbti from(String value) {
+        if (value == null) return null;
+        try {
+            return Mbti.valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidMemberEnumValueException(value);
+        }
     }
 }

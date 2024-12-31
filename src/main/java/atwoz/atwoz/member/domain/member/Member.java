@@ -29,9 +29,6 @@ public class Member extends SoftDeleteBaseEntity {
 
     private boolean isVip;
 
-    @OneToMany(mappedBy = "memberId", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<MemberHobby> memberHobbyList = new ArrayList<>();
-
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
     private ActivityStatus activityStatus;
@@ -83,14 +80,12 @@ public class Member extends SoftDeleteBaseEntity {
         return this.memberProfile.getGender();
     }
 
-    public void updateMemberProfile(MemberProfile memberProfile, List<Long> hobbyIds) {
-        this.memberProfile = memberProfile;
-        updateHobbyList(hobbyIds);
+    public MemberProfile getProfile() {
+        return this.memberProfile;
     }
 
-    private void updateHobbyList(List<Long> hobbyIds) {
-        memberHobbyList = hobbyIds.stream().map((hobbyId) -> MemberHobby.of(id, hobbyId))
-                .collect(Collectors.toList());
+    public void updateMemberProfile(MemberProfile memberProfile) {
+        this.memberProfile = memberProfile;
     }
 
     public boolean isProfileSettingNeeded() {
