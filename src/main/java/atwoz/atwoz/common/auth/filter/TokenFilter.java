@@ -8,6 +8,7 @@ import atwoz.atwoz.common.auth.filter.extractor.RefreshTokenExtractor;
 import atwoz.atwoz.common.auth.filter.response.ResponseHandler;
 import atwoz.atwoz.common.auth.jwt.JwtParser;
 import atwoz.atwoz.common.auth.jwt.JwtProvider;
+import atwoz.atwoz.common.auth.jwt.JwtRepository;
 import atwoz.atwoz.common.presentation.StatusType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -32,13 +33,14 @@ import static atwoz.atwoz.common.presentation.StatusType.*;
 public class TokenFilter extends OncePerRequestFilter {
 
     private static final List<String> EXCLUDED_URIS = List.of(
-            "/members/auth/login",
+            "/member/auth/login", "/member/auth/logout",
             "/admin/login", "/admin/signup",
             "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**"
     );
     private final PathMatcherHelper pathMatcher = new PathMatcherHelper(EXCLUDED_URIS);
     private final JwtProvider jwtProvider;
     private final JwtParser jwtParser;
+    private final JwtRepository jwtRepository;
     private final ResponseHandler responseHandler;
     private final AuthContext authContext;
 
@@ -100,7 +102,7 @@ public class TokenFilter extends OncePerRequestFilter {
 
         String refreshToken = optionalRefreshToken.get();
 
-        if (isValid(refreshToken)) {
+        if (isValid(refreshToken) && !jwtRepository.isExists(refreshToken)) {
             String reissuedAccessToken = reissueAccessToken(refreshToken);
             addAccessTokenToHeader(response, reissuedAccessToken);
 
@@ -131,6 +133,7 @@ public class TokenFilter extends OncePerRequestFilter {
     private String reissueRefreshToken(String token) {
         Long id = jwtParser.getIdFrom(token);
         Role role = jwtParser.getRoleFrom(token);
+        invalidateRefreshToken(token);
         return jwtProvider.createRefreshToken(id, role, Instant.now());
     }
 
@@ -141,7 +144,7 @@ public class TokenFilter extends OncePerRequestFilter {
     }
 
     private void invalidateRefreshToken(String refreshToken) {
-        // TODO: 메서드 구현
+        jwtRepository.save(refreshToken);
     }
 
     private void setUnauthorizedResponse(HttpServletResponse response, StatusType statusType) {

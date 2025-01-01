@@ -2,6 +2,7 @@ package atwoz.atwoz.member.application;
 
 import atwoz.atwoz.common.auth.context.Role;
 import atwoz.atwoz.common.auth.jwt.JwtProvider;
+import atwoz.atwoz.common.auth.jwt.JwtRepository;
 import atwoz.atwoz.member.application.dto.MemberLoginResponse;
 import atwoz.atwoz.member.domain.member.Member;
 import atwoz.atwoz.member.domain.member.MemberRepository;
@@ -18,6 +19,7 @@ public class MemberAuthService {
 
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
+    private final JwtRepository jwtRepository;
 
     @Transactional
     public MemberLoginResponse login(String phoneNumber) {
@@ -28,7 +30,12 @@ public class MemberAuthService {
         }
 
         String accessToken = jwtProvider.createAccessToken(member.getId(), Role.MEMBER, Instant.now());
-        return MemberLoginResponse.fromMemberWithToken(member, accessToken, "");
+        String refreshToken = jwtProvider.createRefreshToken(member.getId(), Role.MEMBER, Instant.now());
+        return MemberLoginResponse.fromMemberWithToken(member, accessToken, refreshToken);
+    }
+
+    public void addTokenToBlackList(String token) {
+        jwtRepository.save(token);
     }
 
     private Member createOrFindMemberByPhoneNumber(String phoneNumber) {
