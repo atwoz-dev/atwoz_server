@@ -4,9 +4,12 @@ import atwoz.atwoz.common.auth.context.Role;
 import atwoz.atwoz.common.auth.jwt.JwtProvider;
 import atwoz.atwoz.common.auth.jwt.JwtRepository;
 import atwoz.atwoz.member.application.dto.MemberLoginResponse;
+import atwoz.atwoz.member.application.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.domain.member.Member;
 import atwoz.atwoz.member.domain.member.MemberRepository;
 import atwoz.atwoz.member.exception.MemberPermanentStopException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +25,7 @@ public class MemberAuthService {
     private final JwtRepository jwtRepository;
 
     @Transactional
-    public MemberLoginResponse login(String phoneNumber) {
+    public MemberLoginServiceDto login(String phoneNumber) {
         Member member = createOrFindMemberByPhoneNumber(phoneNumber);
 
         if (member.isPermanentStop()) {
@@ -31,10 +34,12 @@ public class MemberAuthService {
 
         String accessToken = jwtProvider.createAccessToken(member.getId(), Role.MEMBER, Instant.now());
         String refreshToken = jwtProvider.createRefreshToken(member.getId(), Role.MEMBER, Instant.now());
-        return MemberLoginResponse.fromMemberWithToken(member, accessToken, refreshToken);
+
+
+        return MemberLoginServiceDto.fromMemberWithToken(member, accessToken, refreshToken);
     }
 
-    public void addTokenToBlackList(String token) {
+    public void logout(String token) {
         jwtRepository.save(token);
     }
 

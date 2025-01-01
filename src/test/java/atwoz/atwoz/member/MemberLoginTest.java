@@ -4,7 +4,7 @@ package atwoz.atwoz.member;
 import atwoz.atwoz.common.auth.context.Role;
 import atwoz.atwoz.common.auth.jwt.JwtProvider;
 import atwoz.atwoz.member.application.MemberAuthService;
-import atwoz.atwoz.member.application.dto.MemberLoginResponse;
+import atwoz.atwoz.member.application.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.domain.member.ActivityStatus;
 import atwoz.atwoz.member.domain.member.Member;
 import atwoz.atwoz.member.domain.member.MemberRepository;
@@ -102,7 +102,7 @@ public class MemberLoginTest {
                     .thenReturn("accessToken");
 
             // When
-            MemberLoginResponse response = memberAuthService.login(phoneNumber);
+            MemberLoginServiceDto response = memberAuthService.login(phoneNumber);
 
             // Then
             Assertions.assertThat(response.accessToken()).isNotNull();
