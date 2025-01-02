@@ -5,6 +5,7 @@ import atwoz.atwoz.common.presentation.StatusType;
 import atwoz.atwoz.member.application.MemberAuthService;
 import atwoz.atwoz.member.application.MemberMapper;
 import atwoz.atwoz.member.application.dto.MemberLoginResponse;
+import atwoz.atwoz.member.application.dto.MemberLoginServiceDto;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -21,15 +22,30 @@ public class MemberAuthController {
 
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<MemberLoginResponse>> login(@RequestBody String phoneNumber, HttpServletResponse response) {
-        MemberLoginResponse loginResponse = MemberMapper.toMemberLoginResponse(memberAuthService.login(phoneNumber));
+        MemberLoginServiceDto loginServiceDto = memberAuthService.login(phoneNumber);
+
+        HttpHeaders headers = new HttpHeaders();
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", loginServiceDto.refreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/")
+                .maxAge(60 * 60 * 24 * 7 * 4)
+                .build();
+        headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+
+
+        MemberLoginResponse loginResponse = MemberMapper.toMemberLoginResponse(loginServiceDto);
+
 
         return ResponseEntity.ok()
+                .headers(headers)
                 .body(BaseResponse.of(StatusType.OK, loginResponse));
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<BaseResponse<Void>> logout(@CookieValue(value = "refresh_token", required = false) String refresh_token) {
-        memberAuthService.logout(refresh_token);
+    public ResponseEntity<BaseResponse<Void>> logout(@CookieValue(value = "refresh_token", required = false) String refreshToken) {
+        memberAuthService.logout(refreshToken);
 
         HttpHeaders headers = new HttpHeaders();
         ResponseCookie deleteCookie = ResponseCookie.from("refresh_token", "")
