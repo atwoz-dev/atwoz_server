@@ -15,6 +15,10 @@ public class JwtRepository {
         redisTemplate.opsForValue().set(token, "", 1, TimeUnit.DAYS);
     }
 
+    public void delete(String token) {
+        redisTemplate.delete(token);
+    }
+
     public boolean isExists(String token) {
         return redisTemplate.hasKey(token);
     }

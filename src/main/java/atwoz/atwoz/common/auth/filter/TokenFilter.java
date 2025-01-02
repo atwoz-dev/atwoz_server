@@ -102,11 +102,12 @@ public class TokenFilter extends OncePerRequestFilter {
 
         String refreshToken = optionalRefreshToken.get();
 
-        if (isValid(refreshToken) && !jwtRepository.isExists(refreshToken)) {
+        if (isValid(refreshToken) && jwtRepository.isExists(refreshToken)) {
             String reissuedAccessToken = reissueAccessToken(refreshToken);
             addAccessTokenToHeader(response, reissuedAccessToken);
 
             String reissuedRefreshToken = reissueRefreshToken(refreshToken);
+            jwtRepository.save(reissuedRefreshToken);
             addRefreshTokenToCookie(response, reissuedRefreshToken);
             return;
         }
@@ -144,7 +145,7 @@ public class TokenFilter extends OncePerRequestFilter {
     }
 
     private void invalidateRefreshToken(String refreshToken) {
-        jwtRepository.save(refreshToken);
+        jwtRepository.delete(refreshToken);
     }
 
     private void setUnauthorizedResponse(HttpServletResponse response, StatusType statusType) {

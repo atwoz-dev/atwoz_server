@@ -34,13 +34,13 @@ public class MemberAuthService {
 
         String accessToken = jwtProvider.createAccessToken(member.getId(), Role.MEMBER, Instant.now());
         String refreshToken = jwtProvider.createRefreshToken(member.getId(), Role.MEMBER, Instant.now());
-
+        jwtRepository.save(refreshToken);
 
         return MemberLoginServiceDto.fromMemberWithToken(member, accessToken, refreshToken);
     }
 
     public void logout(String token) {
-        jwtRepository.save(token);
+        jwtRepository.delete(token);
     }
 
     private Member createOrFindMemberByPhoneNumber(String phoneNumber) {

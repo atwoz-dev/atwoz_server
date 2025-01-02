@@ -183,7 +183,7 @@ class TokenFilterTest {
 
             when(jwtProvider.createAccessToken(eq(id), eq(role), any(Instant.class))).thenReturn(REISSUED_ACCESS_TOKEN);
             when(jwtProvider.createRefreshToken(eq(id), eq(role), any(Instant.class))).thenReturn(REISSUED_REFRESH_TOKEN);
-            when(jwtRepository.isExists(VALID_REFRESH_TOKEN)).thenReturn(false);
+            when(jwtRepository.isExists(VALID_REFRESH_TOKEN)).thenReturn(true);
 
             // when
             tokenFilter.doFilterInternal(request, response, filterChain);
@@ -212,12 +212,12 @@ class TokenFilterTest {
         }
 
         @Test
-        @DisplayName("Refresh Token이 유효하지만, 블랙리스트로 등록된 경우 401을 반환합니다.")
-        void returnUnauthorizedIfRefreshTokenIsInBlackList() throws IOException, ServletException {
+        @DisplayName("Refresh Token이 유효하지만, 화이트리스트로 등록되지 않은 경우, 401을 반환합니다.")
+        void returnUnauthorizedIfRefreshTokenIsNotInWhiteList() throws IOException, ServletException {
             // given
             when(request.getCookies()).thenReturn(new Cookie[]{new Cookie(REFRESH_TOKEN_COOKIE_NAME, VALID_REFRESH_TOKEN)});
             when(jwtParser.isValid(VALID_REFRESH_TOKEN)).thenReturn(true);
-            when(jwtRepository.isExists(VALID_REFRESH_TOKEN)).thenReturn(true);
+            when(jwtRepository.isExists(VALID_REFRESH_TOKEN)).thenReturn(false);
 
             // when
             tokenFilter.doFilterInternal(request, response, filterChain);
@@ -232,7 +232,7 @@ class TokenFilterTest {
         void shouldInvalidateTokenAndReturnUnauthorizedIfRefreshTokenIsExpired() throws IOException, ServletException {
             // given
             when(request.getCookies()).thenReturn(new Cookie[]{new Cookie(REFRESH_TOKEN_COOKIE_NAME, EXPIRED_REFRESH_TOKEN)});
-            when(jwtParser.isValid(EXPIRED_REFRESH_TOKEN)).thenReturn(false);
+            when(jwtParser.isValid(EXPIRED_REFRESH_TOKEN)).thenReturn(true);
 
             // when
             tokenFilter.doFilterInternal(request, response, filterChain);
