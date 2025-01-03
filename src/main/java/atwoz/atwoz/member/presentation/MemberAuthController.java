@@ -6,7 +6,6 @@ import atwoz.atwoz.member.application.MemberAuthService;
 import atwoz.atwoz.member.application.MemberMapper;
 import atwoz.atwoz.member.application.dto.MemberLoginResponse;
 import atwoz.atwoz.member.application.dto.MemberLoginServiceDto;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -20,8 +19,9 @@ public class MemberAuthController {
 
     private final MemberAuthService memberAuthService;
 
+
     @PostMapping("/login")
-    public ResponseEntity<BaseResponse<MemberLoginResponse>> login(@RequestBody String phoneNumber, HttpServletResponse response) {
+    public ResponseEntity<BaseResponse<MemberLoginResponse>> login(@RequestBody String phoneNumber) {
         MemberLoginServiceDto loginServiceDto = memberAuthService.login(phoneNumber);
 
         HttpHeaders headers = new HttpHeaders();
@@ -33,10 +33,8 @@ public class MemberAuthController {
                 .maxAge(60 * 60 * 24 * 7 * 4)
                 .build();
         headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-
-
+        
         MemberLoginResponse loginResponse = MemberMapper.toMemberLoginResponse(loginServiceDto);
-
 
         return ResponseEntity.ok()
                 .headers(headers)

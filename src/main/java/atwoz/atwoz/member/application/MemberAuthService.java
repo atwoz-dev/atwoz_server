@@ -36,7 +36,7 @@ public class MemberAuthService {
         String refreshToken = jwtProvider.createRefreshToken(member.getId(), Role.MEMBER, Instant.now());
         jwtRepository.save(refreshToken);
 
-        return MemberLoginServiceDto.fromMemberWithToken(member, accessToken, refreshToken);
+        return MemberLoginServiceDto.fromMemberWithToken(accessToken, refreshToken, member.isProfileSettingNeeded());
     }
 
     public void logout(String token) {

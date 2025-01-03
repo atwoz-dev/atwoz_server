@@ -9,12 +9,12 @@ public record MemberLoginServiceDto(
         String refreshToken,
         boolean isProfileSettingNeeded
 ) {
-    public static MemberLoginServiceDto fromMemberWithToken(Member member,String accessToken, String refreshToken) {
+    public static MemberLoginServiceDto fromMemberWithToken(String accessToken, String refreshToken, Boolean isProfileSettingNeeded) {
 
         return MemberLoginServiceDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .isProfileSettingNeeded(member.isProfileSettingNeeded())
+                .isProfileSettingNeeded(isProfileSettingNeeded)
                 .build();
     }
 }
