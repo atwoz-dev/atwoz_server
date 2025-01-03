@@ -39,11 +39,4 @@ public class MemberMapper {
     public static MemberProfileUpdateResponse toMemberProfileUpdateResponse(Member member) {
         return new MemberProfileUpdateResponse(member.getProfile());
     }
-
-    public static MemberLoginResponse toMemberLoginResponse(MemberLoginServiceDto dto) {
-        return MemberLoginResponse.builder()
-                .accessToken(dto.accessToken())
-                .isProfileSettingNeeded(dto.isProfileSettingNeeded())
-                .build();
-    }
 }

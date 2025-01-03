@@ -3,7 +3,6 @@ package atwoz.atwoz.member.presentation;
 import atwoz.atwoz.common.presentation.BaseResponse;
 import atwoz.atwoz.common.presentation.StatusType;
 import atwoz.atwoz.member.application.MemberAuthService;
-import atwoz.atwoz.member.application.MemberMapper;
 import atwoz.atwoz.member.application.dto.MemberLoginResponse;
 import atwoz.atwoz.member.application.dto.MemberLoginServiceDto;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +32,8 @@ public class MemberAuthController {
                 .maxAge(60 * 60 * 24 * 7 * 4)
                 .build();
         headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-        
-        MemberLoginResponse loginResponse = MemberMapper.toMemberLoginResponse(loginServiceDto);
+
+        MemberLoginResponse loginResponse = MemberDtoMapper.toMemberLoginResponse(loginServiceDto);
 
         return ResponseEntity.ok()
                 .headers(headers)
