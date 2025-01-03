@@ -1,9 +1,13 @@
 package atwoz.atwoz.member;
 
+import atwoz.atwoz.hobby.domain.HobbyRepository;
+import atwoz.atwoz.job.domain.JobRepository;
+import atwoz.atwoz.job.exception.JobNotFoundException;
 import atwoz.atwoz.member.application.MemberService;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateResponse;
 import atwoz.atwoz.member.domain.member.*;
+import atwoz.atwoz.member.exception.InvalidHobbyIdException;
 import atwoz.atwoz.member.exception.InvalidMemberEnumValueException;
 import atwoz.atwoz.member.exception.MemberNotFoundException;
 import org.assertj.core.api.Assertions;
@@ -23,6 +27,12 @@ public class MemberProfileUpdateTest {
 
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private HobbyRepository hobbyRepository;
+
+    @Mock
+    private JobRepository jobRepository;
 
     @InjectMocks
     private MemberService memberService;
@@ -45,20 +55,76 @@ public class MemberProfileUpdateTest {
     void throwExceptionWhenEnumValueIsInvalid() {
         // Given
         Long memberId = 1L;
+        Long jobId = 2L;
+        List<Long> hobbyIds = List.of(1L, 2L);
+
         MemberProfileUpdateRequest invalidRequest = new MemberProfileUpdateRequest(
                 "nickname", "INVALID_ENUM", 20, 180, // 잘못된 gender 값
-                2L, "DAEJEON", "OTHER", "ENFJ",
-                "DAILY", "ABSTINENT", "BUDDHISM", List.of(1L, 2L)
+                jobId, "Daejeon", "OTHER", "ENFJ",
+                "DAILY", "ABSTINENT", "BUDDHISM", hobbyIds
         );
         Member existingMember = Member.createFromPhoneNumber("01012345678");
 
 
         // Mock 동작 설정
         Mockito.when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
+        Mockito.when(jobRepository.existsById(jobId)).thenReturn(true);
+        Mockito.when(hobbyRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(2L);
 
         // When & Then
         Assertions.assertThatThrownBy(() -> memberService.updateMember(memberId, invalidRequest))
                 .isInstanceOf(InvalidMemberEnumValueException.class);
+    }
+
+    @DisplayName("멤버가 존재하지만 유효하지 않은 직업 ID를 가질 경우, 예외 발생")
+    @Test
+    void throwExceptionWhenJobIdIsInvalid() {
+        // Given
+        Long memberId = 1L;
+        Long jobId = 2L;
+        List<Long> hobbyIds = List.of(1L, 2L);
+
+        MemberProfileUpdateRequest invalidRequest = new MemberProfileUpdateRequest(
+                "nickname", "INVALID_ENUM", 20, 180, // 잘못된 gender 값
+                jobId, "Daejeon", "OTHER", "ENFJ",
+                "DAILY", "ABSTINENT", "BUDDHISM", hobbyIds
+        );
+        Member existingMember = Member.createFromPhoneNumber("01012345678");
+
+
+        // Mock 동작 설정
+        Mockito.when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
+        Mockito.when(jobRepository.existsById(jobId)).thenReturn(false);
+
+        // When & Then
+        Assertions.assertThatThrownBy(() -> memberService.updateMember(memberId, invalidRequest))
+                .isInstanceOf(JobNotFoundException.class);
+    }
+
+    @DisplayName("멤버가 존재하지만 유효하지 않은 취미 ID를 가질 경우, 예외 발생")
+    @Test
+    void throwExceptionWhenHobbyIdIsInvalid() {
+        // Given
+        Long memberId = 1L;
+        Long jobId = 2L;
+        List<Long> hobbyIds = List.of(1L, 2L);
+
+        MemberProfileUpdateRequest invalidRequest = new MemberProfileUpdateRequest(
+                "nickname", "INVALID_ENUM", 20, 180, // 잘못된 gender 값
+                jobId, "Daejeon", "OTHER", "ENFJ",
+                "DAILY", "ABSTINENT", "BUDDHISM", hobbyIds
+        );
+        Member existingMember = Member.createFromPhoneNumber("01012345678");
+
+
+        // Mock 동작 설정
+        Mockito.when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
+        Mockito.when(jobRepository.existsById(jobId)).thenReturn(true);
+        Mockito.when(hobbyRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(1L);
+
+        // When & Then
+        Assertions.assertThatThrownBy(() -> memberService.updateMember(memberId, invalidRequest))
+                .isInstanceOf(InvalidHobbyIdException.class);
     }
 
     @DisplayName("멤버가 존재하는 경우, 성공")
@@ -66,15 +132,19 @@ public class MemberProfileUpdateTest {
     void succeedsWhenMemberIsFound() {
         // Given
         Long memberId = 1L;
+        Long jobId = 2L;
+        List<Long> hobbyIds = List.of(1L, 2L);
         MemberProfileUpdateRequest request = new MemberProfileUpdateRequest(
                 "nickname", "MALE", 20, 180,
-                2L, "Daejeon", "OTHER", "ENFJ",
-                "DAILY", "ABSTINENT", "BUDDHISM", List.of(1L, 2L)
+                jobId, "Daejeon", "OTHER", "ENFJ",
+                "DAILY", "ABSTINENT", "BUDDHISM", hobbyIds
         );
         Member existingMember = Member.createFromPhoneNumber("01012345678");
 
         // When
         Mockito.when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
+        Mockito.when(hobbyRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(2L);
+        Mockito.when(jobRepository.existsById(jobId)).thenReturn(true);
 
         // Then
         MemberProfileUpdateResponse response = memberService.updateMember(memberId, request);
@@ -98,15 +168,18 @@ public class MemberProfileUpdateTest {
     void succeedsWhenNullValueExists() {
         // Given
         Long memberId = 1L;
+        Long jobId = 2L;
+        List<Long> hobbyIds = List.of(1L, 2L);
         MemberProfileUpdateRequest request = new MemberProfileUpdateRequest(
                 "nickname", "MALE", 20, 180,
-                2L, null, "OTHER", "ENFJ",
+                jobId, null, "OTHER", "ENFJ",
                 "DAILY", "ABSTINENT", "BUDDHISM", null
         );
         Member existingMember = Member.createFromPhoneNumber("01012345678");
 
         // When
         Mockito.when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
+        Mockito.when(jobRepository.existsById(2L)).thenReturn(true);
 
         // Then
         MemberProfileUpdateResponse response = memberService.updateMember(memberId, request);
@@ -120,6 +193,5 @@ public class MemberProfileUpdateTest {
         Assertions.assertThat(response.memberProfile().getReligionStatus()).isEqualTo(ReligionStatus.BUDDHISM);
 
         Assertions.assertThat(response.memberProfile().getMemberHobbyList()).hasSize(0);
-
     }
 }
