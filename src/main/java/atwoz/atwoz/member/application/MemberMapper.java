@@ -28,7 +28,7 @@ public class MemberMapper {
                 .region(Region.from(memberProfileUpdateRequest.region()))
                 .gender(Gender.from(memberProfileUpdateRequest.gender()))
                 .height(memberProfileUpdateRequest.height())
-                .lastEducation(LastEducation.from(memberProfileUpdateRequest.lastEducation()))
+                .highestEducation(HighestEducation.from(memberProfileUpdateRequest.highestEducation()))
                 .religionStatus(ReligionStatus.from(memberProfileUpdateRequest.religionStatus()))
                 .smokingStatus(SmokingStatus.from(memberProfileUpdateRequest.smokingStatus()))
                 .drinkingStatus(DrinkingStatus.from(memberProfileUpdateRequest.drinkingStatus()))

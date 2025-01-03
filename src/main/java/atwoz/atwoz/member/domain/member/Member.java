@@ -84,7 +84,7 @@ public class Member extends SoftDeleteBaseEntity {
         return this.memberProfile;
     }
 
-    public void updateMemberProfile(MemberProfile memberProfile) {
+    public void updateMemberProfile(@NonNull MemberProfile memberProfile) {
         this.memberProfile = memberProfile;
     }
 
