@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 public enum Region {
-    SEOUL("Seoul"), DAEJEON("Daejeon");
+    SEOUL("서울"), DAEJEON("대전");
 
     private final String description;
 

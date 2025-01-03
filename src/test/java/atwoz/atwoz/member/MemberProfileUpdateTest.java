@@ -2,6 +2,7 @@ package atwoz.atwoz.member;
 
 import atwoz.atwoz.member.application.MemberService;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
+import atwoz.atwoz.member.application.dto.MemberProfileUpdateResponse;
 import atwoz.atwoz.member.domain.member.*;
 import atwoz.atwoz.member.exception.InvalidMemberEnumValueException;
 import atwoz.atwoz.member.exception.MemberNotFoundException;
@@ -76,18 +77,18 @@ public class MemberProfileUpdateTest {
         Mockito.when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
 
         // Then
-        Member updatedMember = memberService.updateMember(memberId, request);
-        Assertions.assertThat(updatedMember).isNotNull();
-        Assertions.assertThat(updatedMember.getProfile().getNickname().getNickname()).isEqualTo("nickname");
-        Assertions.assertThat(updatedMember.getProfile().getGender()).isEqualTo(Gender.MALE);
-        Assertions.assertThat(updatedMember.getProfile().getJobId()).isEqualTo(2L);
-        Assertions.assertThat(updatedMember.getProfile().getAge()).isEqualTo(20);
-        Assertions.assertThat(updatedMember.getProfile().getHeight()).isEqualTo(180);
-        Assertions.assertThat(updatedMember.getProfile().getRegion()).isEqualTo(Region.DAEJEON);
-        Assertions.assertThat(updatedMember.getProfile().getReligionStatus()).isEqualTo(ReligionStatus.BUDDHISM);
+        MemberProfileUpdateResponse response = memberService.updateMember(memberId, request);
+        Assertions.assertThat(response).isNotNull();
+        Assertions.assertThat(response.memberProfile().getNickname().getNickname()).isEqualTo("nickname");
+        Assertions.assertThat(response.memberProfile().getGender()).isEqualTo(Gender.MALE);
+        Assertions.assertThat(response.memberProfile().getJobId()).isEqualTo(2L);
+        Assertions.assertThat(response.memberProfile().getAge()).isEqualTo(20);
+        Assertions.assertThat(response.memberProfile().getHeight()).isEqualTo(180);
+        Assertions.assertThat(response.memberProfile().getRegion()).isEqualTo(Region.DAEJEON);
+        Assertions.assertThat(response.memberProfile().getReligionStatus()).isEqualTo(ReligionStatus.BUDDHISM);
 
-        Assertions.assertThat(updatedMember.getProfile().getMemberHobbyList()).hasSize(2);
-        for (MemberHobby memberHobby : updatedMember.getProfile().getMemberHobbyList()) {
+        Assertions.assertThat(response.memberProfile().getMemberHobbyList()).hasSize(2);
+        for (MemberHobby memberHobby : response.memberProfile().getMemberHobbyList()) {
             Assertions.assertThat(memberHobby.getMemberId()).isEqualTo(memberId);
         }
     }
@@ -108,17 +109,17 @@ public class MemberProfileUpdateTest {
         Mockito.when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
 
         // Then
-        Member updatedMember = memberService.updateMember(memberId, request);
-        Assertions.assertThat(updatedMember).isNotNull();
-        Assertions.assertThat(updatedMember.getProfile().getNickname().getNickname()).isEqualTo("nickname");
-        Assertions.assertThat(updatedMember.getProfile().getGender()).isEqualTo(Gender.MALE);
-        Assertions.assertThat(updatedMember.getProfile().getJobId()).isEqualTo(2L);
-        Assertions.assertThat(updatedMember.getProfile().getAge()).isEqualTo(20);
-        Assertions.assertThat(updatedMember.getProfile().getHeight()).isEqualTo(180);
-        Assertions.assertThat(updatedMember.getProfile().getRegion()).isNull();
-        Assertions.assertThat(updatedMember.getProfile().getReligionStatus()).isEqualTo(ReligionStatus.BUDDHISM);
+        MemberProfileUpdateResponse response = memberService.updateMember(memberId, request);
+        Assertions.assertThat(response).isNotNull();
+        Assertions.assertThat(response.memberProfile().getNickname().getNickname()).isEqualTo("nickname");
+        Assertions.assertThat(response.memberProfile().getGender()).isEqualTo(Gender.MALE);
+        Assertions.assertThat(response.memberProfile().getJobId()).isEqualTo(2L);
+        Assertions.assertThat(response.memberProfile().getAge()).isEqualTo(20);
+        Assertions.assertThat(response.memberProfile().getHeight()).isEqualTo(180);
+        Assertions.assertThat(response.memberProfile().getRegion()).isNull();
+        Assertions.assertThat(response.memberProfile().getReligionStatus()).isEqualTo(ReligionStatus.BUDDHISM);
 
-        Assertions.assertThat(updatedMember.getProfile().getMemberHobbyList()).hasSize(0);
+        Assertions.assertThat(response.memberProfile().getMemberHobbyList()).hasSize(0);
 
     }
 }

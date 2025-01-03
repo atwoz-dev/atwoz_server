@@ -53,12 +53,12 @@ public class MemberProfile {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
-    private LastEducation lastEducation;
+    private HighestEducation highestEducation;
 
     public boolean isProfileSettingNeeded() {
         if (nickname == null || gender == null || region == null || age == null || height == null ||
                 jobId == null || mbti == null || smokingStatus == null || drinkingStatus == null ||
-                religionStatus == null || lastEducation == null || memberHobbyList == null || memberHobbyList.isEmpty()) {
+                religionStatus == null || highestEducation == null || memberHobbyList == null || memberHobbyList.isEmpty()) {
             return true;
         }
         return false;
@@ -68,7 +68,7 @@ public class MemberProfile {
     public MemberProfile(Integer age, Integer height, Long jobId,
                          Nickname nickname, Gender gender, Mbti mbti,
                          Region region, SmokingStatus smokingStatus, DrinkingStatus drinkingStatus,
-                         ReligionStatus religionStatus, LastEducation lastEducation, List<MemberHobby> memberHobbyList) {
+                         ReligionStatus religionStatus, HighestEducation highestEducation, List<MemberHobby> memberHobbyList) {
         this.age = age;
         this.height = height;
         this.jobId = jobId;
@@ -79,7 +79,7 @@ public class MemberProfile {
         this.smokingStatus = smokingStatus;
         this.drinkingStatus = drinkingStatus;
         this.religionStatus = religionStatus;
-        this.lastEducation = lastEducation;
+        this.highestEducation = highestEducation;
 
         if (memberHobbyList != null) {
             this.memberHobbyList = memberHobbyList;
