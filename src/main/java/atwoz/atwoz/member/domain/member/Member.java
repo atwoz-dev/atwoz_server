@@ -3,12 +3,15 @@ package atwoz.atwoz.member.domain.member;
 import atwoz.atwoz.common.domain.SoftDeleteBaseEntity;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
+import atwoz.atwoz.member.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.domain.member.vo.Nickname;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.data.domain.Page;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Builder
@@ -19,26 +22,12 @@ public class Member extends SoftDeleteBaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Embedded
-    private Nickname nickname;
-
     private String phoneNumber;
 
-    private String region;
-
-    private Integer age;
-
-    private Integer height;
+    @Embedded
+    private MemberProfile memberProfile;
 
     private boolean isVip;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(50)")
-    private Gender gender;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(50)")
-    private Mbti mbti;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
@@ -62,13 +51,6 @@ public class Member extends SoftDeleteBaseEntity {
 
     public boolean isPermanentStop() {
         return activityStatus == ActivityStatus.PERMANENT_STOP;
-    }
-
-    public boolean isProfileSettingNeeded() {
-        if (this.nickname == null || gender == null || region == null || age == null || height == null || mbti == null) {
-            return true;
-        }
-        return false;
     }
 
     public void useHeart(HeartAmount heartAmount) {
@@ -95,6 +77,19 @@ public class Member extends SoftDeleteBaseEntity {
     }
 
     public Gender getGender() {
-        return this.gender;
+        return this.memberProfile.getGender();
+    }
+
+    public MemberProfile getProfile() {
+        return this.memberProfile;
+    }
+
+    public void updateMemberProfile(@NonNull MemberProfile memberProfile) {
+        this.memberProfile = memberProfile;
+    }
+
+    public boolean isProfileSettingNeeded() {
+        if (memberProfile == null) return true;
+        return this.memberProfile.isProfileSettingNeeded();
     }
 }

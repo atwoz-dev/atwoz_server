@@ -4,20 +4,23 @@ import atwoz.atwoz.member.exception.InvalidMemberEnumValueException;
 import lombok.Getter;
 
 @Getter
-public enum Gender {
-    MALE("남성"),
-    WOMAN("여성");
+public enum ReligionStatus {
+    NO_RELIGION("무교"),
+    CHRISTIANITY("기독교"),
+    CATHOLIC("천주교"),
+    BUDDHISM("불교"),
+    OTHER("기타");
 
-    private final String description;
+    private String description;
 
-    Gender(String description) {
+    ReligionStatus(String description) {
         this.description = description;
     }
 
-    public static Gender from(String value) {
+    public static ReligionStatus from(String value) {
         if (value == null) return null;
         try {
-            return Gender.valueOf(value.toUpperCase());
+            return ReligionStatus.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new InvalidMemberEnumValueException(value);
         }

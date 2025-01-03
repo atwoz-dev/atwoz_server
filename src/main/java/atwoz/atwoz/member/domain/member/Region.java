@@ -4,22 +4,22 @@ import atwoz.atwoz.member.exception.InvalidMemberEnumValueException;
 import lombok.Getter;
 
 @Getter
-public enum Gender {
-    MALE("남성"),
-    WOMAN("여성");
+public enum Region {
+    SEOUL("서울"), DAEJEON("대전");
 
     private final String description;
 
-    Gender(String description) {
+    Region(String description) {
         this.description = description;
     }
 
-    public static Gender from(String value) {
+    public static Region from(String value) {
         if (value == null) return null;
         try {
-            return Gender.valueOf(value.toUpperCase());
+            return Region.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new InvalidMemberEnumValueException(value);
         }
     }
+
 }
