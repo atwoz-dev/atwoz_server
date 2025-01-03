@@ -5,6 +5,7 @@ import atwoz.atwoz.common.auth.context.Role;
 import atwoz.atwoz.common.auth.filter.response.ResponseHandler;
 import atwoz.atwoz.common.auth.jwt.JwtParser;
 import atwoz.atwoz.common.auth.jwt.JwtProvider;
+import atwoz.atwoz.common.auth.jwt.JwtRepository;
 import atwoz.atwoz.common.presentation.StatusType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -45,6 +46,9 @@ class TokenFilterTest {
 
     @Mock
     private FilterChain filterChain;
+
+    @Mock
+    private JwtRepository jwtRepository;
 
     @Mock
     private JwtProvider jwtProvider;
@@ -179,6 +183,7 @@ class TokenFilterTest {
 
             when(jwtProvider.createAccessToken(eq(id), eq(role), any(Instant.class))).thenReturn(REISSUED_ACCESS_TOKEN);
             when(jwtProvider.createRefreshToken(eq(id), eq(role), any(Instant.class))).thenReturn(REISSUED_REFRESH_TOKEN);
+            when(jwtRepository.isExists(VALID_REFRESH_TOKEN)).thenReturn(true);
 
             // when
             tokenFilter.doFilterInternal(request, response, filterChain);
@@ -207,11 +212,27 @@ class TokenFilterTest {
         }
 
         @Test
+        @DisplayName("Refresh Token이 유효하지만, 화이트리스트로 등록되지 않은 경우, 401을 반환합니다.")
+        void returnUnauthorizedIfRefreshTokenIsNotInWhiteList() throws IOException, ServletException {
+            // given
+            when(request.getCookies()).thenReturn(new Cookie[]{new Cookie(REFRESH_TOKEN_COOKIE_NAME, VALID_REFRESH_TOKEN)});
+            when(jwtParser.isValid(VALID_REFRESH_TOKEN)).thenReturn(true);
+            when(jwtRepository.isExists(VALID_REFRESH_TOKEN)).thenReturn(false);
+
+            // when
+            tokenFilter.doFilterInternal(request, response, filterChain);
+
+            // then
+            verify(responseHandler).setResponse(response, StatusType.INVALID_REFRESH_TOKEN);
+            verifyNoInteractions(jwtProvider, authContext, filterChain);
+        }
+
+        @Test
         @DisplayName("Refresh token이 만료된 경우 토큰을 무효화하고 401을 반환합니다.")
         void shouldInvalidateTokenAndReturnUnauthorizedIfRefreshTokenIsExpired() throws IOException, ServletException {
             // given
             when(request.getCookies()).thenReturn(new Cookie[]{new Cookie(REFRESH_TOKEN_COOKIE_NAME, EXPIRED_REFRESH_TOKEN)});
-            when(jwtParser.isValid(EXPIRED_REFRESH_TOKEN)).thenReturn(false);
+            when(jwtParser.isValid(EXPIRED_REFRESH_TOKEN)).thenReturn(true);
 
             // when
             tokenFilter.doFilterInternal(request, response, filterChain);
