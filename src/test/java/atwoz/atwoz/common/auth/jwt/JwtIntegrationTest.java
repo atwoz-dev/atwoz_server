@@ -3,6 +3,7 @@ package atwoz.atwoz.common.auth.jwt;
 import atwoz.atwoz.common.auth.context.Role;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +20,24 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 class JwtIntegrationTest {
 
+    @Value("${jwt.secret}")
+    private String secret;
+
     @Value("${jwt.access-token.expiration}")
     private long accessTokenExpiration;
 
     @Value("${jwt.refresh-token.expiration}")
     private long refreshTokenExpiration;
 
-    @Autowired
     private JwtProvider jwtProvider;
 
-    @Autowired
     private JwtParser jwtParser;
+
+    @PostConstruct
+    public void init() {
+        jwtProvider = new JwtProvider(secret, accessTokenExpiration, refreshTokenExpiration);
+        jwtParser = new JwtParser(secret);
+    }
 
     @Test
     @DisplayName("Access token을 생성합니다.")
