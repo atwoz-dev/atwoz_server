@@ -1,6 +1,8 @@
 package atwoz.atwoz.common.auth.jwt;
 
-import atwoz.atwoz.common.auth.context.Role;
+import atwoz.atwoz.auth.context.Role;
+import atwoz.atwoz.auth.jwt.JwtParser;
+import atwoz.atwoz.auth.jwt.JwtProvider;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import org.junit.jupiter.api.DisplayName;

@@ -1,15 +1,12 @@
 package atwoz.atwoz.member.application;
 
-import atwoz.atwoz.common.auth.context.Role;
-import atwoz.atwoz.common.auth.jwt.JwtProvider;
-import atwoz.atwoz.common.auth.jwt.JwtRepository;
-import atwoz.atwoz.member.application.dto.MemberLoginResponse;
+import atwoz.atwoz.auth.context.Role;
+import atwoz.atwoz.auth.jwt.JwtProvider;
+import atwoz.atwoz.auth.jwt.JwtRepository;
 import atwoz.atwoz.member.application.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.domain.member.Member;
 import atwoz.atwoz.member.domain.member.MemberRepository;
 import atwoz.atwoz.member.exception.MemberPermanentStopException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

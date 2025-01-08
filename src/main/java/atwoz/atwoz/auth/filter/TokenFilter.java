@@ -1,14 +1,14 @@
-package atwoz.atwoz.common.auth.filter;
+package atwoz.atwoz.auth.filter;
 
 
-import atwoz.atwoz.common.auth.context.AuthContext;
-import atwoz.atwoz.common.auth.context.Role;
-import atwoz.atwoz.common.auth.filter.extractor.AccessTokenExtractor;
-import atwoz.atwoz.common.auth.filter.extractor.RefreshTokenExtractor;
-import atwoz.atwoz.common.auth.filter.response.ResponseHandler;
-import atwoz.atwoz.common.auth.jwt.JwtParser;
-import atwoz.atwoz.common.auth.jwt.JwtProvider;
-import atwoz.atwoz.common.auth.jwt.JwtRepository;
+import atwoz.atwoz.auth.context.AuthContext;
+import atwoz.atwoz.auth.context.Role;
+import atwoz.atwoz.auth.filter.extractor.AccessTokenExtractor;
+import atwoz.atwoz.auth.filter.extractor.RefreshTokenExtractor;
+import atwoz.atwoz.auth.filter.response.ResponseHandler;
+import atwoz.atwoz.auth.jwt.JwtParser;
+import atwoz.atwoz.auth.jwt.JwtProvider;
+import atwoz.atwoz.auth.jwt.JwtRepository;
 import atwoz.atwoz.common.presentation.StatusType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -112,7 +112,6 @@ public class TokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        // TODO: 기존 refresh token 무효화 메서드 구현
         invalidateRefreshToken(refreshToken);
         setUnauthorizedResponse(response, INVALID_REFRESH_TOKEN);
     }

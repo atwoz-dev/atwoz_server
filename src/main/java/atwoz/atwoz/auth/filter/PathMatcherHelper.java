@@ -1,4 +1,4 @@
-package atwoz.atwoz.common.auth.filter;
+package atwoz.atwoz.auth.filter;
 
 import org.springframework.http.server.PathContainer;
 import org.springframework.web.util.pattern.PathPattern;

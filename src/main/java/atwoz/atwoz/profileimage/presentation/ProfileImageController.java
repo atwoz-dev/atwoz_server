@@ -1,7 +1,7 @@
 package atwoz.atwoz.profileimage.presentation;
 
-import atwoz.atwoz.common.auth.context.AuthContext;
-import atwoz.atwoz.common.auth.context.AuthPrincipal;
+import atwoz.atwoz.auth.context.AuthContext;
+import atwoz.atwoz.auth.context.AuthPrincipal;
 import atwoz.atwoz.common.presentation.BaseResponse;
 import atwoz.atwoz.common.presentation.StatusType;
 import atwoz.atwoz.profileimage.application.ProfileImageService;
