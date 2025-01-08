@@ -1,5 +1,6 @@
-package atwoz.atwoz.auth.context;
+package atwoz.atwoz.auth.presentation;
 
+import atwoz.atwoz.auth.domain.Role;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

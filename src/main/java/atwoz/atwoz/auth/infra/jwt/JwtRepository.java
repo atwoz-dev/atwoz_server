@@ -1,4 +1,4 @@
-package atwoz.atwoz.auth.jwt;
+package atwoz.atwoz.auth.infra.jwt;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

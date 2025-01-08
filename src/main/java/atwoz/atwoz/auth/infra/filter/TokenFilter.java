@@ -1,14 +1,14 @@
-package atwoz.atwoz.auth.filter;
+package atwoz.atwoz.auth.infra.filter;
 
 
-import atwoz.atwoz.auth.context.AuthContext;
-import atwoz.atwoz.auth.context.Role;
-import atwoz.atwoz.auth.filter.extractor.AccessTokenExtractor;
-import atwoz.atwoz.auth.filter.extractor.RefreshTokenExtractor;
-import atwoz.atwoz.auth.filter.response.ResponseHandler;
-import atwoz.atwoz.auth.jwt.JwtParser;
-import atwoz.atwoz.auth.jwt.JwtProvider;
-import atwoz.atwoz.auth.jwt.JwtRepository;
+import atwoz.atwoz.auth.domain.Role;
+import atwoz.atwoz.auth.infra.filter.extractor.AccessTokenExtractor;
+import atwoz.atwoz.auth.infra.filter.extractor.RefreshTokenExtractor;
+import atwoz.atwoz.auth.infra.filter.response.ResponseHandler;
+import atwoz.atwoz.auth.infra.jwt.JwtParser;
+import atwoz.atwoz.auth.infra.jwt.JwtProvider;
+import atwoz.atwoz.auth.infra.jwt.JwtRepository;
+import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.common.presentation.StatusType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

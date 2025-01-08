@@ -1,4 +1,4 @@
-package atwoz.atwoz.auth.context;
+package atwoz.atwoz.auth.presentation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;

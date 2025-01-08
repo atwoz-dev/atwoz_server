@@ -1,4 +1,4 @@
-package atwoz.atwoz.auth.filter.extractor;
+package atwoz.atwoz.auth.infra.filter.extractor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;

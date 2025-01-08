@@ -1,7 +1,7 @@
-package atwoz.atwoz.auth.config;
+package atwoz.atwoz.auth.presentation.config;
 
 
-import atwoz.atwoz.auth.context.AuthResolver;
+import atwoz.atwoz.auth.presentation.AuthResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;

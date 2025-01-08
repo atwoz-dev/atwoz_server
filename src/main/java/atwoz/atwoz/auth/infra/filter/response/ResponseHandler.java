@@ -1,4 +1,4 @@
-package atwoz.atwoz.auth.filter.response;
+package atwoz.atwoz.auth.infra.filter.response;
 
 import atwoz.atwoz.common.presentation.StatusType;
 import com.fasterxml.jackson.core.JsonProcessingException;
