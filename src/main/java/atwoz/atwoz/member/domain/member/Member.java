@@ -1,17 +1,11 @@
 package atwoz.atwoz.member.domain.member;
 
-import atwoz.atwoz.common.domain.SoftDeleteBaseEntity;
+import atwoz.atwoz.common.SoftDeleteBaseEntity;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
 import atwoz.atwoz.member.domain.member.vo.MemberProfile;
-import atwoz.atwoz.member.domain.member.vo.Nickname;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.domain.Page;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Builder

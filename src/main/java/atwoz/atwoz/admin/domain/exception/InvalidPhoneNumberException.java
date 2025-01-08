@@ -1,4 +1,4 @@
-package atwoz.atwoz.common.domain.vo.exception;
+package atwoz.atwoz.admin.domain.exception;
 
 public class InvalidPhoneNumberException extends RuntimeException {
     public InvalidPhoneNumberException(String phoneNumber) {

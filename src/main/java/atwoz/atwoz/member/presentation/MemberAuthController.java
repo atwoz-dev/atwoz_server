@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.presentation;
 
-import atwoz.atwoz.common.presentation.BaseResponse;
-import atwoz.atwoz.common.presentation.StatusType;
+import atwoz.atwoz.common.BaseResponse;
+import atwoz.atwoz.common.StatusType;
 import atwoz.atwoz.member.application.MemberAuthService;
 import atwoz.atwoz.member.application.dto.MemberLoginResponse;
 import atwoz.atwoz.member.application.dto.MemberLoginServiceDto;

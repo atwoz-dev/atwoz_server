@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.domain.service;
+package atwoz.atwoz.admin.domain;
 
 public interface PasswordHasher {
 

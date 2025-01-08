@@ -1,6 +1,6 @@
-package atwoz.atwoz.admin.domain.admin;
+package atwoz.atwoz.admin.domain;
 
-import atwoz.atwoz.admin.domain.service.PasswordHasher;
+import atwoz.atwoz.admin.domain.exception.InvalidPasswordException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.EqualsAndHashCode;

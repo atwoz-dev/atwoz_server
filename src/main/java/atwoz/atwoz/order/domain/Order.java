@@ -1,6 +1,6 @@
 package atwoz.atwoz.order.domain;
 
-import atwoz.atwoz.common.domain.BaseEntity;
+import atwoz.atwoz.common.BaseEntity;
 import atwoz.atwoz.order.exception.InvalidOrderStatusException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

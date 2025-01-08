@@ -7,7 +7,7 @@ import atwoz.atwoz.auth.infra.jwt.JwtParser;
 import atwoz.atwoz.auth.infra.jwt.JwtProvider;
 import atwoz.atwoz.auth.infra.jwt.JwtRepository;
 import atwoz.atwoz.auth.presentation.AuthContext;
-import atwoz.atwoz.common.presentation.StatusType;
+import atwoz.atwoz.common.StatusType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -25,7 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 import java.time.Instant;
 
-import static atwoz.atwoz.common.presentation.StatusType.MISSING_REFRESH_TOKEN;
+import static atwoz.atwoz.common.StatusType.MISSING_REFRESH_TOKEN;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

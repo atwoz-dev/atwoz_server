@@ -2,8 +2,8 @@ package atwoz.atwoz.member.presentation;
 
 import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
-import atwoz.atwoz.common.presentation.BaseResponse;
-import atwoz.atwoz.common.presentation.StatusType;
+import atwoz.atwoz.common.BaseResponse;
+import atwoz.atwoz.common.StatusType;
 import atwoz.atwoz.member.application.MemberService;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateResponse;

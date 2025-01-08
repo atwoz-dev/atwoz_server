@@ -1,6 +1,6 @@
 package atwoz.atwoz.hobby.domain;
 
-import atwoz.atwoz.common.domain.BaseEntity;
+import atwoz.atwoz.common.BaseEntity;
 import atwoz.atwoz.hobby.exception.InvalidHobbyNameException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

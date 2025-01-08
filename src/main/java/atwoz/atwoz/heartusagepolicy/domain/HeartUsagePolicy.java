@@ -1,7 +1,7 @@
 package atwoz.atwoz.heartusagepolicy.domain;
 
 
-import atwoz.atwoz.common.domain.BaseEntity;
+import atwoz.atwoz.common.BaseEntity;
 import atwoz.atwoz.hearttransaction.domain.vo.TransactionType;
 import atwoz.atwoz.hearttransaction.exception.InvalidHeartTransactionTypeException;
 import atwoz.atwoz.member.domain.member.Gender;

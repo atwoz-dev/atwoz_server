@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.domain.admin;
+package atwoz.atwoz.admin.domain.exception;
 
 public class InvalidPasswordException extends RuntimeException {
     public InvalidPasswordException(String password) {

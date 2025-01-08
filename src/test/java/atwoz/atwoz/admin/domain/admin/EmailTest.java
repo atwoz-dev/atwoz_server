@@ -1,6 +1,7 @@
-package atwoz.atwoz.common.domain.vo;
+package atwoz.atwoz.admin.domain.admin;
 
-import atwoz.atwoz.common.domain.vo.exception.InvalidEmailException;
+import atwoz.atwoz.admin.domain.Email;
+import atwoz.atwoz.admin.domain.exception.InvalidEmailException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

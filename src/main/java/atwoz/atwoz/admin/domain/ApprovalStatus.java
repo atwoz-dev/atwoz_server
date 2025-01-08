@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.domain.admin;
+package atwoz.atwoz.admin.domain;
 
 import lombok.Getter;
 

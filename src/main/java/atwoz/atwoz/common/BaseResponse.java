@@ -1,4 +1,4 @@
-package atwoz.atwoz.common.presentation;
+package atwoz.atwoz.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

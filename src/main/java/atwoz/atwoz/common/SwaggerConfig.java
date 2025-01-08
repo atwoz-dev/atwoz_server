@@ -1,4 +1,4 @@
-package atwoz.atwoz.common.swagger;
+package atwoz.atwoz.common;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

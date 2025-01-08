@@ -9,7 +9,7 @@ import atwoz.atwoz.auth.infra.jwt.JwtParser;
 import atwoz.atwoz.auth.infra.jwt.JwtProvider;
 import atwoz.atwoz.auth.infra.jwt.JwtRepository;
 import atwoz.atwoz.auth.presentation.AuthContext;
-import atwoz.atwoz.common.presentation.StatusType;
+import atwoz.atwoz.common.StatusType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -25,7 +25,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import static atwoz.atwoz.common.presentation.StatusType.*;
+import static atwoz.atwoz.common.StatusType.*;
 
 @Slf4j
 @Component
@@ -35,7 +35,7 @@ public class TokenFilter extends OncePerRequestFilter {
     private static final List<String> EXCLUDED_URIS = List.of(
             "/member/auth/login", "/member/auth/logout",
             "/admin/login", "/admin/signup",
-            "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**"
+            "/v3/api-docs/**", "/config-ui.html", "/config-ui/**", "/config-resources/**", "/webjars/**"
     );
     private final PathMatcherHelper pathMatcher = new PathMatcherHelper(EXCLUDED_URIS);
     private final JwtProvider jwtProvider;
