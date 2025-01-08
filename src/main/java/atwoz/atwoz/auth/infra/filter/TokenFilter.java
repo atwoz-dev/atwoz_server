@@ -19,7 +19,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 
 import static atwoz.atwoz.common.StatusType.*;
@@ -29,12 +28,7 @@ import static atwoz.atwoz.common.StatusType.*;
 @RequiredArgsConstructor
 public class TokenFilter extends OncePerRequestFilter {
 
-    private static final List<String> EXCLUDED_URIS = List.of(
-            "/member/auth/login", "/member/auth/logout",
-            "/admin/login", "/admin/signup",
-            "/v3/api-docs/**", "/config-ui.html", "/config-ui/**", "/config-resources/**", "/webjars/**"
-    );
-    private final PathMatcherHelper pathMatcher = new PathMatcherHelper(EXCLUDED_URIS);
+    private final PathMatcherHelper pathMatcherHelper;
     private final TokenProvider tokenProvider;
     private final TokenParser tokenParser;
     private final TokenRepository tokenRepository;
@@ -72,7 +66,7 @@ public class TokenFilter extends OncePerRequestFilter {
     }
 
     private boolean isExcluded(String uri) {
-        return pathMatcher.isExcluded(uri);
+        return pathMatcherHelper.isExcluded(uri);
     }
 
     private boolean isValid(String token) {

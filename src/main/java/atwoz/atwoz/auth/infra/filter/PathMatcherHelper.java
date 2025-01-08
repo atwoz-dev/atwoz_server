@@ -12,6 +12,7 @@ public class PathMatcherHelper {
 
     public PathMatcherHelper(List<String> excludePatterns) {
         PathPatternParser parser = new PathPatternParser();
+
         this.excludePatterns = excludePatterns.stream()
                 .map(parser::parse)
                 .toList();
