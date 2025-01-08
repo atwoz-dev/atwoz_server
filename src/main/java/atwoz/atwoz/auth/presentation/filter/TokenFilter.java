@@ -1,4 +1,4 @@
-package atwoz.atwoz.auth.infra.filter;
+package atwoz.atwoz.auth.presentation.filter;
 
 
 import atwoz.atwoz.auth.domain.Role;
@@ -42,7 +42,7 @@ public class TokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        Optional<String> optionalAccessToken = AccessTokenExtractor.extractFrom(request);
+        Optional<String> optionalAccessToken = TokenExtractor.extractAccessToken(request);
 
         if (optionalAccessToken.isEmpty()) {
             setUnauthorizedResponse(response, MISSING_ACCESS_TOKEN);
@@ -84,7 +84,7 @@ public class TokenFilter extends OncePerRequestFilter {
     }
 
     private void handleExpiredAccessToken(HttpServletRequest request, HttpServletResponse response) {
-        Optional<String> optionalRefreshToken = RefreshTokenExtractor.extractFrom(request);
+        Optional<String> optionalRefreshToken = TokenExtractor.extractRefreshToken(request);
 
         if (optionalRefreshToken.isEmpty()) {
             setUnauthorizedResponse(response, MISSING_REFRESH_TOKEN);

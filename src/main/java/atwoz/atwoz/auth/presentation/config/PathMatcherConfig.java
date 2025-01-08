@@ -1,6 +1,6 @@
-package atwoz.atwoz.auth.infra.config;
+package atwoz.atwoz.auth.presentation.config;
 
-import atwoz.atwoz.auth.infra.filter.PathMatcherHelper;
+import atwoz.atwoz.auth.presentation.filter.PathMatcherHelper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
