@@ -2,9 +2,9 @@ name: CI / CD using Github actions & docker
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: [ "test/main" ]
   push:
-    branches: [ "main" ]
+    branches: [ "test/main" ]
 
 permissions:
   pull-requests: write
@@ -62,18 +62,18 @@ jobs:
         run: |
           echo "${{secrets.SSH_PEM_KEY}}" > $HOME/key.pem
           chmod 400 $HOME/key.pem
-          ssh -i $HOME/key.pem ${{secrets.EC2_USERNAME}}@${{secrets.EC2_HOST}} << 'EOF'
+          
+          ssh -t -i $HOME/key.pem -o StrictHostKeyChecking=no ${{secrets.EC2_USERNAME}}@${{secrets.EC2_HOST}} << 'EOF'
             # Export environment variable inside the SSH session
             export ENV="${{secrets.ENV}}"
 
             # Alternatively, create the .env file directly on the EC2 instance
             echo "$ENV" > /home/ubuntu/.env
 
-            # Pull the Docker image with sudo
-            sudo docker pull ggongtae/atwoz:latest
-
             # Run the deploy script with sudo
+            echo "Run Deploy Script" 
             sudo /home/ubuntu/deploy_script.sh
+          
+            # Exit SSH session.
+            exit
           EOF
-          
-          
