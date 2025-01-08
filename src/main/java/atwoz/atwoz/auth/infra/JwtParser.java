@@ -1,6 +1,7 @@
-package atwoz.atwoz.auth.infra.jwt;
+package atwoz.atwoz.auth.infra;
 
 import atwoz.atwoz.auth.domain.Role;
+import atwoz.atwoz.auth.domain.TokenParser;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +13,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 @Component
-public class JwtParser {
+public class JwtParser implements TokenParser {
 
     private static final String ROLE = "role";
     private final Key key;
@@ -41,16 +42,16 @@ public class JwtParser {
         }
     }
 
-    public Long getIdFrom(String token) {
+    public long getId(String token) {
         return Long.parseLong(getSubject(token));
     }
 
-    public Role getRoleFrom(String token) {
+    public Role getRole(String token) {
         return Role.valueOf(getClaim(token, ROLE, String.class));
     }
 
-    public Instant getExpirationFrom(String token) {
-        return getExpiration(token)
+    public Instant getExpiration(String token) {
+        return getExpirationDate(token)
                 .toInstant()
                 .truncatedTo(ChronoUnit.SECONDS);
     }
@@ -70,7 +71,7 @@ public class JwtParser {
         return parseClaims(token).getSubject();
     }
 
-    private Date getExpiration(String token) {
+    private Date getExpirationDate(String token) {
         return parseClaims(token).getExpiration();
     }
 

@@ -1,6 +1,5 @@
-package atwoz.atwoz.common.domain;
+package atwoz.atwoz.common;
 
-import atwoz.atwoz.common.SoftDeleteBaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

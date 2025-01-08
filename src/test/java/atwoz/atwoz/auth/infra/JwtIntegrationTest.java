@@ -1,8 +1,6 @@
-package atwoz.atwoz.common.auth.jwt;
+package atwoz.atwoz.auth.infra;
 
 import atwoz.atwoz.auth.domain.Role;
-import atwoz.atwoz.auth.infra.jwt.JwtParser;
-import atwoz.atwoz.auth.infra.jwt.JwtProvider;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import org.junit.jupiter.api.DisplayName;
@@ -46,9 +44,9 @@ class JwtIntegrationTest {
 
         // then
         assertThat(token).isNotNull();
-        assertThat(jwtParser.getIdFrom(token)).isEqualTo(id);
-        assertThat(jwtParser.getRoleFrom(token)).isEqualTo(role);
-        Instant expirationFrom = jwtParser.getExpirationFrom(token);
+        assertThat(jwtParser.getId(token)).isEqualTo(id);
+        assertThat(jwtParser.getRole(token)).isEqualTo(role);
+        Instant expirationFrom = jwtParser.getExpiration(token);
         assertThat(expirationFrom)
                 .isEqualTo(now.plus(Duration.ofSeconds(accessTokenExpiration)));
     }
@@ -66,9 +64,9 @@ class JwtIntegrationTest {
 
         // then
         assertThat(token).isNotNull();
-        assertThat(jwtParser.getIdFrom(token)).isEqualTo(id);
-        assertThat(jwtParser.getRoleFrom(token)).isEqualTo(role);
-        assertThat(jwtParser.getExpirationFrom(token))
+        assertThat(jwtParser.getId(token)).isEqualTo(id);
+        assertThat(jwtParser.getRole(token)).isEqualTo(role);
+        assertThat(jwtParser.getExpiration(token))
                 .isEqualTo(now.plus(Duration.ofSeconds(refreshTokenExpiration)));
     }
 
@@ -79,7 +77,7 @@ class JwtIntegrationTest {
         String token = "invalid token";
 
         // when & then
-        assertThatThrownBy(() -> jwtParser.getIdFrom(token)).isInstanceOf(JwtException.class);
+        assertThatThrownBy(() -> jwtParser.getId(token)).isInstanceOf(JwtException.class);
     }
 
     @Test
@@ -90,7 +88,7 @@ class JwtIntegrationTest {
 
         // when & then
         assertThat(jwtParser.isValid(token)).isFalse();
-        assertThatThrownBy(() -> jwtParser.getRoleFrom(token)).isInstanceOf(JwtException.class);
+        assertThatThrownBy(() -> jwtParser.getRole(token)).isInstanceOf(JwtException.class);
     }
 
     @Test
@@ -101,7 +99,7 @@ class JwtIntegrationTest {
 
         // when & then
         assertThat(jwtParser.isValid(token)).isFalse();
-        assertThatThrownBy(() -> jwtParser.getExpirationFrom(token)).isInstanceOf(JwtException.class);
+        assertThatThrownBy(() -> jwtParser.getExpiration(token)).isInstanceOf(JwtException.class);
     }
 
     @Test
@@ -117,7 +115,7 @@ class JwtIntegrationTest {
 
         // then
         assertThat(jwtParser.isExpired(token)).isTrue();
-        assertThatThrownBy(() -> jwtParser.getExpirationFrom(token)).isInstanceOf(ExpiredJwtException.class);
+        assertThatThrownBy(() -> jwtParser.getExpiration(token)).isInstanceOf(ExpiredJwtException.class);
     }
 
     @Test
@@ -133,6 +131,6 @@ class JwtIntegrationTest {
 
         // then
         assertThat(jwtParser.isExpired(token)).isTrue();
-        assertThatThrownBy(() -> jwtParser.getExpirationFrom(token)).isInstanceOf(ExpiredJwtException.class);
+        assertThatThrownBy(() -> jwtParser.getExpiration(token)).isInstanceOf(ExpiredJwtException.class);
     }
 }

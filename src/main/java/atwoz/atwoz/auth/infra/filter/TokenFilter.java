@@ -2,12 +2,9 @@ package atwoz.atwoz.auth.infra.filter;
 
 
 import atwoz.atwoz.auth.domain.Role;
-import atwoz.atwoz.auth.infra.filter.extractor.AccessTokenExtractor;
-import atwoz.atwoz.auth.infra.filter.extractor.RefreshTokenExtractor;
-import atwoz.atwoz.auth.infra.filter.response.ResponseHandler;
-import atwoz.atwoz.auth.infra.jwt.JwtParser;
-import atwoz.atwoz.auth.infra.jwt.JwtProvider;
-import atwoz.atwoz.auth.infra.jwt.JwtRepository;
+import atwoz.atwoz.auth.domain.TokenParser;
+import atwoz.atwoz.auth.domain.TokenProvider;
+import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.common.StatusType;
 import jakarta.servlet.FilterChain;
@@ -38,9 +35,9 @@ public class TokenFilter extends OncePerRequestFilter {
             "/v3/api-docs/**", "/config-ui.html", "/config-ui/**", "/config-resources/**", "/webjars/**"
     );
     private final PathMatcherHelper pathMatcher = new PathMatcherHelper(EXCLUDED_URIS);
-    private final JwtProvider jwtProvider;
-    private final JwtParser jwtParser;
-    private final JwtRepository jwtRepository;
+    private final TokenProvider tokenProvider;
+    private final TokenParser tokenParser;
+    private final TokenRepository tokenRepository;
     private final ResponseHandler responseHandler;
     private final AuthContext authContext;
 
@@ -79,16 +76,16 @@ public class TokenFilter extends OncePerRequestFilter {
     }
 
     private boolean isValid(String token) {
-        return jwtParser.isValid(token);
+        return tokenParser.isValid(token);
     }
 
     private boolean isExpired(String token) {
-        return jwtParser.isExpired(token);
+        return tokenParser.isExpired(token);
     }
 
     private void setAuthenticationContext(String accessToken) {
-        Long id = jwtParser.getIdFrom(accessToken);
-        Role role = jwtParser.getRoleFrom(accessToken);
+        Long id = tokenParser.getId(accessToken);
+        Role role = tokenParser.getRole(accessToken);
         authContext.authenticate(id, role);
     }
 
@@ -102,12 +99,12 @@ public class TokenFilter extends OncePerRequestFilter {
 
         String refreshToken = optionalRefreshToken.get();
 
-        if (isValid(refreshToken) && jwtRepository.isExists(refreshToken)) {
+        if (isValid(refreshToken) && tokenRepository.exists(refreshToken)) {
             String reissuedAccessToken = reissueAccessToken(refreshToken);
             addAccessTokenToHeader(response, reissuedAccessToken);
 
             String reissuedRefreshToken = reissueRefreshToken(refreshToken);
-            jwtRepository.save(reissuedRefreshToken);
+            tokenRepository.save(reissuedRefreshToken);
             addRefreshTokenToCookie(response, reissuedRefreshToken);
             return;
         }
@@ -131,20 +128,20 @@ public class TokenFilter extends OncePerRequestFilter {
     }
 
     private String reissueRefreshToken(String token) {
-        Long id = jwtParser.getIdFrom(token);
-        Role role = jwtParser.getRoleFrom(token);
+        long id = tokenParser.getId(token);
+        Role role = tokenParser.getRole(token);
         invalidateRefreshToken(token);
-        return jwtProvider.createRefreshToken(id, role, Instant.now());
+        return tokenProvider.createRefreshToken(id, role, Instant.now());
     }
 
     private String reissueAccessToken(String token) {
-        Long id = jwtParser.getIdFrom(token);
-        Role role = jwtParser.getRoleFrom(token);
-        return jwtProvider.createAccessToken(id, role, Instant.now());
+        long id = tokenParser.getId(token);
+        Role role = tokenParser.getRole(token);
+        return tokenProvider.createAccessToken(id, role, Instant.now());
     }
 
     private void invalidateRefreshToken(String refreshToken) {
-        jwtRepository.delete(refreshToken);
+        tokenRepository.delete(refreshToken);
     }
 
     private void setUnauthorizedResponse(HttpServletResponse response, StatusType statusType) {

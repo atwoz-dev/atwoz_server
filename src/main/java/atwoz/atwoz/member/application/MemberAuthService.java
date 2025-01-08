@@ -1,8 +1,8 @@
 package atwoz.atwoz.member.application;
 
 import atwoz.atwoz.auth.domain.Role;
-import atwoz.atwoz.auth.infra.jwt.JwtProvider;
-import atwoz.atwoz.auth.infra.jwt.JwtRepository;
+import atwoz.atwoz.auth.infra.JwtProvider;
+import atwoz.atwoz.auth.infra.TokenRedisRepository;
 import atwoz.atwoz.member.application.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.domain.member.Member;
 import atwoz.atwoz.member.domain.member.MemberRepository;
@@ -19,7 +19,7 @@ public class MemberAuthService {
 
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
-    private final JwtRepository jwtRepository;
+    private final TokenRedisRepository jwtRepository;
 
     @Transactional
     public MemberLoginServiceDto login(String phoneNumber) {

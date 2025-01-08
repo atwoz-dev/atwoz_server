@@ -1,4 +1,4 @@
-package atwoz.atwoz.common.domain;
+package atwoz.atwoz.common;
 
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;

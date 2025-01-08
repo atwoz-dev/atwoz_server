@@ -1,6 +1,7 @@
-package atwoz.atwoz.auth.infra.jwt;
+package atwoz.atwoz.auth.infra;
 
 import atwoz.atwoz.auth.domain.Role;
+import atwoz.atwoz.auth.domain.TokenProvider;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +12,7 @@ import java.time.Instant;
 import java.util.Date;
 
 @Component
-public class JwtProvider {
+public class JwtProvider implements TokenProvider {
 
     private static final String ROLE = "role";
 
@@ -27,20 +28,20 @@ public class JwtProvider {
         this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
-    public String createAccessToken(long id, Role role, Instant now) {
-        return createToken(id, role, accessTokenExpiration, now);
+    public String createAccessToken(long id, Role role, Instant issuedAt) {
+        return createToken(id, role, accessTokenExpiration, issuedAt);
     }
 
-    public String createRefreshToken(long id, Role role, Instant now) {
-        return createToken(id, role, refreshTokenExpiration, now);
+    public String createRefreshToken(long id, Role role, Instant issuedAt) {
+        return createToken(id, role, refreshTokenExpiration, issuedAt);
     }
 
-    private String createToken(long id, Role role, long expiration, Instant now) {
+    private String createToken(long id, Role role, long expiration, Instant issuedAt) {
         return Jwts.builder()
                 .setSubject(String.valueOf(id))
                 .claim(ROLE, role)
-                .setIssuedAt(Date.from(now))
-                .setExpiration(Date.from(now.plusSeconds(expiration)))
+                .setIssuedAt(Date.from(issuedAt))
+                .setExpiration(Date.from(issuedAt.plusSeconds(expiration)))
                 .signWith(key)
                 .compact();
     }

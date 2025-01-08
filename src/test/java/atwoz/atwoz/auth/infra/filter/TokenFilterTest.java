@@ -1,11 +1,9 @@
-package atwoz.atwoz.common.auth.filter;
+package atwoz.atwoz.auth.infra.filter;
 
 import atwoz.atwoz.auth.domain.Role;
-import atwoz.atwoz.auth.infra.filter.TokenFilter;
-import atwoz.atwoz.auth.infra.filter.response.ResponseHandler;
-import atwoz.atwoz.auth.infra.jwt.JwtParser;
-import atwoz.atwoz.auth.infra.jwt.JwtProvider;
-import atwoz.atwoz.auth.infra.jwt.JwtRepository;
+import atwoz.atwoz.auth.infra.JwtParser;
+import atwoz.atwoz.auth.infra.JwtProvider;
+import atwoz.atwoz.auth.infra.TokenRedisRepository;
 import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.common.StatusType;
 import jakarta.servlet.FilterChain;
@@ -49,7 +47,7 @@ class TokenFilterTest {
     private FilterChain filterChain;
 
     @Mock
-    private JwtRepository jwtRepository;
+    private TokenRedisRepository jwtRepository;
 
     @Mock
     private JwtProvider jwtProvider;
@@ -104,8 +102,8 @@ class TokenFilterTest {
         when(request.getHeader(AUTHORIZATION_HEADER)).thenReturn(BEARER_PREFIX + VALID_ACCESS_TOKEN);
 
         when(jwtParser.isValid(VALID_ACCESS_TOKEN)).thenReturn(true);
-        when(jwtParser.getIdFrom(VALID_ACCESS_TOKEN)).thenReturn(1L);
-        when(jwtParser.getRoleFrom(VALID_ACCESS_TOKEN)).thenReturn(Role.MEMBER);
+        when(jwtParser.getId(VALID_ACCESS_TOKEN)).thenReturn(1L);
+        when(jwtParser.getRole(VALID_ACCESS_TOKEN)).thenReturn(Role.MEMBER);
 
         // when
         tokenFilter.doFilterInternal(request, response, filterChain);
@@ -179,12 +177,12 @@ class TokenFilterTest {
             Role role = Role.MEMBER;
 
             when(jwtParser.isValid(VALID_REFRESH_TOKEN)).thenReturn(true);
-            when(jwtParser.getIdFrom(VALID_REFRESH_TOKEN)).thenReturn(id);
-            when(jwtParser.getRoleFrom(VALID_REFRESH_TOKEN)).thenReturn(role);
+            when(jwtParser.getId(VALID_REFRESH_TOKEN)).thenReturn(id);
+            when(jwtParser.getRole(VALID_REFRESH_TOKEN)).thenReturn(role);
 
             when(jwtProvider.createAccessToken(eq(id), eq(role), any(Instant.class))).thenReturn(REISSUED_ACCESS_TOKEN);
             when(jwtProvider.createRefreshToken(eq(id), eq(role), any(Instant.class))).thenReturn(REISSUED_REFRESH_TOKEN);
-            when(jwtRepository.isExists(VALID_REFRESH_TOKEN)).thenReturn(true);
+            when(jwtRepository.exists(VALID_REFRESH_TOKEN)).thenReturn(true);
 
             // when
             tokenFilter.doFilterInternal(request, response, filterChain);
@@ -218,7 +216,7 @@ class TokenFilterTest {
             // given
             when(request.getCookies()).thenReturn(new Cookie[]{new Cookie(REFRESH_TOKEN_COOKIE_NAME, VALID_REFRESH_TOKEN)});
             when(jwtParser.isValid(VALID_REFRESH_TOKEN)).thenReturn(true);
-            when(jwtRepository.isExists(VALID_REFRESH_TOKEN)).thenReturn(false);
+            when(jwtRepository.exists(VALID_REFRESH_TOKEN)).thenReturn(false);
 
             // when
             tokenFilter.doFilterInternal(request, response, filterChain);
