@@ -5,8 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.time.Duration;
-
 @Repository
 @RequiredArgsConstructor
 public class TokenRedisRepository implements TokenRepository {
@@ -15,8 +13,8 @@ public class TokenRedisRepository implements TokenRepository {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void save(String token, Duration duration) {
-        redisTemplate.opsForValue().set(PREFIX + token, "", duration);
+    public void save(String token) {
+        redisTemplate.opsForValue().set(PREFIX + token, "");
     }
 
     public void delete(String token) {

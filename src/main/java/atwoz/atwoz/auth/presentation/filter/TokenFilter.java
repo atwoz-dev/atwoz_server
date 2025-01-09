@@ -1,10 +1,9 @@
 package atwoz.atwoz.auth.presentation.filter;
 
 
+import atwoz.atwoz.auth.application.AuthResult;
+import atwoz.atwoz.auth.application.AuthService;
 import atwoz.atwoz.auth.domain.Role;
-import atwoz.atwoz.auth.domain.TokenParser;
-import atwoz.atwoz.auth.domain.TokenProvider;
-import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.common.StatusType;
 import jakarta.servlet.FilterChain;
@@ -18,20 +17,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.Optional;
 
-import static atwoz.atwoz.common.StatusType.*;
+import static atwoz.atwoz.common.StatusType.INVALID_ACCESS_TOKEN;
+import static atwoz.atwoz.common.StatusType.MISSING_ACCESS_TOKEN;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class TokenFilter extends OncePerRequestFilter {
 
+    private static final int FOUR_WEEKS_IN_SECONDS = 60 * 60 * 24 * 7 * 4;
+
     private final PathMatcherHelper pathMatcherHelper;
-    private final TokenProvider tokenProvider;
-    private final TokenParser tokenParser;
-    private final TokenRepository tokenRepository;
+    private final TokenExtractor tokenExtractor;
+    private final AuthService authService;
     private final ResponseHandler responseHandler;
     private final AuthContext authContext;
 
@@ -42,7 +42,10 @@ public class TokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        Optional<String> optionalAccessToken = TokenExtractor.extractAccessToken(request);
+        // TODO: status type, role 어떻게 다룰지 수정 필요
+
+        Optional<String> optionalAccessToken = tokenExtractor.extractAccessToken(request);
+        Optional<String> optionalRefreshToken = tokenExtractor.extractRefreshToken(request);
 
         if (optionalAccessToken.isEmpty()) {
             setUnauthorizedResponse(response, MISSING_ACCESS_TOKEN);
@@ -50,18 +53,28 @@ public class TokenFilter extends OncePerRequestFilter {
         }
 
         String accessToken = optionalAccessToken.get();
+        String refreshToken = optionalRefreshToken.orElse(null);
 
-        if (isValid(accessToken)) {
-            setAuthenticationContext(accessToken);
-            filterChain.doFilter(request, response);
+        AuthResult result = authService.authenticate(accessToken, refreshToken);
+
+        if (!result.isSuccess()) {
+            setUnauthorizedResponse(response, StatusType.valueOf(result.getErrorCode()));
             return;
         }
 
-        if (isExpired(accessToken)) {
-            handleExpiredAccessToken(request, response);
-            return;
+        Long memberId = result.getMemberId();
+        String role = result.getRole();
+
+        if (memberId != null && role != null) {
+            authContext.authenticate(memberId, Role.valueOf(role));
         }
 
+        if (result.isReissued()) {
+            addAccessTokenToHeader(response, result.getReissuedAccessToken());
+            addRefreshTokenToCookie(response, result.getReissuedRefreshToken());
+        }
+
+        // TODO: 응답 어떻게 할지 여기까지 도달하면 어떤 경우?
         setUnauthorizedResponse(response, INVALID_ACCESS_TOKEN);
     }
 
@@ -69,73 +82,18 @@ public class TokenFilter extends OncePerRequestFilter {
         return pathMatcherHelper.isExcluded(uri);
     }
 
-    private boolean isValid(String token) {
-        return tokenParser.isValid(token);
-    }
-
-    private boolean isExpired(String token) {
-        return tokenParser.isExpired(token);
-    }
-
-    private void setAuthenticationContext(String accessToken) {
-        Long id = tokenParser.getId(accessToken);
-        Role role = tokenParser.getRole(accessToken);
-        authContext.authenticate(id, role);
-    }
-
-    private void handleExpiredAccessToken(HttpServletRequest request, HttpServletResponse response) {
-        Optional<String> optionalRefreshToken = TokenExtractor.extractRefreshToken(request);
-
-        if (optionalRefreshToken.isEmpty()) {
-            setUnauthorizedResponse(response, MISSING_REFRESH_TOKEN);
-            return;
-        }
-
-        String refreshToken = optionalRefreshToken.get();
-
-        if (isValid(refreshToken) && tokenRepository.exists(refreshToken)) {
-            String reissuedAccessToken = reissueAccessToken(refreshToken);
-            addAccessTokenToHeader(response, reissuedAccessToken);
-
-            String reissuedRefreshToken = reissueRefreshToken(refreshToken);
-            tokenRepository.save(reissuedRefreshToken);
-            addRefreshTokenToCookie(response, reissuedRefreshToken);
-            return;
-        }
-
-        invalidateRefreshToken(refreshToken);
-        setUnauthorizedResponse(response, INVALID_REFRESH_TOKEN);
+    private void addAccessTokenToHeader(HttpServletResponse response, String accessToken) {
+        response.setHeader("Authorization", "Bearer " + accessToken);
     }
 
     private void addRefreshTokenToCookie(HttpServletResponse response, String refreshToken) {
         Cookie cookie = new Cookie("refresh_token", refreshToken);
-        cookie.setMaxAge(60 * 60 * 24 * 7 * 4);  // 4주
+        cookie.setMaxAge(FOUR_WEEKS_IN_SECONDS);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
 
         response.addCookie(cookie);
-    }
-
-    private void addAccessTokenToHeader(HttpServletResponse response, String accessToken) {
-        response.setHeader("Authorization", "Bearer " + accessToken);
-    }
-
-    private String reissueRefreshToken(String token) {
-        long id = tokenParser.getId(token);
-        Role role = tokenParser.getRole(token);
-        invalidateRefreshToken(token);
-        return tokenProvider.createRefreshToken(id, role, Instant.now());
-    }
-
-    private String reissueAccessToken(String token) {
-        long id = tokenParser.getId(token);
-        Role role = tokenParser.getRole(token);
-        return tokenProvider.createAccessToken(id, role, Instant.now());
-    }
-
-    private void invalidateRefreshToken(String refreshToken) {
-        tokenRepository.delete(refreshToken);
     }
 
     private void setUnauthorizedResponse(HttpServletResponse response, StatusType statusType) {

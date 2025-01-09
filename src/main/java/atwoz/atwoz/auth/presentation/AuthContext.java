@@ -14,10 +14,10 @@ import org.springframework.web.context.annotation.RequestScope;
 @Getter
 public class AuthContext {
 
-    private Long id;
+    private long id;
     private Role role;
 
-    public void authenticate(@NonNull Long id, @NonNull Role role) {
+    public void authenticate(long id, @NonNull Role role) {
         this.id = id;
         this.role = role;
     }

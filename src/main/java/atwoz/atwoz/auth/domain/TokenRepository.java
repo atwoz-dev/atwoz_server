@@ -1,10 +1,8 @@
 package atwoz.atwoz.auth.domain;
 
-import java.time.Duration;
-
 public interface TokenRepository {
 
-    void save(String token, Duration expiration);
+    void save(String token);
 
     void delete(String token);
 
