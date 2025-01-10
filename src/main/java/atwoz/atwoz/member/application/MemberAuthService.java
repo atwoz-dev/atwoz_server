@@ -1,8 +1,8 @@
 package atwoz.atwoz.member.application;
 
-import atwoz.atwoz.auth.domain.Role;
 import atwoz.atwoz.auth.infra.JwtProvider;
 import atwoz.atwoz.auth.infra.TokenRedisRepository;
+import atwoz.atwoz.common.Role;
 import atwoz.atwoz.member.application.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.domain.member.Member;
 import atwoz.atwoz.member.domain.member.MemberRepository;

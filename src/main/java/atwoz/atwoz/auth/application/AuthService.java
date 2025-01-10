@@ -1,10 +1,15 @@
 package atwoz.atwoz.auth.application;
 
-import atwoz.atwoz.auth.domain.*;
+import atwoz.atwoz.auth.domain.TokenParser;
+import atwoz.atwoz.auth.domain.TokenProvider;
+import atwoz.atwoz.auth.domain.TokenRepository;
+import atwoz.atwoz.common.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+
+import static atwoz.atwoz.auth.application.AuthErrorStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -14,21 +19,48 @@ public class AuthService {
     private final TokenParser tokenParser;
     private final TokenRepository tokenRepository;
 
-    public AuthResult authenticate(String accessToken, String refreshToken) {
+    public AuthResponse authenticate(String accessToken, String refreshToken) {
+        if (accessToken == null) {
+            return AuthResponse.error(MISSING_ACCESS_TOKEN);
+        }
+
         if (isValid(accessToken)) {
-            AuthMember authMember = parseAuthMember(accessToken);
-            return AuthResult.success(authMember.getId(), authMember.getRole().toString());
+            return AuthResponse.authenticated(getId(accessToken), getRole(accessToken));
         }
 
         if (isExpired(accessToken)) {
             if (refreshToken == null) {
-                return AuthResult.error("MISSING_REFRESH_TOKEN");
+                return AuthResponse.error(MISSING_REFRESH_TOKEN);
             }
-
             return reissueTokens(refreshToken);
         }
 
-        return AuthResult.error("INVALID_ACCESS_TOKEN");
+        return AuthResponse.error(INVALID_ACCESS_TOKEN);
+    }
+
+    private AuthResponse reissueTokens(String refreshToken) {
+        if (!isValid(refreshToken) || !exists(refreshToken)) {
+            invalidateRefreshToken(refreshToken);
+            return AuthResponse.error(INVALID_REFRESH_TOKEN);
+        }
+
+        invalidateRefreshToken(refreshToken);
+
+        long id = getId(refreshToken);
+        Role role = getRole(refreshToken);
+
+        String reissuedAccessToken = createAccessToken(id, role, Instant.now());
+        String reissuedRefreshToken = createRefreshToken(id, role, Instant.now());
+
+        return AuthResponse.reissued(id, role, reissuedAccessToken, reissuedRefreshToken);
+    }
+
+    private Role getRole(String token) {
+        return tokenParser.getRole(token);
+    }
+
+    private long getId(String token) {
+        return tokenParser.getId(token);
     }
 
     private boolean isValid(String token) {
@@ -39,45 +71,19 @@ public class AuthService {
         return tokenParser.isExpired(token);
     }
 
-    private AuthMember parseAuthMember(String token) {
-        long id = tokenParser.getId(token);
-        Role role = tokenParser.getRole(token);
-        return AuthMember.of(id, role);
-    }
-
-    private AuthResult reissueTokens(String refreshToken) {
-        if (!isValid(refreshToken) || !exists(refreshToken)) {
-            invalidateRefreshToken(refreshToken);
-            return AuthResult.error("INVALID_REFRESH_TOKEN");
-        }
-
-        AuthMember member = parseAuthMember(refreshToken);
-
-        invalidateRefreshToken(refreshToken);
-
-        String newRefresh = tokenProvider.createRefreshToken(member.getId(), member.getRole(), Instant.now());
-        tokenRepository.save(newRefresh);
-
-        String newAccess = tokenProvider.createAccessToken(member.getId(), member.getRole(), Instant.now());
-
-        return AuthResult.reissued(member.getId(), member.getRole().name(), newAccess, newRefresh);
-    }
-
-    public boolean exists(String token) {
+    private boolean exists(String token) {
         return tokenRepository.exists(token);
     }
 
     private void invalidateRefreshToken(String token) {
-        if (token != null) {
-            tokenRepository.delete(token);
-        }
+        tokenRepository.delete(token);
     }
 
-    public String createAccessToken(long id, Role role, Instant issuedAt) {
+    private String createAccessToken(long id, Role role, Instant issuedAt) {
         return tokenProvider.createAccessToken(id, role, issuedAt);
     }
 
-    public String createRefreshToken(long id, Role role, Instant issuedAt) {
+    private String createRefreshToken(long id, Role role, Instant issuedAt) {
         String refreshToken = tokenProvider.createRefreshToken(id, role, issuedAt);
         tokenRepository.save(refreshToken);
         return refreshToken;
