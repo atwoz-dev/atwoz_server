@@ -1,4 +1,4 @@
-package atwoz.atwoz.common;
+package atwoz.atwoz.common.entity;
 
 
 import jakarta.persistence.MappedSuperclass;

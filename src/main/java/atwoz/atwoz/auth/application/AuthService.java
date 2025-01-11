@@ -3,7 +3,7 @@ package atwoz.atwoz.auth.application;
 import atwoz.atwoz.auth.domain.TokenParser;
 import atwoz.atwoz.auth.domain.TokenProvider;
 import atwoz.atwoz.auth.domain.TokenRepository;
-import atwoz.atwoz.common.Role;
+import atwoz.atwoz.common.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -4,8 +4,8 @@ import atwoz.atwoz.auth.infra.JwtParser;
 import atwoz.atwoz.auth.infra.JwtProvider;
 import atwoz.atwoz.auth.infra.TokenRedisRepository;
 import atwoz.atwoz.auth.presentation.AuthContext;
-import atwoz.atwoz.common.Role;
-import atwoz.atwoz.common.StatusType;
+import atwoz.atwoz.common.enums.Role;
+import atwoz.atwoz.common.enums.StatusType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -23,7 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 import java.time.Instant;
 
-import static atwoz.atwoz.common.StatusType.MISSING_REFRESH_TOKEN;
+import static atwoz.atwoz.common.enums.StatusType.MISSING_REFRESH_TOKEN;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

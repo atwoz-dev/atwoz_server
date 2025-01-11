@@ -1,6 +1,6 @@
 package atwoz.atwoz.auth.application;
 
-import atwoz.atwoz.common.Role;
+import atwoz.atwoz.common.enums.Role;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

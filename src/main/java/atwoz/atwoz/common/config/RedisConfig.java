@@ -1,4 +1,4 @@
-package atwoz.atwoz.auth.infra.config;
+package atwoz.atwoz.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

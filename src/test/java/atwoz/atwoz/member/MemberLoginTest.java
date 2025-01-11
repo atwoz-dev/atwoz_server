@@ -3,7 +3,7 @@ package atwoz.atwoz.member;
 
 import atwoz.atwoz.auth.infra.JwtProvider;
 import atwoz.atwoz.auth.infra.TokenRedisRepository;
-import atwoz.atwoz.common.Role;
+import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.member.application.MemberAuthService;
 import atwoz.atwoz.member.application.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.domain.member.ActivityStatus;

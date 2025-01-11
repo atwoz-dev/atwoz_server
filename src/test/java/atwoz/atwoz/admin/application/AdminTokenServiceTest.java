@@ -13,7 +13,7 @@ import atwoz.atwoz.admin.domain.Email;
 import atwoz.atwoz.admin.domain.PasswordHasher;
 import atwoz.atwoz.admin.domain.exception.InvalidPasswordException;
 import atwoz.atwoz.auth.infra.JwtProvider;
-import atwoz.atwoz.common.Role;
+import atwoz.atwoz.common.enums.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

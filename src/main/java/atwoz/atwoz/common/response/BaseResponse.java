@@ -1,5 +1,6 @@
-package atwoz.atwoz.common;
+package atwoz.atwoz.common.response;
 
+import atwoz.atwoz.common.enums.StatusType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

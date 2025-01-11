@@ -1,6 +1,6 @@
 package atwoz.atwoz.auth.presentation.filter;
 
-import atwoz.atwoz.common.StatusType;
+import atwoz.atwoz.common.enums.StatusType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;

@@ -1,4 +1,4 @@
-package atwoz.atwoz.auth.infra.config;
+package atwoz.atwoz.auth.infra;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

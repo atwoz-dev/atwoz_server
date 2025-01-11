@@ -1,6 +1,6 @@
 package atwoz.atwoz.auth.infra;
 
-import atwoz.atwoz.common.Role;
+import atwoz.atwoz.common.enums.Role;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import org.junit.jupiter.api.DisplayName;

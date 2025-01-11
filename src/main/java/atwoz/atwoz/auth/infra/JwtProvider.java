@@ -1,7 +1,7 @@
 package atwoz.atwoz.auth.infra;
 
 import atwoz.atwoz.auth.domain.TokenProvider;
-import atwoz.atwoz.common.Role;
+import atwoz.atwoz.common.enums.Role;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;

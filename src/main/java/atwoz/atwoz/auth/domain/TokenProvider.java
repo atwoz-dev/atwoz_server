@@ -1,6 +1,6 @@
 package atwoz.atwoz.auth.domain;
 
-import atwoz.atwoz.common.Role;
+import atwoz.atwoz.common.enums.Role;
 
 import java.time.Instant;
 

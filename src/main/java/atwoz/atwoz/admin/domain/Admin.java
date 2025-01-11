@@ -1,6 +1,6 @@
 package atwoz.atwoz.admin.domain;
 
-import atwoz.atwoz.common.SoftDeleteBaseEntity;
+import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -9,7 +9,7 @@ import atwoz.atwoz.admin.application.exception.DuplicateEmailException;
 import atwoz.atwoz.admin.application.exception.PasswordMismatchException;
 import atwoz.atwoz.admin.domain.*;
 import atwoz.atwoz.auth.infra.JwtProvider;
-import atwoz.atwoz.common.Role;
+import atwoz.atwoz.common.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
