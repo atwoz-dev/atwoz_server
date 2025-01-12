@@ -10,6 +10,13 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+  data:
+    redis:
+      connection:
+        host: ${REDIS_HOST:localhost}
+        port: ${REDIS_PORT:6379}
+        password: ${REDIS_PASSWORD:}
+        ssl: false
 
 cloud:
   aws:
