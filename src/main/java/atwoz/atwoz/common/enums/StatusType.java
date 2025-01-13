@@ -31,6 +31,7 @@ public enum StatusType {
     INVALID_ACCESS_TOKEN(401, "401002", "Invalid Access Token"),
     MISSING_REFRESH_TOKEN(401, "401003", "Missing Refresh Token"),
     INVALID_REFRESH_TOKEN(401, "401004", "Invalid Refresh Token"),
+    EXPIRED_REFRESH_TOKEN(401, "401005", "Expired Refresh Token"),
 
     FORBIDDEN(403, "403", "Forbidden"),
     HANDLE_ACCESS_DENIED(403, "403001", "Access is Denied"),

@@ -32,6 +32,12 @@ public class AuthService {
             if (refreshToken == null) {
                 return AuthResponse.error(MISSING_REFRESH_TOKEN);
             }
+
+            if (isExpired(refreshToken)) {
+                invalidateRefreshToken(refreshToken);
+                return AuthResponse.error(EXPIRED_REFRESH_TOKEN);
+            }
+
             return reissueTokens(refreshToken);
         }
 
