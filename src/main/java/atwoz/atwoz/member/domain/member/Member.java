@@ -49,6 +49,10 @@ public class Member extends SoftDeleteBaseEntity {
         return id;
     }
 
+    public boolean isActive() {
+        return activityStatus.equals(ActivityStatus.ACTIVE) ? true : false;
+    }
+
     public boolean isPermanentStop() {
         return activityStatus == ActivityStatus.PERMANENT_STOP;
     }
@@ -91,5 +95,9 @@ public class Member extends SoftDeleteBaseEntity {
     public boolean isProfileSettingNeeded() {
         if (memberProfile == null) return true;
         return this.memberProfile.isProfileSettingNeeded();
+    }
+
+    public void transitionToDormant() {
+        this.activityStatus = ActivityStatus.DORMANT;
     }
 }

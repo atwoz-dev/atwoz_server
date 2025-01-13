@@ -5,14 +5,12 @@ import atwoz.atwoz.common.auth.context.AuthPrincipal;
 import atwoz.atwoz.common.presentation.BaseResponse;
 import atwoz.atwoz.common.presentation.StatusType;
 import atwoz.atwoz.member.application.MemberService;
+import atwoz.atwoz.member.application.dto.MemberProfileResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/member")
@@ -25,4 +23,17 @@ public class MemberController {
         MemberProfileUpdateResponse response = memberService.updateMember(authContext.getId(), request);
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, response));
     }
+
+    @GetMapping("/profile")
+    public ResponseEntity<BaseResponse<MemberProfileResponse>> getMyProfile(@AuthPrincipal AuthContext authContext) {
+        MemberProfileResponse response = memberService.getProfile(authContext.getId());
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, response));
+    }
+
+    @PostMapping("/profile/dormant")
+    public ResponseEntity<BaseResponse<Void>> transitionToDormant(@AuthPrincipal AuthContext authContext) {
+        memberService.setDormant(authContext.getId());
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
+
 }

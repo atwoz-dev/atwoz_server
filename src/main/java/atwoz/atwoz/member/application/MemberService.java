@@ -3,8 +3,10 @@ package atwoz.atwoz.member.application;
 import atwoz.atwoz.hobby.domain.HobbyRepository;
 import atwoz.atwoz.job.domain.JobRepository;
 import atwoz.atwoz.job.exception.JobNotFoundException;
+import atwoz.atwoz.member.application.dto.MemberProfileResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateResponse;
+import atwoz.atwoz.member.domain.member.ActivityStatus;
 import atwoz.atwoz.member.domain.member.Member;
 import atwoz.atwoz.member.domain.member.MemberRepository;
 import atwoz.atwoz.member.exception.InvalidHobbyIdException;
@@ -32,6 +34,16 @@ public class MemberService {
 
         member.updateMemberProfile(MemberMapper.toMemberProfile(memberId, request));
         return MemberMapper.toMemberProfileUpdateResponse(member);
+    }
+
+    @Transactional
+    public void setDormant(Long memberId) {
+        findById(memberId).transitionToDormant();
+    }
+
+    public MemberProfileResponse getProfile(Long memberId) {
+        Member member = findById(memberId);
+        return new MemberProfileResponse(member.getProfile());
     }
 
     private Member findById(Long memberId) {

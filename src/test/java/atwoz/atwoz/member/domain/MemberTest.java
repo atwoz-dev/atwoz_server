@@ -2,6 +2,7 @@ package atwoz.atwoz.member.domain;
 
 import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
+import atwoz.atwoz.member.domain.member.ActivityStatus;
 import atwoz.atwoz.member.domain.member.Member;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +24,24 @@ public class MemberTest {
         Assertions.assertThat(member).isNotNull();
         Assertions.assertThat(member.isProfileSettingNeeded()).isTrue();
         Assertions.assertThat(member.isPermanentStop()).isFalse();
+    }
+
+    @Nested
+    @DisplayName("Member 의 상태 변화 메서드 테스트")
+    class MemberStatusChangeTest {
+
+        @Test
+        @DisplayName("멤버의 활동 상태를 휴면 상태로 전환합니다.")
+        void changeMemberActivityStatusToDormant() {
+            // Given
+            Member member = Member.createFromPhoneNumber("01012345678");
+
+            // When
+            member.transitionToDormant();
+
+            // Then
+            Assertions.assertThat(member.isActive()).isFalse();
+        }
     }
 
     @Nested
