@@ -172,14 +172,26 @@ class AuthServiceTest {
             when(tokenParser.getId(REFRESH_TOKEN)).thenReturn(1L);
             when(tokenParser.getRole(REFRESH_TOKEN)).thenReturn(Role.MEMBER);
 
+            String reissuedAccessToken = "reissuedAccessToken";
+            String reissuedRefreshToken = "reissuedRefreshToken";
+
+            when(tokenProvider.createAccessToken(eq(1L), eq(Role.MEMBER), any(Instant.class)))
+                    .thenReturn(reissuedAccessToken);
+            when(tokenProvider.createRefreshToken(eq(1L), eq(Role.MEMBER), any(Instant.class)))
+                    .thenReturn(reissuedRefreshToken);
+
             // when
             AuthResponse response = authService.authenticate(ACCESS_TOKEN, REFRESH_TOKEN);
 
             // then
             verify(tokenRepository).delete(REFRESH_TOKEN);
             verify(tokenProvider).createAccessToken(eq(1L), eq(Role.MEMBER), any(Instant.class));
-            verify(tokenProvider).createAccessToken(eq(1L), eq(Role.MEMBER), any(Instant.class));
+            verify(tokenProvider).createRefreshToken(eq(1L), eq(Role.MEMBER), any(Instant.class));
+            verify(tokenRepository).save(reissuedRefreshToken);
+
             assertThat(response.isReissued()).isTrue();
+            assertThat(response.getAccessToken()).isEqualTo(reissuedAccessToken);
+            assertThat(response.getRefreshToken()).isEqualTo(reissuedRefreshToken);
         }
     }
 }
