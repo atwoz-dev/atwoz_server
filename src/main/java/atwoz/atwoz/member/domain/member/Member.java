@@ -3,6 +3,7 @@ package atwoz.atwoz.member.domain.member;
 import atwoz.atwoz.common.domain.SoftDeleteBaseEntity;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
+import atwoz.atwoz.member.domain.member.vo.KakaoId;
 import atwoz.atwoz.member.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.domain.member.vo.Nickname;
 import jakarta.persistence.*;
@@ -25,6 +26,9 @@ public class Member extends SoftDeleteBaseEntity {
     private String phoneNumber;
 
     @Embedded
+    private KakaoId kakaoId;
+
+    @Embedded
     private MemberProfile memberProfile;
 
     private boolean isVip;
@@ -36,7 +40,7 @@ public class Member extends SoftDeleteBaseEntity {
     @Embedded
     private HeartBalance heartBalance;
 
-    public static Member createFromPhoneNumber(String phoneNumber) {
+    public static Member createFromPhoneNumber(@NonNull String phoneNumber) {
         return Member.builder()
                 .phoneNumber(phoneNumber)
                 .activityStatus(ActivityStatus.ACTIVE)
@@ -49,8 +53,16 @@ public class Member extends SoftDeleteBaseEntity {
         return id;
     }
 
+    public String getKakaoId() {
+        return kakaoId.getId();
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
     public boolean isActive() {
-        return activityStatus.equals(ActivityStatus.ACTIVE) ? true : false;
+        return activityStatus == ActivityStatus.ACTIVE;
     }
 
     public boolean isPermanentStop() {
@@ -99,5 +111,13 @@ public class Member extends SoftDeleteBaseEntity {
 
     public void transitionToDormant() {
         this.activityStatus = ActivityStatus.DORMANT;
+    }
+
+    public void updateKaKaoId(KakaoId kakaoId) {
+        this.kakaoId = kakaoId;
+    }
+
+    public void updatePhoneNumber(@NonNull String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

@@ -3,14 +3,16 @@ package atwoz.atwoz.member.application;
 import atwoz.atwoz.hobby.domain.HobbyRepository;
 import atwoz.atwoz.job.domain.JobRepository;
 import atwoz.atwoz.job.exception.JobNotFoundException;
+import atwoz.atwoz.member.application.dto.MemberContactResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateResponse;
-import atwoz.atwoz.member.domain.member.ActivityStatus;
 import atwoz.atwoz.member.domain.member.Member;
 import atwoz.atwoz.member.domain.member.MemberRepository;
+import atwoz.atwoz.member.domain.member.vo.KakaoId;
 import atwoz.atwoz.member.exception.InvalidHobbyIdException;
 import atwoz.atwoz.member.exception.MemberNotFoundException;
+import atwoz.atwoz.member.exception.PhoneNumberAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,17 +39,41 @@ public class MemberService {
     }
 
     @Transactional
-    public void setDormant(Long memberId) {
+    public void transitionToDormant(Long memberId) {
         findById(memberId).transitionToDormant();
+    }
+
+    @Transactional
+    public void updateKakaoId(Long memberId, String kakaoId) {
+        findById(memberId).updateKaKaoId(KakaoId.from(kakaoId));
+    }
+
+    @Transactional
+    public void updatePhoneNumber(Long memberId, String phoneNumber) {
+        if (existsByPhoneNumber(phoneNumber)) {
+            throw new PhoneNumberAlreadyExistsException();
+        }
+
+        Member member = findById(memberId);
+        member.updatePhoneNumber(phoneNumber);
     }
 
     public MemberProfileResponse getProfile(Long memberId) {
         Member member = findById(memberId);
-        return new MemberProfileResponse(member.getProfile());
+        return MemberMapper.toMemberProfileResponse(member);
+    }
+
+    public MemberContactResponse getContact(Long memberId) {
+        Member member = findById(memberId);
+        return MemberMapper.toMemberContactResponse(member);
     }
 
     private Member findById(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException());
+    }
+
+    private boolean existsByPhoneNumber(String phoneNumber) {
+        return memberRepository.findByPhoneNumber(phoneNumber).isPresent();
     }
 
     private void validateJobId(Long jobId) {

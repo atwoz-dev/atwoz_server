@@ -5,6 +5,7 @@ import atwoz.atwoz.common.auth.context.AuthPrincipal;
 import atwoz.atwoz.common.presentation.BaseResponse;
 import atwoz.atwoz.common.presentation.StatusType;
 import atwoz.atwoz.member.application.MemberService;
+import atwoz.atwoz.member.application.dto.MemberContactResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateResponse;
@@ -32,8 +33,25 @@ public class MemberController {
 
     @PostMapping("/profile/dormant")
     public ResponseEntity<BaseResponse<Void>> transitionToDormant(@AuthPrincipal AuthContext authContext) {
-        memberService.setDormant(authContext.getId());
+        memberService.transitionToDormant(authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
+    @GetMapping("/profile/contact")
+    public ResponseEntity<BaseResponse<MemberContactResponse>> getMyContact(@AuthPrincipal AuthContext authContext) {
+        MemberContactResponse response = memberService.getContact(authContext.getId());
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, response));
+    }
+
+    @PostMapping("/profile/contact/kakao")
+    public ResponseEntity<BaseResponse<Void>> updateKakaoId(@AuthPrincipal AuthContext authContext, @RequestBody String kakaoId) {
+        memberService.updateKakaoId(authContext.getId(), kakaoId);
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
+
+    @PostMapping("/profile/contact/phone")
+    public ResponseEntity<BaseResponse<Void>> updatePhone(@AuthPrincipal AuthContext authContext, @RequestBody String phone) {
+        memberService.updatePhoneNumber(authContext.getId(), phone);
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
 }
