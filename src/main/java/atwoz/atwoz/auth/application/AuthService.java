@@ -54,9 +54,10 @@ public class AuthService {
 
         long id = getId(refreshToken);
         Role role = getRole(refreshToken);
+        Instant issuedAt = Instant.now();
 
-        String reissuedAccessToken = createAccessToken(id, role, Instant.now());
-        String reissuedRefreshToken = createRefreshToken(id, role, Instant.now());
+        String reissuedAccessToken = createAccessToken(id, role, issuedAt);
+        String reissuedRefreshToken = createRefreshToken(id, role, issuedAt);
 
         return AuthResponse.reissued(id, role, reissuedAccessToken, reissuedRefreshToken);
     }
