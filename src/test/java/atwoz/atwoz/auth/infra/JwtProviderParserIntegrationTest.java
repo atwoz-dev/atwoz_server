@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-class JwtIntegrationTest {
+class JwtProviderParserIntegrationTest {
 
     @Value("${jwt.access-token.expiration}")
     private long accessTokenExpiration;
