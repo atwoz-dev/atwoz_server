@@ -35,16 +35,14 @@ class TokenFilterTest {
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
 
     private static final String VALID_ACCESS_TOKEN = "validAccessToken";
-    private static final String VALID_REFRESH_TOKEN = "validRefreshToken";
-
     private static final String INVALID_ACCESS_TOKEN = "invalidAccessToken";
-    private static final String INVALID_REFRESH_TOKEN = "invalidRefreshToken";
-
-    private static final String REISSUED_ACCESS_TOKEN = "reissuedAccessToken";
-    private static final String REISSUED_REFRESH_TOKEN = "reissuedRefreshToken";
-
     private static final String EXPIRED_ACCESS_TOKEN = "expiredAccessToken";
+    private static final String REISSUED_ACCESS_TOKEN = "reissuedAccessToken";
+
+    private static final String VALID_REFRESH_TOKEN = "validRefreshToken";
+    private static final String INVALID_REFRESH_TOKEN = "invalidRefreshToken";
     private static final String EXPIRED_REFRESH_TOKEN = "expiredRefreshToken";
+    private static final String REISSUED_REFRESH_TOKEN = "reissuedRefreshToken";
 
     @Mock
     private HttpServletRequest request;

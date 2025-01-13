@@ -1,6 +1,5 @@
-package atwoz.atwoz.common;
+package atwoz.atwoz.common.entity;
 
-import atwoz.atwoz.common.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

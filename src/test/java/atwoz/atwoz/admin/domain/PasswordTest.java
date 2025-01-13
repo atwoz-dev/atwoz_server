@@ -1,7 +1,5 @@
-package atwoz.atwoz.admin.domain.admin;
+package atwoz.atwoz.admin.domain;
 
-import atwoz.atwoz.admin.domain.Password;
-import atwoz.atwoz.admin.domain.PasswordHasher;
 import atwoz.atwoz.admin.domain.exception.InvalidPasswordException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -38,6 +38,11 @@ public class AuthService {
                 return AuthResponse.error(EXPIRED_REFRESH_TOKEN);
             }
 
+            if (!isValid(refreshToken) || !exists(refreshToken)) {
+                invalidateRefreshToken(refreshToken);
+                return AuthResponse.error(INVALID_REFRESH_TOKEN);
+            }
+
             return reissueTokens(refreshToken);
         }
 
@@ -45,11 +50,6 @@ public class AuthService {
     }
 
     private AuthResponse reissueTokens(String refreshToken) {
-        if (!isValid(refreshToken) || !exists(refreshToken)) {
-            invalidateRefreshToken(refreshToken);
-            return AuthResponse.error(INVALID_REFRESH_TOKEN);
-        }
-
         invalidateRefreshToken(refreshToken);
 
         long id = getId(refreshToken);

@@ -1,6 +1,5 @@
-package atwoz.atwoz.admin.domain.admin;
+package atwoz.atwoz.admin.domain;
 
-import atwoz.atwoz.admin.domain.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

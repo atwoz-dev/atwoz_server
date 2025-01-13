@@ -32,7 +32,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @ExtendWith(MockitoExtension.class)
-class AdminTokenServiceTest {
+class AdminAuthServiceTest {
 
     @Mock
     private AdminRepository adminRepository;
