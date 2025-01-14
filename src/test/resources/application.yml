@@ -35,3 +35,12 @@ jwt:
     expiration: 1800  # 30분
   refresh-token:
     expiration: 1209600  # 2주
+
+auth:
+  refresh-token-cookie:
+    name: refresh_token
+    max-age: 2419200 # 4주
+    path: /
+    same-site: None
+    secure: true
+    http-only: true

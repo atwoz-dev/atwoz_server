@@ -4,6 +4,7 @@ import atwoz.atwoz.auth.application.AuthErrorStatus;
 import atwoz.atwoz.auth.application.AuthResponse;
 import atwoz.atwoz.auth.application.AuthService;
 import atwoz.atwoz.auth.presentation.AuthContext;
+import atwoz.atwoz.auth.presentation.RefreshTokenCookieProperties;
 import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.common.enums.StatusType;
 import jakarta.servlet.FilterChain;
@@ -68,6 +69,9 @@ class TokenFilterTest {
     @Mock
     private ResponseHandler responseHandler;
 
+    @Mock
+    private RefreshTokenCookieProperties refreshTokenCookieProperties;
+
     @InjectMocks
     private TokenFilter tokenFilter;
 
@@ -120,6 +124,10 @@ class TokenFilterTest {
 
         when(authService.authenticate(EXPIRED_ACCESS_TOKEN, VALID_REFRESH_TOKEN))
                 .thenReturn(AuthResponse.reissued(1L, Role.MEMBER, REISSUED_ACCESS_TOKEN, REISSUED_REFRESH_TOKEN));
+
+        when(refreshTokenCookieProperties.name()).thenReturn(REFRESH_TOKEN_COOKIE_NAME);
+        when(refreshTokenCookieProperties.path()).thenReturn("/");
+        when(refreshTokenCookieProperties.httpOnly()).thenReturn(true);
 
         // when
         tokenFilter.doFilterInternal(request, response, filterChain);
