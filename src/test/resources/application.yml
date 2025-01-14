@@ -18,14 +18,6 @@ spring:
         password: ${REDIS_PASSWORD:}
         ssl: false
 
-  data:
-    redis:
-      connection:
-        host: ${REDIS_HOST:localhost}
-        port: ${REDIS_PORT:6379}
-        password: ${REDIS_PASSWORD:}
-        ssl: false
-
 cloud:
   aws:
     bucket: bucket-name
