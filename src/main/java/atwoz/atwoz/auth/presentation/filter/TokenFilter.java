@@ -4,6 +4,7 @@ package atwoz.atwoz.auth.presentation.filter;
 import atwoz.atwoz.auth.application.AuthResponse;
 import atwoz.atwoz.auth.application.AuthService;
 import atwoz.atwoz.auth.presentation.AuthContext;
+import atwoz.atwoz.auth.presentation.RefreshTokenCookieProperties;
 import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.common.enums.StatusType;
 import jakarta.servlet.FilterChain;
@@ -25,14 +26,13 @@ public class TokenFilter extends OncePerRequestFilter {
 
     private static final String AUTHORIZATION = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final String REFRESH_TOKEN_COOKIE = "refresh_token";
-    private static final int FOUR_WEEKS_IN_SECONDS = 60 * 60 * 24 * 7 * 4;
 
     private final PathMatcherHelper pathMatcherHelper;
     private final TokenExtractor tokenExtractor;
     private final AuthService authService;
     private final AuthContext authContext;
     private final ResponseHandler responseHandler;
+    private final RefreshTokenCookieProperties refreshTokenCookieProperties;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -76,11 +76,11 @@ public class TokenFilter extends OncePerRequestFilter {
     }
 
     private void addRefreshTokenToCookie(HttpServletResponse response, String refreshToken) {
-        Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE, refreshToken);
-        cookie.setMaxAge(FOUR_WEEKS_IN_SECONDS);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        Cookie cookie = new Cookie(refreshTokenCookieProperties.name(), refreshToken);
+        cookie.setMaxAge(refreshTokenCookieProperties.maxAge());
+        cookie.setPath(refreshTokenCookieProperties.path());
+        cookie.setHttpOnly(refreshTokenCookieProperties.httpOnly());
+        cookie.setSecure(refreshTokenCookieProperties.secure());
 
         response.addCookie(cookie);
     }

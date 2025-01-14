@@ -51,6 +51,7 @@ auth:
     name: refresh_token
     max-age: 2419200 # 4주
     path: /
+    same-site: None
     secure: true
     http-only: true
 
