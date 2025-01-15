@@ -1,7 +1,6 @@
 package atwoz.atwoz.heartpurchaseoption.domain;
 
-import atwoz.atwoz.common.domain.SoftDeleteBaseEntity;
-import atwoz.atwoz.heartpurchaseoption.exception.InvalidHeartPurchaseAmountException;
+import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
 import atwoz.atwoz.heartpurchaseoption.exception.InvalidHeartPurchaseOptionException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

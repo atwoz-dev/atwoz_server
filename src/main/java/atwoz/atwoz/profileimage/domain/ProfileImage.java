@@ -1,6 +1,6 @@
 package atwoz.atwoz.profileimage.domain;
 
-import atwoz.atwoz.common.domain.BaseEntity;
+import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.profileimage.domain.vo.ImageUrl;
 import atwoz.atwoz.profileimage.exception.InvalidOrderException;
 import jakarta.persistence.*;

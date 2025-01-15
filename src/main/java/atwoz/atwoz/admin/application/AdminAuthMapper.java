@@ -3,11 +3,7 @@ package atwoz.atwoz.admin.application;
 import atwoz.atwoz.admin.application.dto.AdminLoginResponse;
 import atwoz.atwoz.admin.application.dto.AdminSignupRequest;
 import atwoz.atwoz.admin.application.dto.AdminSignupResponse;
-import atwoz.atwoz.admin.domain.admin.Admin;
-import atwoz.atwoz.admin.domain.admin.Password;
-import atwoz.atwoz.common.domain.vo.Email;
-import atwoz.atwoz.common.domain.vo.Name;
-import atwoz.atwoz.common.domain.vo.PhoneNumber;
+import atwoz.atwoz.admin.domain.*;
 import lombok.NoArgsConstructor;
 
 import static lombok.AccessLevel.PRIVATE;

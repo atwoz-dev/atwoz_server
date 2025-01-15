@@ -1,6 +1,6 @@
 package atwoz.atwoz.admin.infra;
 
-import atwoz.atwoz.admin.domain.service.PasswordHasher;
+import atwoz.atwoz.admin.domain.PasswordHasher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
