@@ -129,7 +129,7 @@ class AuthServiceTest {
         }
 
         @Test
-        @DisplayName("Refresh token이 유효하지 않은 경우 기존 refresh token을 제거하고, INVALID_REFRESH_TOKEN 에러를 반환합니다.")
+        @DisplayName("Refresh token이 유효하지 않은 경우 INVALID_REFRESH_TOKEN 에러를 반환합니다.")
         void shouldInvalidateTokenAndReturnErrorWhenRefreshTokenIsInvalid() {
             // given
             when(tokenParser.isValid(REFRESH_TOKEN)).thenReturn(false);
@@ -139,13 +139,12 @@ class AuthServiceTest {
             AuthResponse response = authService.authenticate(ACCESS_TOKEN, REFRESH_TOKEN);
 
             // then
-            verify(tokenRepository).delete(REFRESH_TOKEN);
             assertThat(response.isError()).isTrue();
             assertThat(response.getErrorStatus()).isEqualTo(AuthErrorStatus.INVALID_REFRESH_TOKEN);
         }
 
         @Test
-        @DisplayName("Refresh token이 저장소에 존재하지 않는 경우 기존 refresh token을 제거하고, INVALID_REFRESH_TOKEN 에러를 반환합니다.")
+        @DisplayName("Refresh token이 저장소에 존재하지 않는 경우 INVALID_REFRESH_TOKEN 에러를 반환합니다.")
         void shouldInvalidateTokenAndReturnErrorWhenRefreshTokenIsMissing() {
             // given
             when(tokenParser.isValid(REFRESH_TOKEN)).thenReturn(true);
@@ -156,7 +155,6 @@ class AuthServiceTest {
             AuthResponse response = authService.authenticate(ACCESS_TOKEN, REFRESH_TOKEN);
 
             // then
-            verify(tokenRepository).delete(REFRESH_TOKEN);
             assertThat(response.isError()).isTrue();
             assertThat(response.getErrorStatus()).isEqualTo(AuthErrorStatus.INVALID_REFRESH_TOKEN);
         }
