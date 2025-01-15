@@ -1,15 +1,12 @@
 package atwoz.atwoz.member.application;
 
-import atwoz.atwoz.common.auth.context.Role;
-import atwoz.atwoz.common.auth.jwt.JwtProvider;
-import atwoz.atwoz.common.auth.jwt.JwtRepository;
-import atwoz.atwoz.member.application.dto.MemberLoginResponse;
+import atwoz.atwoz.auth.domain.TokenProvider;
+import atwoz.atwoz.auth.domain.TokenRepository;
+import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.member.application.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.domain.member.Member;
 import atwoz.atwoz.member.domain.member.MemberRepository;
 import atwoz.atwoz.member.exception.MemberPermanentStopException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +18,8 @@ import java.time.Instant;
 public class MemberAuthService {
 
     private final MemberRepository memberRepository;
-    private final JwtProvider jwtProvider;
-    private final JwtRepository jwtRepository;
+    private final TokenProvider tokenProvider;
+    private final TokenRepository tokenRepository;
 
     @Transactional
     public MemberLoginServiceDto login(String phoneNumber) {
@@ -32,15 +29,15 @@ public class MemberAuthService {
             throw new MemberPermanentStopException();
         }
 
-        String accessToken = jwtProvider.createAccessToken(member.getId(), Role.MEMBER, Instant.now());
-        String refreshToken = jwtProvider.createRefreshToken(member.getId(), Role.MEMBER, Instant.now());
-        jwtRepository.save(refreshToken);
+        String accessToken = tokenProvider.createAccessToken(member.getId(), Role.MEMBER, Instant.now());
+        String refreshToken = tokenProvider.createRefreshToken(member.getId(), Role.MEMBER, Instant.now());
+        tokenRepository.save(refreshToken);
 
         return MemberLoginServiceDto.fromMemberWithToken(accessToken, refreshToken, member.isProfileSettingNeeded());
     }
 
     public void logout(String token) {
-        jwtRepository.delete(token);
+        tokenRepository.delete(token);
     }
 
     private Member createOrFindMemberByPhoneNumber(String phoneNumber) {

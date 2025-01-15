@@ -1,7 +1,7 @@
 package atwoz.atwoz.common.exception;
 
-import atwoz.atwoz.common.presentation.BaseResponse;
-import atwoz.atwoz.common.presentation.StatusType;
+import atwoz.atwoz.common.enums.StatusType;
+import atwoz.atwoz.common.response.BaseResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

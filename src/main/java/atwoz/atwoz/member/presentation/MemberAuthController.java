@@ -1,7 +1,8 @@
 package atwoz.atwoz.member.presentation;
 
-import atwoz.atwoz.common.presentation.BaseResponse;
-import atwoz.atwoz.common.presentation.StatusType;
+import atwoz.atwoz.auth.presentation.RefreshTokenCookieProperties;
+import atwoz.atwoz.common.enums.StatusType;
+import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.application.MemberAuthService;
 import atwoz.atwoz.member.application.dto.MemberLoginResponse;
 import atwoz.atwoz.member.application.dto.MemberLoginServiceDto;
@@ -16,8 +17,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/member/auth")
 public class MemberAuthController {
 
+    private final RefreshTokenCookieProperties refreshTokenCookieProperties;
     private final MemberAuthService memberAuthService;
-
 
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<MemberLoginResponse>> login(@RequestBody String phoneNumber) {
@@ -45,12 +46,12 @@ public class MemberAuthController {
         memberAuthService.logout(refreshToken);
 
         HttpHeaders headers = new HttpHeaders();
-        ResponseCookie deleteCookie = ResponseCookie.from("refresh_token", "")
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
-                .path("/")
-                .maxAge(0)
+        ResponseCookie deleteCookie = ResponseCookie.from(refreshTokenCookieProperties.name(), "")
+                .httpOnly(refreshTokenCookieProperties.httpOnly())
+                .secure(refreshTokenCookieProperties.secure())
+                .sameSite(refreshTokenCookieProperties.sameSite())
+                .path(refreshTokenCookieProperties.path())
+                .maxAge(refreshTokenCookieProperties.maxAge())
                 .build();
         headers.add(HttpHeaders.SET_COOKIE, deleteCookie.toString());
 
