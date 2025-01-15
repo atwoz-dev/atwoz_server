@@ -19,6 +19,7 @@ public class Admin extends SoftDeleteBaseEntity {
     private Email email;
 
     @Embedded
+    @Getter
     private Password password;
 
     @Embedded
@@ -64,9 +65,5 @@ public class Admin extends SoftDeleteBaseEntity {
 
     private void setPhoneNumber(@NonNull PhoneNumber phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public String getHashedPassword() {
-        return password.getHashedValue();
     }
 }

@@ -33,10 +33,10 @@ public class AdminAuthService {
         return AdminAuthMapper.toSignupResponse(newAdmin);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public AdminLoginResponse login(AdminLoginRequest request) {
-        Admin admin = findAdminBy(request.email());
-        validatePassword(request.password(), admin.getHashedPassword());
+        Admin admin = findAdminByEmail(request.email());
+        matchPassword(request.password(), admin.getPassword());
 
         Instant issuedAt = Instant.now();
         String accessToken = createAccessToken(admin.getId(), issuedAt);
@@ -61,13 +61,13 @@ public class AdminAuthService {
         return adminRepository.save(newAdmin);
     }
 
-    private Admin findAdminBy(String email) {
+    private Admin findAdminByEmail(String email) {
         return adminRepository.findByEmail(Email.from(email))
                 .orElseThrow(AdminNotFoundException::new);
     }
 
-    private void validatePassword(String requestPassword, String hashedPassword) {
-        if (!passwordHasher.matches(requestPassword, hashedPassword)) {
+    private void matchPassword(String requestPassword, Password password) {
+        if (!password.matches(requestPassword, passwordHasher)) {
             throw new PasswordMismatchException();
         }
     }
