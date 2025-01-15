@@ -8,7 +8,8 @@ import atwoz.atwoz.admin.application.exception.AdminNotFoundException;
 import atwoz.atwoz.admin.application.exception.DuplicateEmailException;
 import atwoz.atwoz.admin.application.exception.PasswordMismatchException;
 import atwoz.atwoz.admin.domain.*;
-import atwoz.atwoz.auth.infra.JwtProvider;
+import atwoz.atwoz.auth.domain.TokenProvider;
+import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.common.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,8 @@ public class AdminAuthService {
 
     private final AdminRepository adminRepository;
     private final PasswordHasher passwordHasher;
-    private final JwtProvider jwtProvider;
+    private final TokenProvider tokenProvider;
+    private final TokenRepository tokenRepository;
 
     @Transactional
     public AdminSignupResponse signup(AdminSignupRequest request) {
@@ -31,16 +33,21 @@ public class AdminAuthService {
         return AdminAuthMapper.toSignupResponse(newAdmin);
     }
 
-    // TODO: refresh token redis 관련 로직 추가
     @Transactional(readOnly = true)
     public AdminLoginResponse login(AdminLoginRequest request) {
         Admin admin = findAdminBy(request.email());
         validatePassword(request.password(), admin.getHashedPassword());
 
-        Instant now = Instant.now();
-        String accessToken = createAccessToken(admin.getId(), now);
-        String refreshToken = createRefreshToken(admin.getId(), now);
+        Instant issuedAt = Instant.now();
+        String accessToken = createAccessToken(admin.getId(), issuedAt);
+        String refreshToken = createRefreshToken(admin.getId(), issuedAt);
+        tokenRepository.save(refreshToken);
+
         return AdminAuthMapper.toLoginResponse(accessToken, refreshToken);
+    }
+
+    public void logout(String refreshToken) {
+        tokenRepository.delete(refreshToken);
     }
 
     private void validateEmailUniqueness(String email) {
@@ -65,11 +72,11 @@ public class AdminAuthService {
         }
     }
 
-    private String createAccessToken(Long id, Instant now) {
-        return jwtProvider.createAccessToken(id, Role.ADMIN, now);
+    private String createAccessToken(Long id, Instant issuedAt) {
+        return tokenProvider.createAccessToken(id, Role.ADMIN, issuedAt);
     }
 
-    private String createRefreshToken(Long id, Instant now) {
-        return jwtProvider.createRefreshToken(id, Role.ADMIN, now);
+    private String createRefreshToken(Long id, Instant issuedAt) {
+        return tokenProvider.createRefreshToken(id, Role.ADMIN, issuedAt);
     }
 }

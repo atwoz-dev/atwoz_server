@@ -13,15 +13,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminAuthController {
+
+    private static final String BEARER_PREFIX = "Bearer ";
 
     private final RefreshTokenCookieProperties refreshTokenCookieProperties;
     private final AdminAuthService adminAuthService;
@@ -37,7 +36,7 @@ public class AdminAuthController {
         AdminLoginResponse response = adminAuthService.login(request);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + response.accessToken());
+        headers.set(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + response.accessToken());
         ResponseCookie refreshTokenCookie = ResponseCookie.from(refreshTokenCookieProperties.name(), response.refreshToken())
                 .httpOnly(refreshTokenCookieProperties.httpOnly())
                 .secure(refreshTokenCookieProperties.secure())
@@ -49,6 +48,25 @@ public class AdminAuthController {
 
         return ResponseEntity.ok()
                 .headers(headers)
+                .body(BaseResponse.from(StatusType.OK));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<BaseResponse<Void>> logout(
+            @CookieValue(value = "refresh_token", required = false) String refreshToken
+    ) {
+        adminAuthService.logout(refreshToken);
+
+        ResponseCookie refreshTokenCookie = ResponseCookie.from(refreshTokenCookieProperties.name(), "")
+                .httpOnly(refreshTokenCookieProperties.httpOnly())
+                .secure(refreshTokenCookieProperties.secure())
+                .sameSite(refreshTokenCookieProperties.sameSite())
+                .path(refreshTokenCookieProperties.path())
+                .maxAge(0)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
                 .body(BaseResponse.from(StatusType.OK));
     }
 }
