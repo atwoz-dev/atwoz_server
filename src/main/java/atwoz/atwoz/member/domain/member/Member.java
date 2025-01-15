@@ -27,6 +27,8 @@ public class Member extends SoftDeleteBaseEntity {
 
     private boolean isVip;
 
+    private ContactType contactType;
+
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
     private ActivityStatus activityStatus;
@@ -39,6 +41,7 @@ public class Member extends SoftDeleteBaseEntity {
                 .phoneNumber(phoneNumber)
                 .activityStatus(ActivityStatus.ACTIVE)
                 .heartBalance(HeartBalance.init())
+                .contactType(ContactType.PHONE_NUMBER)
                 .isVip(false)
                 .build();
     }
