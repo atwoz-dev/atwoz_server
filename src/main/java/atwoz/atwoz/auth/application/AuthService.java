@@ -39,7 +39,6 @@ public class AuthService {
             }
 
             if (!isValid(refreshToken) || !exists(refreshToken)) {
-                invalidateRefreshToken(refreshToken);
                 return AuthResponse.error(INVALID_REFRESH_TOKEN);
             }
 
