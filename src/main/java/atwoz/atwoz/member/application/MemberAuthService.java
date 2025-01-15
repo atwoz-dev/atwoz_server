@@ -41,7 +41,7 @@ public class MemberAuthService {
     }
 
     private Member createOrFindMemberByPhoneNumber(String phoneNumber) {
-        return memberRepository.findByPhoneNumber(phoneNumber).orElse(create(phoneNumber));
+        return memberRepository.findByPhoneNumber(phoneNumber).orElseGet(() -> create(phoneNumber));
     }
 
     private Member create(String phoneNumber) {
