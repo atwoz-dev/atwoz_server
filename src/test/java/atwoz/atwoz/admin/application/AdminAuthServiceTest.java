@@ -61,10 +61,8 @@ class AdminAuthServiceTest {
             String rawPassword = "password123^^";
             AdminSignupRequest request = new AdminSignupRequest(email, rawPassword, "홍길동", "01012345678");
 
-            when(adminRepository.findByEmail(Email.from(email)))
-                    .thenReturn(Optional.empty());
-            when(passwordHasher.hash(rawPassword))
-                    .thenReturn("hashed-password123^^");
+            when(adminRepository.findByEmail(Email.from(email))).thenReturn(Optional.empty());
+            when(passwordHasher.hash(rawPassword)).thenReturn("hashed-password123^^");
             when(adminRepository.save(any(Admin.class)))
                     .thenAnswer(invocation -> {
                         Admin admin = invocation.getArgument(0, Admin.class);
@@ -92,12 +90,10 @@ class AdminAuthServiceTest {
             String email = "exists@example.com";
             AdminSignupRequest request = new AdminSignupRequest(email, "password123^^", "홍길동", "01012345678");
 
-            when(adminRepository.findByEmail(Email.from(email)))
-                    .thenReturn(Optional.of(mock(Admin.class)));
+            when(adminRepository.findByEmail(Email.from(email))).thenReturn(Optional.of(mock(Admin.class)));
 
             // when & then
-            assertThatThrownBy(() -> adminAuthService.signup(request))
-                    .isInstanceOf(DuplicateEmailException.class);
+            assertThatThrownBy(() -> adminAuthService.signup(request)).isInstanceOf(DuplicateEmailException.class);
 
             verify(adminRepository, never()).save(any(Admin.class));
             verify(passwordHasher, never()).hash(anyString());
@@ -111,12 +107,10 @@ class AdminAuthServiceTest {
             String invalidPassword = "short12^^";
             AdminSignupRequest request = new AdminSignupRequest(email, invalidPassword, "홍길동", "01012345678");
 
-            when(adminRepository.findByEmail(Email.from(email)))
-                    .thenReturn(Optional.empty());
+            when(adminRepository.findByEmail(Email.from(email))).thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> adminAuthService.signup(request))
-                    .isInstanceOf(InvalidPasswordException.class);
+            assertThatThrownBy(() -> adminAuthService.signup(request)).isInstanceOf(InvalidPasswordException.class);
 
             verify(adminRepository).findByEmail(Email.from(email));
             verify(passwordHasher, never()).hash(anyString());
@@ -170,8 +164,7 @@ class AdminAuthServiceTest {
             when(adminRepository.findByEmail(Email.from(email))).thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> adminAuthService.login(request))
-                    .isInstanceOf(AdminNotFoundException.class);
+            assertThatThrownBy(() -> adminAuthService.login(request)).isInstanceOf(AdminNotFoundException.class);
         }
     }
 }

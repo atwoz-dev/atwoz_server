@@ -9,33 +9,26 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AdminTest {
 
-    private final Email email = Email.from("example@me.com");
-    private final Password password = Password.fromHashed("hashed-password");
-    private final Name name = Name.from("홍길동");
-    private final PhoneNumber phoneNumber = PhoneNumber.from("01012345678");
-
     @Mock
     private PasswordHasher passwordHasher;
 
-    @Test
-    @DisplayName("유효한 값 타입들로 Admin을 생성합니다.")
-    void createAdminWithValidValueTypes() {
-        Admin admin = createAdmin();
-
-        assertThat(admin).isNotNull();
-    }
-
     @ParameterizedTest
     @ValueSource(strings = {"email", "password", "name", "phoneNumber"})
-    @DisplayName("Admin의 값 타입이 null이면 예외를 던집니다.")
+    @DisplayName("Admin의 값 타입이 null이면 NullPointerException이 발생합니다.")
     void createAdminWithNullValueTypeThrowsException(String fieldName) {
+        // given
+        Email email = Email.from("example@me.com");
+        Password password = Password.fromHashed("hashed-password");
+        Name name = Name.from("홍길동");
+        PhoneNumber phoneNumber = PhoneNumber.from("01012345678");
+
+        // when & then
         assertThatThrownBy(() ->
                 Admin.builder()
                         .email(fieldName.equals("email") ? null : email)
@@ -47,25 +40,22 @@ class AdminTest {
     }
 
     @Test
-    @DisplayName("비밀번호가 일치하지 않으면 PasswordMismatchException을 던집니다.")
+    @DisplayName("비밀번호가 일치하지 않으면 PasswordMismatchException이 발생합니다.")
     void throwsPasswordMismatchExceptionWhenPasswordMismatch() {
         // given
-        Admin admin = createAdmin();
-        String rawPassword = "raw-password";
+        Admin admin = Admin.builder()
+                .email(Email.from("example@me.com"))
+                .password(Password.fromHashed("hashed-password"))
+                .name(Name.from("홍길동"))
+                .phoneNumber(PhoneNumber.from("01012345678"))
+                .build();
 
-        when(passwordHasher.matches(rawPassword, password.getHashedValue())).thenReturn(false);
+        String rawPassword = "raw-password";
+        String hashedPassword = "hashed-password";
+        when(passwordHasher.matches(rawPassword, hashedPassword)).thenReturn(false);
 
         // when & then
         assertThatThrownBy(() -> admin.matchPassword(rawPassword, passwordHasher))
                 .isInstanceOf(IncorrectPasswordException.class);
-    }
-
-    private Admin createAdmin() {
-        return Admin.builder()
-                .email(email)
-                .password(password)
-                .name(name)
-                .phoneNumber(phoneNumber)
-                .build();
     }
 }
