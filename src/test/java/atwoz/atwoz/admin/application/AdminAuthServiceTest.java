@@ -7,12 +7,10 @@ import atwoz.atwoz.admin.application.dto.AdminSignupResponse;
 import atwoz.atwoz.admin.application.exception.AdminNotFoundException;
 import atwoz.atwoz.admin.application.exception.DuplicateEmailException;
 import atwoz.atwoz.admin.application.exception.PasswordMismatchException;
-import atwoz.atwoz.admin.domain.Admin;
-import atwoz.atwoz.admin.domain.AdminRepository;
-import atwoz.atwoz.admin.domain.Email;
-import atwoz.atwoz.admin.domain.PasswordHasher;
+import atwoz.atwoz.admin.domain.*;
 import atwoz.atwoz.admin.domain.exception.InvalidPasswordException;
-import atwoz.atwoz.auth.infra.JwtProvider;
+import atwoz.atwoz.auth.domain.TokenProvider;
+import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.common.enums.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +39,10 @@ class AdminAuthServiceTest {
     private PasswordHasher passwordHasher;
 
     @Mock
-    private JwtProvider jwtProvider;
+    private TokenProvider tokenProvider;
+
+    @Mock
+    private TokenRepository tokenRepository;
 
     @InjectMocks
     private AdminAuthService adminAuthService;
@@ -49,6 +50,7 @@ class AdminAuthServiceTest {
     @Nested
     @DisplayName("회원가입")
     class Signup {
+
         @Test
         @DisplayName("중복되지 않은 이메일과 유효한 비밀번호로 회원가입 할 수 있습니다.")
         void canSignupWhenRequestIsValid() {
@@ -134,11 +136,11 @@ class AdminAuthServiceTest {
         @BeforeEach
         void setUp() {
             when(admin.getId()).thenReturn(1L);
-            when(admin.getHashedPassword()).thenReturn(HASHED_PASSWORD);
+            when(admin.getPassword()).thenReturn(Password.fromHashed(HASHED_PASSWORD));
         }
 
         @Test
-        @DisplayName("유효한 이메일과 비밀번호로 로그인하면 access token과 refresh token을 발급받습니다.")
+        @DisplayName("유효한 이메일과 비밀번호로 로그인하면 access token과 refresh token을 발급받고, refresh token은 저장소에 저장합니다.")
         void issueTokensWhenLoginIsValid() {
             // given
             when(adminRepository.findByEmail(Email.from(EMAIL)))
@@ -146,9 +148,9 @@ class AdminAuthServiceTest {
             when(passwordHasher.matches(RAW_PASSWORD, HASHED_PASSWORD))
                     .thenReturn(true);
 
-            when(jwtProvider.createAccessToken(eq(1L), eq(Role.ADMIN), any()))
+            when(tokenProvider.createAccessToken(eq(1L), eq(Role.ADMIN), any()))
                     .thenReturn("accessToken");
-            when(jwtProvider.createRefreshToken(eq(1L), eq(Role.ADMIN), any()))
+            when(tokenProvider.createRefreshToken(eq(1L), eq(Role.ADMIN), any()))
                     .thenReturn("refreshToken");
 
             // when
@@ -158,6 +160,7 @@ class AdminAuthServiceTest {
             assertThat(response).isNotNull();
             assertThat(response.accessToken()).isEqualTo("accessToken");
             assertThat(response.refreshToken()).isEqualTo("refreshToken");
+            verify(tokenRepository).save("refreshToken");
         }
 
         @Test

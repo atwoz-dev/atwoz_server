@@ -2,6 +2,7 @@ package atwoz.atwoz.admin.domain;
 
 import atwoz.atwoz.admin.domain.exception.InvalidPasswordException;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -18,118 +19,159 @@ class PasswordTest {
     @Mock
     private PasswordHasher passwordHasher;
 
-    @Test
-    @DisplayName("비밀번호가 10자이고, 문자, 숫자, 특수문자를 포함한 경우 유효합니다.")
-    void isValidWhenPasswordHasTenCharactersIncludingLettersNumbersAndSpecialCharacters() {
-        // given
-        String validPassword = "pw345678^^";
-        when(passwordHasher.hash(anyString()))
-                .thenAnswer(invocation -> {
-                    String raw = invocation.getArgument(0, String.class);
-                    return "hashed" + raw;
-                });
+    @Nested
+    @DisplayName("비밀번호 유효성 검증")
+    class PasswordValidation {
 
-        // when
-        Password password = Password.fromRaw(validPassword, passwordHasher);
+        @Test
+        @DisplayName("비밀번호가 10자이고, 문자, 숫자, 특수문자를 포함한 경우 유효합니다.")
+        void isValidWhenPasswordHasTenCharactersIncludingLettersNumbersAndSpecialCharacters() {
+            // given
+            String validPassword = "pw345678^^";
+            when(passwordHasher.hash(anyString()))
+                    .thenAnswer(invocation -> {
+                        String raw = invocation.getArgument(0, String.class);
+                        return "hashed" + raw;
+                    });
 
-        // then
-        assertThat(password).isNotNull();
-        assertThat(password.getHashedValue()).isEqualTo("hashed" + validPassword);
+            // when
+            Password password = Password.fromRaw(validPassword, passwordHasher);
+
+            // then
+            assertThat(password).isNotNull();
+            assertThat(password.getHashedValue()).isEqualTo("hashed" + validPassword);
+        }
+
+        @Test
+        @DisplayName("비밀번호가 20자이고, 문자, 숫자, 특수문자를 포함한 경우 유효합니다.")
+        void isValidWhenPasswordHasTwentyCharactersIncludingLettersNumbersAndSpecialCharacters() {
+            // given
+            String validPassword = "password9012345678^^";
+            when(passwordHasher.hash(anyString()))
+                    .thenAnswer(invocation -> {
+                        String raw = invocation.getArgument(0, String.class);
+                        return "hashed" + raw;
+                    });
+
+            // when
+            Password password = Password.fromRaw(validPassword, passwordHasher);
+
+            // then
+            assertThat(password).isNotNull();
+            assertThat(password.getHashedValue()).isEqualTo("hashed" + validPassword);
+        }
+
+        @Test
+        @DisplayName("비밀번호가 10자 미만인 경우 유효하지 않습니다.")
+        void isInvalidWhenPasswordIsLessThan10Characters() {
+            // given
+            String invalidPassword = "pw123^^";
+
+            // when & then
+            assertThatThrownBy(() -> Password.fromRaw(invalidPassword, passwordHasher))
+                    .isInstanceOf(InvalidPasswordException.class);
+        }
+
+        @Test
+        @DisplayName("비밀번호가 20자를 초과하는 경우 유효하지 않습니다.")
+        void isInvalidWhenPasswordIsGreaterThan20Characters() {
+            // given
+            String invalidPassword = "abcdefghijklmnopqrstuvwxyz1234567890^^";
+
+            // when & then
+            assertThatThrownBy(() -> Password.fromRaw(invalidPassword, passwordHasher))
+                    .isInstanceOf(InvalidPasswordException.class);
+        }
+
+        @Test
+        @DisplayName("비밀번호가 null인 경우 유효하지 않습니다.")
+        void isInvalidWhenPasswordIsNull() {
+            // given
+            String invalidPassword = null;
+
+            // when & then
+            assertThatThrownBy(() -> Password.fromRaw(invalidPassword, passwordHasher))
+                    .isInstanceOf(NullPointerException.class);
+        }
+
+        @Test
+        @DisplayName("비밀번호에 문자가 포함되지 않은 경우 유효하지 않습니다.")
+        void isInvalidWhenPasswordDoesNotContainCharacters() {
+            // given
+            String invalidPassword = "1234567890^^";
+
+            // when & then
+            assertThatThrownBy(() -> Password.fromRaw(invalidPassword, passwordHasher))
+                    .isInstanceOf(InvalidPasswordException.class);
+        }
+
+        @Test
+        @DisplayName("비밀번호에 숫자가 포함되지 않은 경우 유효하지 않습니다.")
+        void isInvalidWhenPasswordDoesNotContainNumbers() {
+            // given
+            String invalidPassword = "password^^";
+
+            // when & then
+            assertThatThrownBy(() -> Password.fromRaw(invalidPassword, passwordHasher))
+                    .isInstanceOf(InvalidPasswordException.class);
+        }
+
+        @Test
+        @DisplayName("비밀번호에 특수문자가 포함되지 않은 경우 유효하지 않습니다.")
+        void isInvalidWhenPasswordDoesNotContainSpecialCharacters() {
+            // given
+            String invalidPassword = "password1234";
+
+            // when & then
+            assertThatThrownBy(() -> Password.fromRaw(invalidPassword, passwordHasher))
+                    .isInstanceOf(InvalidPasswordException.class);
+        }
+
+        @Test
+        @DisplayName("비밀번호에 영어 대소문자 이외의 문자가 포함된 경우 유효하지 않습니다.")
+        void isInvalidWhenPasswordContainsNonAlphabetCharacters() {
+            // given
+            String invalidPassword = "비밀번호abcd1234^^";
+
+            // when & then
+            assertThatThrownBy(() -> Password.fromRaw(invalidPassword, passwordHasher))
+                    .isInstanceOf(InvalidPasswordException.class);
+        }
     }
 
-    @Test
-    @DisplayName("비밀번호가 20자이고, 문자, 숫자, 특수문자를 포함한 경우 유효합니다.")
-    void isValidWhenPasswordHasTwentyCharactersIncludingLettersNumbersAndSpecialCharacters() {
-        // given
-        String validPassword = "password9012345678^^";
-        when(passwordHasher.hash(anyString()))
-                .thenAnswer(invocation -> {
-                    String raw = invocation.getArgument(0, String.class);
-                    return "hashed" + raw;
-                });
+    @Nested
+    @DisplayName("비밀번호 매칭")
+    class PasswordMatch {
 
-        // when
-        Password password = Password.fromRaw(validPassword, passwordHasher);
+        private static final String RAW_PASSWORD = "raw";
+        private static final String HASHED_PASSWORD = "hashed";
 
-        // then
-        assertThat(password).isNotNull();
-        assertThat(password.getHashedValue()).isEqualTo("hashed" + validPassword);
-    }
+        @Test
+        @DisplayName("비밀번호가 일치하는 경우 true를 반환합니다.")
+        void shouldReturnTrueWhenPasswordMatches() {
+            // given
+            Password hashedPassword = Password.fromHashed(HASHED_PASSWORD);
+            when(passwordHasher.matches(RAW_PASSWORD, HASHED_PASSWORD)).thenReturn(true);
 
-    @Test
-    @DisplayName("비밀번호가 10자 미만인 경우 유효하지 않습니다.")
-    void isInvalidWhenPasswordIsLessThan10Characters() {
-        // given
-        String invalidPassword = "pw123^^";
+            // when
+            boolean result = hashedPassword.matches(RAW_PASSWORD, passwordHasher);
 
-        // when & then
-        assertThatThrownBy(() -> Password.fromRaw(invalidPassword, passwordHasher))
-                .isInstanceOf(InvalidPasswordException.class);
-    }
+            // then
+            assertThat(result).isTrue();
+        }
 
-    @Test
-    @DisplayName("비밀번호가 20자를 초과하는 경우 유효하지 않습니다.")
-    void isInvalidWhenPasswordIsGreaterThan20Characters() {
-        // given
-        String invalidPassword = "abcdefghijklmnopqrstuvwxyz1234567890^^";
+        @Test
+        @DisplayName("비밀번호가 일치하지 않는 경우 false를 반환합니다.")
+        void shouldReturnFalseWhenPasswordDoesntMatch() {
+            // given
+            Password hashedPassword = Password.fromHashed(HASHED_PASSWORD);
+            when(passwordHasher.matches(RAW_PASSWORD, HASHED_PASSWORD)).thenReturn(false);
 
-        // when & then
-        assertThatThrownBy(() -> Password.fromRaw(invalidPassword, passwordHasher))
-                .isInstanceOf(InvalidPasswordException.class);
-    }
+            // when
+            boolean result = hashedPassword.matches(RAW_PASSWORD, passwordHasher);
 
-    @Test
-    @DisplayName("비밀번호가 null인 경우 유효하지 않습니다.")
-    void isInvalidWhenPasswordIsNull() {
-        // given
-        String invalidPassword = null;
-
-        // when & then
-        assertThatThrownBy(() -> Password.fromRaw(invalidPassword, passwordHasher))
-                .isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    @DisplayName("비밀번호에 문자가 포함되지 않은 경우 유효하지 않습니다.")
-    void isInvalidWhenPasswordDoesNotContainCharacters() {
-        // given
-        String invalidPassword = "1234567890^^";
-
-        // when & then
-        assertThatThrownBy(() -> Password.fromRaw(invalidPassword, passwordHasher))
-                .isInstanceOf(InvalidPasswordException.class);
-    }
-
-    @Test
-    @DisplayName("비밀번호에 숫자가 포함되지 않은 경우 유효하지 않습니다.")
-    void isInvalidWhenPasswordDoesNotContainNumbers() {
-        // given
-        String invalidPassword = "password^^";
-
-        // when & then
-        assertThatThrownBy(() -> Password.fromRaw(invalidPassword, passwordHasher))
-                .isInstanceOf(InvalidPasswordException.class);
-    }
-
-    @Test
-    @DisplayName("비밀번호에 특수문자가 포함되지 않은 경우 유효하지 않습니다.")
-    void isInvalidWhenPasswordDoesNotContainSpecialCharacters() {
-        // given
-        String invalidPassword = "password1234";
-
-        // when & then
-        assertThatThrownBy(() -> Password.fromRaw(invalidPassword, passwordHasher))
-                .isInstanceOf(InvalidPasswordException.class);
-    }
-
-    @Test
-    @DisplayName("비밀번호에 영어 대소문자 이외의 문자가 포함된 경우 유효하지 않습니다.")
-    void isInvalidWhenPasswordContainsNonAlphabetCharacters() {
-        // given
-        String invalidPassword = "비밀번호abcd1234^^";
-
-        // when & then
-        assertThatThrownBy(() -> Password.fromRaw(invalidPassword, passwordHasher))
-                .isInstanceOf(InvalidPasswordException.class);
+            // then
+            assertThat(result).isFalse();
+        }
     }
 }
