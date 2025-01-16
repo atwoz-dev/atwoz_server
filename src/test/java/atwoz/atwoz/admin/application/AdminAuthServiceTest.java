@@ -142,21 +142,21 @@ class AdminAuthServiceTest {
             when(admin.getId()).thenReturn(1L);
             when(adminRepository.findByEmail(Email.from(email))).thenReturn(Optional.of(admin));
 
-            String reissuedAccessToken = "accessToken";
-            String reissuedRefreshToken = "refreshToken";
+            String newAccessToken = "accessToken";
+            String newRefreshToken = "refreshToken";
             when(tokenProvider.createAccessToken(eq(1L), eq(Role.ADMIN), any(Instant.class)))
-                    .thenReturn(reissuedAccessToken);
+                    .thenReturn(newAccessToken);
             when(tokenProvider.createRefreshToken(eq(1L), eq(Role.ADMIN), any(Instant.class)))
-                    .thenReturn(reissuedRefreshToken);
+                    .thenReturn(newRefreshToken);
 
             // when
             AdminLoginResponse response = adminAuthService.login(request);
 
             // then
-            verify(tokenRepository).save(reissuedRefreshToken);
+            verify(tokenRepository).save(newRefreshToken);
             assertThat(response).isNotNull();
-            assertThat(response.accessToken()).isEqualTo(reissuedAccessToken);
-            assertThat(response.refreshToken()).isEqualTo(reissuedRefreshToken);
+            assertThat(response.accessToken()).isEqualTo(newAccessToken);
+            assertThat(response.refreshToken()).isEqualTo(newRefreshToken);
         }
 
         @Test

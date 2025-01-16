@@ -2,7 +2,7 @@ package atwoz.atwoz.admin.presentation;
 
 import atwoz.atwoz.admin.application.exception.AdminNotFoundException;
 import atwoz.atwoz.admin.application.exception.DuplicateEmailException;
-import atwoz.atwoz.admin.application.exception.PasswordMismatchException;
+import atwoz.atwoz.admin.domain.exception.IncorrectPasswordException;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -33,8 +33,8 @@ public class AdminExceptionHandler {
                 .body(BaseResponse.from(StatusType.UNAUTHORIZED));
     }
 
-    @ExceptionHandler(PasswordMismatchException.class)
-    public ResponseEntity<BaseResponse<Void>> handlePasswordMismatchException(PasswordMismatchException e) {
+    @ExceptionHandler(IncorrectPasswordException.class)
+    public ResponseEntity<BaseResponse<Void>> handlePasswordMismatchException(IncorrectPasswordException e) {
         log.warn("관리자 로그인에 실패했습니다. {}", e.getMessage());
 
         return ResponseEntity.status(401)

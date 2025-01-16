@@ -1,6 +1,6 @@
 package atwoz.atwoz.admin.domain;
 
-import atwoz.atwoz.admin.application.exception.PasswordMismatchException;
+import atwoz.atwoz.admin.domain.exception.IncorrectPasswordException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,7 +57,7 @@ class AdminTest {
 
         // when & then
         assertThatThrownBy(() -> admin.matchPassword(rawPassword, passwordHasher))
-                .isInstanceOf(PasswordMismatchException.class);
+                .isInstanceOf(IncorrectPasswordException.class);
     }
 
     private Admin createAdmin() {
