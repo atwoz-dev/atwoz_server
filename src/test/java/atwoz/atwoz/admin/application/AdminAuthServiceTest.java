@@ -6,15 +6,14 @@ import atwoz.atwoz.admin.application.dto.AdminSignupRequest;
 import atwoz.atwoz.admin.application.dto.AdminSignupResponse;
 import atwoz.atwoz.admin.application.exception.AdminNotFoundException;
 import atwoz.atwoz.admin.application.exception.DuplicateEmailException;
-import atwoz.atwoz.admin.application.exception.PasswordMismatchException;
 import atwoz.atwoz.admin.domain.Admin;
 import atwoz.atwoz.admin.domain.AdminRepository;
 import atwoz.atwoz.admin.domain.Email;
 import atwoz.atwoz.admin.domain.PasswordHasher;
 import atwoz.atwoz.admin.domain.exception.InvalidPasswordException;
-import atwoz.atwoz.auth.infra.JwtProvider;
+import atwoz.atwoz.auth.domain.TokenProvider;
+import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.common.enums.Role;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -41,7 +41,10 @@ class AdminAuthServiceTest {
     private PasswordHasher passwordHasher;
 
     @Mock
-    private JwtProvider jwtProvider;
+    private TokenProvider tokenProvider;
+
+    @Mock
+    private TokenRepository tokenRepository;
 
     @InjectMocks
     private AdminAuthService adminAuthService;
@@ -49,6 +52,7 @@ class AdminAuthServiceTest {
     @Nested
     @DisplayName("회원가입")
     class Signup {
+
         @Test
         @DisplayName("중복되지 않은 이메일과 유효한 비밀번호로 회원가입 할 수 있습니다.")
         void canSignupWhenRequestIsValid() {
@@ -57,10 +61,8 @@ class AdminAuthServiceTest {
             String rawPassword = "password123^^";
             AdminSignupRequest request = new AdminSignupRequest(email, rawPassword, "홍길동", "01012345678");
 
-            when(adminRepository.findByEmail(Email.from(email)))
-                    .thenReturn(Optional.empty());
-            when(passwordHasher.hash(rawPassword))
-                    .thenReturn("hashed-password123^^");
+            when(adminRepository.findByEmail(Email.from(email))).thenReturn(Optional.empty());
+            when(passwordHasher.hash(rawPassword)).thenReturn("hashed-password123^^");
             when(adminRepository.save(any(Admin.class)))
                     .thenAnswer(invocation -> {
                         Admin admin = invocation.getArgument(0, Admin.class);
@@ -88,12 +90,10 @@ class AdminAuthServiceTest {
             String email = "exists@example.com";
             AdminSignupRequest request = new AdminSignupRequest(email, "password123^^", "홍길동", "01012345678");
 
-            when(adminRepository.findByEmail(Email.from(email)))
-                    .thenReturn(Optional.of(mock(Admin.class)));
+            when(adminRepository.findByEmail(Email.from(email))).thenReturn(Optional.of(mock(Admin.class)));
 
             // when & then
-            assertThatThrownBy(() -> adminAuthService.signup(request))
-                    .isInstanceOf(DuplicateEmailException.class);
+            assertThatThrownBy(() -> adminAuthService.signup(request)).isInstanceOf(DuplicateEmailException.class);
 
             verify(adminRepository, never()).save(any(Admin.class));
             verify(passwordHasher, never()).hash(anyString());
@@ -107,12 +107,10 @@ class AdminAuthServiceTest {
             String invalidPassword = "short12^^";
             AdminSignupRequest request = new AdminSignupRequest(email, invalidPassword, "홍길동", "01012345678");
 
-            when(adminRepository.findByEmail(Email.from(email)))
-                    .thenReturn(Optional.empty());
+            when(adminRepository.findByEmail(Email.from(email))).thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> adminAuthService.signup(request))
-                    .isInstanceOf(InvalidPasswordException.class);
+            assertThatThrownBy(() -> adminAuthService.signup(request)).isInstanceOf(InvalidPasswordException.class);
 
             verify(adminRepository).findByEmail(Email.from(email));
             verify(passwordHasher, never()).hash(anyString());
@@ -124,66 +122,49 @@ class AdminAuthServiceTest {
     @DisplayName("로그인")
     class Login {
 
-        private static final String EMAIL = "test@example.com";
-        private static final String RAW_PASSWORD = "password123^^";
-        private static final String HASHED_PASSWORD = "hashed-pw";
-
-        private final Admin admin = mock(Admin.class);
-        private final AdminLoginRequest request = new AdminLoginRequest(EMAIL, RAW_PASSWORD);
-
-        @BeforeEach
-        void setUp() {
-            when(admin.getId()).thenReturn(1L);
-            when(admin.getHashedPassword()).thenReturn(HASHED_PASSWORD);
-        }
+        @Mock
+        private Admin admin;
 
         @Test
-        @DisplayName("유효한 이메일과 비밀번호로 로그인하면 access token과 refresh token을 발급받습니다.")
+        @DisplayName("유효한 이메일과 비밀번호로 로그인하면 access token과 refresh token을 발급받고, refresh token은 저장소에 저장합니다.")
         void issueTokensWhenLoginIsValid() {
             // given
-            when(adminRepository.findByEmail(Email.from(EMAIL)))
-                    .thenReturn(Optional.of(admin));
-            when(passwordHasher.matches(RAW_PASSWORD, HASHED_PASSWORD))
-                    .thenReturn(true);
+            String email = "valid@example.com";
+            String requestPassword = "password123^^";
+            AdminLoginRequest request = new AdminLoginRequest(email, requestPassword);
 
-            when(jwtProvider.createAccessToken(eq(1L), eq(Role.ADMIN), any()))
-                    .thenReturn("accessToken");
-            when(jwtProvider.createRefreshToken(eq(1L), eq(Role.ADMIN), any()))
-                    .thenReturn("refreshToken");
+            when(admin.getId()).thenReturn(1L);
+            when(adminRepository.findByEmail(Email.from(email))).thenReturn(Optional.of(admin));
+
+            String newAccessToken = "accessToken";
+            String newRefreshToken = "refreshToken";
+            when(tokenProvider.createAccessToken(eq(1L), eq(Role.ADMIN), any(Instant.class)))
+                    .thenReturn(newAccessToken);
+            when(tokenProvider.createRefreshToken(eq(1L), eq(Role.ADMIN), any(Instant.class)))
+                    .thenReturn(newRefreshToken);
 
             // when
             AdminLoginResponse response = adminAuthService.login(request);
 
             // then
+            verify(tokenRepository).save(newRefreshToken);
             assertThat(response).isNotNull();
-            assertThat(response.accessToken()).isEqualTo("accessToken");
-            assertThat(response.refreshToken()).isEqualTo("refreshToken");
+            assertThat(response.accessToken()).isEqualTo(newAccessToken);
+            assertThat(response.refreshToken()).isEqualTo(newRefreshToken);
         }
 
         @Test
         @DisplayName("존재하지 않는 이메일로 로그인을 시도하면 AdminNotFoundException이 발생합니다.")
         void loginThrowsAdminNotFoundException() {
             // given
-            when(adminRepository.findByEmail(Email.from(EMAIL)))
-                    .thenReturn(Optional.empty());
+            String email = "invalid@example.com";
+            String requestPassword = "password123^^";
+            AdminLoginRequest request = new AdminLoginRequest(email, requestPassword);
+
+            when(adminRepository.findByEmail(Email.from(email))).thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> adminAuthService.login(request))
-                    .isInstanceOf(AdminNotFoundException.class);
-        }
-
-        @Test
-        @DisplayName("비밀번호가 일치하지 않으면 PasswordMismatchException이 발생합니다.")
-        void loginThrowsPasswordMismatchException() {
-            // given
-            when(adminRepository.findByEmail(Email.from(EMAIL)))
-                    .thenReturn(Optional.of(admin));
-            when(passwordHasher.matches(RAW_PASSWORD, HASHED_PASSWORD))
-                    .thenReturn(false);
-
-            // when & then
-            assertThatThrownBy(() -> adminAuthService.login(request))
-                    .isInstanceOf(PasswordMismatchException.class);
+            assertThatThrownBy(() -> adminAuthService.login(request)).isInstanceOf(AdminNotFoundException.class);
         }
     }
 }

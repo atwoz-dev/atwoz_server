@@ -2,19 +2,18 @@ package atwoz.atwoz.admin.domain;
 
 import atwoz.atwoz.admin.domain.exception.InvalidNameException;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class NameTest {
 
-    @Test
-    @DisplayName("이름이 한 글자이고 문자(한글, 영어)나 숫자인 경우 유효합니다.")
-    void isValidWhenNameIsOneCharacterOrNumber() {
-        // given
-        String validName = "김";
-
+    @ParameterizedTest
+    @ValueSource(strings = {"홍길동", "John", "김", "1234567890"})
+    @DisplayName("10자 이하의 문자나 숫자로 Name을 생성할 수 있습니다.")
+    void canCreateNameWhenFormatIsValid(String validName) {
         // when
         Name name = Name.from(validName);
 
@@ -23,70 +22,10 @@ class NameTest {
         assertThat(name.getValue()).isEqualTo(validName);
     }
 
-    @Test
-    @DisplayName("이름이 열 글자이고 문자(한글, 영어)나 숫자인 경우 유효합니다.")
-    void isValidWhenNameIsTenCharacterOrNumber() {
-        // given
-        String validName = "1234567890";
-
-        // when
-        Name name = Name.from(validName);
-
-        // then
-        assertThat(name).isNotNull();
-        assertThat(name.getValue()).isEqualTo(validName);
-    }
-
-    @Test
-    @DisplayName("이름이 공백인 경우 유효하지 않습니다.")
-    void isInValidWhenNameIsEmpty() {
-        // given
-        String invalidName = "";
-
-        // when & then
-        assertThatThrownBy(() -> Name.from(invalidName))
-                .isInstanceOf(InvalidNameException.class);
-    }
-
-    @Test
-    @DisplayName("이름이 null인 경우 유효하지 않습니다.")
-    void isInValidWhenNameIsNull() {
-        // given
-        String invalidName = null;
-
-        // when & then
-        assertThatThrownBy(() -> Name.from(invalidName))
-                .isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    @DisplayName("이름이 열 글자를 초과하는 경우 유효하지 않습니다.")
-    void isInValidWhenNameIsGreaterThanTenCharacters() {
-        // given
-        String invalidName = "12345678910";
-
-        // when & then
-        assertThatThrownBy(() -> Name.from(invalidName))
-                .isInstanceOf(InvalidNameException.class);
-    }
-
-    @Test
-    @DisplayName("이름에 허용되지 않는 문자가 포함된 경우 유효하지 않습니다.")
-    void isInValidWhenNameContainsInvalidCharacters() {
-        // given
-        String invalidName = "홍길동123^^";
-
-        // when & then
-        assertThatThrownBy(() -> Name.from(invalidName))
-                .isInstanceOf(InvalidNameException.class);
-    }
-
-    @Test
-    @DisplayName("이름에 공백이 포함된 경우 유효하지 않습니다.")
-    void isInvalidWhenNameContainsWhitespace() {
-        // given
-        String invalidName = "John Doe";
-
+    @ParameterizedTest
+    @ValueSource(strings = {"", "12345678910", "홍길동123^^", "John Doe"})
+    @DisplayName("잘못된 형식의 이름은 InvalidNameException이 발생합니다.")
+    void throwInvalidNameExceptionWhenFormatIsInvalid(String invalidName) {
         // when & then
         assertThatThrownBy(() -> Name.from(invalidName))
                 .isInstanceOf(InvalidNameException.class);

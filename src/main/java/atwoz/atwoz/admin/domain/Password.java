@@ -42,4 +42,8 @@ public class Password {
         }
         this.hashedValue = hashedValue;
     }
+
+    public boolean matches(String rawValue, PasswordHasher hasher) {
+        return hasher.matches(rawValue, hashedValue);
+    }
 }

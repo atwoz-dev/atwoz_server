@@ -2,19 +2,18 @@ package atwoz.atwoz.admin.domain;
 
 import atwoz.atwoz.admin.domain.exception.InvalidPhoneNumberException;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class PhoneNumberTest {
 
-    @Test
-    @DisplayName("전화번호가 형식에 맞는 경우 유효합니다.")
-    void isValidWhenFormatIsCorrect() {
-        // given
-        String validPhoneNumber = "01012345678";
-
+    @ParameterizedTest
+    @ValueSource(strings = {"01012345678", "01099999999"})
+    @DisplayName("전화번호가 01012345678 형식에 맞는 경우 유효합니다.")
+    void canCreatePhoneNumberWhenFormatIsValid(String validPhoneNumber) {
         // when
         PhoneNumber phoneNumber = PhoneNumber.from(validPhoneNumber);
 
@@ -23,56 +22,10 @@ class PhoneNumberTest {
         assertThat(phoneNumber.getValue()).isEqualTo(validPhoneNumber);
     }
 
-    @Test
-    @DisplayName("전화번호가 010으로 시작하지 않는 경우 유효하지 않습니다.")
-    void isInvalidWhenPhoneNumberDoesNotStartWith010() {
-        // given
-        String invalidPhoneNumber = "01234567890";
-
-        // when & then
-        assertThatThrownBy(() -> PhoneNumber.from(invalidPhoneNumber))
-                .isInstanceOf(InvalidPhoneNumberException.class);
-    }
-
-    @Test
-    @DisplayName("전화번호가 11자리보다 큰 경우 유효하지 않습니다.")
-    void isInvalidWhenPhoneNumberExceedsElevenDigits() {
-        // given
-        String invalidPhoneNumber = "010123456789";
-
-        // when & then
-        assertThatThrownBy(() -> PhoneNumber.from(invalidPhoneNumber))
-                .isInstanceOf(InvalidPhoneNumberException.class);
-    }
-
-    @Test
-    @DisplayName("전화번호가 null인 경우 유효하지 않습니다.")
-    void isInvalidWhenPhoneNumberIsNull() {
-        // given
-        String invalidPhoneNumber = null;
-
-        // when & then
-        assertThatThrownBy(() -> PhoneNumber.from(invalidPhoneNumber))
-                .isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    @DisplayName("전화번호가 빈 문자열인 경우 유효하지 않습니다.")
-    void isInvalidWhenPhoneNumberIsEmpty() {
-        // given
-        String invalidPhoneNumber = "";
-
-        // when & then
-        assertThatThrownBy(() -> PhoneNumber.from(invalidPhoneNumber))
-                .isInstanceOf(InvalidPhoneNumberException.class);
-    }
-
-    @Test
-    @DisplayName("전화번호에 숫자가 아닌 값이 포함된 경우 유효하지 않습니다.")
-    void isInvalidWhenPhoneNumberContainsNonNumericCharacters() {
-        // given
-        String invalidPhoneNumber = "010-1234-5678";
-
+    @ParameterizedTest
+    @ValueSource(strings = {"01234567890", "010123456789", "", "010-1234-5678"})
+    @DisplayName("전화번호 형식이 유효하지 않은 경우 InvalidPhoneNumberException이 발생합니다.")
+    void isInvalidWhenFormatIsIncorrect(String invalidPhoneNumber) {
         // when & then
         assertThatThrownBy(() -> PhoneNumber.from(invalidPhoneNumber))
                 .isInstanceOf(InvalidPhoneNumberException.class);

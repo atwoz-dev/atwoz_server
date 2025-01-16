@@ -1,5 +1,6 @@
 package atwoz.atwoz.admin.domain;
 
+import atwoz.atwoz.admin.domain.exception.IncorrectPasswordException;
 import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,6 +20,7 @@ public class Admin extends SoftDeleteBaseEntity {
     private Email email;
 
     @Embedded
+    @Getter
     private Password password;
 
     @Embedded
@@ -66,7 +68,9 @@ public class Admin extends SoftDeleteBaseEntity {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getHashedPassword() {
-        return password.getHashedValue();
+    public void matchPassword(String rawPassword, PasswordHasher passwordHasher) {
+        if (!password.matches(rawPassword, passwordHasher)) {
+            throw new IncorrectPasswordException();
+        }
     }
 }
