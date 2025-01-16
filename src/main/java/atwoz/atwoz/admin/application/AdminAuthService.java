@@ -6,7 +6,6 @@ import atwoz.atwoz.admin.application.dto.AdminSignupRequest;
 import atwoz.atwoz.admin.application.dto.AdminSignupResponse;
 import atwoz.atwoz.admin.application.exception.AdminNotFoundException;
 import atwoz.atwoz.admin.application.exception.DuplicateEmailException;
-import atwoz.atwoz.admin.application.exception.PasswordMismatchException;
 import atwoz.atwoz.admin.domain.*;
 import atwoz.atwoz.auth.domain.TokenProvider;
 import atwoz.atwoz.auth.domain.TokenRepository;
@@ -36,7 +35,7 @@ public class AdminAuthService {
     @Transactional
     public AdminLoginResponse login(AdminLoginRequest request) {
         Admin admin = findAdminByEmail(request.email());
-        matchPassword(request.password(), admin.getPassword());
+        admin.matchPassword(request.password(), passwordHasher);
 
         Instant issuedAt = Instant.now();
         String accessToken = createAccessToken(admin.getId(), issuedAt);
@@ -64,12 +63,6 @@ public class AdminAuthService {
     private Admin findAdminByEmail(String email) {
         return adminRepository.findByEmail(Email.from(email))
                 .orElseThrow(AdminNotFoundException::new);
-    }
-
-    private void matchPassword(String requestPassword, Password password) {
-        if (!password.matches(requestPassword, passwordHasher)) {
-            throw new PasswordMismatchException();
-        }
     }
 
     private String createAccessToken(Long id, Instant issuedAt) {

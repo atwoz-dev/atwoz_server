@@ -1,5 +1,6 @@
 package atwoz.atwoz.admin.domain;
 
+import atwoz.atwoz.admin.application.exception.PasswordMismatchException;
 import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -65,5 +66,11 @@ public class Admin extends SoftDeleteBaseEntity {
 
     private void setPhoneNumber(@NonNull PhoneNumber phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public void matchPassword(String rawPassword, PasswordHasher passwordHasher) {
+        if (!password.matches(rawPassword, passwordHasher)) {
+            throw new PasswordMismatchException();
+        }
     }
 }
