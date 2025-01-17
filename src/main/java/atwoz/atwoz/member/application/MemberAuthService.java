@@ -25,7 +25,7 @@ public class MemberAuthService {
     public MemberLoginServiceDto login(String phoneNumber) {
         Member member = createOrFindMemberByPhoneNumber(phoneNumber);
 
-        if (member.isPermanentStop()) {
+        if (member.isBanned()) {
             throw new MemberPermanentStopException();
         }
 
@@ -45,6 +45,6 @@ public class MemberAuthService {
     }
 
     private Member create(String phoneNumber) {
-        return memberRepository.save(Member.createFromPhoneNumber(phoneNumber));
+        return memberRepository.save(Member.fromPhoneNumber(phoneNumber));
     }
 }

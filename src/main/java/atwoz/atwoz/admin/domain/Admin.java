@@ -10,6 +10,7 @@ import static jakarta.persistence.EnumType.STRING;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Admin extends SoftDeleteBaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter

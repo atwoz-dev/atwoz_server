@@ -30,7 +30,7 @@ public class MemberService {
         validateJobId(request.jobId());
         validateHobbyIdList(request.hobbyIds());
 
-        member.updateMemberProfile(MemberMapper.toMemberProfile(memberId, request));
+        member.updateProfile(MemberMapper.toMemberProfile(memberId, request));
         return MemberMapper.toMemberProfileUpdateResponse(member);
     }
 

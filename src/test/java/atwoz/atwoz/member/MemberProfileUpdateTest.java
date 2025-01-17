@@ -63,7 +63,7 @@ public class MemberProfileUpdateTest {
                 jobId, "Daejeon", "OTHER", "ENFJ",
                 "DAILY", "ABSTINENT", "BUDDHISM", hobbyIds
         );
-        Member existingMember = Member.createFromPhoneNumber("01012345678");
+        Member existingMember = Member.fromPhoneNumber("01012345678");
 
 
         // Mock 동작 설정
@@ -89,7 +89,7 @@ public class MemberProfileUpdateTest {
                 jobId, "Daejeon", "OTHER", "ENFJ",
                 "DAILY", "ABSTINENT", "BUDDHISM", hobbyIds
         );
-        Member existingMember = Member.createFromPhoneNumber("01012345678");
+        Member existingMember = Member.fromPhoneNumber("01012345678");
 
 
         // Mock 동작 설정
@@ -114,7 +114,7 @@ public class MemberProfileUpdateTest {
                 jobId, "Daejeon", "OTHER", "ENFJ",
                 "DAILY", "ABSTINENT", "BUDDHISM", hobbyIds
         );
-        Member existingMember = Member.createFromPhoneNumber("01012345678");
+        Member existingMember = Member.fromPhoneNumber("01012345678");
 
 
         // Mock 동작 설정
@@ -139,7 +139,7 @@ public class MemberProfileUpdateTest {
                 jobId, "Daejeon", "OTHER", "ENFJ",
                 "DAILY", "ABSTINENT", "BUDDHISM", hobbyIds
         );
-        Member existingMember = Member.createFromPhoneNumber("01012345678");
+        Member existingMember = Member.fromPhoneNumber("01012345678");
 
         // When
         Mockito.when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
@@ -175,7 +175,7 @@ public class MemberProfileUpdateTest {
                 jobId, null, "OTHER", "ENFJ",
                 "DAILY", "ABSTINENT", "BUDDHISM", null
         );
-        Member existingMember = Member.createFromPhoneNumber("01012345678");
+        Member existingMember = Member.fromPhoneNumber("01012345678");
 
         // When
         Mockito.when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
