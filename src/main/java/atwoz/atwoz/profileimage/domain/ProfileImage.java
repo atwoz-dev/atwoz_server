@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "profile_images")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProfileImage extends BaseEntity {
