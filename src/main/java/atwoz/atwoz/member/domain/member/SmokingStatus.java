@@ -6,12 +6,12 @@ import lombok.Getter;
 @Getter
 public enum SmokingStatus {
     NON_SMOKER("비흡연"),
-    ABSTAINING("금연 중"),
-    E_CIGARETTE("전자담배"),
-    OCCASIONAL("가끔 피움"),
-    DAILY("매일 피움");
+    QUITTING("금연 중"),
+    VAPING("전자담배"),
+    OCCASIONAL_SMOKER("가끔 피움"),
+    DAILY_SMOKER("매일 피움");
 
-    private String description;
+    private final String description;
 
     SmokingStatus(String description) {
         this.description = description;
@@ -19,6 +19,7 @@ public enum SmokingStatus {
 
     public static SmokingStatus from(String value) {
         if (value == null) return null;
+
         try {
             return SmokingStatus.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {

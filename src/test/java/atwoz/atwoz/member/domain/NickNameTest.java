@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class NickNameTest {
+class NickNameTest {
 
     @Test
     @DisplayName("닉네임이 입력되지 않은 경우 유효하지 않습니다.")
@@ -16,7 +16,7 @@ public class NickNameTest {
 
         // When & Then
         Assertions.assertThatThrownBy(() -> Nickname.from(nickname))
-                .isInstanceOf(InvalidNickNameException.class);
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -63,6 +63,6 @@ public class NickNameTest {
 
         // When & Then
         Assertions.assertThat(nickname).isNotNull();
-        Assertions.assertThat(nickname.getNickname()).isEqualTo(validNickname);
+        Assertions.assertThat(nickname.getValue()).isEqualTo(validNickname);
     }
 }

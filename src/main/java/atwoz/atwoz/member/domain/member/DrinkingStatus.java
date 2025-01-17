@@ -5,13 +5,13 @@ import lombok.Getter;
 
 @Getter
 public enum DrinkingStatus {
-    NONE("전혀 마시지 않음"),
-    SOCIAL("사회적 음주"),
-    OCCASIONALLY("가끔 마심"),
-    ENJOY_DRINKING("술자리를 즐김"),
-    ABSTINENT("금주 중");
+    NON_DRINKER("전혀 마시지 않음"),
+    SOCIAL_DRINKER("사회적 음주"),
+    OCCASIONAL_DRINKER("가끔 마심"),
+    ENJOYS_DRINKING("술자리를 즐김"),
+    QUITTING("금주 중");
 
-    private String description;
+    private final String description;
 
     DrinkingStatus(String description) {
         this.description = description;
@@ -19,6 +19,7 @@ public enum DrinkingStatus {
 
     public static DrinkingStatus from(String value) {
         if (value == null) return null;
+
         try {
             return DrinkingStatus.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {

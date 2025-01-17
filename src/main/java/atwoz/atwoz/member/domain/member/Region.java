@@ -5,7 +5,8 @@ import lombok.Getter;
 
 @Getter
 public enum Region {
-    SEOUL("서울"), DAEJEON("대전");
+    SEOUL("서울"),
+    DAEJEON("대전");
 
     private final String description;
 
@@ -15,6 +16,7 @@ public enum Region {
 
     public static Region from(String value) {
         if (value == null) return null;
+
         try {
             return Region.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {

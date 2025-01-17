@@ -61,7 +61,7 @@ public class MemberProfileUpdateTest {
         MemberProfileUpdateRequest invalidRequest = new MemberProfileUpdateRequest(
                 "nickname", "INVALID_ENUM", 20, 180, // 잘못된 gender 값
                 jobId, "Daejeon", "OTHER", "ENFJ",
-                "DAILY", "ABSTINENT", "BUDDHISM", hobbyIds
+                "DAILY_SMOKER", "QUITTING", "BUDDHIST", hobbyIds
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
@@ -87,7 +87,7 @@ public class MemberProfileUpdateTest {
         MemberProfileUpdateRequest invalidRequest = new MemberProfileUpdateRequest(
                 "nickname", "INVALID_ENUM", 20, 180, // 잘못된 gender 값
                 jobId, "Daejeon", "OTHER", "ENFJ",
-                "DAILY", "ABSTINENT", "BUDDHISM", hobbyIds
+                "DAILY_SMOKER", "QUITTING", "BUDDHIST", hobbyIds
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
@@ -112,7 +112,7 @@ public class MemberProfileUpdateTest {
         MemberProfileUpdateRequest invalidRequest = new MemberProfileUpdateRequest(
                 "nickname", "INVALID_ENUM", 20, 180, // 잘못된 gender 값
                 jobId, "Daejeon", "OTHER", "ENFJ",
-                "DAILY", "ABSTINENT", "BUDDHISM", hobbyIds
+                "DAILY_SMOKER", "QUITTING", "BUDDHIST", hobbyIds
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
@@ -137,7 +137,7 @@ public class MemberProfileUpdateTest {
         MemberProfileUpdateRequest request = new MemberProfileUpdateRequest(
                 "nickname", "MALE", 20, 180,
                 jobId, "Daejeon", "OTHER", "ENFJ",
-                "DAILY", "ABSTINENT", "BUDDHISM", hobbyIds
+                "DAILY_SMOKER", "QUITTING", "BUDDHIST", hobbyIds
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
@@ -149,13 +149,13 @@ public class MemberProfileUpdateTest {
         // Then
         MemberProfileUpdateResponse response = memberService.updateMember(memberId, request);
         Assertions.assertThat(response).isNotNull();
-        Assertions.assertThat(response.memberProfile().getNickname().getNickname()).isEqualTo("nickname");
+        Assertions.assertThat(response.memberProfile().getNickname().getValue()).isEqualTo("nickname");
         Assertions.assertThat(response.memberProfile().getGender()).isEqualTo(Gender.MALE);
         Assertions.assertThat(response.memberProfile().getJobId()).isEqualTo(2L);
         Assertions.assertThat(response.memberProfile().getAge()).isEqualTo(20);
         Assertions.assertThat(response.memberProfile().getHeight()).isEqualTo(180);
         Assertions.assertThat(response.memberProfile().getRegion()).isEqualTo(Region.DAEJEON);
-        Assertions.assertThat(response.memberProfile().getReligionStatus()).isEqualTo(ReligionStatus.BUDDHISM);
+        Assertions.assertThat(response.memberProfile().getReligionStatus()).isEqualTo(ReligionStatus.BUDDHIST);
 
         Assertions.assertThat(response.memberProfile().getMemberHobbyList()).hasSize(2);
         for (MemberHobby memberHobby : response.memberProfile().getMemberHobbyList()) {
@@ -173,7 +173,7 @@ public class MemberProfileUpdateTest {
         MemberProfileUpdateRequest request = new MemberProfileUpdateRequest(
                 "nickname", "MALE", 20, 180,
                 jobId, null, "OTHER", "ENFJ",
-                "DAILY", "ABSTINENT", "BUDDHISM", null
+                "DAILY_SMOKER", "QUITTING", "BUDDHIST", null
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
@@ -184,13 +184,13 @@ public class MemberProfileUpdateTest {
         // Then
         MemberProfileUpdateResponse response = memberService.updateMember(memberId, request);
         Assertions.assertThat(response).isNotNull();
-        Assertions.assertThat(response.memberProfile().getNickname().getNickname()).isEqualTo("nickname");
+        Assertions.assertThat(response.memberProfile().getNickname().getValue()).isEqualTo("nickname");
         Assertions.assertThat(response.memberProfile().getGender()).isEqualTo(Gender.MALE);
         Assertions.assertThat(response.memberProfile().getJobId()).isEqualTo(2L);
         Assertions.assertThat(response.memberProfile().getAge()).isEqualTo(20);
         Assertions.assertThat(response.memberProfile().getHeight()).isEqualTo(180);
         Assertions.assertThat(response.memberProfile().getRegion()).isNull();
-        Assertions.assertThat(response.memberProfile().getReligionStatus()).isEqualTo(ReligionStatus.BUDDHISM);
+        Assertions.assertThat(response.memberProfile().getReligionStatus()).isEqualTo(ReligionStatus.BUDDHIST);
 
         Assertions.assertThat(response.memberProfile().getMemberHobbyList()).hasSize(0);
     }

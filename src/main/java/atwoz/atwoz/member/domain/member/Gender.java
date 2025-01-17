@@ -16,6 +16,7 @@ public enum Gender {
 
     public static Gender from(String value) {
         if (value == null) return null;
+
         try {
             return Gender.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {

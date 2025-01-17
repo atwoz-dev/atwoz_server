@@ -2,10 +2,7 @@ package atwoz.atwoz.member.domain.member.vo;
 
 import atwoz.atwoz.member.domain.member.*;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,23 +52,18 @@ public class MemberProfile {
     @Column(columnDefinition = "varchar(50)")
     private HighestEducation highestEducation;
 
-    public boolean isProfileSettingNeeded() {
-        if (nickname == null || gender == null || region == null || age == null || height == null ||
-                jobId == null || mbti == null || smokingStatus == null || drinkingStatus == null ||
-                religionStatus == null || highestEducation == null || memberHobbyList == null || memberHobbyList.isEmpty()) {
-            return true;
-        }
-        return false;
-    }
-
     @Builder
-    public MemberProfile(Integer age, Integer height, Long jobId,
-                         Nickname nickname, Gender gender, Mbti mbti,
-                         Region region, SmokingStatus smokingStatus, DrinkingStatus drinkingStatus,
-                         ReligionStatus religionStatus, HighestEducation highestEducation, List<MemberHobby> memberHobbyList) {
+    public MemberProfile(
+            Integer age, Integer height,
+            Long jobId, @NonNull List<MemberHobby> memberHobbyList,
+            Nickname nickname, Gender gender, Mbti mbti, Region region,
+            SmokingStatus smokingStatus, DrinkingStatus drinkingStatus,
+            ReligionStatus religionStatus, HighestEducation highestEducation
+    ) {
         this.age = age;
         this.height = height;
         this.jobId = jobId;
+        this.memberHobbyList = memberHobbyList;
         this.nickname = nickname;
         this.gender = gender;
         this.mbti = mbti;
@@ -80,9 +72,11 @@ public class MemberProfile {
         this.drinkingStatus = drinkingStatus;
         this.religionStatus = religionStatus;
         this.highestEducation = highestEducation;
+    }
 
-        if (memberHobbyList != null) {
-            this.memberHobbyList = memberHobbyList;
-        }
+    public boolean isProfileSettingNeeded() {
+        return age == null || height == null || jobId == null || memberHobbyList.isEmpty() ||
+                nickname == null || gender == null || mbti == null || region == null ||
+                smokingStatus == null || drinkingStatus == null ||  religionStatus == null || highestEducation == null;
     }
 }
