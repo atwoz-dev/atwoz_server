@@ -1,8 +1,10 @@
-package atwoz.atwoz.member.domain.member.vo;
+package atwoz.atwoz.member.domain.member;
 
-import atwoz.atwoz.member.domain.member.*;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +55,8 @@ public class MemberProfile {
     private HighestEducation highestEducation;
 
     @Builder
-    public MemberProfile(
-            Integer age, Integer height,
-            Long jobId, @NonNull List<MemberHobby> memberHobbyList,
+    private MemberProfile(
+            Integer age, Integer height, Long jobId, List<MemberHobby> memberHobbyList,
             Nickname nickname, Gender gender, Mbti mbti, Region region,
             SmokingStatus smokingStatus, DrinkingStatus drinkingStatus,
             ReligionStatus religionStatus, HighestEducation highestEducation
@@ -75,7 +76,7 @@ public class MemberProfile {
     }
 
     public boolean isProfileSettingNeeded() {
-        return age == null || height == null || jobId == null || memberHobbyList.isEmpty() ||
+        return age == null || height == null || jobId == null || memberHobbyList == null || memberHobbyList.isEmpty() ||
                 nickname == null || gender == null || mbti == null || region == null ||
                 smokingStatus == null || drinkingStatus == null ||  religionStatus == null || highestEducation == null;
     }

@@ -11,7 +11,7 @@ import atwoz.atwoz.heartusagepolicy.domain.HeartUsagePolicyRepository;
 import atwoz.atwoz.heartusagepolicy.exception.HeartUsagePolicyNotFoundException;
 import atwoz.atwoz.member.domain.member.Gender;
 import atwoz.atwoz.member.domain.member.Member;
-import atwoz.atwoz.member.domain.member.vo.MemberProfile;
+import atwoz.atwoz.member.domain.member.MemberProfile;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

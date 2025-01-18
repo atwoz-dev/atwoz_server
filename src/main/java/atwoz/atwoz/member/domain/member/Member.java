@@ -3,7 +3,6 @@ package atwoz.atwoz.member.domain.member;
 import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
-import atwoz.atwoz.member.domain.member.vo.MemberProfile;
 import jakarta.persistence.*;
 import lombok.*;
 

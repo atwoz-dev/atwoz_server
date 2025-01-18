@@ -1,15 +1,13 @@
 package atwoz.atwoz.member.domain;
 
 import atwoz.atwoz.member.domain.member.*;
-import atwoz.atwoz.member.domain.member.vo.MemberProfile;
-import atwoz.atwoz.member.domain.member.vo.Nickname;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class MemberProfileTest {
+class MemberProfileTest {
     @DisplayName("값이 하나라도 Null 이 있다면, 프로필 업데이트가 필요한 대상이다.")
     @Test
     void isNeededProfileSettingWhenNullValueExists() {

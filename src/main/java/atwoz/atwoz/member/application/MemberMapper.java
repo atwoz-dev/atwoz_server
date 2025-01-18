@@ -1,24 +1,23 @@
 package atwoz.atwoz.member.application;
 
-import atwoz.atwoz.member.application.dto.MemberLoginResponse;
-import atwoz.atwoz.member.application.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateResponse;
 import atwoz.atwoz.member.domain.member.*;
-import atwoz.atwoz.member.domain.member.vo.MemberProfile;
-import atwoz.atwoz.member.domain.member.vo.Nickname;
+import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static lombok.AccessLevel.PRIVATE;
+
+@NoArgsConstructor(access = PRIVATE)
 public class MemberMapper {
+
     public static MemberProfile toMemberProfile(Long memberId, MemberProfileUpdateRequest memberProfileUpdateRequest) {
 
-        List<MemberHobby> memberHobbyList = memberProfileUpdateRequest.hobbyIds() == null ? new ArrayList<>()
-                : memberProfileUpdateRequest.hobbyIds().stream().map(
-                (hobbyId) -> MemberHobby.of(memberId, hobbyId)
-        ).collect(Collectors.toList());
+        List<MemberHobby> memberHobbyList = memberProfileUpdateRequest.hobbyIds() == null ? List.of() :
+                memberProfileUpdateRequest.hobbyIds().stream()
+                        .map(hobbyId -> MemberHobby.of(memberId, hobbyId))
+                        .toList();
 
         return MemberProfile.builder()
                 .age(memberProfileUpdateRequest.age())

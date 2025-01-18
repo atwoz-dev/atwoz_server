@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.domain.member.vo;
+package atwoz.atwoz.member.domain.member;
 
 import atwoz.atwoz.member.exception.InvalidNickNameException;
 import jakarta.persistence.Column;
@@ -13,7 +13,7 @@ public class Nickname {
 
     private static final String NICKNAME_REGEX = "^[a-zA-Z0-9가-힣]{1,10}$";
 
-    @Column(name = "name")
+    @Column(name = "nickname")
     private final String value;
 
     public static Nickname from(String nickname) {
