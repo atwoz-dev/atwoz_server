@@ -1,19 +1,18 @@
 package atwoz.atwoz.member.domain.member;
 
 import atwoz.atwoz.common.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity
+@Table(name = "member_hobbies")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class MemberHobby extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,18 +20,11 @@ public class MemberHobby extends BaseEntity {
     private Long hobbyId;
 
     public static MemberHobby of(Long memberId, Long hobbyId) {
-        MemberHobby memberHobby = new MemberHobby();
-        memberHobby.setMemberId(memberId);
-        memberHobby.setHobbyId(hobbyId);
-
-        return memberHobby;
+        return new MemberHobby(memberId, hobbyId);
     }
 
-    private void setMemberId(@NonNull Long memberId) {
+    private MemberHobby(@NonNull Long memberId, @NonNull Long hobbyId) {
         this.memberId = memberId;
-    }
-
-    private void setHobbyId(@NonNull Long hobbyId) {
         this.hobbyId = hobbyId;
     }
 }

@@ -6,8 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,8 +20,10 @@ public class MemberProfile {
 
     private Long jobId;
 
-    @OneToMany(mappedBy = "memberId", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<MemberHobby> memberHobbyList = new ArrayList<>();
+    @ElementCollection
+    @CollectionTable(name = "member_hobbies", joinColumns = @JoinColumn(name = "member_id"))
+    @Column(name = "hobby_id")
+    private Set<Long> hobbyIds = new HashSet<>();
 
     @Embedded
     private Nickname nickname;
@@ -56,7 +58,7 @@ public class MemberProfile {
 
     @Builder
     private MemberProfile(
-            Integer age, Integer height, Long jobId, List<MemberHobby> memberHobbyList,
+            Integer age, Integer height, Long jobId, Set<Long> hobbyIds,
             Nickname nickname, Gender gender, Mbti mbti, Region region,
             SmokingStatus smokingStatus, DrinkingStatus drinkingStatus,
             ReligionStatus religionStatus, HighestEducation highestEducation
@@ -64,7 +66,7 @@ public class MemberProfile {
         this.age = age;
         this.height = height;
         this.jobId = jobId;
-        this.memberHobbyList = memberHobbyList;
+        this.hobbyIds = hobbyIds;
         this.nickname = nickname;
         this.gender = gender;
         this.mbti = mbti;
@@ -76,7 +78,7 @@ public class MemberProfile {
     }
 
     public boolean isProfileSettingNeeded() {
-        return age == null || height == null || jobId == null || memberHobbyList == null || memberHobbyList.isEmpty() ||
+        return age == null || height == null || jobId == null || hobbyIds == null || hobbyIds.isEmpty() ||
                 nickname == null || gender == null || mbti == null || region == null ||
                 smokingStatus == null || drinkingStatus == null ||  religionStatus == null || highestEducation == null;
     }

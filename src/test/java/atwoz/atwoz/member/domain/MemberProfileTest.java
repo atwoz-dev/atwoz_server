@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.Set;
 
 class MemberProfileTest {
     @DisplayName("값이 하나라도 Null 이 있다면, 프로필 업데이트가 필요한 대상이다.")
@@ -23,7 +23,7 @@ class MemberProfileTest {
                 .highestEducation(HighestEducation.DOCTORATE)
                 .gender(Gender.MALE)
                 .nickname(Nickname.from("Hello"))
-                .memberHobbyList(List.of(MemberHobby.of(1L, 2L)))
+                .hobbyIds(Set.of(2L))
                 .region(null)
                 .build();
 
@@ -46,7 +46,7 @@ class MemberProfileTest {
                 .highestEducation(HighestEducation.DOCTORATE)
                 .gender(Gender.MALE)
                 .nickname(Nickname.from("Hello"))
-                .memberHobbyList(List.of())
+                .hobbyIds(Set.of())
                 .region(Region.SEOUL)
                 .build();
 
@@ -69,7 +69,7 @@ class MemberProfileTest {
                 .highestEducation(HighestEducation.DOCTORATE)
                 .gender(Gender.MALE)
                 .nickname(Nickname.from("Hello"))
-                .memberHobbyList(List.of(MemberHobby.of(1L, 2L)))
+                .hobbyIds(Set.of(2L))
                 .region(Region.SEOUL)
                 .build();
 

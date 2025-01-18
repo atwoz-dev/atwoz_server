@@ -13,24 +13,24 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
+
     private final MemberRepository memberRepository;
     private final JobRepository jobRepository;
     private final HobbyRepository hobbyRepository;
-
 
     @Transactional
     public MemberProfileUpdateResponse updateMember(Long memberId, MemberProfileUpdateRequest request) {
         Member member = findById(memberId);
 
         validateJobId(request.jobId());
-        validateHobbyIdList(request.hobbyIds());
+        validateHobbyIds(request.hobbyIds());
 
-        member.updateProfile(MemberMapper.toMemberProfile(memberId, request));
+        member.updateProfile(MemberMapper.toMemberProfile(request));
         return MemberMapper.toMemberProfileUpdateResponse(member);
     }
 
@@ -44,7 +44,7 @@ public class MemberService {
         }
     }
 
-    private void validateHobbyIdList(List<Long> hobbyIdList) {
+    private void validateHobbyIds(Set<Long> hobbyIdList) {
         if (hobbyIdList != null && hobbyRepository.countHobbiesByIdIn(hobbyIdList) != hobbyIdList.size()) {
             throw new InvalidHobbyIdException();
         }
