@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.exception;
+package atwoz.atwoz.member.application.exception;
 
 public class MemberNotFoundException extends RuntimeException {
     public MemberNotFoundException() {

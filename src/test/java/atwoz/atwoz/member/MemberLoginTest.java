@@ -6,10 +6,10 @@ import atwoz.atwoz.auth.infra.JwtProvider;
 import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.member.application.MemberAuthService;
 import atwoz.atwoz.member.application.dto.MemberLoginServiceDto;
+import atwoz.atwoz.member.application.exception.BannedMemberException;
 import atwoz.atwoz.member.domain.member.ActivityStatus;
 import atwoz.atwoz.member.domain.member.Member;
 import atwoz.atwoz.member.domain.member.MemberRepository;
-import atwoz.atwoz.member.exception.MemberPermanentStopException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -65,7 +65,7 @@ public class MemberLoginTest {
                 .thenReturn(Optional.of(permanentStoppedMember));
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber)).isInstanceOf(MemberPermanentStopException.class);
+        Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber)).isInstanceOf(BannedMemberException.class);
     }
 
     @Test

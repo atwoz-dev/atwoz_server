@@ -1,6 +1,6 @@
 package atwoz.atwoz.member.domain.member;
 
-import atwoz.atwoz.member.exception.InvalidMemberEnumValueException;
+import atwoz.atwoz.member.domain.member.exception.InvalidMemberEnumValueException;
 
 public enum HighestEducation {
     SEOUL_FOUR_YEAR("서울 4년제"),

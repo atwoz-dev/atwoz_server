@@ -4,9 +4,9 @@ import atwoz.atwoz.auth.domain.TokenProvider;
 import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.member.application.dto.MemberLoginServiceDto;
+import atwoz.atwoz.member.application.exception.BannedMemberException;
 import atwoz.atwoz.member.domain.member.Member;
 import atwoz.atwoz.member.domain.member.MemberRepository;
-import atwoz.atwoz.member.exception.MemberPermanentStopException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +26,7 @@ public class MemberAuthService {
         Member member = createOrFindMemberByPhoneNumber(phoneNumber);
 
         if (member.isBanned()) {
-            throw new MemberPermanentStopException();
+            throw new BannedMemberException();
         }
 
         String accessToken = tokenProvider.createAccessToken(member.getId(), Role.MEMBER, Instant.now());

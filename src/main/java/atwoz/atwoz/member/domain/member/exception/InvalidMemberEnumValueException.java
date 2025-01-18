@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.exception;
+package atwoz.atwoz.member.domain.member.exception;
 
 public class InvalidMemberEnumValueException extends RuntimeException {
     public InvalidMemberEnumValueException(String message) {

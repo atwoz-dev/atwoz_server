@@ -1,6 +1,6 @@
 package atwoz.atwoz.member.domain.member;
 
-import atwoz.atwoz.member.exception.InvalidNickNameException;
+import atwoz.atwoz.member.domain.member.exception.InvalidNickNameException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
