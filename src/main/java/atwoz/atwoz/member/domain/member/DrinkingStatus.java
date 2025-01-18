@@ -5,11 +5,11 @@ import lombok.Getter;
 
 @Getter
 public enum DrinkingStatus {
-    NON_DRINKER("전혀 마시지 않음"),
-    SOCIAL_DRINKER("사회적 음주"),
-    OCCASIONAL_DRINKER("가끔 마심"),
-    ENJOYS_DRINKING("술자리를 즐김"),
-    QUITTING("금주 중");
+    NONE("전혀 마시지 않음"),
+    SOCIAL("사회적 음주"),
+    OCCASIONAL("가끔 마심"),
+    ENJOY("술자리를 즐김"),
+    QUIT("금주 중");
 
     private final String description;
 

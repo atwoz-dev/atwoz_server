@@ -63,7 +63,7 @@ class MemberProfileUpdateTest {
         MemberProfileUpdateRequest invalidRequest = new MemberProfileUpdateRequest(
                 "nickname", "INVALID_ENUM", 20, 180, // 잘못된 gender 값
                 jobId, "Daejeon", "OTHER", "ENFJ",
-                "DAILY_SMOKER", "QUITTING", "BUDDHIST", hobbyIds
+                "DAILY", "QUIT", "BUDDHIST", hobbyIds
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
@@ -87,7 +87,7 @@ class MemberProfileUpdateTest {
         MemberProfileUpdateRequest invalidRequest = new MemberProfileUpdateRequest(
                 "nickname", "INVALID_ENUM", 20, 180, // 잘못된 gender 값
                 jobId, "Daejeon", "OTHER", "ENFJ",
-                "DAILY_SMOKER", "QUITTING", "BUDDHIST", hobbyIds
+                "DAILY", "QUIT", "BUDDHIST", hobbyIds
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
@@ -110,7 +110,7 @@ class MemberProfileUpdateTest {
         MemberProfileUpdateRequest invalidRequest = new MemberProfileUpdateRequest(
                 "nickname", "INVALID_ENUM", 20, 180, // 잘못된 gender 값
                 jobId, "Daejeon", "OTHER", "ENFJ",
-                "DAILY_SMOKER", "QUITTING", "BUDDHIST", hobbyIds
+                "DAILY", "QUIT", "BUDDHIST", hobbyIds
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
@@ -134,7 +134,7 @@ class MemberProfileUpdateTest {
         MemberProfileUpdateRequest request = new MemberProfileUpdateRequest(
                 "nickname", "MALE", 20, 180,
                 jobId, "Daejeon", "OTHER", "ENFJ",
-                "DAILY_SMOKER", "QUITTING", "BUDDHIST", hobbyIds
+                "DAILY", "QUIT", "BUDDHIST", hobbyIds
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
@@ -153,7 +153,7 @@ class MemberProfileUpdateTest {
         assertThat(response.memberProfile().getAge()).isEqualTo(20);
         assertThat(response.memberProfile().getHeight()).isEqualTo(180);
         assertThat(response.memberProfile().getRegion()).isEqualTo(Region.DAEJEON);
-        assertThat(response.memberProfile().getReligionStatus()).isEqualTo(ReligionStatus.BUDDHIST);
+        assertThat(response.memberProfile().getReligion()).isEqualTo(Religion.BUDDHIST);
 
         assertThat(response.memberProfile().getHobbyIds()).hasSize(2);
     }
@@ -167,7 +167,7 @@ class MemberProfileUpdateTest {
         MemberProfileUpdateRequest request = new MemberProfileUpdateRequest(
                 "nickname", "MALE", 20, 180,
                 jobId, null, "OTHER", "ENFJ",
-                "DAILY_SMOKER", "QUITTING", "BUDDHIST", null
+                "DAILY", "QUIT", "BUDDHIST", null
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
@@ -185,7 +185,7 @@ class MemberProfileUpdateTest {
         assertThat(response.memberProfile().getAge()).isEqualTo(20);
         assertThat(response.memberProfile().getHeight()).isEqualTo(180);
         assertThat(response.memberProfile().getRegion()).isNull();
-        assertThat(response.memberProfile().getReligionStatus()).isEqualTo(ReligionStatus.BUDDHIST);
+        assertThat(response.memberProfile().getReligion()).isEqualTo(Religion.BUDDHIST);
         assertThat(response.memberProfile().getHobbyIds()).isNull();
     }
 }

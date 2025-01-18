@@ -22,7 +22,7 @@ public class MemberMapper {
                 .region(Region.from(memberProfileUpdateRequest.region()))
                 .smokingStatus(SmokingStatus.from(memberProfileUpdateRequest.smokingStatus()))
                 .drinkingStatus(DrinkingStatus.from(memberProfileUpdateRequest.drinkingStatus()))
-                .religionStatus(ReligionStatus.from(memberProfileUpdateRequest.religionStatus()))
+                .religion(Religion.from(memberProfileUpdateRequest.religionStatus()))
                 .highestEducation(HighestEducation.from(memberProfileUpdateRequest.highestEducation()))
                 .build();
     }

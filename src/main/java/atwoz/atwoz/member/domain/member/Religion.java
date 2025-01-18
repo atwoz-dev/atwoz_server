@@ -4,8 +4,8 @@ import atwoz.atwoz.member.domain.member.exception.InvalidMemberEnumValueExceptio
 import lombok.Getter;
 
 @Getter
-public enum ReligionStatus {
-    NON_RELIGIOUS("무교"),
+public enum Religion {
+    NONE("무교"),
     CHRISTIAN("기독교"),
     CATHOLIC("천주교"),
     BUDDHIST("불교"),
@@ -13,15 +13,15 @@ public enum ReligionStatus {
 
     private final String description;
 
-    ReligionStatus(String description) {
+    Religion(String description) {
         this.description = description;
     }
 
-    public static ReligionStatus from(String value) {
+    public static Religion from(String value) {
         if (value == null) return null;
 
         try {
-            return ReligionStatus.valueOf(value.toUpperCase());
+            return Religion.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new InvalidMemberEnumValueException(value);
         }
