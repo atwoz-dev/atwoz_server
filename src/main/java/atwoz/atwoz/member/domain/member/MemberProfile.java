@@ -14,7 +14,14 @@ import java.util.Set;
 @Getter
 public class MemberProfile {
 
+    @Embedded
+    private Nickname nickname;
+
     private Integer age;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(50)")
+    private Gender gender;
 
     private Integer height;
 
@@ -24,13 +31,6 @@ public class MemberProfile {
     @CollectionTable(name = "member_hobbies", joinColumns = @JoinColumn(name = "member_id"))
     @Column(name = "hobby_id")
     private Set<Long> hobbyIds = new HashSet<>();
-
-    @Embedded
-    private Nickname nickname;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(50)")
-    private Gender gender;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
@@ -42,6 +42,10 @@ public class MemberProfile {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
+    private Religion religion;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(50)")
     private SmokingStatus smokingStatus;
 
     @Enumerated(EnumType.STRING)
@@ -50,36 +54,31 @@ public class MemberProfile {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
-    private Religion religion;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(50)")
     private HighestEducation highestEducation;
 
     @Builder
     private MemberProfile(
-            Integer age, Integer height, Long jobId, Set<Long> hobbyIds,
-            Nickname nickname, Gender gender, Mbti mbti, Region region,
-            SmokingStatus smokingStatus, DrinkingStatus drinkingStatus,
-            Religion religion, HighestEducation highestEducation
+            Nickname nickname, Integer age, Gender gender, Integer height, Long jobId,
+            Set<Long> hobbyIds, Mbti mbti, Region region, Religion religion,
+            SmokingStatus smokingStatus, DrinkingStatus drinkingStatus, HighestEducation highestEducation
     ) {
+        this.nickname = nickname;
         this.age = age;
+        this.gender = gender;
         this.height = height;
         this.jobId = jobId;
         this.hobbyIds = hobbyIds;
-        this.nickname = nickname;
-        this.gender = gender;
         this.mbti = mbti;
         this.region = region;
+        this.religion = religion;
         this.smokingStatus = smokingStatus;
         this.drinkingStatus = drinkingStatus;
-        this.religion = religion;
         this.highestEducation = highestEducation;
     }
 
     public boolean isProfileSettingNeeded() {
-        return age == null || height == null || jobId == null || hobbyIds == null || hobbyIds.isEmpty() ||
-                nickname == null || gender == null || mbti == null || region == null ||
-                smokingStatus == null || drinkingStatus == null || religion == null || highestEducation == null;
+        return nickname == null || age == null || gender == null || height == null || jobId == null ||
+                hobbyIds == null || hobbyIds.isEmpty() || mbti == null || region == null || religion == null ||
+                smokingStatus == null || drinkingStatus == null || highestEducation == null;
     }
 }

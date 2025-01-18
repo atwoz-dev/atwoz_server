@@ -6,10 +6,10 @@ import lombok.Getter;
 @Getter
 public enum SmokingStatus {
     NONE("비흡연"),
-    QUIT("금연 중"),
-    VAPE("전자담배"),
+    QUIT("금연"),
     OCCASIONAL("가끔 피움"),
-    DAILY("매일 피움");
+    DAILY("매일 피움"),
+    VAPE("전자담배");
 
     private final String description;
 

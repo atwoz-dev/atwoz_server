@@ -6,10 +6,10 @@ import lombok.Getter;
 @Getter
 public enum DrinkingStatus {
     NONE("전혀 마시지 않음"),
+    QUIT("금주"),
     SOCIAL("사회적 음주"),
     OCCASIONAL("가끔 마심"),
-    ENJOY("술자리를 즐김"),
-    QUIT("금주 중");
+    FREQUENT("술자리를 즐김");
 
     private final String description;
 
