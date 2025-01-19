@@ -1,6 +1,6 @@
 package atwoz.atwoz.member.application.dto;
 
-import java.util.List;
+import java.util.Set;
 
 public record MemberProfileUpdateRequest(
         String nickName,
@@ -14,6 +14,6 @@ public record MemberProfileUpdateRequest(
         String smokingStatus,
         String drinkingStatus,
         String religionStatus,
-        List<Long> hobbyIds
+        Set<Long> hobbyIds
 ) {
 }

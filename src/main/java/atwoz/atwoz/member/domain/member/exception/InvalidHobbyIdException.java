@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.exception;
+package atwoz.atwoz.member.domain.member.exception;
 
 public class InvalidHobbyIdException extends RuntimeException {
     public InvalidHobbyIdException() {

@@ -30,7 +30,7 @@ public class HeartUsageServiceImpl implements HeartUsageService {
     private HeartAmount getHeartAmount(Member member, TransactionType transactionType) {
         HeartUsagePolicy heartUsagePolicy = heartUsagePolicyRepository.findByGenderAndTransactionType(member.getGender(), transactionType)
                 .orElseThrow(() -> new HeartUsagePolicyNotFoundException("해당하는 하트 사용 정책이 없습니다. gender: " + member.getGender() + ", transactionType: " + transactionType));
-        if (member.isVipMember()) {
+        if (member.isVip()) {
             return HeartAmount.from(0L);
         }
         HeartAmount heartAmount = HeartAmount.from(heartUsagePolicy.getAmount());

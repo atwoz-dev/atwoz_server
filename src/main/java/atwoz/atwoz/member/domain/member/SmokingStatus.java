@@ -1,17 +1,17 @@
 package atwoz.atwoz.member.domain.member;
 
-import atwoz.atwoz.member.exception.InvalidMemberEnumValueException;
+import atwoz.atwoz.member.domain.member.exception.InvalidMemberEnumValueException;
 import lombok.Getter;
 
 @Getter
 public enum SmokingStatus {
-    NON_SMOKER("비흡연"),
-    ABSTAINING("금연 중"),
-    E_CIGARETTE("전자담배"),
+    NONE("비흡연"),
+    QUIT("금연"),
     OCCASIONAL("가끔 피움"),
-    DAILY("매일 피움");
+    DAILY("매일 피움"),
+    VAPE("전자담배");
 
-    private String description;
+    private final String description;
 
     SmokingStatus(String description) {
         this.description = description;
@@ -19,6 +19,7 @@ public enum SmokingStatus {
 
     public static SmokingStatus from(String value) {
         if (value == null) return null;
+
         try {
             return SmokingStatus.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {
