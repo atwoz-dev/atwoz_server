@@ -31,6 +31,10 @@ public class Member extends SoftDeleteBaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private ActivityStatus activityStatus;
 
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(50)")
+    private MemberScreeningStatus screeningStatus;
+
     @Embedded
     @Getter
     private HeartBalance heartBalance;
