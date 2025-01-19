@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity
+@Table(name = "heart_usage_policies")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HeartUsagePolicy extends BaseEntity {
     @Id
