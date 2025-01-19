@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity
+@Table(name = "heart_transactions")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HeartTransaction extends BaseEntity {
 

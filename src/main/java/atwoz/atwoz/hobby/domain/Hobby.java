@@ -2,16 +2,14 @@ package atwoz.atwoz.hobby.domain;
 
 import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.hobby.exception.InvalidHobbyNameException;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity
+@Table(name = "hobbies")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Hobby extends BaseEntity {
 

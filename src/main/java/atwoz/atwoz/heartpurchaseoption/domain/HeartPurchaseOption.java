@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity
+@Table(name = "heart_purchase_options")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HeartPurchaseOption extends SoftDeleteBaseEntity {
     @Id

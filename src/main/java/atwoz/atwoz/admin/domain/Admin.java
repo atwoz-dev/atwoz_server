@@ -8,6 +8,7 @@ import lombok.*;
 import static jakarta.persistence.EnumType.STRING;
 
 @Entity
+@Table(name = "admins")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Admin extends SoftDeleteBaseEntity {
 
