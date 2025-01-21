@@ -9,8 +9,8 @@ import java.util.List;
 public class PathMatcherConfig {
 
     private static final List<String> EXCLUDED_URIS = List.of(
-            "/member/auth/login", "/member/auth/logout",
-            "/admin/login", "/admin/signup",
+            "/member/login", "/member/logout",
+            "/admin/login", "/admin/signup", "/admin/logout",
             "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**",
             "/webjars/**"
     );
