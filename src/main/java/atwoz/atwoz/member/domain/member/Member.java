@@ -3,118 +3,73 @@ package atwoz.atwoz.member.domain.member;
 import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
-import atwoz.atwoz.member.domain.member.vo.KakaoId;
-import atwoz.atwoz.member.domain.member.vo.MemberProfile;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "members")
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Member extends SoftDeleteBaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long id;
 
     private String phoneNumber;
 
     @Embedded
-    private KakaoId kakaoId;
+    @Getter
+    private MemberProfile profile;
 
-    @Embedded
-    private MemberProfile memberProfile;
-
+    @Getter
     private boolean isVip;
-
-    private ContactType contactType;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
     private ActivityStatus activityStatus;
 
     @Embedded
+    @Getter
     private HeartBalance heartBalance;
 
-    public static Member createFromPhoneNumber(@NonNull String phoneNumber) {
+    public static Member fromPhoneNumber(String phoneNumber) {
         return Member.builder()
                 .phoneNumber(phoneNumber)
                 .activityStatus(ActivityStatus.ACTIVE)
                 .heartBalance(HeartBalance.init())
-                .contactType(ContactType.PHONE_NUMBER)
                 .isVip(false)
                 .build();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getKakaoId() {
-        return kakaoId.getKakaoId();
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public boolean isActive() {
-        return activityStatus == ActivityStatus.ACTIVE;
-    }
-
-    public boolean isPermanentStop() {
-        return activityStatus == ActivityStatus.PERMANENT_STOP;
-    }
-
-    public void useHeart(HeartAmount heartAmount) {
-        HeartBalance balanceAfterUsingHeart = this.heartBalance.useHeart(heartAmount);
-        this.heartBalance = balanceAfterUsingHeart;
-    }
-
-    public void gainPurchaseHeart(HeartAmount heartAmount) {
-        HeartBalance balanceAfterGainingHeart = this.heartBalance.gainPurchaseHeart(heartAmount);
-        this.heartBalance = balanceAfterGainingHeart;
-    }
-
-    public void gainMissionHeart(HeartAmount heartAmount) {
-        HeartBalance balanceAfterGainingHeart = this.heartBalance.gainMissionHeart(heartAmount);
-        this.heartBalance = balanceAfterGainingHeart;
-    }
-
-    public HeartBalance getHeartBalance() {
-        return this.heartBalance;
-    }
-
-    public boolean isVipMember() {
-        return this.isVip;
-    }
-
-    public Gender getGender() {
-        return this.memberProfile.getGender();
-    }
-
-    public MemberProfile getProfile() {
-        return this.memberProfile;
-    }
-
-    public void updateMemberProfile(@NonNull MemberProfile memberProfile) {
-        this.memberProfile = memberProfile;
+    public void updateProfile(@NonNull MemberProfile profile) {
+        this.profile = profile;
     }
 
     public boolean isProfileSettingNeeded() {
-        if (memberProfile == null) return true;
-        return this.memberProfile.isProfileSettingNeeded();
+        if (profile == null) return true;
+        return profile.isProfileSettingNeeded();
     }
 
-    public void transitionToDormant() {
-        this.activityStatus = ActivityStatus.DORMANT;
+    public Gender getGender() {
+        return profile.getGender();
     }
 
-    public void updateKaKaoId(KakaoId kakaoId) {
-        this.kakaoId = kakaoId;
+    public boolean isBanned() {
+        return activityStatus == ActivityStatus.BANNED;
     }
 
-    public void updatePhoneNumber(@NonNull String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void useHeart(HeartAmount heartAmount) {
+        heartBalance = heartBalance.useHeart(heartAmount);
+    }
+
+    public void gainPurchaseHeart(HeartAmount heartAmount) {
+        heartBalance = heartBalance.gainPurchaseHeart(heartAmount);
+    }
+
+    public void gainMissionHeart(HeartAmount heartAmount) {
+        heartBalance = heartBalance.gainMissionHeart(heartAmount);
     }
 }

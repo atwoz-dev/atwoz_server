@@ -6,10 +6,10 @@ import atwoz.atwoz.auth.infra.JwtProvider;
 import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.member.application.MemberAuthService;
 import atwoz.atwoz.member.application.dto.MemberLoginServiceDto;
+import atwoz.atwoz.member.application.exception.BannedMemberException;
 import atwoz.atwoz.member.domain.member.ActivityStatus;
 import atwoz.atwoz.member.domain.member.Member;
 import atwoz.atwoz.member.domain.member.MemberRepository;
-import atwoz.atwoz.member.exception.MemberPermanentStopException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,13 +45,13 @@ public class MemberLoginTest {
 
     @BeforeEach
     void setUp() {
-        member = Member.createFromPhoneNumber("01012345678");
+        member = Member.fromPhoneNumber("01012345678");
         ReflectionTestUtils.setField(member, "id", 1L);
         ReflectionTestUtils.setField(member, "activityStatus", ActivityStatus.ACTIVE);
 
-        permanentStoppedMember = Member.createFromPhoneNumber("01012345678");
+        permanentStoppedMember = Member.fromPhoneNumber("01012345678");
         ReflectionTestUtils.setField(permanentStoppedMember, "id", 2L);
-        ReflectionTestUtils.setField(permanentStoppedMember, "activityStatus", ActivityStatus.PERMANENT_STOP);
+        ReflectionTestUtils.setField(permanentStoppedMember, "activityStatus", ActivityStatus.BANNED);
 
     }
 
@@ -65,7 +65,7 @@ public class MemberLoginTest {
                 .thenReturn(Optional.of(permanentStoppedMember));
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber)).isInstanceOf(MemberPermanentStopException.class);
+        Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber)).isInstanceOf(BannedMemberException.class);
     }
 
     @Test

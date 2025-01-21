@@ -4,24 +4,26 @@ import atwoz.atwoz.member.domain.member.exception.InvalidMemberEnumValueExceptio
 import lombok.Getter;
 
 @Getter
-public enum Region {
-    SEOUL("서울"),
-    DAEJEON("대전");
+public enum Religion {
+    NONE("무교"),
+    CHRISTIAN("기독교"),
+    CATHOLIC("천주교"),
+    BUDDHIST("불교"),
+    OTHER("기타");
 
     private final String description;
 
-    Region(String description) {
+    Religion(String description) {
         this.description = description;
     }
 
-    public static Region from(String value) {
+    public static Religion from(String value) {
         if (value == null) return null;
 
         try {
-            return Region.valueOf(value.toUpperCase());
+            return Religion.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new InvalidMemberEnumValueException(value);
         }
     }
-
 }

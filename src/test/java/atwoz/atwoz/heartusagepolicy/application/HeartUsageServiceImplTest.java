@@ -11,7 +11,7 @@ import atwoz.atwoz.heartusagepolicy.domain.HeartUsagePolicyRepository;
 import atwoz.atwoz.heartusagepolicy.exception.HeartUsagePolicyNotFoundException;
 import atwoz.atwoz.member.domain.member.Gender;
 import atwoz.atwoz.member.domain.member.Member;
-import atwoz.atwoz.member.domain.member.vo.MemberProfile;
+import atwoz.atwoz.member.domain.member.MemberProfile;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,12 +41,12 @@ class HeartUsageServiceImplTest {
     @DisplayName("하트 사용 정책이 없는 경우 예외 발생")
     void shouldThrowExceptionWhenHeartUsagePolicyNotFound() {
         // given
-        Member member = Member.createFromPhoneNumber("01012345678");
+        Member member = Member.fromPhoneNumber("01012345678");
         Gender gender = Gender.MALE;
         MemberProfile memberProfile = MemberProfile.builder()
                 .gender(gender)
                 .build();
-        setField(member, "memberProfile", memberProfile);
+        setField(member, "profile", memberProfile);
         TransactionType transactionType = TransactionType.MESSAGE;
         when(heartUsagePolicyRepository.findByGenderAndTransactionType(eq(gender), eq(transactionType)))
                 .thenReturn(Optional.empty());
@@ -63,7 +63,7 @@ class HeartUsageServiceImplTest {
     @DisplayName("VIP 멤버인 경우 하트 사용량 0으로 처리")
     void shouldUseZeroHeartAmountWhenMemberIsVip() {
         // given
-        Member member = Member.createFromPhoneNumber("01012345678");
+        Member member = Member.fromPhoneNumber("01012345678");
         setField(member, "isVip", true);
         Long memberId = 1L;
         setField(member, "id", memberId);
@@ -71,7 +71,7 @@ class HeartUsageServiceImplTest {
         MemberProfile memberProfile = MemberProfile.builder()
                 .gender(gender)
                 .build();
-        setField(member, "memberProfile", memberProfile);
+        setField(member, "profile", memberProfile);
 
         HeartBalance heartBalanceBeforeUsingHeart = HeartBalance.init();
         setField(heartBalanceBeforeUsingHeart, "purchaseHeartBalance", 100L);
@@ -106,7 +106,7 @@ class HeartUsageServiceImplTest {
     @DisplayName("VIP 멤버가 아닌 경우 하트 사용 정책에 따라 하트 사용량 계산")
     void shouldCalculateHeartAmountAccordingToHeartUsagePolicy() {
         // given
-        Member member = Member.createFromPhoneNumber("01012345678");
+        Member member = Member.fromPhoneNumber("01012345678");
         Long memberId = 1L;
 
         setField(member, "id", memberId);
@@ -114,7 +114,7 @@ class HeartUsageServiceImplTest {
         MemberProfile memberProfile = MemberProfile.builder()
                 .gender(gender)
                 .build();
-        setField(member, "memberProfile", memberProfile);
+        setField(member, "profile", memberProfile);
         HeartBalance heartBalanceBeforeUsingHeart = HeartBalance.init();
         setField(heartBalanceBeforeUsingHeart, "purchaseHeartBalance", 100L);
         setField(heartBalanceBeforeUsingHeart, "missionHeartBalance", 100L);

@@ -1,15 +1,13 @@
 package atwoz.atwoz.member.domain;
 
 import atwoz.atwoz.member.domain.member.*;
-import atwoz.atwoz.member.domain.member.vo.MemberProfile;
-import atwoz.atwoz.member.domain.member.vo.Nickname;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.Set;
 
-public class MemberProfileTest {
+class MemberProfileTest {
     @DisplayName("값이 하나라도 Null 이 있다면, 프로필 업데이트가 필요한 대상이다.")
     @Test
     void isNeededProfileSettingWhenNullValueExists() {
@@ -20,12 +18,12 @@ public class MemberProfileTest {
                 .jobId(1L)
                 .mbti(Mbti.ENFJ)
                 .drinkingStatus(DrinkingStatus.NONE)
-                .smokingStatus(SmokingStatus.E_CIGARETTE)
-                .religionStatus(ReligionStatus.NO_RELIGION)
+                .smokingStatus(SmokingStatus.VAPE)
+                .religion(Religion.NONE)
                 .highestEducation(HighestEducation.DOCTORATE)
                 .gender(Gender.MALE)
                 .nickname(Nickname.from("Hello"))
-                .memberHobbyList(List.of(MemberHobby.of(1L, 2L)))
+                .hobbyIds(Set.of(2L))
                 .region(null)
                 .build();
 
@@ -43,12 +41,12 @@ public class MemberProfileTest {
                 .jobId(1L)
                 .mbti(Mbti.ENFJ)
                 .drinkingStatus(DrinkingStatus.NONE)
-                .smokingStatus(SmokingStatus.E_CIGARETTE)
-                .religionStatus(ReligionStatus.NO_RELIGION)
+                .smokingStatus(SmokingStatus.VAPE)
+                .religion(Religion.NONE)
                 .highestEducation(HighestEducation.DOCTORATE)
                 .gender(Gender.MALE)
                 .nickname(Nickname.from("Hello"))
-                .memberHobbyList(List.of())
+                .hobbyIds(Set.of())
                 .region(Region.SEOUL)
                 .build();
 
@@ -66,12 +64,12 @@ public class MemberProfileTest {
                 .jobId(1L)
                 .mbti(Mbti.ENFJ)
                 .drinkingStatus(DrinkingStatus.NONE)
-                .smokingStatus(SmokingStatus.E_CIGARETTE)
-                .religionStatus(ReligionStatus.NO_RELIGION)
+                .smokingStatus(SmokingStatus.VAPE)
+                .religion(Religion.NONE)
                 .highestEducation(HighestEducation.DOCTORATE)
                 .gender(Gender.MALE)
                 .nickname(Nickname.from("Hello"))
-                .memberHobbyList(List.of(MemberHobby.of(1L, 2L)))
+                .hobbyIds(Set.of(2L))
                 .region(Region.SEOUL)
                 .build();
 

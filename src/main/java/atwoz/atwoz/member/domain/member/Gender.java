@@ -1,12 +1,12 @@
 package atwoz.atwoz.member.domain.member;
 
-import atwoz.atwoz.member.exception.InvalidMemberEnumValueException;
+import atwoz.atwoz.member.domain.member.exception.InvalidMemberEnumValueException;
 import lombok.Getter;
 
 @Getter
 public enum Gender {
     MALE("남성"),
-    WOMAN("여성");
+    FEMALE("여성");
 
     private final String description;
 
@@ -16,6 +16,7 @@ public enum Gender {
 
     public static Gender from(String value) {
         if (value == null) return null;
+
         try {
             return Gender.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {

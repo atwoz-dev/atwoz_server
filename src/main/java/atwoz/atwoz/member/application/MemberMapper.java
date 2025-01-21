@@ -1,45 +1,33 @@
 package atwoz.atwoz.member.application;
 
-import atwoz.atwoz.member.application.dto.MemberContactResponse;
-import atwoz.atwoz.member.application.dto.MemberProfileResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
+import atwoz.atwoz.member.application.dto.MemberProfileUpdateResponse;
 import atwoz.atwoz.member.domain.member.*;
-import atwoz.atwoz.member.domain.member.vo.MemberProfile;
-import atwoz.atwoz.member.domain.member.vo.Nickname;
+import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import static lombok.AccessLevel.PRIVATE;
 
+@NoArgsConstructor(access = PRIVATE)
 public class MemberMapper {
-    public static MemberProfile toMemberProfile(Long memberId, MemberProfileUpdateRequest memberProfileUpdateRequest) {
 
-        List<MemberHobby> memberHobbyList = memberProfileUpdateRequest.hobbyIds() == null ? new ArrayList<>()
-                : memberProfileUpdateRequest.hobbyIds().stream().map(
-                (hobbyId) -> MemberHobby.of(memberId, hobbyId)
-        ).collect(Collectors.toList());
-
+    public static MemberProfile toMemberProfile(MemberProfileUpdateRequest memberProfileUpdateRequest) {
         return MemberProfile.builder()
                 .age(memberProfileUpdateRequest.age())
-                .mbti(Mbti.from(memberProfileUpdateRequest.mbti()))
-                .jobId(memberProfileUpdateRequest.jobId())
-                .nickname(Nickname.from(memberProfileUpdateRequest.nickName()))
-                .region(Region.from(memberProfileUpdateRequest.region()))
-                .gender(Gender.from(memberProfileUpdateRequest.gender()))
                 .height(memberProfileUpdateRequest.height())
-                .highestEducation(HighestEducation.from(memberProfileUpdateRequest.highestEducation()))
-                .religionStatus(ReligionStatus.from(memberProfileUpdateRequest.religionStatus()))
+                .jobId(memberProfileUpdateRequest.jobId())
+                .hobbyIds(memberProfileUpdateRequest.hobbyIds())
+                .nickname(Nickname.from(memberProfileUpdateRequest.nickName()))
+                .gender(Gender.from(memberProfileUpdateRequest.gender()))
+                .mbti(Mbti.from(memberProfileUpdateRequest.mbti()))
+                .region(Region.from(memberProfileUpdateRequest.region()))
                 .smokingStatus(SmokingStatus.from(memberProfileUpdateRequest.smokingStatus()))
                 .drinkingStatus(DrinkingStatus.from(memberProfileUpdateRequest.drinkingStatus()))
-                .memberHobbyList(memberHobbyList)
+                .religion(Religion.from(memberProfileUpdateRequest.religionStatus()))
+                .highestEducation(HighestEducation.from(memberProfileUpdateRequest.highestEducation()))
                 .build();
     }
 
-    public static MemberProfileResponse toMemberProfileResponse(Member member) {
-        return new MemberProfileResponse(member.getProfile());
-    }
-
-    public static MemberContactResponse toMemberContactResponse(Member member) {
-        return new MemberContactResponse(member.getPhoneNumber(), member.getKakaoId());
+    public static MemberProfileUpdateResponse toMemberProfileUpdateResponse(Member member) {
+        return new MemberProfileUpdateResponse(member.getProfile());
     }
 }
