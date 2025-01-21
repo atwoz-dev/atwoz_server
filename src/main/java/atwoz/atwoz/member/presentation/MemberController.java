@@ -8,7 +8,6 @@ import atwoz.atwoz.member.application.MemberService;
 import atwoz.atwoz.member.application.dto.MemberContactResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
-import atwoz.atwoz.member.application.dto.MemberProfileUpdateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +19,8 @@ public class MemberController {
     private final MemberService memberService;
 
     @PutMapping("/profile")
-    public ResponseEntity<BaseResponse<MemberProfileUpdateResponse>> updateProfile(@RequestBody MemberProfileUpdateRequest request, @AuthPrincipal AuthContext authContext) {
-        MemberProfileUpdateResponse response = memberService.updateMember(authContext.getId(), request);
+    public ResponseEntity<BaseResponse<MemberProfileResponse>> updateProfile(@RequestBody MemberProfileUpdateRequest request, @AuthPrincipal AuthContext authContext) {
+        MemberProfileResponse response = memberService.updateMember(authContext.getId(), request);
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, response));
     }
 
@@ -39,7 +38,7 @@ public class MemberController {
 
     @GetMapping("/profile/contact")
     public ResponseEntity<BaseResponse<MemberContactResponse>> getMyContact(@AuthPrincipal AuthContext authContext) {
-        MemberContactResponse response = memberService.getContact(authContext.getId());
+        MemberContactResponse response = memberService.getContactAll(authContext.getId());
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, response));
     }
 

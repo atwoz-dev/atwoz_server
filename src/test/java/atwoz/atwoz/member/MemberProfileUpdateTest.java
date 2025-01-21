@@ -4,6 +4,7 @@ import atwoz.atwoz.hobby.domain.HobbyRepository;
 import atwoz.atwoz.job.domain.JobRepository;
 import atwoz.atwoz.job.exception.JobNotFoundException;
 import atwoz.atwoz.member.application.MemberService;
+import atwoz.atwoz.member.application.dto.MemberProfileResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateResponse;
 import atwoz.atwoz.member.domain.member.*;
@@ -147,7 +148,7 @@ public class MemberProfileUpdateTest {
         Mockito.when(jobRepository.existsById(jobId)).thenReturn(true);
 
         // Then
-        MemberProfileUpdateResponse response = memberService.updateMember(memberId, request);
+        MemberProfileResponse response = memberService.updateMember(memberId, request);
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.memberProfile().getNickname().getNickname()).isEqualTo("nickname");
         Assertions.assertThat(response.memberProfile().getGender()).isEqualTo(Gender.MALE);
@@ -182,7 +183,7 @@ public class MemberProfileUpdateTest {
         Mockito.when(jobRepository.existsById(2L)).thenReturn(true);
 
         // Then
-        MemberProfileUpdateResponse response = memberService.updateMember(memberId, request);
+        MemberProfileResponse response = memberService.updateMember(memberId, request);
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.memberProfile().getNickname().getNickname()).isEqualTo("nickname");
         Assertions.assertThat(response.memberProfile().getGender()).isEqualTo(Gender.MALE);

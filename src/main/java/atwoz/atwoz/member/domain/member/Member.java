@@ -51,7 +51,7 @@ public class Member extends SoftDeleteBaseEntity {
     }
 
     public String getKakaoId() {
-        return kakaoId.getId();
+        return kakaoId.getKakaoId();
     }
 
     public String getPhoneNumber() {

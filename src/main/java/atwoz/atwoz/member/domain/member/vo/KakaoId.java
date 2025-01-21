@@ -18,16 +18,16 @@ public class KakaoId {
     private static final Pattern KAKAO_ID_PATTERN = Pattern.compile(KAKAO_ID_REGEX);
 
 
-    private String id;
+    private String kakaoId;
 
     public static KakaoId from(String id) {
         return new KakaoId(id);
     }
 
-    private KakaoId(@NonNull String id) {
-        if (!KAKAO_ID_PATTERN.matcher(id).matches()) {
+    private KakaoId(@NonNull String kakaoId) {
+        if (!KAKAO_ID_PATTERN.matcher(kakaoId).matches()) {
             throw new InvalidKakaoIdException();
         }
-        this.id = id;
+        this.kakaoId = kakaoId;
     }
 }

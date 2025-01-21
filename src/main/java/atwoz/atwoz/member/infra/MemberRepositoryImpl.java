@@ -2,6 +2,7 @@ package atwoz.atwoz.member.infra;
 
 import atwoz.atwoz.member.domain.member.Member;
 import atwoz.atwoz.member.domain.member.MemberRepository;
+import atwoz.atwoz.member.domain.member.vo.KakaoId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -23,7 +24,13 @@ public class MemberRepositoryImpl implements MemberRepository {
         return memberJpaRepository.findByPhoneNumber(phoneNumber);
     }
 
+    @Override
     public Optional<Member> findById(Long id) {
         return memberJpaRepository.findById(id);
+    }
+
+    @Override
+    public Optional<Member> findByKakaoId(String kakaoId) {
+        return memberJpaRepository.findByKakaoId(KakaoId.from(kakaoId));
     }
 }

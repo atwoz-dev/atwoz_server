@@ -1,6 +1,8 @@
 package atwoz.atwoz.member.application;
 
-import atwoz.atwoz.member.application.dto.*;
+import atwoz.atwoz.member.application.dto.MemberContactResponse;
+import atwoz.atwoz.member.application.dto.MemberProfileResponse;
+import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.domain.member.*;
 import atwoz.atwoz.member.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.domain.member.vo.Nickname;
@@ -31,10 +33,6 @@ public class MemberMapper {
                 .drinkingStatus(DrinkingStatus.from(memberProfileUpdateRequest.drinkingStatus()))
                 .memberHobbyList(memberHobbyList)
                 .build();
-    }
-
-    public static MemberProfileUpdateResponse toMemberProfileUpdateResponse(Member member) {
-        return new MemberProfileUpdateResponse(member.getProfile());
     }
 
     public static MemberProfileResponse toMemberProfileResponse(Member member) {
