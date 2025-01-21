@@ -1,8 +1,8 @@
 package atwoz.atwoz.member.infra;
 
+import atwoz.atwoz.member.domain.member.KakaoId;
 import atwoz.atwoz.member.domain.member.Member;
 import atwoz.atwoz.member.domain.member.MemberRepository;
-import atwoz.atwoz.member.domain.member.vo.KakaoId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

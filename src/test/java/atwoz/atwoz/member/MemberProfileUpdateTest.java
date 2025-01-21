@@ -4,6 +4,7 @@ import atwoz.atwoz.hobby.domain.HobbyRepository;
 import atwoz.atwoz.job.domain.JobRepository;
 import atwoz.atwoz.job.exception.JobNotFoundException;
 import atwoz.atwoz.member.application.MemberService;
+import atwoz.atwoz.member.application.dto.MemberProfileResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateResponse;
 import atwoz.atwoz.member.application.exception.MemberNotFoundException;
@@ -143,7 +144,7 @@ class MemberProfileUpdateTest {
         when(jobRepository.existsById(jobId)).thenReturn(true);
 
         // When
-        MemberProfileUpdateResponse response = memberService.updateMember(memberId, request);
+        MemberProfileResponse response = memberService.updateMember(memberId, request);
 
         // Then
         assertThat(response).isNotNull();
@@ -175,7 +176,7 @@ class MemberProfileUpdateTest {
         when(jobRepository.existsById(2L)).thenReturn(true);
 
         // When
-        MemberProfileUpdateResponse response = memberService.updateMember(memberId, request);
+        MemberProfileResponse response = memberService.updateMember(memberId, request);
 
         // Then
         assertThat(response).isNotNull();

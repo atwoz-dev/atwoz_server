@@ -21,6 +21,9 @@ public class Member extends SoftDeleteBaseEntity {
     private String phoneNumber;
 
     @Embedded
+    private KakaoId kakaoId;
+
+    @Embedded
     @Getter
     private MemberProfile profile;
 
@@ -31,16 +34,19 @@ public class Member extends SoftDeleteBaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private ActivityStatus activityStatus;
 
+    private ContactType contactType;
+
     @Embedded
     @Getter
     private HeartBalance heartBalance;
 
-    public static Member fromPhoneNumber(String phoneNumber) {
+    public static Member fromPhoneNumber(@NonNull String phoneNumber) {
         return Member.builder()
                 .phoneNumber(phoneNumber)
                 .activityStatus(ActivityStatus.ACTIVE)
                 .heartBalance(HeartBalance.init())
                 .isVip(false)
+                .contactType(ContactType.PHONE_NUMBER)
                 .build();
     }
 
@@ -51,6 +57,30 @@ public class Member extends SoftDeleteBaseEntity {
     public boolean isProfileSettingNeeded() {
         if (profile == null) return true;
         return profile.isProfileSettingNeeded();
+    }
+
+    public String getKakaoId() {
+        return kakaoId.getValue();
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void transitionToDormant() {
+        activityStatus = ActivityStatus.DORMANT;
+    }
+
+    public void updateKakaoId(KakaoId kakaoId) {
+        this.kakaoId = kakaoId;
+    }
+
+    public void updatePhoneNumber(@NonNull String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public boolean isActive() {
+        return activityStatus == ActivityStatus.ACTIVE;
     }
 
     public Gender getGender() {

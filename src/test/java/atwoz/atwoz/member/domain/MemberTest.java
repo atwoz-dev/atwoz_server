@@ -2,9 +2,8 @@ package atwoz.atwoz.member.domain;
 
 import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
-import atwoz.atwoz.member.domain.member.ActivityStatus;
+import atwoz.atwoz.member.domain.member.KakaoId;
 import atwoz.atwoz.member.domain.member.Member;
-import atwoz.atwoz.member.domain.member.vo.KakaoId;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,7 +34,7 @@ public class MemberTest {
         @DisplayName("멤버의 활동 상태를 휴면 상태로 전환합니다.")
         void changeMemberActivityStatusToDormant() {
             // Given
-            Member member = Member.createFromPhoneNumber("01012345678");
+            Member member = Member.fromPhoneNumber("01012345678");
 
             // When
             member.transitionToDormant();
@@ -48,11 +47,11 @@ public class MemberTest {
         @DisplayName("멤버의 카카오 아이디를 변경합니다.")
         void changeMemberKakaoId() {
             // Given
-            Member member = Member.createFromPhoneNumber("01012345678");
+            Member member = Member.fromPhoneNumber("01012345678");
             String kakaoId = "kongtae";
 
             // When
-            member.updateKaKaoId(KakaoId.from(kakaoId));
+            member.updateKakaoId(KakaoId.from(kakaoId));
 
             // Then
             Assertions.assertThat(member.getKakaoId()).isEqualTo(kakaoId);
@@ -62,7 +61,7 @@ public class MemberTest {
         @DisplayName("멤버의 휴대폰 번호를 변경합니다.")
         void changeMemberPhoneNumber() {
             // Given
-            Member member = Member.createFromPhoneNumber("01012345678");
+            Member member = Member.fromPhoneNumber("01012345678");
             String phoneNumber = "01087564321";
 
             // When

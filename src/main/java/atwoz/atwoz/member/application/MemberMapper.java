@@ -1,5 +1,7 @@
 package atwoz.atwoz.member.application;
 
+import atwoz.atwoz.member.application.dto.MemberContactResponse;
+import atwoz.atwoz.member.application.dto.MemberProfileResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateResponse;
 import atwoz.atwoz.member.domain.member.*;
@@ -27,7 +29,11 @@ public class MemberMapper {
                 .build();
     }
 
-    public static MemberProfileUpdateResponse toMemberProfileUpdateResponse(Member member) {
-        return new MemberProfileUpdateResponse(member.getProfile());
+    public static MemberProfileResponse toMemberProfileResponse(Member member) {
+        return new MemberProfileResponse(member.getProfile());
+    }
+
+    public static MemberContactResponse toMemberContactResponse(Member member) {
+        return new MemberContactResponse(member.getPhoneNumber(), member.getKakaoId());
     }
 }

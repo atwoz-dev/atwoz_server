@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.infra;
 
+import atwoz.atwoz.member.domain.member.KakaoId;
 import atwoz.atwoz.member.domain.member.Member;
-import atwoz.atwoz.member.domain.member.vo.KakaoId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
