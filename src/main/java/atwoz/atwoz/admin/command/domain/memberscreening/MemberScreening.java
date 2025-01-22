@@ -3,7 +3,6 @@ package atwoz.atwoz.admin.command.domain.memberscreening;
 import atwoz.atwoz.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
@@ -29,16 +28,34 @@ public class MemberScreening extends BaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private ScreeningStatus status;
 
-    @Builder
-    private MemberScreening(Long memberId, Long adminId, RejectionReasonType rejectionReason, ScreeningStatus status) {
-        setMemberId(memberId);
-        setAdminId(adminId);
-        setRejectionReason(rejectionReason);
-        setStatus(status);
+    @Version
+    private Long version;
+
+    public static MemberScreening from(Long memberId) {
+        return new MemberScreening(memberId, null, null, ScreeningStatus.PENDING);
     }
 
-    private void setMemberId(@NonNull Long memberId) {
+    private MemberScreening(Long memberId, Long adminId, RejectionReasonType rejectionReason, ScreeningStatus status) {
         this.memberId = memberId;
+        this.adminId = adminId;
+        this.rejectionReason = rejectionReason;
+        this.status = status;
+    }
+
+    public void approve(Long adminId) {
+        setAdminId(adminId);
+        changeScreeningStatus(ScreeningStatus.APPROVED);
+        setRejectionReason(null);
+    }
+
+    public void reject(Long adminId, RejectionReasonType rejectionReason) {
+        setAdminId(adminId);
+        changeScreeningStatus(ScreeningStatus.REJECTED);
+        setRejectionReason(rejectionReason);
+    }
+
+    private void changeScreeningStatus(ScreeningStatus status) {
+        this.status = status;
     }
 
     private void setAdminId(@NonNull Long adminId) {
@@ -47,9 +64,5 @@ public class MemberScreening extends BaseEntity {
 
     private void setRejectionReason(RejectionReasonType rejectionReason) {
         this.rejectionReason = rejectionReason;
-    }
-
-    private void setStatus(@NonNull ScreeningStatus status) {
-        this.status = status;
     }
 }

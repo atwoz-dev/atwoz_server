@@ -1,8 +1,8 @@
-package atwoz.atwoz.admin.command.application;
+package atwoz.atwoz.admin.command.application.admin;
 
-import atwoz.atwoz.admin.command.application.dto.AdminLoginResponse;
-import atwoz.atwoz.admin.command.application.dto.AdminSignupRequest;
-import atwoz.atwoz.admin.command.application.dto.AdminSignupResponse;
+import atwoz.atwoz.admin.command.application.admin.dto.AdminLoginResponse;
+import atwoz.atwoz.admin.command.application.admin.dto.AdminSignupRequest;
+import atwoz.atwoz.admin.command.application.admin.dto.AdminSignupResponse;
 import atwoz.atwoz.admin.command.domain.admin.*;
 import lombok.NoArgsConstructor;
 
