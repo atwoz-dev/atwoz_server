@@ -1,6 +1,7 @@
 package atwoz.atwoz.admin.domain;
 
-import atwoz.atwoz.admin.domain.exception.IncorrectPasswordException;
+import atwoz.atwoz.admin.command.domain.admin.*;
+import atwoz.atwoz.admin.command.domain.admin.exception.IncorrectPasswordException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

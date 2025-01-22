@@ -4,7 +4,7 @@ package atwoz.atwoz.heartusagepolicy.domain;
 import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.hearttransaction.domain.vo.TransactionType;
 import atwoz.atwoz.hearttransaction.exception.InvalidHeartTransactionTypeException;
-import atwoz.atwoz.member.command.domain.member.Gender;
+import atwoz.atwoz.member.domain.member.Gender;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

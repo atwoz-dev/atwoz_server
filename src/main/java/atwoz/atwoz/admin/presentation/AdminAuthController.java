@@ -1,10 +1,10 @@
 package atwoz.atwoz.admin.presentation;
 
-import atwoz.atwoz.admin.application.AdminAuthService;
-import atwoz.atwoz.admin.application.dto.AdminLoginRequest;
-import atwoz.atwoz.admin.application.dto.AdminLoginResponse;
-import atwoz.atwoz.admin.application.dto.AdminSignupRequest;
-import atwoz.atwoz.admin.application.dto.AdminSignupResponse;
+import atwoz.atwoz.admin.command.application.AdminAuthService;
+import atwoz.atwoz.admin.command.application.dto.AdminLoginRequest;
+import atwoz.atwoz.admin.command.application.dto.AdminLoginResponse;
+import atwoz.atwoz.admin.command.application.dto.AdminSignupRequest;
+import atwoz.atwoz.admin.command.application.dto.AdminSignupResponse;
 import atwoz.atwoz.auth.presentation.RefreshTokenCookieProperties;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;

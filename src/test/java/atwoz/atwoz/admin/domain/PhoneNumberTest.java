@@ -1,6 +1,7 @@
 package atwoz.atwoz.admin.domain;
 
-import atwoz.atwoz.admin.domain.exception.InvalidPhoneNumberException;
+import atwoz.atwoz.admin.command.domain.admin.PhoneNumber;
+import atwoz.atwoz.admin.command.domain.admin.exception.InvalidPhoneNumberException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;

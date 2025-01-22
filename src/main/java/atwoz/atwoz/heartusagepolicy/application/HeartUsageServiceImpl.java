@@ -8,7 +8,7 @@ import atwoz.atwoz.hearttransaction.domain.vo.TransactionType;
 import atwoz.atwoz.heartusagepolicy.domain.HeartUsagePolicy;
 import atwoz.atwoz.heartusagepolicy.domain.HeartUsagePolicyRepository;
 import atwoz.atwoz.heartusagepolicy.exception.HeartUsagePolicyNotFoundException;
-import atwoz.atwoz.member.command.domain.member.Member;
+import atwoz.atwoz.member.domain.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

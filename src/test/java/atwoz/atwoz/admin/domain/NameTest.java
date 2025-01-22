@@ -1,6 +1,7 @@
 package atwoz.atwoz.admin.domain;
 
-import atwoz.atwoz.admin.domain.exception.InvalidNameException;
+import atwoz.atwoz.admin.command.domain.admin.Name;
+import atwoz.atwoz.admin.command.domain.admin.exception.InvalidNameException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
