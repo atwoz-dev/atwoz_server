@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.application;
+package atwoz.atwoz.admin.command.application;
 
 import atwoz.atwoz.admin.command.application.admin.AdminAuthService;
 import atwoz.atwoz.admin.command.application.admin.dto.AdminLoginRequest;
