@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/member/auth")
+@RequestMapping("/member")
 public class MemberAuthController {
 
     private final RefreshTokenCookieProperties refreshTokenCookieProperties;
