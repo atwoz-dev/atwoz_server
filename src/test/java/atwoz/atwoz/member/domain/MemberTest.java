@@ -51,7 +51,7 @@ public class MemberTest {
             String kakaoId = "kongtae";
 
             // When
-            member.updateKakaoId(KakaoId.from(kakaoId));
+            member.updateContactByKakaoId(KakaoId.from(kakaoId));
 
             // Then
             Assertions.assertThat(member.getKakaoId()).isEqualTo(kakaoId);
@@ -65,7 +65,7 @@ public class MemberTest {
             String phoneNumber = "01087564321";
 
             // When
-            member.updatePhoneNumber(phoneNumber);
+            member.updateContactByPhoneNumber(phoneNumber);
 
             // Then
             Assertions.assertThat(member.getPhoneNumber()).isEqualTo(phoneNumber);

@@ -49,7 +49,7 @@ public class MemberController {
     }
 
     @PostMapping("/profile/contact/phone")
-    public ResponseEntity<BaseResponse<Void>> updatePhone(@AuthPrincipal AuthContext authContext, @RequestBody String phone) {
+    public ResponseEntity<BaseResponse<Void>> updatePhoneNumber(@AuthPrincipal AuthContext authContext, @RequestBody String phone) {
         memberService.updatePhoneNumber(authContext.getId(), phone);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }

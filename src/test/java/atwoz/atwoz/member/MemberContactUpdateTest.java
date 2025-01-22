@@ -109,11 +109,4 @@ public class MemberContactUpdateTest {
             Assertions.assertThat(member.getKakaoId()).isEqualTo(kakaoId);
         }
     }
-
-    @Test
-    @DisplayName("자신의 등록된 연락처 조회 테스트")
-    void test() {
-
-    }
-
 }

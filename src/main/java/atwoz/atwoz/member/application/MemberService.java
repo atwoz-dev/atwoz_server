@@ -50,7 +50,7 @@ public class MemberService {
             throw new KakaoIdAlreadyExistsException();
         }
         Member member = findById(memberId);
-        member.updateKakaoId(KakaoId.from(kakaoId));
+        member.updateContactByKakaoId(KakaoId.from(kakaoId));
     }
 
     @Transactional
@@ -60,7 +60,7 @@ public class MemberService {
         }
 
         Member member = findById(memberId);
-        member.updatePhoneNumber(phoneNumber);
+        member.updateContactByPhoneNumber(phoneNumber);
     }
 
     public MemberProfileResponse getProfile(Long memberId) {

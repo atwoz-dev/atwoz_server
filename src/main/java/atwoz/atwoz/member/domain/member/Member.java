@@ -71,12 +71,14 @@ public class Member extends SoftDeleteBaseEntity {
         activityStatus = ActivityStatus.DORMANT;
     }
 
-    public void updateKakaoId(KakaoId kakaoId) {
+    public void updateContactByKakaoId(KakaoId kakaoId) {
         this.kakaoId = kakaoId;
+        this.contactType = ContactType.KAKAO;
     }
 
-    public void updatePhoneNumber(@NonNull String phoneNumber) {
+    public void updateContactByPhoneNumber(@NonNull String phoneNumber) {
         this.phoneNumber = phoneNumber;
+        this.contactType = ContactType.PHONE_NUMBER;
     }
 
     public boolean isActive() {
