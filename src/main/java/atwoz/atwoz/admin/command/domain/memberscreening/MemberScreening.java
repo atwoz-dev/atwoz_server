@@ -3,6 +3,7 @@ package atwoz.atwoz.admin.command.domain.memberscreening;
 import atwoz.atwoz.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
@@ -17,15 +18,20 @@ public class MemberScreening extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
     private Long memberId;
+
+    @Getter
     private Long adminId;
 
     @Enumerated(STRING)
     @Column(columnDefinition = "varchar(50)")
+    @Getter
     private RejectionReasonType rejectionReason;
 
     @Enumerated(STRING)
     @Column(columnDefinition = "varchar(50)")
+    @Getter
     private ScreeningStatus status;
 
     @Version
