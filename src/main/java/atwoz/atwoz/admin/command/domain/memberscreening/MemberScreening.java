@@ -35,6 +35,7 @@ public class MemberScreening extends BaseEntity {
     private ScreeningStatus status;
 
     @Version
+    @Getter
     private Long version;
 
     public static MemberScreening from(Long memberId) {
@@ -55,20 +56,27 @@ public class MemberScreening extends BaseEntity {
     }
 
     public void reject(Long adminId, RejectionReasonType rejectionReason) {
+        validateNotApproved();
         setAdminId(adminId);
         changeScreeningStatus(ScreeningStatus.REJECTED);
         setRejectionReason(rejectionReason);
-    }
-
-    private void changeScreeningStatus(ScreeningStatus status) {
-        this.status = status;
     }
 
     private void setAdminId(@NonNull Long adminId) {
         this.adminId = adminId;
     }
 
+    private void changeScreeningStatus(ScreeningStatus status) {
+        this.status = status;
+    }
+
     private void setRejectionReason(RejectionReasonType rejectionReason) {
         this.rejectionReason = rejectionReason;
+    }
+
+    private void validateNotApproved() {
+        if (ScreeningStatus.APPROVED == status) {
+            throw new CannotRejectApprovedScreeningException();
+        }
     }
 }
