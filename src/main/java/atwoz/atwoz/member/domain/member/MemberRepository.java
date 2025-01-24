@@ -10,5 +10,7 @@ public interface MemberRepository {
 
     Optional<Member> findByPhoneNumber(String phoneNumber);
 
-    Optional<Member> findByKakaoId(String kakaoId);
+    boolean existsByPhoneNumberAndIdNot(String phoneNumber, Long id);
+
+    boolean existsByKakaoIdAndIdNot(String kakaoId, Long id);
 }

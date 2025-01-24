@@ -37,7 +37,7 @@ public class MemberTest {
             Member member = Member.fromPhoneNumber("01012345678");
 
             // When
-            member.transitionToDormant();
+            member.changeToDormant();
 
             // Then
             Assertions.assertThat(member.isActive()).isFalse();
@@ -51,7 +51,7 @@ public class MemberTest {
             String kakaoId = "kongtae";
 
             // When
-            member.updateContactByKakaoId(KakaoId.from(kakaoId));
+            member.changePrimaryContactTypeToKakao(KakaoId.from(kakaoId));
 
             // Then
             Assertions.assertThat(member.getKakaoId()).isEqualTo(kakaoId);
@@ -65,7 +65,7 @@ public class MemberTest {
             String phoneNumber = "01087564321";
 
             // When
-            member.updateContactByPhoneNumber(phoneNumber);
+            member.changePrimaryContactTypeToPhoneNumber(phoneNumber);
 
             // Then
             Assertions.assertThat(member.getPhoneNumber()).isEqualTo(phoneNumber);

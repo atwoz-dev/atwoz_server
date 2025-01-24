@@ -1,8 +1,7 @@
-package atwoz.atwoz.member;
+package atwoz.atwoz.member.application;
 
 import atwoz.atwoz.hobby.domain.HobbyRepository;
 import atwoz.atwoz.job.domain.JobRepository;
-import atwoz.atwoz.member.application.MemberService;
 import atwoz.atwoz.member.application.exception.KakaoIdAlreadyExistsException;
 import atwoz.atwoz.member.application.exception.PhoneNumberAlreadyExistsException;
 import atwoz.atwoz.member.domain.member.Member;
@@ -48,7 +47,7 @@ public class MemberContactUpdateTest {
             String updatePhoneNumber = anotherMember.getPhoneNumber();
             ReflectionTestUtils.setField(member, "id", 1L);
 
-            Mockito.when(memberRepository.findByPhoneNumber(updatePhoneNumber)).thenReturn(Optional.of(anotherMember));
+            Mockito.when(memberRepository.existsByPhoneNumberAndIdNot(Mockito.any(), Mockito.any())).thenReturn(true);
 
             // When & Then
             Assertions.assertThatThrownBy(() -> memberService.updatePhoneNumber(member.getId(), updatePhoneNumber))
@@ -61,7 +60,7 @@ public class MemberContactUpdateTest {
             // Given
             String updatedPhoneNumber = "01098765432";
 
-            Mockito.when(memberRepository.findByPhoneNumber(updatedPhoneNumber)).thenReturn(Optional.empty());
+            Mockito.when(memberRepository.existsByPhoneNumberAndIdNot(Mockito.any(), Mockito.any())).thenReturn(false);
             Mockito.when(memberRepository.findById(member.getId())).thenReturn(Optional.of(member));
 
             // When
@@ -84,9 +83,8 @@ public class MemberContactUpdateTest {
         void isFailWhenUpdatedKakaoIdIsAnotherMemberKakaoId() {
             // Given
             String kakaoId = "kakaoId";
-            ReflectionTestUtils.setField(member, "id", 1L);
 
-            Mockito.when(memberRepository.findByKakaoId(kakaoId)).thenReturn(Optional.of(anotherMember));
+            Mockito.when(memberRepository.existsByKakaoIdAndIdNot(Mockito.any(), Mockito.any())).thenReturn(true);
 
             // When & Then
             Assertions.assertThatThrownBy(() -> memberService.updateKakaoId(member.getId(), kakaoId))
@@ -99,7 +97,7 @@ public class MemberContactUpdateTest {
             // Given
             String kakaoId = "kakaoId";
 
-            Mockito.when(memberRepository.findByKakaoId(kakaoId)).thenReturn(Optional.empty());
+            Mockito.when(memberRepository.existsByKakaoIdAndIdNot(Mockito.any(), Mockito.any())).thenReturn(false);
             Mockito.when(memberRepository.findById(member.getId())).thenReturn(Optional.of(member));
 
             // When

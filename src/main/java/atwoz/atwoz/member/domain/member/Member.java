@@ -18,6 +18,7 @@ public class Member extends SoftDeleteBaseEntity {
     @Getter
     private Long id;
 
+    @Getter
     private String phoneNumber;
 
     @Embedded
@@ -34,7 +35,9 @@ public class Member extends SoftDeleteBaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private ActivityStatus activityStatus;
 
-    private ContactType contactType;
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(50)")
+    private PrimaryContactType primaryContactType;
 
     @Embedded
     @Getter
@@ -46,7 +49,7 @@ public class Member extends SoftDeleteBaseEntity {
                 .activityStatus(ActivityStatus.ACTIVE)
                 .heartBalance(HeartBalance.init())
                 .isVip(false)
-                .contactType(ContactType.PHONE_NUMBER)
+                .primaryContactType(PrimaryContactType.PHONE_NUMBER)
                 .build();
     }
 
@@ -63,22 +66,18 @@ public class Member extends SoftDeleteBaseEntity {
         return kakaoId.getValue();
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void transitionToDormant() {
+    public void changeToDormant() {
         activityStatus = ActivityStatus.DORMANT;
     }
 
-    public void updateContactByKakaoId(KakaoId kakaoId) {
+    public void changePrimaryContactTypeToKakao(KakaoId kakaoId) {
         this.kakaoId = kakaoId;
-        this.contactType = ContactType.KAKAO;
+        this.primaryContactType = PrimaryContactType.KAKAO;
     }
 
-    public void updateContactByPhoneNumber(@NonNull String phoneNumber) {
+    public void changePrimaryContactTypeToPhoneNumber(@NonNull String phoneNumber) {
         this.phoneNumber = phoneNumber;
-        this.contactType = ContactType.PHONE_NUMBER;
+        this.primaryContactType = PrimaryContactType.PHONE_NUMBER;
     }
 
     public boolean isActive() {

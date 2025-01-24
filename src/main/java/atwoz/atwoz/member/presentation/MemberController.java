@@ -38,17 +38,17 @@ public class MemberController {
 
     @GetMapping("/profile/contact")
     public ResponseEntity<BaseResponse<MemberContactResponse>> getMyContact(@AuthPrincipal AuthContext authContext) {
-        MemberContactResponse response = memberService.getContactAll(authContext.getId());
+        MemberContactResponse response = memberService.getContacts(authContext.getId());
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, response));
     }
 
-    @PostMapping("/profile/contact/kakao")
+    @PatchMapping("/profile/contact/kakao")
     public ResponseEntity<BaseResponse<Void>> updateKakaoId(@AuthPrincipal AuthContext authContext, @RequestBody String kakaoId) {
         memberService.updateKakaoId(authContext.getId(), kakaoId);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
-    @PostMapping("/profile/contact/phone")
+    @PatchMapping("/profile/contact/phone")
     public ResponseEntity<BaseResponse<Void>> updatePhoneNumber(@AuthPrincipal AuthContext authContext, @RequestBody String phone) {
         memberService.updatePhoneNumber(authContext.getId(), phone);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));

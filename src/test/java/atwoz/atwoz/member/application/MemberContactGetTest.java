@@ -1,8 +1,7 @@
-package atwoz.atwoz.member;
+package atwoz.atwoz.member.application;
 
 import atwoz.atwoz.hobby.domain.HobbyRepository;
 import atwoz.atwoz.job.domain.JobRepository;
-import atwoz.atwoz.member.application.MemberService;
 import atwoz.atwoz.member.application.dto.MemberContactResponse;
 import atwoz.atwoz.member.application.exception.MemberNotFoundException;
 import atwoz.atwoz.member.domain.member.KakaoId;
@@ -43,7 +42,7 @@ public class MemberContactGetTest {
         Mockito.when(memberRepository.findById(Mockito.any())).thenReturn(Optional.empty());
 
         // When
-        Assertions.assertThatThrownBy(() -> memberService.getContactAll(member.getId()))
+        Assertions.assertThatThrownBy(() -> memberService.getContacts(member.getId()))
                 .isInstanceOf(MemberNotFoundException.class);
     }
 
@@ -54,12 +53,12 @@ public class MemberContactGetTest {
         String phoneNumber = "01012345678";
         String kakaoId = "kakaoId";
         Member member = Member.fromPhoneNumber(phoneNumber);
-        member.updateContactByKakaoId(KakaoId.from(kakaoId));
+        member.changePrimaryContactTypeToKakao(KakaoId.from(kakaoId));
 
         Mockito.when(memberRepository.findById(Mockito.any())).thenReturn(Optional.of(member));
 
         // When
-        MemberContactResponse memberContactResponse = memberService.getContactAll(member.getId());
+        MemberContactResponse memberContactResponse = memberService.getContacts(member.getId());
 
         // Then
         Assertions.assertThat(memberContactResponse).isNotNull();

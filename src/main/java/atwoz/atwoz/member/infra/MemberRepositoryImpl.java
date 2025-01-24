@@ -30,7 +30,12 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findByKakaoId(String kakaoId) {
-        return memberJpaRepository.findByKakaoId(KakaoId.from(kakaoId));
+    public boolean existsByPhoneNumberAndIdNot(String phoneNumber, Long id) {
+        return memberJpaRepository.existsByPhoneNumberAndIdNot(phoneNumber, id);
+    }
+
+    @Override
+    public boolean existsByKakaoIdAndIdNot(String kakaoId, Long id) {
+        return memberJpaRepository.existsByKakaoIdAndIdNot(KakaoId.from(kakaoId), id);
     }
 }

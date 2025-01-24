@@ -11,13 +11,14 @@ import atwoz.atwoz.member.application.exception.MemberNotFoundException;
 import atwoz.atwoz.member.application.exception.PhoneNumberAlreadyExistsException;
 import atwoz.atwoz.member.domain.member.KakaoId;
 import atwoz.atwoz.member.domain.member.Member;
+import atwoz.atwoz.member.domain.member.MemberProfile;
 import atwoz.atwoz.member.domain.member.MemberRepository;
 import atwoz.atwoz.member.domain.member.exception.InvalidHobbyIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -30,50 +31,65 @@ public class MemberService {
 
     @Transactional
     public MemberProfileResponse updateMember(Long memberId, MemberProfileUpdateRequest request) {
-        Member member = findById(memberId);
+        Member member = getMemberById(memberId);
 
         validateJobId(request.jobId());
         validateHobbyIds(request.hobbyIds());
 
         member.updateProfile(MemberMapper.toMemberProfile(request));
-        return MemberMapper.toMemberProfileResponse(member);
+        List<String> hobbyNames = getHobbyNames(request.hobbyIds());
+        String jobName = getJobName(request.jobId());
+
+        return MemberMapper.toMemberProfileResponse(member.getProfile(), hobbyNames, jobName);
     }
 
     @Transactional
     public void transitionToDormant(Long memberId) {
-        findById(memberId).transitionToDormant();
+        getMemberById(memberId).changeToDormant();
     }
 
     @Transactional
     public void updateKakaoId(Long memberId, String kakaoId) {
-        if (existsAnotherMemberByKakaoId(kakaoId, memberId)) {
-            throw new KakaoIdAlreadyExistsException();
-        }
-        Member member = findById(memberId);
-        member.updateContactByKakaoId(KakaoId.from(kakaoId));
+        validateKakaoId(kakaoId, memberId);
+        Member member = getMemberById(memberId);
+        member.changePrimaryContactTypeToKakao(KakaoId.from(kakaoId));
     }
 
     @Transactional
     public void updatePhoneNumber(Long memberId, String phoneNumber) {
-        if (existsAnotherMemberByPhoneNumber(phoneNumber, memberId)) {
-            throw new PhoneNumberAlreadyExistsException();
-        }
-
-        Member member = findById(memberId);
-        member.updateContactByPhoneNumber(phoneNumber);
+        validatePhoneNumber(phoneNumber, memberId);
+        Member member = getMemberById(memberId);
+        member.changePrimaryContactTypeToPhoneNumber(phoneNumber);
     }
 
+    @Transactional(readOnly = true)
     public MemberProfileResponse getProfile(Long memberId) {
-        Member member = findById(memberId);
-        return MemberMapper.toMemberProfileResponse(member);
+        MemberProfile memberProfile = getMemberById(memberId).getProfile();
+        List<String> hobbyNames = getHobbyNames(memberProfile.getHobbyIds());
+        String jobName = getJobName(memberProfile.getJobId());
+        return MemberMapper.toMemberProfileResponse(memberProfile, hobbyNames, jobName);
     }
 
-    public MemberContactResponse getContactAll(Long memberId) {
-        return MemberMapper.toMemberContactResponse(findById(memberId));
+    @Transactional(readOnly = true)
+    public MemberContactResponse getContacts(Long memberId) {
+        return MemberMapper.toMemberContactResponse(getMemberById(memberId));
     }
 
-    private Member findById(Long memberId) {
+    private Member getMemberById(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
+    }
+
+    private List<String> getHobbyNames(Set<Long> hobbyIds) {
+        return hobbyRepository.findHobbiesByIdIn(hobbyIds).stream()
+                .map(hobby -> hobby.getName())
+                .toList();
+    }
+
+    private String getJobName(Long jobId) {
+        if (jobRepository.findById(jobId).isPresent()) {
+            return jobRepository.findById(jobId).get().getName();
+        }
+        return null;
     }
 
     private void validateJobId(Long jobId) {
@@ -88,19 +104,15 @@ public class MemberService {
         }
     }
 
-    private boolean existsAnotherMemberByPhoneNumber(String phoneNumber, Long memberId) {
-        Optional<Member> member = memberRepository.findByPhoneNumber(phoneNumber);
-        if (member.isPresent() && member.get().getId() != memberId) {
-            return true;
+    private void validatePhoneNumber(String phoneNumber, Long memberId) {
+        if (memberRepository.existsByPhoneNumberAndIdNot(phoneNumber, memberId)) {
+            throw new PhoneNumberAlreadyExistsException();
         }
-        return false;
     }
 
-    private boolean existsAnotherMemberByKakaoId(String kakaoId, Long memberId) {
-        Optional<Member> member = memberRepository.findByKakaoId(kakaoId);
-        if (member.isPresent() && member.get().getId() != memberId) {
-            return true;
+    private void validateKakaoId(String kakaoId, Long memberId) {
+        if (memberRepository.existsByKakaoIdAndIdNot(kakaoId, memberId)) {
+            throw new KakaoIdAlreadyExistsException();
         }
-        return false;
     }
 }
