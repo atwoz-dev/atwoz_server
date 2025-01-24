@@ -1,6 +1,5 @@
 package atwoz.atwoz.member.application;
 
-
 import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.auth.infra.JwtProvider;
 import atwoz.atwoz.common.enums.Role;
@@ -25,8 +24,7 @@ import java.time.Instant;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-public class MemberLoginTest {
-
+public class MemberAuthTest {
     private Member permanentStoppedMember;
     private Member member;
 

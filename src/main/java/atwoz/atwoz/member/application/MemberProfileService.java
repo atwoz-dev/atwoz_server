@@ -3,13 +3,9 @@ package atwoz.atwoz.member.application;
 import atwoz.atwoz.hobby.domain.HobbyRepository;
 import atwoz.atwoz.job.domain.JobRepository;
 import atwoz.atwoz.job.exception.JobNotFoundException;
-import atwoz.atwoz.member.application.dto.MemberContactResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
-import atwoz.atwoz.member.application.exception.KakaoIdAlreadyExistsException;
 import atwoz.atwoz.member.application.exception.MemberNotFoundException;
-import atwoz.atwoz.member.application.exception.PhoneNumberAlreadyExistsException;
-import atwoz.atwoz.member.domain.member.KakaoId;
 import atwoz.atwoz.member.domain.member.Member;
 import atwoz.atwoz.member.domain.member.MemberProfile;
 import atwoz.atwoz.member.domain.member.MemberRepository;
@@ -23,7 +19,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class MemberService {
+public class MemberProfileService {
 
     private final MemberRepository memberRepository;
     private final JobRepository jobRepository;
@@ -43,25 +39,6 @@ public class MemberService {
         return MemberMapper.toMemberProfileResponse(member.getProfile(), hobbyNames, jobName);
     }
 
-    @Transactional
-    public void transitionToDormant(Long memberId) {
-        getMemberById(memberId).changeToDormant();
-    }
-
-    @Transactional
-    public void updateKakaoId(Long memberId, String kakaoId) {
-        validateKakaoId(kakaoId, memberId);
-        Member member = getMemberById(memberId);
-        member.changePrimaryContactTypeToKakao(KakaoId.from(kakaoId));
-    }
-
-    @Transactional
-    public void updatePhoneNumber(Long memberId, String phoneNumber) {
-        validatePhoneNumber(phoneNumber, memberId);
-        Member member = getMemberById(memberId);
-        member.changePrimaryContactTypeToPhoneNumber(phoneNumber);
-    }
-
     @Transactional(readOnly = true)
     public MemberProfileResponse getProfile(Long memberId) {
         MemberProfile memberProfile = getMemberById(memberId).getProfile();
@@ -70,9 +47,21 @@ public class MemberService {
         return MemberMapper.toMemberProfileResponse(memberProfile, hobbyNames, jobName);
     }
 
-    @Transactional(readOnly = true)
-    public MemberContactResponse getContacts(Long memberId) {
-        return MemberMapper.toMemberContactResponse(getMemberById(memberId));
+    @Transactional
+    public void changeToDormant(Long memberId) {
+        getMemberById(memberId).changeToDormant();
+    }
+
+    private void validateJobId(Long jobId) {
+        if (jobId != null && !jobRepository.existsById(jobId)) {
+            throw new JobNotFoundException();
+        }
+    }
+
+    private void validateHobbyIds(Set<Long> hobbyIdList) {
+        if (hobbyIdList != null && hobbyRepository.countHobbiesByIdIn(hobbyIdList) != hobbyIdList.size()) {
+            throw new InvalidHobbyIdException();
+        }
     }
 
     private Member getMemberById(Long memberId) {
@@ -90,29 +79,5 @@ public class MemberService {
             return jobRepository.findById(jobId).get().getName();
         }
         return null;
-    }
-
-    private void validateJobId(Long jobId) {
-        if (jobId != null && !jobRepository.existsById(jobId)) {
-            throw new JobNotFoundException();
-        }
-    }
-
-    private void validateHobbyIds(Set<Long> hobbyIdList) {
-        if (hobbyIdList != null && hobbyRepository.countHobbiesByIdIn(hobbyIdList) != hobbyIdList.size()) {
-            throw new InvalidHobbyIdException();
-        }
-    }
-
-    private void validatePhoneNumber(String phoneNumber, Long memberId) {
-        if (memberRepository.existsByPhoneNumberAndIdNot(phoneNumber, memberId)) {
-            throw new PhoneNumberAlreadyExistsException();
-        }
-    }
-
-    private void validateKakaoId(String kakaoId, Long memberId) {
-        if (memberRepository.existsByKakaoIdAndIdNot(kakaoId, memberId)) {
-            throw new KakaoIdAlreadyExistsException();
-        }
     }
 }

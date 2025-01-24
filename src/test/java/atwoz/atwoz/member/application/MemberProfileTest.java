@@ -27,8 +27,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class MemberProfileUpdateTest {
-
+public class MemberProfileTest {
     @Mock
     private MemberRepository memberRepository;
 
@@ -39,7 +38,7 @@ class MemberProfileUpdateTest {
     private JobRepository jobRepository;
 
     @InjectMocks
-    private MemberService memberService;
+    private MemberProfileService memberProfileService;
 
     @DisplayName("멤버를 찾을 수 없을 경우, 예외 발생")
     @Test
@@ -51,7 +50,7 @@ class MemberProfileUpdateTest {
         when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
 
         // Then
-        assertThatThrownBy(() -> memberService.updateMember(memberId, null)).isInstanceOf(MemberNotFoundException.class);
+        assertThatThrownBy(() -> memberProfileService.updateMember(memberId, null)).isInstanceOf(MemberNotFoundException.class);
     }
 
     @DisplayName("멤버가 존재하지만 Enum 값이 적절하지 않은 경우, 예외 발생")
@@ -74,7 +73,7 @@ class MemberProfileUpdateTest {
         when(hobbyRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(2L);
 
         // When & Then
-        assertThatThrownBy(() -> memberService.updateMember(memberId, invalidRequest))
+        assertThatThrownBy(() -> memberProfileService.updateMember(memberId, invalidRequest))
                 .isInstanceOf(InvalidMemberEnumValueException.class);
     }
 
@@ -97,7 +96,7 @@ class MemberProfileUpdateTest {
         when(jobRepository.existsById(jobId)).thenReturn(false);
 
         // When & Then
-        assertThatThrownBy(() -> memberService.updateMember(memberId, invalidRequest))
+        assertThatThrownBy(() -> memberProfileService.updateMember(memberId, invalidRequest))
                 .isInstanceOf(JobNotFoundException.class);
     }
 
@@ -121,7 +120,7 @@ class MemberProfileUpdateTest {
         when(hobbyRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(1L);
 
         // When & Then
-        assertThatThrownBy(() -> memberService.updateMember(memberId, invalidRequest))
+        assertThatThrownBy(() -> memberProfileService.updateMember(memberId, invalidRequest))
                 .isInstanceOf(InvalidHobbyIdException.class);
     }
 
@@ -151,7 +150,7 @@ class MemberProfileUpdateTest {
         when(jobRepository.findById(jobId)).thenReturn(Optional.of(job));
         when(hobbyRepository.findHobbiesByIdIn(hobbyIds)).thenReturn(hobbies);
         // When
-        MemberProfileResponse response = memberService.updateMember(memberId, request);
+        MemberProfileResponse response = memberProfileService.updateMember(memberId, request);
 
         // Then
         assertThat(response).isNotNull();
@@ -184,7 +183,7 @@ class MemberProfileUpdateTest {
         when(jobRepository.findById(jobId)).thenReturn(Optional.of(job));
 
         // When
-        MemberProfileResponse response = memberService.updateMember(memberId, request);
+        MemberProfileResponse response = memberProfileService.updateMember(memberId, request);
 
         // Then
         assertThat(response).isNotNull();
