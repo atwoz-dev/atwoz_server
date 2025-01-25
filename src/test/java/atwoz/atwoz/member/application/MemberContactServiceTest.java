@@ -112,6 +112,22 @@ public class MemberContactServiceTest {
                 // Then
                 Assertions.assertThat(member.getPhoneNumber()).isEqualTo(updatedPhoneNumber);
             }
+
+            @Test
+            @DisplayName("기존 자신의 핸드폰 번호인 경우 성공.")
+            void isSuccessWhenUpdateNumberIsOwnPhoneNumber() {
+                // Given
+                String updatedPhoneNumber = member.getPhoneNumber();
+
+                Mockito.when(memberRepository.existsByPhoneNumberAndIdNot(Mockito.any(), Mockito.any())).thenReturn(false);
+                Mockito.when(memberRepository.findById(member.getId())).thenReturn(Optional.of(member));
+
+                // When
+                memberContactService.updatePhoneNumber(member.getId(), updatedPhoneNumber);
+
+                // Then
+                Assertions.assertThat(member.getPhoneNumber()).isEqualTo(updatedPhoneNumber);
+            }
         }
 
         @Nested
@@ -139,6 +155,23 @@ public class MemberContactServiceTest {
             void isSuccessWhenUpdatedKakaoIdIsNotAnotherMemberKakaoId() {
                 // Given
                 String kakaoId = "kakaoId";
+
+                Mockito.when(memberRepository.existsByKakaoIdAndIdNot(Mockito.any(), Mockito.any())).thenReturn(false);
+                Mockito.when(memberRepository.findById(member.getId())).thenReturn(Optional.of(member));
+
+                // When
+                memberContactService.updateKakaoId(member.getId(), kakaoId);
+
+                // Then
+                Assertions.assertThat(member.getKakaoId()).isEqualTo(kakaoId);
+            }
+
+            @Test
+            @DisplayName("기존 자신의 카카오 아이디인 경우 성공.")
+            void isSuccessWhenUpdatedKakaoIdIsOwnKakaoId() {
+                // Given
+                String kakaoId = "kakaoId";
+                member.changePrimaryContactTypeToKakao(KakaoId.from(kakaoId));
 
                 Mockito.when(memberRepository.existsByKakaoIdAndIdNot(Mockito.any(), Mockito.any())).thenReturn(false);
                 Mockito.when(memberRepository.findById(member.getId())).thenReturn(Optional.of(member));
