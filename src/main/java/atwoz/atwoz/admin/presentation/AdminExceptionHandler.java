@@ -1,8 +1,8 @@
 package atwoz.atwoz.admin.presentation;
 
-import atwoz.atwoz.admin.application.exception.AdminNotFoundException;
-import atwoz.atwoz.admin.application.exception.DuplicateEmailException;
-import atwoz.atwoz.admin.domain.exception.IncorrectPasswordException;
+import atwoz.atwoz.admin.command.application.admin.exception.AdminNotFoundException;
+import atwoz.atwoz.admin.command.application.admin.exception.DuplicateEmailException;
+import atwoz.atwoz.admin.command.domain.admin.exception.IncorrectPasswordException;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import lombok.extern.slf4j.Slf4j;

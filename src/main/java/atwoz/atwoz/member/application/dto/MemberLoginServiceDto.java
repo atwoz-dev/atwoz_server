@@ -1,6 +1,5 @@
 package atwoz.atwoz.member.application.dto;
 
-import atwoz.atwoz.member.domain.member.Member;
 import lombok.Builder;
 
 @Builder
