@@ -49,7 +49,7 @@ public class MemberMapper {
     }
 
     public static MemberContactResponse toMemberContactResponse(Member member) {
-        return new MemberContactResponse(member.getPhoneNumber(), member.getKakaoId());
+        return new MemberContactResponse(member.getPhoneNumber(), member.getKakaoId(), member.getPrimaryContactType().toString());
     }
 
     private static String getStringOrNull(Enum e) {

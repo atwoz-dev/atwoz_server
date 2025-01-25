@@ -9,6 +9,7 @@ import atwoz.atwoz.member.application.exception.PhoneNumberAlreadyExistsExceptio
 import atwoz.atwoz.member.domain.member.KakaoId;
 import atwoz.atwoz.member.domain.member.Member;
 import atwoz.atwoz.member.domain.member.MemberRepository;
+import atwoz.atwoz.member.domain.member.PrimaryContactType;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -71,6 +72,7 @@ public class MemberContactServiceTest {
             Assertions.assertThat(memberContactResponse).isNotNull();
             Assertions.assertThat(memberContactResponse.phoneNumber()).isEqualTo(phoneNumber);
             Assertions.assertThat(memberContactResponse.kakaoId()).isEqualTo(kakaoId);
+            Assertions.assertThat(memberContactResponse.primaryContactType()).isEqualTo(PrimaryContactType.KAKAO.toString());
         }
     }
 

@@ -38,6 +38,7 @@ public class Member extends SoftDeleteBaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
+    @Getter
     private PrimaryContactType primaryContactType;
 
     @Embedded
