@@ -21,7 +21,7 @@ public class ProfileImageRepositoryImpl implements ProfileImageRepository {
     }
 
     @Override
-    public boolean existsPrimaryImageByMemberId(Long memberId) {
+    public boolean existsByMemberIdAndIsPrimary(Long memberId) {
         return profileImageJpaRepository.existsByMemberIdAndIsPrimary(memberId, true);
     }
 

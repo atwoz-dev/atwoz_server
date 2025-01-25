@@ -56,7 +56,7 @@ public class ProfileImageTest {
             MultipartFile imageFile = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "test".getBytes());
             Long memberId = 1L;
 
-            Mockito.when(profileImageRepository.existsPrimaryImageByMemberId(memberId)).thenReturn(true);
+            Mockito.when(profileImageRepository.existsByMemberIdAndIsPrimary(memberId)).thenReturn(true);
             List<ProfileImageUploadRequest> request = List.of(new ProfileImageUploadRequest(imageFile, true, 1));
 
             // When & Then
