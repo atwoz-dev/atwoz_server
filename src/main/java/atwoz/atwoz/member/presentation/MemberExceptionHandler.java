@@ -35,7 +35,7 @@ public class MemberExceptionHandler {
     public ResponseEntity<BaseResponse<Void>> handlePhoneNumberAlreadyExistsException(PhoneNumberAlreadyExistsException e) {
         log.warn("휴대폰 번호 변경에 실패하였습니다. {}", e.getMessage());
 
-        return ResponseEntity.status(400)
+        return ResponseEntity.badRequest()
                 .body(BaseResponse.from(StatusType.BAD_REQUEST));
     }
 
@@ -43,7 +43,7 @@ public class MemberExceptionHandler {
     public ResponseEntity<BaseResponse<Void>> handleKakaoIdAlreadyExistsException(KakaoIdAlreadyExistsException e) {
         log.warn("카카오 아이디 변경에 실패하였습니다. {}", e.getMessage());
 
-        return ResponseEntity.status(400)
+        return ResponseEntity.badRequest()
                 .body(BaseResponse.from(StatusType.BAD_REQUEST));
     }
 }
