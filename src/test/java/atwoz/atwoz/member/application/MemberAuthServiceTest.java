@@ -24,7 +24,7 @@ import java.time.Instant;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-public class MemberAuthTest {
+public class MemberAuthServiceTest {
     private Member permanentStoppedMember;
     private Member member;
 

@@ -14,12 +14,12 @@ public class HobbyRepositoryImpl implements HobbyRepository {
     private final HobbyJpaRepository hobbyJpaRepository;
 
     @Override
-    public long countHobbiesByIdIn(Set<Long> ids) {
+    public long countAllByIdIsIn(Set<Long> ids) {
         return hobbyJpaRepository.countAllByIdIsIn(ids);
     }
 
     @Override
-    public List<Hobby> findHobbiesByIdIn(Set<Long> ids) {
+    public List<Hobby> findByIdIn(Set<Long> ids) {
         return hobbyJpaRepository.findByIdIn(ids);
     }
 }

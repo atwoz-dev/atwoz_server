@@ -26,17 +26,13 @@ public class MemberProfileService {
     private final HobbyRepository hobbyRepository;
 
     @Transactional
-    public MemberProfileResponse updateMember(Long memberId, MemberProfileUpdateRequest request) {
+    public void updateMember(Long memberId, MemberProfileUpdateRequest request) {
         Member member = getMemberById(memberId);
 
         validateJobId(request.jobId());
         validateHobbyIds(request.hobbyIds());
 
         member.updateProfile(MemberMapper.toMemberProfile(request));
-        List<String> hobbyNames = getHobbyNames(request.hobbyIds());
-        String jobName = getJobName(request.jobId());
-
-        return MemberMapper.toMemberProfileResponse(member.getProfile(), hobbyNames, jobName);
     }
 
     @Transactional(readOnly = true)
@@ -59,7 +55,7 @@ public class MemberProfileService {
     }
 
     private void validateHobbyIds(Set<Long> hobbyIdList) {
-        if (hobbyIdList != null && hobbyRepository.countHobbiesByIdIn(hobbyIdList) != hobbyIdList.size()) {
+        if (hobbyIdList != null && hobbyRepository.countAllByIdIsIn(hobbyIdList) != hobbyIdList.size()) {
             throw new InvalidHobbyIdException();
         }
     }
@@ -69,7 +65,7 @@ public class MemberProfileService {
     }
 
     private List<String> getHobbyNames(Set<Long> hobbyIds) {
-        return hobbyRepository.findHobbiesByIdIn(hobbyIds).stream()
+        return hobbyRepository.findByIdIn(hobbyIds).stream()
                 .map(hobby -> hobby.getName())
                 .toList();
     }

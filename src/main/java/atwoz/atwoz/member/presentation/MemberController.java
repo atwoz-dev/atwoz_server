@@ -21,9 +21,9 @@ public class MemberController {
     private final MemberProfileService memberProfileService;
 
     @PutMapping("/profile")
-    public ResponseEntity<BaseResponse<MemberProfileResponse>> updateProfile(@RequestBody MemberProfileUpdateRequest request, @AuthPrincipal AuthContext authContext) {
-        MemberProfileResponse response = memberProfileService.updateMember(authContext.getId(), request);
-        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, response));
+    public ResponseEntity<BaseResponse<Void>> updateProfile(@RequestBody MemberProfileUpdateRequest request, @AuthPrincipal AuthContext authContext) {
+        memberProfileService.updateMember(authContext.getId(), request);
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
     @GetMapping("/profile")

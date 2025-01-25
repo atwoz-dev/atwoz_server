@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class MemberProfileTest {
+public class MemberProfileServiceTest {
     @Mock
     private MemberRepository memberRepository;
 
@@ -70,7 +70,7 @@ public class MemberProfileTest {
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
         when(jobRepository.existsById(jobId)).thenReturn(true);
-        when(hobbyRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(2L);
+        when(hobbyRepository.countAllByIdIsIn(hobbyIds)).thenReturn(2L);
 
         // When & Then
         assertThatThrownBy(() -> memberProfileService.updateMember(memberId, invalidRequest))
@@ -117,7 +117,7 @@ public class MemberProfileTest {
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
         when(jobRepository.existsById(jobId)).thenReturn(true);
-        when(hobbyRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(1L);
+        when(hobbyRepository.countAllByIdIsIn(hobbyIds)).thenReturn(1L);
 
         // When & Then
         assertThatThrownBy(() -> memberProfileService.updateMember(memberId, invalidRequest))
@@ -145,22 +145,20 @@ public class MemberProfileTest {
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
-        when(hobbyRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(2L);
+        when(hobbyRepository.countAllByIdIsIn(hobbyIds)).thenReturn(2L);
         when(jobRepository.existsById(jobId)).thenReturn(true);
-        when(jobRepository.findById(jobId)).thenReturn(Optional.of(job));
-        when(hobbyRepository.findHobbiesByIdIn(hobbyIds)).thenReturn(hobbies);
+
         // When
-        MemberProfileResponse response = memberProfileService.updateMember(memberId, request);
+        memberProfileService.updateMember(memberId, request);
 
         // Then
-        assertThat(response).isNotNull();
-        assertThat(response.nickname()).isEqualTo("nickname");
-        assertThat(response.gender()).isEqualTo(Gender.MALE.toString());
-        assertThat(response.job()).isEqualTo(job.getName());
-        assertThat(response.hobbies().size()).isEqualTo(hobbies.size());
-        assertThat(response.height()).isEqualTo(180);
-        assertThat(response.region()).isEqualTo(Region.DAEJEON.toString());
-        assertThat(response.religion()).isEqualTo(Religion.BUDDHIST.toString());
+        assertThat(existingMember.getProfile().getNickname().getValue()).isEqualTo("nickname");
+        assertThat(existingMember.getProfile().getGender()).isEqualTo(Gender.MALE);
+        assertThat(existingMember.getProfile().getJobId()).isEqualTo(jobId);
+        assertThat(existingMember.getProfile().getHobbyIds().size()).isEqualTo(hobbies.size());
+        assertThat(existingMember.getProfile().getHeight()).isEqualTo(180);
+        assertThat(existingMember.getProfile().getRegion()).isEqualTo(Region.DAEJEON);
+        assertThat(existingMember.getProfile().getReligion()).isEqualTo(Religion.BUDDHIST);
     }
 
     @DisplayName("멤버가 존재하는 경우, 특정 값에 null 이 포함되어 있더라도 성공.")
@@ -180,19 +178,17 @@ public class MemberProfileTest {
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
         when(jobRepository.existsById(2L)).thenReturn(true);
-        when(jobRepository.findById(jobId)).thenReturn(Optional.of(job));
 
         // When
-        MemberProfileResponse response = memberProfileService.updateMember(memberId, request);
+        memberProfileService.updateMember(memberId, request);
 
         // Then
-        assertThat(response).isNotNull();
-        assertThat(response.nickname()).isEqualTo("nickname");
-        assertThat(response.gender()).isEqualTo(Gender.MALE.toString());
-        assertThat(response.job()).isEqualTo(job.getName());
-        assertThat(response.hobbies().size()).isEqualTo(0);
-        assertThat(response.height()).isEqualTo(180);
-        assertThat(response.region()).isNull();
-        assertThat(response.religion()).isEqualTo(Religion.BUDDHIST.toString());
+        assertThat(existingMember.getProfile().getNickname().getValue()).isEqualTo("nickname");
+        assertThat(existingMember.getProfile().getGender()).isEqualTo(Gender.MALE);
+        assertThat(existingMember.getProfile().getJobId()).isEqualTo(jobId);
+        assertThat(existingMember.getProfile().getHobbyIds()).isNull();
+        assertThat(existingMember.getProfile().getHeight()).isEqualTo(180);
+        assertThat(existingMember.getProfile().getRegion()).isNull();
+        assertThat(existingMember.getProfile().getReligion()).isEqualTo(Religion.BUDDHIST);
     }
 }

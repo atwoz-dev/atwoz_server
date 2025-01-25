@@ -23,7 +23,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-public class MemberContactTest {
+public class MemberContactServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
