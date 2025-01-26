@@ -1,9 +1,13 @@
 package atwoz.atwoz.member.application;
 
+import atwoz.atwoz.member.application.dto.MemberContactResponse;
+import atwoz.atwoz.member.application.dto.MemberProfileResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateResponse;
 import atwoz.atwoz.member.domain.member.*;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -27,7 +31,28 @@ public class MemberMapper {
                 .build();
     }
 
-    public static MemberProfileUpdateResponse toMemberProfileUpdateResponse(Member member) {
-        return new MemberProfileUpdateResponse(member.getProfile());
+    public static MemberProfileResponse toMemberProfileResponse(MemberProfile memberProfile, List<String> hobbies, String job) {
+        return MemberProfileResponse.builder()
+                .age(memberProfile.getAge())
+                .height(memberProfile.getHeight())
+                .hobbies(hobbies)
+                .highestEducation(getStringOrNull(memberProfile.getHighestEducation()))
+                .drinkingStatus(getStringOrNull(memberProfile.getDrinkingStatus()))
+                .region(getStringOrNull(memberProfile.getRegion()))
+                .smokingStatus(getStringOrNull(memberProfile.getSmokingStatus()))
+                .gender(getStringOrNull(memberProfile.getGender()))
+                .mbti(getStringOrNull(memberProfile.getMbti()))
+                .job(job)
+                .nickname(memberProfile.getNickname().getValue())
+                .religion(getStringOrNull(memberProfile.getReligion()))
+                .build();
+    }
+
+    public static MemberContactResponse toMemberContactResponse(Member member) {
+        return new MemberContactResponse(member.getPhoneNumber(), member.getKakaoId(), member.getPrimaryContactType().toString());
+    }
+
+    private static String getStringOrNull(Enum e) {
+        return e == null ? null : e.toString();
     }
 }

@@ -1,10 +1,8 @@
-package atwoz.atwoz.member;
-
+package atwoz.atwoz.member.application;
 
 import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.auth.infra.JwtProvider;
 import atwoz.atwoz.common.enums.Role;
-import atwoz.atwoz.member.application.MemberAuthService;
 import atwoz.atwoz.member.application.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.application.exception.BannedMemberException;
 import atwoz.atwoz.member.domain.member.ActivityStatus;
@@ -26,8 +24,7 @@ import java.time.Instant;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-public class MemberLoginTest {
-
+public class MemberAuthServiceTest {
     private Member permanentStoppedMember;
     private Member member;
 

@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.infra;
 
+import atwoz.atwoz.member.domain.member.KakaoId;
 import atwoz.atwoz.member.domain.member.Member;
 import atwoz.atwoz.member.domain.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,18 @@ public class MemberRepositoryImpl implements MemberRepository {
         return memberJpaRepository.findByPhoneNumber(phoneNumber);
     }
 
+    @Override
     public Optional<Member> findById(Long id) {
         return memberJpaRepository.findById(id);
+    }
+
+    @Override
+    public boolean existsByPhoneNumberAndIdNot(String phoneNumber, Long id) {
+        return memberJpaRepository.existsByPhoneNumberAndIdNot(phoneNumber, id);
+    }
+
+    @Override
+    public boolean existsByKakaoIdAndIdNot(String kakaoId, Long id) {
+        return memberJpaRepository.existsByKakaoIdAndIdNot(KakaoId.from(kakaoId), id);
     }
 }

@@ -1,11 +1,12 @@
-package atwoz.atwoz.member;
+package atwoz.atwoz.member.application;
 
+import atwoz.atwoz.hobby.domain.Hobby;
 import atwoz.atwoz.hobby.domain.HobbyRepository;
+import atwoz.atwoz.job.domain.Job;
 import atwoz.atwoz.job.domain.JobRepository;
 import atwoz.atwoz.job.exception.JobNotFoundException;
-import atwoz.atwoz.member.application.MemberService;
+import atwoz.atwoz.member.application.dto.MemberProfileResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
-import atwoz.atwoz.member.application.dto.MemberProfileUpdateResponse;
 import atwoz.atwoz.member.application.exception.MemberNotFoundException;
 import atwoz.atwoz.member.domain.member.*;
 import atwoz.atwoz.member.domain.member.exception.InvalidHobbyIdException;
@@ -17,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -25,8 +27,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class MemberProfileUpdateTest {
-
+public class MemberProfileServiceTest {
     @Mock
     private MemberRepository memberRepository;
 
@@ -37,7 +38,7 @@ class MemberProfileUpdateTest {
     private JobRepository jobRepository;
 
     @InjectMocks
-    private MemberService memberService;
+    private MemberProfileService memberProfileService;
 
     @DisplayName("멤버를 찾을 수 없을 경우, 예외 발생")
     @Test
@@ -49,7 +50,7 @@ class MemberProfileUpdateTest {
         when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
 
         // Then
-        assertThatThrownBy(() -> memberService.updateMember(memberId, null)).isInstanceOf(MemberNotFoundException.class);
+        assertThatThrownBy(() -> memberProfileService.updateMember(memberId, null)).isInstanceOf(MemberNotFoundException.class);
     }
 
     @DisplayName("멤버가 존재하지만 Enum 값이 적절하지 않은 경우, 예외 발생")
@@ -69,10 +70,10 @@ class MemberProfileUpdateTest {
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
         when(jobRepository.existsById(jobId)).thenReturn(true);
-        when(hobbyRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(2L);
+        when(hobbyRepository.countAllByIdIsIn(hobbyIds)).thenReturn(2L);
 
         // When & Then
-        assertThatThrownBy(() -> memberService.updateMember(memberId, invalidRequest))
+        assertThatThrownBy(() -> memberProfileService.updateMember(memberId, invalidRequest))
                 .isInstanceOf(InvalidMemberEnumValueException.class);
     }
 
@@ -95,7 +96,7 @@ class MemberProfileUpdateTest {
         when(jobRepository.existsById(jobId)).thenReturn(false);
 
         // When & Then
-        assertThatThrownBy(() -> memberService.updateMember(memberId, invalidRequest))
+        assertThatThrownBy(() -> memberProfileService.updateMember(memberId, invalidRequest))
                 .isInstanceOf(JobNotFoundException.class);
     }
 
@@ -116,20 +117,25 @@ class MemberProfileUpdateTest {
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
         when(jobRepository.existsById(jobId)).thenReturn(true);
-        when(hobbyRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(1L);
+        when(hobbyRepository.countAllByIdIsIn(hobbyIds)).thenReturn(1L);
 
         // When & Then
-        assertThatThrownBy(() -> memberService.updateMember(memberId, invalidRequest))
+        assertThatThrownBy(() -> memberProfileService.updateMember(memberId, invalidRequest))
                 .isInstanceOf(InvalidHobbyIdException.class);
     }
 
     @DisplayName("멤버가 존재하는 경우, 성공")
     @Test
     void succeedsWhenMemberIsFound() {
+        /**
+         * TODO : 수정.
+         */
         // Given
         Long memberId = 1L;
         Long jobId = 2L;
+        Job job = Job.from("직업");
         Set<Long> hobbyIds = Set.of(1L, 2L);
+        List<Hobby> hobbies = List.of(Hobby.from("취미1"), Hobby.from("취미2"));
 
         MemberProfileUpdateRequest request = new MemberProfileUpdateRequest(
                 "nickname", "MALE", 20, 180,
@@ -139,23 +145,20 @@ class MemberProfileUpdateTest {
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
-        when(hobbyRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(2L);
+        when(hobbyRepository.countAllByIdIsIn(hobbyIds)).thenReturn(2L);
         when(jobRepository.existsById(jobId)).thenReturn(true);
 
         // When
-        MemberProfileUpdateResponse response = memberService.updateMember(memberId, request);
+        memberProfileService.updateMember(memberId, request);
 
         // Then
-        assertThat(response).isNotNull();
-        assertThat(response.memberProfile().getNickname().getValue()).isEqualTo("nickname");
-        assertThat(response.memberProfile().getGender()).isEqualTo(Gender.MALE);
-        assertThat(response.memberProfile().getJobId()).isEqualTo(2L);
-        assertThat(response.memberProfile().getAge()).isEqualTo(20);
-        assertThat(response.memberProfile().getHeight()).isEqualTo(180);
-        assertThat(response.memberProfile().getRegion()).isEqualTo(Region.DAEJEON);
-        assertThat(response.memberProfile().getReligion()).isEqualTo(Religion.BUDDHIST);
-
-        assertThat(response.memberProfile().getHobbyIds()).hasSize(2);
+        assertThat(existingMember.getProfile().getNickname().getValue()).isEqualTo("nickname");
+        assertThat(existingMember.getProfile().getGender()).isEqualTo(Gender.MALE);
+        assertThat(existingMember.getProfile().getJobId()).isEqualTo(jobId);
+        assertThat(existingMember.getProfile().getHobbyIds().size()).isEqualTo(hobbies.size());
+        assertThat(existingMember.getProfile().getHeight()).isEqualTo(180);
+        assertThat(existingMember.getProfile().getRegion()).isEqualTo(Region.DAEJEON);
+        assertThat(existingMember.getProfile().getReligion()).isEqualTo(Religion.BUDDHIST);
     }
 
     @DisplayName("멤버가 존재하는 경우, 특정 값에 null 이 포함되어 있더라도 성공.")
@@ -164,6 +167,8 @@ class MemberProfileUpdateTest {
         // Given
         Long memberId = 1L;
         Long jobId = 2L;
+        Job job = Job.from("직업");
+
         MemberProfileUpdateRequest request = new MemberProfileUpdateRequest(
                 "nickname", "MALE", 20, 180,
                 jobId, null, "OTHER", "ENFJ",
@@ -175,17 +180,15 @@ class MemberProfileUpdateTest {
         when(jobRepository.existsById(2L)).thenReturn(true);
 
         // When
-        MemberProfileUpdateResponse response = memberService.updateMember(memberId, request);
+        memberProfileService.updateMember(memberId, request);
 
         // Then
-        assertThat(response).isNotNull();
-        assertThat(response.memberProfile().getNickname().getValue()).isEqualTo("nickname");
-        assertThat(response.memberProfile().getGender()).isEqualTo(Gender.MALE);
-        assertThat(response.memberProfile().getJobId()).isEqualTo(2L);
-        assertThat(response.memberProfile().getAge()).isEqualTo(20);
-        assertThat(response.memberProfile().getHeight()).isEqualTo(180);
-        assertThat(response.memberProfile().getRegion()).isNull();
-        assertThat(response.memberProfile().getReligion()).isEqualTo(Religion.BUDDHIST);
-        assertThat(response.memberProfile().getHobbyIds()).isNull();
+        assertThat(existingMember.getProfile().getNickname().getValue()).isEqualTo("nickname");
+        assertThat(existingMember.getProfile().getGender()).isEqualTo(Gender.MALE);
+        assertThat(existingMember.getProfile().getJobId()).isEqualTo(jobId);
+        assertThat(existingMember.getProfile().getHobbyIds()).isNull();
+        assertThat(existingMember.getProfile().getHeight()).isEqualTo(180);
+        assertThat(existingMember.getProfile().getRegion()).isNull();
+        assertThat(existingMember.getProfile().getReligion()).isEqualTo(Religion.BUDDHIST);
     }
 }
