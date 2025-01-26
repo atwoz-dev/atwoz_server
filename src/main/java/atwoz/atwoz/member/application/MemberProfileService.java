@@ -1,6 +1,7 @@
 package atwoz.atwoz.member.application;
 
 import atwoz.atwoz.hobby.domain.HobbyRepository;
+import atwoz.atwoz.job.domain.Job;
 import atwoz.atwoz.job.domain.JobRepository;
 import atwoz.atwoz.job.exception.JobNotFoundException;
 import atwoz.atwoz.member.application.dto.MemberProfileResponse;
@@ -39,7 +40,7 @@ public class MemberProfileService {
     public MemberProfileResponse getProfile(Long memberId) {
         MemberProfile memberProfile = getMemberById(memberId).getProfile();
         List<String> hobbyNames = getHobbyNames(memberProfile.getHobbyIds());
-        String jobName = getJobName(memberProfile.getJobId());
+        String jobName = findJobName(memberProfile.getJobId());
         return MemberMapper.toMemberProfileResponse(memberProfile, hobbyNames, jobName);
     }
 
@@ -70,10 +71,7 @@ public class MemberProfileService {
                 .toList();
     }
 
-    private String getJobName(Long jobId) {
-        if (jobRepository.findById(jobId).isPresent()) {
-            return jobRepository.findById(jobId).get().getName();
-        }
-        return null;
+    private String findJobName(Long jobId) {
+        return jobRepository.findById(jobId).map(Job::getName).orElse(null);
     }
 }

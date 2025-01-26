@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class MemberKakaoIdTest {
+public class KakaoIdTest {
 
     @Test
     @DisplayName("길이가 3글자 미만인 경우, 유효하지 않습니다.")
