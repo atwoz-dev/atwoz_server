@@ -85,7 +85,7 @@ public class ProfileImageService {
     }
 
     private void checkPrimaryImageAlreadyExists(Long memberId, Boolean isPrimary) {
-        if (isPrimary && profileImageRepository.existsPrimaryImageByMemberId(memberId)) {
+        if (isPrimary && profileImageRepository.existsByMemberIdAndIsPrimary(memberId)) {
             throw new PrimaryImageAlreadyExistsException();
         }
     }

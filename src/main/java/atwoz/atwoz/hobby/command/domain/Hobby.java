@@ -1,7 +1,6 @@
 package atwoz.atwoz.hobby.command.domain;
 
 import atwoz.atwoz.common.entity.BaseEntity;
-import atwoz.atwoz.hobby.command.exception.InvalidHobbyNameException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

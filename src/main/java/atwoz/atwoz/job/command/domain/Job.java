@@ -1,7 +1,6 @@
 package atwoz.atwoz.job.command.domain;
 
 import atwoz.atwoz.common.entity.BaseEntity;
-import atwoz.atwoz.job.command.exception.InvalidJobNameException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

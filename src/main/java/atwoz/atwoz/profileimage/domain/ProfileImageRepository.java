@@ -5,7 +5,8 @@ import java.util.Optional;
 
 public interface ProfileImageRepository {
     ProfileImage save(ProfileImage profileImage);
-    boolean existsPrimaryImageByMemberId(Long memberId);
+
+    boolean existsByMemberIdAndIsPrimary(Long memberId);
     void saveAll(List<ProfileImage> profileImages);
     Optional<ProfileImage> findById(Long id);
     void delete(ProfileImage profileImage);
