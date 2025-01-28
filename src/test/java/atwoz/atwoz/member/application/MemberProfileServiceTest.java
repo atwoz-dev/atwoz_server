@@ -3,8 +3,8 @@ package atwoz.atwoz.member.application;
 import atwoz.atwoz.hobby.command.domain.Hobby;
 import atwoz.atwoz.hobby.command.domain.HobbyRepository;
 import atwoz.atwoz.job.command.domain.Job;
+import atwoz.atwoz.job.command.domain.JobNotFoundException;
 import atwoz.atwoz.job.command.domain.JobRepository;
-import atwoz.atwoz.job.exception.JobNotFoundException;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.application.exception.MemberNotFoundException;
 import atwoz.atwoz.member.domain.member.*;
@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class MemberProfileServiceTest {
+class MemberProfileServiceTest {
     @Mock
     private MemberRepository memberRepository;
 
@@ -69,7 +69,7 @@ public class MemberProfileServiceTest {
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
         when(jobRepository.existsById(jobId)).thenReturn(true);
-        when(hobbyRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(2L);
+        when(hobbyRepository.countAllByIdIsIn(hobbyIds)).thenReturn(2L);
 
         // When & Then
         assertThatThrownBy(() -> memberProfileService.updateMember(memberId, invalidRequest))
@@ -116,7 +116,7 @@ public class MemberProfileServiceTest {
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
         when(jobRepository.existsById(jobId)).thenReturn(true);
-        when(hobbyRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(1L);
+        when(hobbyRepository.countAllByIdIsIn(hobbyIds)).thenReturn(1L);
 
         // When & Then
         assertThatThrownBy(() -> memberProfileService.updateMember(memberId, invalidRequest))
@@ -144,7 +144,7 @@ public class MemberProfileServiceTest {
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
-        when(hobbyRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(2L);
+        when(hobbyRepository.countAllByIdIsIn(hobbyIds)).thenReturn(2L);
         when(jobRepository.existsById(jobId)).thenReturn(true);
 
         // When
