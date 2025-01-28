@@ -1,8 +1,7 @@
-package atwoz.atwoz.job.infra;
+package atwoz.atwoz.job.command.infra;
 
 import atwoz.atwoz.job.command.domain.Job;
 import atwoz.atwoz.job.command.domain.JobRepository;
-import atwoz.atwoz.job.command.infra.JobJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
