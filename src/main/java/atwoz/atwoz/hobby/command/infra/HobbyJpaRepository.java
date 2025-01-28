@@ -1,6 +1,6 @@
-package atwoz.atwoz.hobby.infra;
+package atwoz.atwoz.hobby.command.infra;
 
-import atwoz.atwoz.hobby.domain.Hobby;
+import atwoz.atwoz.hobby.command.domain.Hobby;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Set;

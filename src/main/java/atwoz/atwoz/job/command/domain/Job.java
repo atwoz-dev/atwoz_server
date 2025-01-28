@@ -1,7 +1,7 @@
-package atwoz.atwoz.hobby.domain;
+package atwoz.atwoz.job.command.domain;
 
 import atwoz.atwoz.common.entity.BaseEntity;
-import atwoz.atwoz.hobby.exception.InvalidHobbyNameException;
+import atwoz.atwoz.job.command.exception.InvalidJobNameException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,24 +9,24 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity
-@Table(name = "hobbies")
+@Table(name = "jobs")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Hobby extends BaseEntity {
+public class Job extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     @Getter
     private String name;
 
-    public static Hobby from(String name) {
-        return new Hobby(name);
+    public static Job from(String name) {
+        return new Job(name);
     }
 
-    private Hobby(@NonNull String name) {
+    private Job(@NonNull String name) {
         if (name.isBlank()) {
-            throw new InvalidHobbyNameException();
+            throw new InvalidJobNameException();
         }
         this.name = name;
     }

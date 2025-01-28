@@ -1,8 +1,8 @@
 package atwoz.atwoz.member;
 
-import atwoz.atwoz.hobby.domain.HobbyRepository;
-import atwoz.atwoz.job.domain.JobRepository;
-import atwoz.atwoz.job.exception.JobNotFoundException;
+import atwoz.atwoz.hobby.command.domain.HobbyCommandRepository;
+import atwoz.atwoz.job.command.domain.JobCommandRepository;
+import atwoz.atwoz.job.command.exception.JobNotFoundException;
 import atwoz.atwoz.member.application.MemberService;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateResponse;
@@ -31,10 +31,10 @@ class MemberProfileUpdateTest {
     private MemberRepository memberRepository;
 
     @Mock
-    private HobbyRepository hobbyRepository;
+    private HobbyCommandRepository hobbyCommandRepository;
 
     @Mock
-    private JobRepository jobRepository;
+    private JobCommandRepository jobCommandRepository;
 
     @InjectMocks
     private MemberService memberService;
@@ -68,8 +68,8 @@ class MemberProfileUpdateTest {
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
-        when(jobRepository.existsById(jobId)).thenReturn(true);
-        when(hobbyRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(2L);
+        when(jobCommandRepository.existsById(jobId)).thenReturn(true);
+        when(hobbyCommandRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(2L);
 
         // When & Then
         assertThatThrownBy(() -> memberService.updateMember(memberId, invalidRequest))
@@ -92,7 +92,7 @@ class MemberProfileUpdateTest {
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
-        when(jobRepository.existsById(jobId)).thenReturn(false);
+        when(jobCommandRepository.existsById(jobId)).thenReturn(false);
 
         // When & Then
         assertThatThrownBy(() -> memberService.updateMember(memberId, invalidRequest))
@@ -115,8 +115,8 @@ class MemberProfileUpdateTest {
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
-        when(jobRepository.existsById(jobId)).thenReturn(true);
-        when(hobbyRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(1L);
+        when(jobCommandRepository.existsById(jobId)).thenReturn(true);
+        when(hobbyCommandRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(1L);
 
         // When & Then
         assertThatThrownBy(() -> memberService.updateMember(memberId, invalidRequest))
@@ -139,8 +139,8 @@ class MemberProfileUpdateTest {
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
-        when(hobbyRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(2L);
-        when(jobRepository.existsById(jobId)).thenReturn(true);
+        when(hobbyCommandRepository.countHobbiesByIdIn(hobbyIds)).thenReturn(2L);
+        when(jobCommandRepository.existsById(jobId)).thenReturn(true);
 
         // When
         MemberProfileUpdateResponse response = memberService.updateMember(memberId, request);
@@ -172,7 +172,7 @@ class MemberProfileUpdateTest {
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
-        when(jobRepository.existsById(2L)).thenReturn(true);
+        when(jobCommandRepository.existsById(2L)).thenReturn(true);
 
         // When
         MemberProfileUpdateResponse response = memberService.updateMember(memberId, request);

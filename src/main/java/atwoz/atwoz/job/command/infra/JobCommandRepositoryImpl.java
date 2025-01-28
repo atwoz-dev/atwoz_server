@@ -1,12 +1,12 @@
-package atwoz.atwoz.job.infra;
+package atwoz.atwoz.job.command.infra;
 
-import atwoz.atwoz.job.domain.JobRepository;
+import atwoz.atwoz.job.command.domain.JobCommandRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class JobRepositoryImpl implements JobRepository {
+public class JobCommandRepositoryImpl implements JobCommandRepository {
 
     private final JobJpaRepository jobJpaRepository;
 
