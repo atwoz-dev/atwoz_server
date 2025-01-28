@@ -1,6 +1,6 @@
 package atwoz.atwoz.admin.command.infra;
 
-import atwoz.atwoz.admin.command.application.memberscreening.InterviewSubmitted;
+import atwoz.atwoz.admin.command.application.memberscreening.FirstInterviewSubmitted;
 import atwoz.atwoz.admin.command.application.memberscreening.MemberScreeningService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -15,8 +15,8 @@ public class InterviewSubmittedEventHandler {
     private final MemberScreeningService memberScreeningService;
 
     @Async
-    @TransactionalEventListener(value = InterviewSubmitted.class, phase = TransactionPhase.AFTER_COMMIT)
-    public void handle(InterviewSubmitted event) {
+    @TransactionalEventListener(value = FirstInterviewSubmitted.class, phase = TransactionPhase.AFTER_COMMIT)
+    public void handle(FirstInterviewSubmitted event) {
         memberScreeningService.create(event.getMemberId());
     }
 }
