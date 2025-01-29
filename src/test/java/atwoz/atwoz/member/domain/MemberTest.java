@@ -2,8 +2,8 @@ package atwoz.atwoz.member.domain;
 
 import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
-import atwoz.atwoz.member.domain.member.KakaoId;
-import atwoz.atwoz.member.domain.member.Member;
+import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
+import atwoz.atwoz.member.command.domain.member.Member;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

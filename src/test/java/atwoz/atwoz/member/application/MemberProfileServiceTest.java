@@ -5,12 +5,12 @@ import atwoz.atwoz.hobby.domain.HobbyRepository;
 import atwoz.atwoz.job.domain.Job;
 import atwoz.atwoz.job.domain.JobRepository;
 import atwoz.atwoz.job.exception.JobNotFoundException;
-import atwoz.atwoz.member.application.dto.MemberProfileResponse;
-import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
-import atwoz.atwoz.member.application.exception.MemberNotFoundException;
-import atwoz.atwoz.member.domain.member.*;
-import atwoz.atwoz.member.domain.member.exception.InvalidHobbyIdException;
-import atwoz.atwoz.member.domain.member.exception.InvalidMemberEnumValueException;
+import atwoz.atwoz.member.command.application.member.MemberProfileService;
+import atwoz.atwoz.member.command.application.member.dto.MemberProfileUpdateRequest;
+import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
+import atwoz.atwoz.member.command.domain.member.*;
+import atwoz.atwoz.member.command.domain.member.exception.InvalidHobbyIdException;
+import atwoz.atwoz.member.command.domain.member.exception.InvalidMemberEnumValueException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class MemberProfileServiceTest {
     @Mock
-    private MemberRepository memberRepository;
+    private MemberCommandRepository memberCommandRepository;
 
     @Mock
     private HobbyRepository hobbyRepository;
@@ -47,7 +47,7 @@ public class MemberProfileServiceTest {
         Long memberId = 1L;
 
         // When
-        when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.empty());
 
         // Then
         assertThatThrownBy(() -> memberProfileService.updateMember(memberId, null)).isInstanceOf(MemberNotFoundException.class);
@@ -68,7 +68,7 @@ public class MemberProfileServiceTest {
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
-        when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
+        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
         when(jobRepository.existsById(jobId)).thenReturn(true);
         when(hobbyRepository.countAllByIdIsIn(hobbyIds)).thenReturn(2L);
 
@@ -92,7 +92,7 @@ public class MemberProfileServiceTest {
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
-        when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
+        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
         when(jobRepository.existsById(jobId)).thenReturn(false);
 
         // When & Then
@@ -115,7 +115,7 @@ public class MemberProfileServiceTest {
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
-        when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
+        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
         when(jobRepository.existsById(jobId)).thenReturn(true);
         when(hobbyRepository.countAllByIdIsIn(hobbyIds)).thenReturn(1L);
 
@@ -144,7 +144,7 @@ public class MemberProfileServiceTest {
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
-        when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
+        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
         when(hobbyRepository.countAllByIdIsIn(hobbyIds)).thenReturn(2L);
         when(jobRepository.existsById(jobId)).thenReturn(true);
 
@@ -176,7 +176,7 @@ public class MemberProfileServiceTest {
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
-        when(memberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
+        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
         when(jobRepository.existsById(2L)).thenReturn(true);
 
         // When
