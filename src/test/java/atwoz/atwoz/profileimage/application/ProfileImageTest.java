@@ -1,12 +1,13 @@
 package atwoz.atwoz.profileimage.application;
 
-import atwoz.atwoz.profileimage.application.dto.ProfileImageUploadRequest;
-import atwoz.atwoz.profileimage.application.dto.ProfileImageUploadResponse;
-import atwoz.atwoz.profileimage.domain.ProfileImage;
-import atwoz.atwoz.profileimage.domain.ProfileImageRepository;
-import atwoz.atwoz.profileimage.domain.vo.ImageUrl;
-import atwoz.atwoz.profileimage.exception.*;
-import atwoz.atwoz.profileimage.infra.S3Uploader;
+import atwoz.atwoz.member.command.application.profileImage.ProfileImageService;
+import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadRequest;
+import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadResponse;
+import atwoz.atwoz.member.command.application.profileImage.exception.*;
+import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
+import atwoz.atwoz.member.command.domain.profileImage.ProfileImageCommandRepository;
+import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
+import atwoz.atwoz.member.command.infra.profileImage.S3Uploader;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -29,7 +30,7 @@ public class ProfileImageTest {
     private ProfileImageService profileImageService;
 
     @Mock
-    private ProfileImageRepository profileImageRepository;
+    private ProfileImageCommandRepository profileImageCommandRepository;
 
     @Mock
     private S3Uploader s3Uploader;
@@ -56,7 +57,7 @@ public class ProfileImageTest {
             MultipartFile imageFile = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "test".getBytes());
             Long memberId = 1L;
 
-            Mockito.when(profileImageRepository.existsByMemberIdAndIsPrimary(memberId)).thenReturn(true);
+            Mockito.when(profileImageCommandRepository.existsByMemberIdAndIsPrimary(memberId)).thenReturn(true);
             List<ProfileImageUploadRequest> request = List.of(new ProfileImageUploadRequest(imageFile, true, 1));
 
             // When & Then
@@ -157,7 +158,7 @@ public class ProfileImageTest {
             // Given
             Long profileImageId = 1L;
             Long memberId = 1L;
-            Mockito.when(profileImageRepository.findById(profileImageId)).thenReturn(Optional.empty());
+            Mockito.when(profileImageCommandRepository.findById(profileImageId)).thenReturn(Optional.empty());
 
             // When & Then
             Assertions.assertThatThrownBy(() -> profileImageService.delete(profileImageId, memberId)).isInstanceOf(ProfileImageNotFoundException.class);
@@ -175,7 +176,7 @@ public class ProfileImageTest {
                     .order(1)
                     .isPrimary(true)
                     .build();
-            Mockito.when(profileImageRepository.findById(profileImageId)).thenReturn(Optional.of(profileImage));
+            Mockito.when(profileImageCommandRepository.findById(profileImageId)).thenReturn(Optional.of(profileImage));
 
             // When & Then
             Assertions.assertThatThrownBy(() -> profileImageService.delete(profileImageId, memberId)).isInstanceOf(ProfileImageMemberIdMismatchException.class);
@@ -193,7 +194,7 @@ public class ProfileImageTest {
                     .order(1)
                     .isPrimary(true)
                     .build();
-            Mockito.when(profileImageRepository.findById(profileImageId))
+            Mockito.when(profileImageCommandRepository.findById(profileImageId))
                     .thenReturn(Optional.of(profileImage));
 
             // When & Then

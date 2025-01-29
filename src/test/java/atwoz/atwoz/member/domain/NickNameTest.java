@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.domain;
 
-import atwoz.atwoz.member.domain.member.Nickname;
-import atwoz.atwoz.member.domain.member.exception.InvalidNickNameException;
+import atwoz.atwoz.member.command.domain.member.vo.Nickname;
+import atwoz.atwoz.member.command.domain.member.exception.InvalidNickNameException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

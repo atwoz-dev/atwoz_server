@@ -1,7 +1,7 @@
 package atwoz.atwoz.profileimage.domain;
 
-import atwoz.atwoz.profileimage.domain.vo.ImageUrl;
-import atwoz.atwoz.profileimage.exception.InvalidImageUrlException;
+import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
+import atwoz.atwoz.member.command.domain.profileImage.exception.InvalidImageUrlException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
