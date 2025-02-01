@@ -5,9 +5,6 @@ import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
 
 public class MemberDtoMapper {
     public static MemberLoginResponse toMemberLoginResponse(MemberLoginServiceDto dto) {
-        return MemberLoginResponse.builder()
-                .accessToken(dto.accessToken())
-                .isProfileSettingNeeded(dto.isProfileSettingNeeded())
-                .build();
+        return new MemberLoginResponse(dto.accessToken(), dto.isProfileSettingNeeded());
     }
 }

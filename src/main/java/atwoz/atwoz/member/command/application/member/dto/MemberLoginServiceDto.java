@@ -1,8 +1,9 @@
 package atwoz.atwoz.member.command.application.member.dto;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 public record MemberLoginServiceDto(
         String accessToken,
         String refreshToken,
