@@ -7,7 +7,9 @@ import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.member.MemberContactService;
 import atwoz.atwoz.member.command.application.member.MemberProfileService;
 import atwoz.atwoz.member.command.application.member.dto.MemberProfileUpdateRequest;
+import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.query.member.MemberQueryRepository;
+import atwoz.atwoz.member.query.member.MemberQueryService;
 import atwoz.atwoz.member.query.member.dto.MemberContactResponse;
 import atwoz.atwoz.member.query.member.dto.MemberProfileResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
     private final MemberContactService memberContactService;
     private final MemberProfileService memberProfileService;
-    private final MemberQueryRepository memberQueryRepository;
+    private final MemberQueryService memberQueryService;
 
     @PutMapping("/profile")
     public ResponseEntity<BaseResponse<Void>> updateProfile(@RequestBody MemberProfileUpdateRequest request, @AuthPrincipal AuthContext authContext) {
@@ -30,7 +32,7 @@ public class MemberController {
 
     @GetMapping("/profile")
     public ResponseEntity<BaseResponse<MemberProfileResponse>> getMyProfile(@AuthPrincipal AuthContext authContext) {
-        MemberProfileResponse response = memberQueryRepository.getProfile(authContext.getId());
+        MemberProfileResponse response = memberQueryService.getProfile(authContext.getId());
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, response));
     }
 
@@ -42,7 +44,7 @@ public class MemberController {
 
     @GetMapping("/profile/contact")
     public ResponseEntity<BaseResponse<MemberContactResponse>> getMyContact(@AuthPrincipal AuthContext authContext) {
-        MemberContactResponse response = memberQueryRepository.getContacts(authContext.getId());
+        MemberContactResponse response = memberQueryService.getContacts(authContext.getId());
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, response));
     }
 

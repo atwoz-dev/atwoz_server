@@ -1,16 +1,12 @@
-package atwoz.atwoz.member.application;
+package atwoz.atwoz.member.command.application.member;
 
 import atwoz.atwoz.hobby.domain.HobbyRepository;
 import atwoz.atwoz.job.domain.JobRepository;
-import atwoz.atwoz.member.command.application.member.MemberContactService;
-import atwoz.atwoz.member.query.member.dto.MemberContactResponse;
 import atwoz.atwoz.member.command.application.member.exception.KakaoIdAlreadyExistsException;
-import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.application.member.exception.PhoneNumberAlreadyExistsException;
-import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
-import atwoz.atwoz.member.command.domain.member.PrimaryContactType;
+import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -38,44 +34,6 @@ public class MemberContactServiceTest {
 
     @InjectMocks
     private MemberContactService memberContactService;
-
-    @Nested
-    class GetTest {
-        @Test
-        @DisplayName("존재하지 않은 아이디의 경우 연락처 조회 실패.")
-        void isFailWhenMemberIsNotExists() {
-            // Given
-            String phoneNumber = "01012345678";
-            Member member = Member.fromPhoneNumber(phoneNumber);
-
-            Mockito.when(memberCommandRepository.findById(Mockito.any())).thenReturn(Optional.empty());
-
-            // When
-            Assertions.assertThatThrownBy(() -> memberContactService.getContacts(member.getId()))
-                    .isInstanceOf(MemberNotFoundException.class);
-        }
-
-        @Test
-        @DisplayName("아이디가 존재하는 경우 연락처 조회 성공.")
-        void isSuccessWhenMemberIsExists() {
-            // Given
-            String phoneNumber = "01012345678";
-            String kakaoId = "kakaoId";
-            Member member = Member.fromPhoneNumber(phoneNumber);
-            member.changePrimaryContactTypeToKakao(KakaoId.from(kakaoId));
-
-            Mockito.when(memberCommandRepository.findById(Mockito.any())).thenReturn(Optional.of(member));
-
-            // When
-            MemberContactResponse memberContactResponse = memberContactService.getContacts(member.getId());
-
-            // Then
-            Assertions.assertThat(memberContactResponse).isNotNull();
-            Assertions.assertThat(memberContactResponse.phoneNumber()).isEqualTo(phoneNumber);
-            Assertions.assertThat(memberContactResponse.kakaoId()).isEqualTo(kakaoId);
-            Assertions.assertThat(memberContactResponse.primaryContactType()).isEqualTo(PrimaryContactType.KAKAO.toString());
-        }
-    }
 
     @Nested
     class UpdateTest {

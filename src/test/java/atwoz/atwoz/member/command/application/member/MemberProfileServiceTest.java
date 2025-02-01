@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.application;
+package atwoz.atwoz.member.command.application.member;
 
 import atwoz.atwoz.hobby.domain.Hobby;
 import atwoz.atwoz.hobby.domain.HobbyRepository;

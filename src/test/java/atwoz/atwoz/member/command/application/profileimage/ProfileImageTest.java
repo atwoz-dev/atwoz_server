@@ -1,4 +1,4 @@
-package atwoz.atwoz.profileimage.application;
+package atwoz.atwoz.member.command.application.profileimage;
 
 import atwoz.atwoz.member.command.application.profileImage.ProfileImageService;
 import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadRequest;

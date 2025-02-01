@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.application;
+package atwoz.atwoz.member.command.application.member;
 
 import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.auth.infra.JwtProvider;

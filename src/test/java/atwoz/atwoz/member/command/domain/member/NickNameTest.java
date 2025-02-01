@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.domain;
+package atwoz.atwoz.member.command.domain.member;
 
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;
 import atwoz.atwoz.member.command.domain.member.exception.InvalidNickNameException;

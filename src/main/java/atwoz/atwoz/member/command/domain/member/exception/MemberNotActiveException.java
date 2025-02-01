@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.command.application.member.exception;
+package atwoz.atwoz.member.command.domain.member.exception;
 
 public class MemberNotActiveException extends RuntimeException {
     public MemberNotActiveException() {

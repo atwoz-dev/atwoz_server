@@ -1,15 +1,14 @@
 package atwoz.atwoz.member.query.member.dto;
 
-import lombok.Builder;
+import java.util.List;
 
-@Builder
 public record MemberProfileResponse(
         String nickname,
         Integer age,
         String gender,
         Integer height,
         String job,
-        Object hobbies,
+        List<String> hobbies,
         String mbti,
         String region,
         String smokingStatus,

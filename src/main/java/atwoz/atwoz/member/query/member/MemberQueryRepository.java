@@ -2,11 +2,13 @@ package atwoz.atwoz.member.query.member;
 
 import atwoz.atwoz.member.query.member.dto.MemberContactResponse;
 import atwoz.atwoz.member.query.member.dto.MemberProfileResponse;
+import atwoz.atwoz.member.query.member.dto.QMemberContactResponse;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static atwoz.atwoz.hobby.domain.QHobby.hobby;
 import static atwoz.atwoz.job.domain.QJob.job;
@@ -14,12 +16,12 @@ import static atwoz.atwoz.member.command.domain.member.QMember.member;
 import static com.querydsl.core.types.Projections.constructor;
 import static com.querydsl.core.types.dsl.Expressions.constant;
 
-@Component
+@Repository
 @RequiredArgsConstructor
 public class MemberQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public MemberProfileResponse getProfile(Long memberId) {
+    public Optional<MemberProfileResponse> findProfileByMemberId(Long memberId) {
         List<String> hobbyNames = findHobbyNames(memberId);
 
         MemberProfileResponse memberProfileResponse = queryFactory
@@ -44,21 +46,20 @@ public class MemberQueryRepository {
                 .fetchOne();
 
 
-        return memberProfileResponse;
+        return Optional.ofNullable(memberProfileResponse);
     }
 
-    public MemberContactResponse getContacts(Long memberId) {
+    public Optional<MemberContactResponse> findContactsByMemberId(Long memberId) {
         MemberContactResponse memberContactResponse = queryFactory
                 .from(member)
                 .where(member.id.eq(memberId))
-                .select(constructor(
-                        MemberContactResponse.class,
+                .select(new QMemberContactResponse(
                         member.phoneNumber,
                         member.kakaoId.value,
-                        member.primaryContactType
-                )).fetchOne();
+                        member.primaryContactType.stringValue())
+                ).fetchOne();
 
-        return memberContactResponse;
+        return Optional.ofNullable(memberContactResponse);
     }
 
     private List<String> findHobbyNames(Long memberId) {

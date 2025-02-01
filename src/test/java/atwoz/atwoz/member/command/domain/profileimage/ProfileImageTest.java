@@ -1,4 +1,4 @@
-package atwoz.atwoz.profileimage.domain;
+package atwoz.atwoz.member.command.domain.profileimage;
 
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
