@@ -1,16 +1,16 @@
 package atwoz.atwoz.member.command.domain.member;
 
+import atwoz.atwoz.member.command.domain.member.exception.InvalidNicknameException;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;
-import atwoz.atwoz.member.command.domain.member.exception.InvalidNickNameException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class NickNameTest {
+class NicknameTest {
 
     @Test
     @DisplayName("닉네임이 입력되지 않은 경우 유효하지 않습니다.")
-    void isInValidWhenNickNameIsNull() {
+    void isInValidWhenNicknameIsNull() {
         // Given
         String nickname = null;
 
@@ -21,24 +21,24 @@ class NickNameTest {
 
     @Test
     @DisplayName("닉네임이 공백으로 입력된 경우 유효하지 않습니다.")
-    void isInValidWhenNickNameIsEmpty() {
+    void isInValidWhenNicknameIsEmpty() {
         // Given
         String nickname = "";
 
         // When & Then
         Assertions.assertThatThrownBy(() -> Nickname.from(nickname))
-                .isInstanceOf(InvalidNickNameException.class);
+                .isInstanceOf(InvalidNicknameException.class);
     }
 
     @Test
     @DisplayName("닉네임에 특수문자가 포함된 경우 유효하지 않습니다.")
-    void isInvalidWhenNickNameIncludesSpecialCharacters() {
+    void isInvalidWhenNicknameIncludesSpecialCharacters() {
         // Given
         String nickname = "kong@@tae";
 
         // When & Then
         Assertions.assertThatThrownBy(() -> Nickname.from(nickname))
-                .isInstanceOf(InvalidNickNameException.class);
+                .isInstanceOf(InvalidNicknameException.class);
     }
 
     @Test
@@ -49,7 +49,7 @@ class NickNameTest {
 
         // When & Then
         Assertions.assertThatThrownBy(() -> Nickname.from(nickname))
-                .isInstanceOf(InvalidNickNameException.class);
+                .isInstanceOf(InvalidNicknameException.class);
     }
 
     @Test

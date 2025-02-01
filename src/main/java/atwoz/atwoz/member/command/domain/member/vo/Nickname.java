@@ -1,6 +1,6 @@
 package atwoz.atwoz.member.command.domain.member.vo;
 
-import atwoz.atwoz.member.command.domain.member.exception.InvalidNickNameException;
+import atwoz.atwoz.member.command.domain.member.exception.InvalidNicknameException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
@@ -22,7 +22,7 @@ public class Nickname {
 
     private Nickname(@NonNull String value) {
         if (!value.matches(NICKNAME_REGEX)) {
-            throw new InvalidNickNameException();
+            throw new InvalidNicknameException();
         }
         this.value = value;
     }

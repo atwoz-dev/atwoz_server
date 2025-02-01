@@ -57,11 +57,11 @@ public class MemberQueryServiceTest {
 
             // Then
             Assertions.assertThat(memberProfileResponse).isNotNull();
-            Assertions.assertThat(memberProfileResponse.age()).isEqualTo(savedMemberProfile.getAge());
-            Assertions.assertThat(memberProfileResponse.height()).isEqualTo(savedMemberProfile.getHeight());
-            Assertions.assertThat(memberProfileResponse.drinkingStatus()).isEqualTo(savedMemberProfile.getDrinkingStatus().toString());
-            Assertions.assertThat(memberProfileResponse.job()).isEqualTo(testData.getJob().getName());
-            Assertions.assertThat(memberProfileResponse.hobbies().size()).isEqualTo(savedMemberProfile.getHobbyIds().size());
+            Assertions.assertThat(memberProfileResponse.getAge()).isEqualTo(savedMemberProfile.getAge());
+            Assertions.assertThat(memberProfileResponse.getHeight()).isEqualTo(savedMemberProfile.getHeight());
+            Assertions.assertThat(memberProfileResponse.getDrinkingStatus()).isEqualTo(savedMemberProfile.getDrinkingStatus().toString());
+            Assertions.assertThat(memberProfileResponse.getJob()).isEqualTo(testData.getJob().getName());
+            Assertions.assertThat(memberProfileResponse.getHobbies().size()).isEqualTo(savedMemberProfile.getHobbyIds().size());
         }
     }
 
