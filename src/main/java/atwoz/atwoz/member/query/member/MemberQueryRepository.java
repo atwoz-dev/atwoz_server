@@ -8,11 +8,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
-import static atwoz.atwoz.hobby.domain.QHobby.hobby;
-import static atwoz.atwoz.job.domain.QJob.job;
+import static atwoz.atwoz.hobby.command.domain.QHobby.hobby;
+import static atwoz.atwoz.job.command.domain.QJob.job;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
@@ -62,14 +61,5 @@ public class MemberQueryRepository {
                 ).fetchOne();
 
         return Optional.ofNullable(memberContactResponse);
-    }
-
-    private List<String> findHobbyNames(Long memberId) {
-        return queryFactory
-                .select(hobby.name)
-                .from(member)
-                .join(hobby).on(hobby.id.in(member.profile.hobbyIds))
-                .where(member.id.eq(memberId))
-                .fetch();
     }
 }

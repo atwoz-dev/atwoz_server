@@ -1,4 +1,4 @@
-package atwoz.atwoz.hobby.exception;
+package atwoz.atwoz.hobby.command.domain;
 
 public class InvalidHobbyNameException extends RuntimeException {
     public InvalidHobbyNameException() {

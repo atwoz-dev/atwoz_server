@@ -1,7 +1,7 @@
-package atwoz.atwoz.hobby.infra;
+package atwoz.atwoz.hobby.command.infra;
 
-import atwoz.atwoz.hobby.domain.Hobby;
-import atwoz.atwoz.hobby.domain.HobbyRepository;
+import atwoz.atwoz.hobby.command.domain.Hobby;
+import atwoz.atwoz.hobby.command.domain.HobbyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +11,7 @@ import java.util.Set;
 @Repository
 @RequiredArgsConstructor
 public class HobbyRepositoryImpl implements HobbyRepository {
+
     private final HobbyJpaRepository hobbyJpaRepository;
 
     @Override

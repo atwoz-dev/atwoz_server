@@ -41,19 +41,19 @@ public class MemberQueryRepositoryTest {
         @DisplayName("존재하는 아이디인 경우, 프로필 조회 성공.")
         void isSuccessWhenMemberIsExists() {
             // Given
-            Long existMemberId = testData.getMember().getId();
+            Long existMemberId = testData.member().getId();
 
             // When
             MemberProfileResponse memberProfileResponse = memberQueryRepository.findProfileByMemberId(existMemberId).orElse(null);
 
-            MemberProfile savedMemberProfile = testData.getMember().getProfile();
+            MemberProfile savedMemberProfile = testData.member().getProfile();
 
             // Then
             Assertions.assertThat(memberProfileResponse).isNotNull();
             Assertions.assertThat(memberProfileResponse.getAge()).isEqualTo(savedMemberProfile.getAge());
             Assertions.assertThat(memberProfileResponse.getHeight()).isEqualTo(savedMemberProfile.getHeight());
             Assertions.assertThat(memberProfileResponse.getDrinkingStatus()).isEqualTo(savedMemberProfile.getDrinkingStatus().toString());
-            Assertions.assertThat(memberProfileResponse.getJob()).isEqualTo(testData.getJob().getName());
+            Assertions.assertThat(memberProfileResponse.getJob()).isEqualTo(testData.job().getName());
             Assertions.assertThat(memberProfileResponse.getHobbies().size()).isEqualTo(savedMemberProfile.getHobbyIds().size());
         }
     }
@@ -77,16 +77,16 @@ public class MemberQueryRepositoryTest {
         @DisplayName("아이디가 존재하는 경우 연락처 조회 성공.")
         void isSuccessWhenMemberIsExists() {
             // Given
-            Long existMemberId = testData.getMember().getId();
+            Long existMemberId = testData.member().getId();
 
             // When
             MemberContactResponse memberContactResponse = memberQueryRepository.findContactsByMemberId(existMemberId).orElse(null);
 
             // Then
             Assertions.assertThat(memberContactResponse).isNotNull();
-            Assertions.assertThat(memberContactResponse.getPhoneNumber()).isEqualTo(testData.getMember().getPhoneNumber());
-            Assertions.assertThat(memberContactResponse.getKakaoId()).isEqualTo(testData.getMember().getKakaoId());
-            Assertions.assertThat(memberContactResponse.getPrimaryContactType()).isEqualTo(testData.getMember().getPrimaryContactType().toString());
+            Assertions.assertThat(memberContactResponse.getPhoneNumber()).isEqualTo(testData.member().getPhoneNumber());
+            Assertions.assertThat(memberContactResponse.getKakaoId()).isEqualTo(testData.member().getKakaoId());
+            Assertions.assertThat(memberContactResponse.getPrimaryContactType()).isEqualTo(testData.member().getPrimaryContactType().toString());
         }
     }
 }

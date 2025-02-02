@@ -1,7 +1,8 @@
 package atwoz.atwoz.member.query;
 
-import atwoz.atwoz.hobby.domain.Hobby;
-import atwoz.atwoz.job.domain.Job;
+
+import atwoz.atwoz.hobby.command.domain.Hobby;
+import atwoz.atwoz.job.command.domain.Job;
 import atwoz.atwoz.member.command.domain.member.DrinkingStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
@@ -59,27 +60,6 @@ public class TestConfig {
         return new TestData(job, List.of(hobby1, hobby2), member);
     }
 
-    public static class TestData {
-        private final Job job;
-        private final List<Hobby> hobbies;
-        private final Member member;
-
-        public TestData(Job job, List<Hobby> hobbies, Member member) {
-            this.job = job;
-            this.hobbies = hobbies;
-            this.member = member;
-        }
-
-        public Job getJob() {
-            return job;
-        }
-
-        public List<Hobby> getHobbies() {
-            return hobbies;
-        }
-
-        public Member getMember() {
-            return member;
-        }
+    public record TestData(Job job, List<Hobby> hobbies, Member member) {
     }
 }

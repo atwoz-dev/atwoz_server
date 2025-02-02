@@ -19,14 +19,14 @@ public class KakaoId {
     @Column(name = "kakaoId")
     private String value;
 
-    public static KakaoId from(String kakaoId) {
-        return new KakaoId(kakaoId);
-    }
-
     private KakaoId(String value) {
         if (!value.matches(KAKAO_ID_REGEX)) {
             throw new InvalidKakaoIdException();
         }
         this.value = value;
+    }
+
+    public static KakaoId from(String kakaoId) {
+        return new KakaoId(kakaoId);
     }
 }

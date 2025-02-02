@@ -5,12 +5,12 @@ import atwoz.atwoz.admin.command.application.admin.dto.AdminLoginRequest;
 import atwoz.atwoz.admin.command.application.admin.dto.AdminLoginResponse;
 import atwoz.atwoz.admin.command.application.admin.dto.AdminSignupRequest;
 import atwoz.atwoz.admin.command.application.admin.dto.AdminSignupResponse;
-import atwoz.atwoz.admin.command.application.admin.exception.AdminNotFoundException;
 import atwoz.atwoz.admin.command.application.admin.exception.DuplicateEmailException;
 import atwoz.atwoz.admin.command.domain.admin.Admin;
-import atwoz.atwoz.admin.command.domain.admin.AdminRepository;
+import atwoz.atwoz.admin.command.domain.admin.AdminCommandRepository;
 import atwoz.atwoz.admin.command.domain.admin.Email;
 import atwoz.atwoz.admin.command.domain.admin.PasswordHasher;
+import atwoz.atwoz.admin.command.domain.admin.exception.AdminNotFoundException;
 import atwoz.atwoz.admin.command.domain.admin.exception.InvalidPasswordException;
 import atwoz.atwoz.auth.domain.TokenProvider;
 import atwoz.atwoz.auth.domain.TokenRepository;
@@ -36,7 +36,7 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 class AdminAuthServiceTest {
 
     @Mock
-    private AdminRepository adminRepository;
+    private AdminCommandRepository adminCommandRepository;
 
     @Mock
     private PasswordHasher passwordHasher;
@@ -62,9 +62,9 @@ class AdminAuthServiceTest {
             String rawPassword = "password123^^";
             AdminSignupRequest request = new AdminSignupRequest(email, rawPassword, "홍길동", "01012345678");
 
-            when(adminRepository.findByEmail(Email.from(email))).thenReturn(Optional.empty());
+            when(adminCommandRepository.findByEmail(Email.from(email))).thenReturn(Optional.empty());
             when(passwordHasher.hash(rawPassword)).thenReturn("hashed-password123^^");
-            when(adminRepository.save(any(Admin.class)))
+            when(adminCommandRepository.save(any(Admin.class)))
                     .thenAnswer(invocation -> {
                         Admin admin = invocation.getArgument(0, Admin.class);
                         setField(admin, "id", 1L);
@@ -79,9 +79,9 @@ class AdminAuthServiceTest {
             assertThat(response.id()).isEqualTo(1L);
             assertThat(response.email()).isEqualTo(email);
 
-            verify(adminRepository).findByEmail(Email.from(email));
+            verify(adminCommandRepository).findByEmail(Email.from(email));
             verify(passwordHasher).hash(rawPassword);
-            verify(adminRepository).save(any(Admin.class));
+            verify(adminCommandRepository).save(any(Admin.class));
         }
 
         @Test
@@ -91,12 +91,12 @@ class AdminAuthServiceTest {
             String email = "exists@example.com";
             AdminSignupRequest request = new AdminSignupRequest(email, "password123^^", "홍길동", "01012345678");
 
-            when(adminRepository.findByEmail(Email.from(email))).thenReturn(Optional.of(mock(Admin.class)));
+            when(adminCommandRepository.findByEmail(Email.from(email))).thenReturn(Optional.of(mock(Admin.class)));
 
             // when & then
             assertThatThrownBy(() -> adminAuthService.signup(request)).isInstanceOf(DuplicateEmailException.class);
 
-            verify(adminRepository, never()).save(any(Admin.class));
+            verify(adminCommandRepository, never()).save(any(Admin.class));
             verify(passwordHasher, never()).hash(anyString());
         }
 
@@ -108,14 +108,14 @@ class AdminAuthServiceTest {
             String invalidPassword = "short12^^";
             AdminSignupRequest request = new AdminSignupRequest(email, invalidPassword, "홍길동", "01012345678");
 
-            when(adminRepository.findByEmail(Email.from(email))).thenReturn(Optional.empty());
+            when(adminCommandRepository.findByEmail(Email.from(email))).thenReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() -> adminAuthService.signup(request)).isInstanceOf(InvalidPasswordException.class);
 
-            verify(adminRepository).findByEmail(Email.from(email));
+            verify(adminCommandRepository).findByEmail(Email.from(email));
             verify(passwordHasher, never()).hash(anyString());
-            verify(adminRepository, never()).save(any(Admin.class));
+            verify(adminCommandRepository, never()).save(any(Admin.class));
         }
     }
 
@@ -135,7 +135,7 @@ class AdminAuthServiceTest {
             AdminLoginRequest request = new AdminLoginRequest(email, requestPassword);
 
             when(admin.getId()).thenReturn(1L);
-            when(adminRepository.findByEmail(Email.from(email))).thenReturn(Optional.of(admin));
+            when(adminCommandRepository.findByEmail(Email.from(email))).thenReturn(Optional.of(admin));
 
             String newAccessToken = "accessToken";
             String newRefreshToken = "refreshToken";
@@ -162,7 +162,7 @@ class AdminAuthServiceTest {
             String requestPassword = "password123^^";
             AdminLoginRequest request = new AdminLoginRequest(email, requestPassword);
 
-            when(adminRepository.findByEmail(Email.from(email))).thenReturn(Optional.empty());
+            when(adminCommandRepository.findByEmail(Email.from(email))).thenReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() -> adminAuthService.login(request)).isInstanceOf(AdminNotFoundException.class);

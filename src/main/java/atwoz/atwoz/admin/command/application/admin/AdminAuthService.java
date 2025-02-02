@@ -4,9 +4,9 @@ import atwoz.atwoz.admin.command.application.admin.dto.AdminLoginRequest;
 import atwoz.atwoz.admin.command.application.admin.dto.AdminLoginResponse;
 import atwoz.atwoz.admin.command.application.admin.dto.AdminSignupRequest;
 import atwoz.atwoz.admin.command.application.admin.dto.AdminSignupResponse;
-import atwoz.atwoz.admin.command.application.admin.exception.AdminNotFoundException;
 import atwoz.atwoz.admin.command.application.admin.exception.DuplicateEmailException;
 import atwoz.atwoz.admin.command.domain.admin.*;
+import atwoz.atwoz.admin.command.domain.admin.exception.AdminNotFoundException;
 import atwoz.atwoz.auth.domain.TokenProvider;
 import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.common.enums.Role;
@@ -20,7 +20,7 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class AdminAuthService {
 
-    private final AdminRepository adminRepository;
+    private final AdminCommandRepository adminCommandRepository;
     private final PasswordHasher passwordHasher;
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;
@@ -50,18 +50,18 @@ public class AdminAuthService {
     }
 
     private void validateEmailUniqueness(String email) {
-        adminRepository.findByEmail(Email.from(email))
+        adminCommandRepository.findByEmail(Email.from(email))
                 .ifPresent(admin -> { throw new DuplicateEmailException(); });
     }
 
     private Admin createAdmin(AdminSignupRequest request) {
         Password password = Password.fromRaw(request.password(), passwordHasher);
         Admin newAdmin = AdminAuthMapper.toAdmin(request, password);
-        return adminRepository.save(newAdmin);
+        return adminCommandRepository.save(newAdmin);
     }
 
     private Admin findAdminByEmail(String email) {
-        return adminRepository.findByEmail(Email.from(email))
+        return adminCommandRepository.findByEmail(Email.from(email))
                 .orElseThrow(AdminNotFoundException::new);
     }
 

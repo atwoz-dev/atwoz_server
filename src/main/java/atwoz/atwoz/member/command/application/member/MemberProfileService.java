@@ -1,8 +1,8 @@
 package atwoz.atwoz.member.command.application.member;
 
-import atwoz.atwoz.hobby.domain.HobbyRepository;
-import atwoz.atwoz.job.domain.JobRepository;
-import atwoz.atwoz.job.exception.JobNotFoundException;
+import atwoz.atwoz.hobby.command.domain.HobbyRepository;
+import atwoz.atwoz.job.command.domain.JobNotFoundException;
+import atwoz.atwoz.job.command.domain.JobRepository;
 import atwoz.atwoz.member.command.application.member.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.domain.member.Member;

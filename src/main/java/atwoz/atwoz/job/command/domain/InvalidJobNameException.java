@@ -1,4 +1,4 @@
-package atwoz.atwoz.job.exception;
+package atwoz.atwoz.job.command.domain;
 
 public class InvalidJobNameException extends RuntimeException {
     public InvalidJobNameException() {
