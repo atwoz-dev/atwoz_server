@@ -44,7 +44,7 @@ public class MemberQueryRepository {
                                         member.profile.religion.stringValue()
                                 )
                         )
-                ).get(memberId); // 특정 memberId의 결과 가져오기
+                ).get(memberId);
 
 
         return Optional.ofNullable(memberProfileResponse);

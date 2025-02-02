@@ -5,5 +5,4 @@ public record MemberLoginServiceDto(
         String refreshToken,
         boolean isProfileSettingNeeded
 ) {
-
 }
