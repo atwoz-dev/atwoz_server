@@ -7,9 +7,7 @@ import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.member.MemberContactService;
 import atwoz.atwoz.member.command.application.member.MemberProfileService;
 import atwoz.atwoz.member.command.application.member.dto.MemberProfileUpdateRequest;
-import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.query.member.MemberQueryRepository;
-import atwoz.atwoz.member.query.member.MemberQueryService;
 import atwoz.atwoz.member.query.member.dto.MemberContactResponse;
 import atwoz.atwoz.member.query.member.dto.MemberProfileResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
     private final MemberContactService memberContactService;
     private final MemberProfileService memberProfileService;
-    private final MemberQueryService memberQueryService;
+    private final MemberQueryRepository memberQueryRepository;
 
     @PutMapping("/profile")
     public ResponseEntity<BaseResponse<Void>> updateProfile(@RequestBody MemberProfileUpdateRequest request, @AuthPrincipal AuthContext authContext) {
@@ -32,7 +30,10 @@ public class MemberController {
 
     @GetMapping("/profile")
     public ResponseEntity<BaseResponse<MemberProfileResponse>> getMyProfile(@AuthPrincipal AuthContext authContext) {
-        MemberProfileResponse response = memberQueryService.getProfile(authContext.getId());
+        MemberProfileResponse response = memberQueryRepository.findProfileByMemberId(authContext.getId()).orElse(null);
+        if (response == null) {
+            return ResponseEntity.ok(BaseResponse.from(StatusType.NOT_FOUND));
+        }
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, response));
     }
 
@@ -44,7 +45,10 @@ public class MemberController {
 
     @GetMapping("/profile/contact")
     public ResponseEntity<BaseResponse<MemberContactResponse>> getMyContact(@AuthPrincipal AuthContext authContext) {
-        MemberContactResponse response = memberQueryService.getContacts(authContext.getId());
+        MemberContactResponse response = memberQueryRepository.findContactsByMemberId(authContext.getId()).orElse(null);
+        if (response == null) {
+            return ResponseEntity.ok(BaseResponse.from(StatusType.NOT_FOUND));
+        }
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, response));
     }
 

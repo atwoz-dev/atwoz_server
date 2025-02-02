@@ -33,7 +33,7 @@ public class MemberAuthService {
         String refreshToken = tokenProvider.createRefreshToken(member.getId(), Role.MEMBER, Instant.now());
         tokenRepository.save(refreshToken);
 
-        return MemberLoginServiceDto.fromMemberWithToken(accessToken, refreshToken, member.isProfileSettingNeeded());
+        return new MemberLoginServiceDto(accessToken, refreshToken, member.isProfileSettingNeeded());
     }
 
     public void logout(String token) {

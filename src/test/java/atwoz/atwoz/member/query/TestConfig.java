@@ -5,6 +5,7 @@ import atwoz.atwoz.job.domain.Job;
 import atwoz.atwoz.member.command.domain.member.DrinkingStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
+import com.querydsl.jpa.JPQLTemplates;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -22,7 +23,7 @@ public class TestConfig {
 
     @Bean
     public JPAQueryFactory queryFactory() {
-        return new JPAQueryFactory(entityManager);
+        return new JPAQueryFactory(JPQLTemplates.DEFAULT, entityManager);
     }
 
     @Bean

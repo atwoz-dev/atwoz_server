@@ -1,12 +1,9 @@
 package atwoz.atwoz.member.query;
 
-import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.query.member.MemberQueryRepository;
-import atwoz.atwoz.member.query.member.MemberQueryService;
 import atwoz.atwoz.member.query.member.dto.MemberContactResponse;
 import atwoz.atwoz.member.query.member.dto.MemberProfileResponse;
-import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,14 +14,11 @@ import org.springframework.context.annotation.Import;
 
 
 @DataJpaTest
-@Import({TestConfig.class, MemberQueryService.class, MemberQueryRepository.class})
-public class MemberQueryServiceTest {
+@Import({TestConfig.class, MemberQueryRepository.class})
+public class MemberQueryRepositoryTest {
 
     @Autowired
-    private EntityManager entityManager;
-
-    @Autowired
-    private MemberQueryService memberQueryService;
+    private MemberQueryRepository memberQueryRepository;
 
     @Autowired
     private TestConfig.TestData testData;
@@ -34,14 +28,13 @@ public class MemberQueryServiceTest {
     class ProfileQueryTest {
 
         @Test
-        @DisplayName("존재하지 않은 아이디인 경우, 프로필 조회 실패.")
-        void isFailWhenMemberIsNotExists() {
+        @DisplayName("존재하지 않은 아이디인 경우, 프로필 빈 값 반환.")
+        void isNullWhenMemberIsNotExists() {
             // Given
             Long notExistMemberId = 10L;
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> memberQueryService.getProfile(notExistMemberId))
-                    .isInstanceOf(MemberNotFoundException.class);
+            Assertions.assertThat(memberQueryRepository.findContactsByMemberId(notExistMemberId).orElse(null)).isNull();
         }
 
         @Test
@@ -51,7 +44,7 @@ public class MemberQueryServiceTest {
             Long existMemberId = testData.getMember().getId();
 
             // When
-            MemberProfileResponse memberProfileResponse = memberQueryService.getProfile(existMemberId);
+            MemberProfileResponse memberProfileResponse = memberQueryRepository.findProfileByMemberId(existMemberId).orElse(null);
 
             MemberProfile savedMemberProfile = testData.getMember().getProfile();
 
@@ -76,8 +69,7 @@ public class MemberQueryServiceTest {
             Long notExistMemberId = 10L;
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> memberQueryService.getContacts(notExistMemberId))
-                    .isInstanceOf(MemberNotFoundException.class);
+            Assertions.assertThat(memberQueryRepository.findContactsByMemberId(notExistMemberId).orElse(null)).isNull();
         }
 
 
@@ -88,7 +80,7 @@ public class MemberQueryServiceTest {
             Long existMemberId = testData.getMember().getId();
 
             // When
-            MemberContactResponse memberContactResponse = memberQueryService.getContacts(existMemberId);
+            MemberContactResponse memberContactResponse = memberQueryRepository.findContactsByMemberId(existMemberId).orElse(null);
 
             // Then
             Assertions.assertThat(memberContactResponse).isNotNull();
