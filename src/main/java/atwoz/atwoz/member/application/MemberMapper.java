@@ -3,7 +3,6 @@ package atwoz.atwoz.member.application;
 import atwoz.atwoz.member.application.dto.MemberContactResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
-import atwoz.atwoz.member.application.dto.MemberProfileUpdateResponse;
 import atwoz.atwoz.member.domain.member.*;
 import lombok.NoArgsConstructor;
 

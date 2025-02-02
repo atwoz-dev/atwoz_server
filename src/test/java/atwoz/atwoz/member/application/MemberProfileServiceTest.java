@@ -1,11 +1,10 @@
 package atwoz.atwoz.member.application;
 
-import atwoz.atwoz.hobby.domain.Hobby;
-import atwoz.atwoz.hobby.domain.HobbyRepository;
-import atwoz.atwoz.job.domain.Job;
-import atwoz.atwoz.job.domain.JobRepository;
-import atwoz.atwoz.job.exception.JobNotFoundException;
-import atwoz.atwoz.member.application.dto.MemberProfileResponse;
+import atwoz.atwoz.hobby.command.domain.Hobby;
+import atwoz.atwoz.hobby.command.domain.HobbyRepository;
+import atwoz.atwoz.job.command.domain.Job;
+import atwoz.atwoz.job.command.domain.JobNotFoundException;
+import atwoz.atwoz.job.command.domain.JobRepository;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.application.exception.MemberNotFoundException;
 import atwoz.atwoz.member.domain.member.*;
@@ -27,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class MemberProfileServiceTest {
+class MemberProfileServiceTest {
     @Mock
     private MemberRepository memberRepository;
 

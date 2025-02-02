@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.application;
 
-import atwoz.atwoz.hobby.domain.HobbyRepository;
-import atwoz.atwoz.job.domain.JobRepository;
+import atwoz.atwoz.hobby.command.domain.HobbyRepository;
+import atwoz.atwoz.job.command.domain.JobRepository;
 import atwoz.atwoz.member.application.dto.MemberContactResponse;
 import atwoz.atwoz.member.application.exception.KakaoIdAlreadyExistsException;
 import atwoz.atwoz.member.application.exception.MemberNotFoundException;

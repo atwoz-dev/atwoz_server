@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.command.application.admin.exception;
+package atwoz.atwoz.admin.command.domain.admin.exception;
 
 public class AdminNotFoundException extends RuntimeException {
     public AdminNotFoundException() {

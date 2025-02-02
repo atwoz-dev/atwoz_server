@@ -1,9 +1,10 @@
 package atwoz.atwoz.member.application;
 
-import atwoz.atwoz.hobby.domain.HobbyRepository;
-import atwoz.atwoz.job.domain.Job;
-import atwoz.atwoz.job.domain.JobRepository;
-import atwoz.atwoz.job.exception.JobNotFoundException;
+import atwoz.atwoz.hobby.command.domain.Hobby;
+import atwoz.atwoz.hobby.command.domain.HobbyRepository;
+import atwoz.atwoz.job.command.domain.Job;
+import atwoz.atwoz.job.command.domain.JobNotFoundException;
+import atwoz.atwoz.job.command.domain.JobRepository;
 import atwoz.atwoz.member.application.dto.MemberProfileResponse;
 import atwoz.atwoz.member.application.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.application.exception.MemberNotFoundException;
@@ -67,7 +68,7 @@ public class MemberProfileService {
 
     private List<String> getHobbyNames(Set<Long> hobbyIds) {
         return hobbyRepository.findByIdIn(hobbyIds).stream()
-                .map(hobby -> hobby.getName())
+                .map(Hobby::getName)
                 .toList();
     }
 

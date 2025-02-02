@@ -1,7 +1,6 @@
-package atwoz.atwoz.hobby.domain;
+package atwoz.atwoz.hobby.command.domain;
 
 import atwoz.atwoz.common.entity.BaseEntity;
-import atwoz.atwoz.hobby.exception.InvalidHobbyNameException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,6 +14,7 @@ public class Hobby extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long id;
 
     @Getter
