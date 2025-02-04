@@ -1,7 +1,7 @@
 package atwoz.atwoz.heartusagepolicy.domain;
 
 import atwoz.atwoz.hearttransaction.domain.vo.TransactionType;
-import atwoz.atwoz.member.domain.member.Gender;
+import atwoz.atwoz.member.command.domain.member.Gender;
 
 import java.util.Optional;
 
