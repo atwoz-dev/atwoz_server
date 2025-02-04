@@ -32,7 +32,8 @@ public class MemberController {
     public ResponseEntity<BaseResponse<MemberProfileResponse>> getMyProfile(@AuthPrincipal AuthContext authContext) {
         MemberProfileResponse response = memberQueryRepository.findProfileByMemberId(authContext.getId()).orElse(null);
         if (response == null) {
-            return ResponseEntity.ok(BaseResponse.from(StatusType.NOT_FOUND));
+            return ResponseEntity.status(404)
+                    .body(BaseResponse.from(StatusType.NOT_FOUND));
         }
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, response));
     }
@@ -47,7 +48,8 @@ public class MemberController {
     public ResponseEntity<BaseResponse<MemberContactResponse>> getMyContact(@AuthPrincipal AuthContext authContext) {
         MemberContactResponse response = memberQueryRepository.findContactsByMemberId(authContext.getId()).orElse(null);
         if (response == null) {
-            return ResponseEntity.ok(BaseResponse.from(StatusType.NOT_FOUND));
+            return ResponseEntity.status(404)
+                    .body(BaseResponse.from(StatusType.NOT_FOUND));
         }
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, response));
     }
