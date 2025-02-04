@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.presentation;
+package atwoz.atwoz.admin.presentation.admin;
 
 import atwoz.atwoz.admin.command.application.admin.exception.AdminNotFoundException;
 import atwoz.atwoz.admin.command.application.admin.exception.DuplicateEmailException;

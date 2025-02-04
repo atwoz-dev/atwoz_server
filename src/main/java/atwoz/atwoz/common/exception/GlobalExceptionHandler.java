@@ -2,6 +2,7 @@ package atwoz.atwoz.common.exception;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
+import jakarta.persistence.OptimisticLockException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,14 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest()
                 .body(BaseResponse.of(StatusType.BAD_REQUEST, errors));
+    }
+
+    @ExceptionHandler(OptimisticLockException.class)
+    public ResponseEntity<BaseResponse<List<String>>> handleOptimisticLockException(OptimisticLockException e) {
+        log.warn("Optimistic lock exception", e);
+
+        return ResponseEntity.status(409)
+                .body(BaseResponse.from(StatusType.CONFLICT));
     }
 
     @ExceptionHandler(Exception.class)
