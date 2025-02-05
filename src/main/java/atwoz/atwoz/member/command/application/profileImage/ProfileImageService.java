@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.command.application.profileImage;
 
+import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUpdateRequest;
 import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadRequest;
 import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadResponse;
 import atwoz.atwoz.member.command.application.profileImage.exception.*;
@@ -13,8 +14,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +48,39 @@ public class ProfileImageService {
     }
 
     @Transactional
+    public List<ProfileImageUploadResponse> update(Long memberId, List<ProfileImageUpdateRequest> requestList) {
+        List<ProfileImage> profileImages = profileImageCommandRepository.findByMemberId(memberId);
+        Set<Long> updatedImageIds = new HashSet<>();
+
+
+        List<CompletableFuture<ProfileImage>> future = requestList.stream()
+                .map(request -> uploadImageAsync(request.getImage())
+                        .thenApply(imageUrl -> {
+                            if (request.getId() != null) {
+                                ProfileImage profileImage = findById(request.getId(), profileImages);
+                                profileImage.update(imageUrl, request.getOrder(), request.getIsPrimary());
+                                updatedImageIds.add(profileImage.getId());
+                                return profileImage;
+                            } else {
+                                return ProfileImage.builder()
+                                        .memberId(memberId)
+                                        .imageUrl(ImageUrl.from(imageUrl))
+                                        .order(request.getOrder())
+                                        .isPrimary(request.getIsPrimary())
+                                        .build();
+                            }
+                        })
+                ).toList();
+
+        validateUpdateRequests(requestList, profileImages);
+
+        List<ProfileImage> updatedProfileImages = gatherProfileImages(future);
+
+        profileImageCommandRepository.saveAll(updatedProfileImages.stream().filter(p -> p.getId() == null).toList());
+        return ProfileImageMapper.toList(Stream.concat(updatedProfileImages.stream(), profileImages.stream().filter(p -> !updatedImageIds.contains(p.getId()))).toList());
+    }
+
+    @Transactional
     public void delete(Long id, Long memberId) {
         ProfileImage profileImage = findByIdAndMemberId(id, memberId);
         s3Uploader.deleteFile(profileImage.getUrl());
@@ -52,6 +89,8 @@ public class ProfileImageService {
 
     @Async
     protected CompletableFuture<String> uploadImageAsync(MultipartFile image) {
+        if (image == null)
+            return null;
         String imageUrl = s3Uploader.uploadFile(image);
         return CompletableFuture.completedFuture(imageUrl);
     }
@@ -78,6 +117,20 @@ public class ProfileImageService {
         }
     }
 
+    private void validateUpdateRequests(List<ProfileImageUpdateRequest> requestList, List<ProfileImage> profileImageList) {
+        long primaryCount = requestList.stream().filter(ProfileImageUpdateRequest::getIsPrimary).count() +
+                profileImageList.stream().filter(ProfileImage::isPrimary).count();
+
+        if (primaryCount > 1) {
+            throw new InvalidPrimaryProfileImageCountException();
+        }
+
+        for (ProfileImageUpdateRequest request : requestList) {
+            if (request.getImage() != null)
+                validateImageType(request.getImage());
+        }
+    }
+
     private void validateImageType(MultipartFile file) {
         if (!file.getContentType().startsWith("image/")) {
             throw new InvalidImageFileException();
@@ -96,5 +149,14 @@ public class ProfileImageService {
             throw new ProfileImageMemberIdMismatchException();
         }
         return profileImage;
+    }
+
+    private ProfileImage findById(Long id, List<ProfileImage> profileImageList) {
+        for (ProfileImage profileImage : profileImageList) {
+            if (profileImage.getId().equals(id)) {
+                return profileImage;
+            }
+        }
+        throw new ProfileImageNotFoundException();
     }
 }
