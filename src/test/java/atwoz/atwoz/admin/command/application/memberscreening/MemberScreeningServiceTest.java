@@ -35,7 +35,7 @@ class MemberScreeningServiceTest {
     class Create {
 
         @Test
-        @DisplayName("멤버가 아직 존재하지 않는다면 MemberScreening을 생성하고 저장합니다.")
+        @DisplayName("멤버 심사가 아직 존재하지 않는다면 MemberScreening을 생성하고 저장합니다.")
         void createNewMemberScreeningWhenNotExists() {
             // given
             Long memberId = 100L;
@@ -75,7 +75,7 @@ class MemberScreeningServiceTest {
             // given
             Long memberId = 300L;
             Long adminId = 999L;
-            MemberScreeningApproveRequest request = new MemberScreeningApproveRequest(memberId, 1L);
+            MemberScreeningApproveRequest request = new MemberScreeningApproveRequest(memberId);
 
             MemberScreening memberScreening = mock(MemberScreening.class);
             when(memberScreeningCommandRepository.findByMemberId(memberId)).thenReturn(Optional.of(memberScreening));
@@ -94,7 +94,7 @@ class MemberScreeningServiceTest {
             // given
             Long memberId = 400L;
             Long adminId = 999L;
-            MemberScreeningApproveRequest request = new MemberScreeningApproveRequest(memberId, 1L);
+            MemberScreeningApproveRequest request = new MemberScreeningApproveRequest(memberId);
 
             when(memberScreeningCommandRepository.findByMemberId(memberId)).thenReturn(Optional.empty());
 
@@ -115,7 +115,7 @@ class MemberScreeningServiceTest {
             Long memberId = 500L;
             Long adminId = 999L;
             String rejectionReason = "STOLEN_IMAGE";
-            MemberScreeningRejectRequest request = new MemberScreeningRejectRequest(memberId, rejectionReason, 1L);
+            MemberScreeningRejectRequest request = new MemberScreeningRejectRequest(memberId, rejectionReason);
 
             MemberScreening memberScreening = mock(MemberScreening.class);
             when(memberScreeningCommandRepository.findByMemberId(memberId)).thenReturn(Optional.of(memberScreening));
@@ -134,7 +134,7 @@ class MemberScreeningServiceTest {
             // given
             Long memberId = 600L;
             Long adminId = 999L;
-            MemberScreeningRejectRequest request = new MemberScreeningRejectRequest(memberId, "STOLEN_IMAGE", 1L);
+            MemberScreeningRejectRequest request = new MemberScreeningRejectRequest(memberId, "STOLEN_IMAGE");
 
             when(memberScreeningCommandRepository.findByMemberId(memberId)).thenReturn(Optional.empty());
 
@@ -149,7 +149,7 @@ class MemberScreeningServiceTest {
             // given
             Long memberId = 600L;
             Long adminId = 999L;
-            MemberScreeningRejectRequest request = new MemberScreeningRejectRequest(memberId, "NON_EXISTING_REASON", 1L);
+            MemberScreeningRejectRequest request = new MemberScreeningRejectRequest(memberId, "NON_EXISTING_REASON");
 
             MemberScreening memberScreening = mock(MemberScreening.class);
             when(memberScreeningCommandRepository.findByMemberId(memberId)).thenReturn(Optional.of(memberScreening));
