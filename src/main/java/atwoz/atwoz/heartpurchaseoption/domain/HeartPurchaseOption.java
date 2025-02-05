@@ -4,6 +4,7 @@ import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
 import atwoz.atwoz.heartpurchaseoption.exception.InvalidHeartPurchaseOptionException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
@@ -13,6 +14,7 @@ import lombok.NonNull;
 public class HeartPurchaseOption extends SoftDeleteBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long id;
 
     @Embedded
@@ -23,8 +25,14 @@ public class HeartPurchaseOption extends SoftDeleteBaseEntity {
 
     private String name;
 
+    private String productId;
+
     public static HeartPurchaseOption of(HeartPurchaseAmount amount, Price price, String name) {
         return new HeartPurchaseOption(amount, price, name);
+    }
+
+    public Long getHeartAmount () {
+        return amount.getAmount();
     }
 
     private HeartPurchaseOption(HeartPurchaseAmount amount, Price price, String name) {
