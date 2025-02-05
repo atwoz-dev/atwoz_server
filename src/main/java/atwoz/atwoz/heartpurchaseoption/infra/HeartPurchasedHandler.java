@@ -17,7 +17,7 @@ public class HeartPurchasedHandler {
     @TransactionalEventListener(value = HeartPurchased.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handle(HeartPurchased event) {
         try {
-            heartPurchaseOptionService.processPurchase(event.getProductId(), event.getQuantity(), event.getMemberId());
+            heartPurchaseOptionService.grantPurchasedHearts(event.getProductId(), event.getQuantity(), event.getMemberId());
         } catch (Exception e) {
             // TODO: 하트 지급 실패시 보상 트랜잭션으로 로그를 남기고, 관리자에게 알림을 보낸다.
         }
