@@ -1,4 +1,4 @@
-package atwoz.atwoz.order.domain;
+package atwoz.atwoz.payment.domain;
 
 public enum PaymentMethod {
     GOOGLE_PLAY,
