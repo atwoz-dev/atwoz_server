@@ -1,6 +1,7 @@
 package atwoz.atwoz.heartpurchaseoption.domain;
 
 import atwoz.atwoz.heartpurchaseoption.exception.InvalidPriceException;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -12,6 +13,7 @@ public class Price {
     private static final Long MIN_PRICE = 1L;
 
     @Getter
+    @Column(name = "price")
     private final Long value;
 
     public static Price from(Long value) {
