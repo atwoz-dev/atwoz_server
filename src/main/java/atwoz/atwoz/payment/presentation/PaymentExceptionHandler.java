@@ -6,7 +6,6 @@ import atwoz.atwoz.payment.application.exception.InvalidOrderException;
 import atwoz.atwoz.payment.application.exception.OrderAlreadyExistsException;
 import atwoz.atwoz.payment.infra.exception.AppStoreClientException;
 import atwoz.atwoz.payment.infra.exception.InvalidTransactionIdException;
-import atwoz.atwoz.payment.infra.exception.PrivateKeyFileException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -45,14 +44,6 @@ public class PaymentExceptionHandler {
     @ExceptionHandler(AppStoreClientException.class)
     public ResponseEntity<BaseResponse<Void>> handleAppStoreClientException(AppStoreClientException e) {
         log.warn("앱스토어 서버와 통신 중 오류가 발생했습니다. {}", e.getMessage());
-
-        return ResponseEntity.status(500)
-                .body(BaseResponse.from(StatusType.INTERNAL_SERVER_ERROR));
-    }
-
-    @ExceptionHandler(PrivateKeyFileException.class)
-    public ResponseEntity<BaseResponse<Void>> handlePrivateKeyFileException(PrivateKeyFileException e) {
-        log.warn("private key file 에서 오류가 발생했습니다. {}", e.getMessage());
 
         return ResponseEntity.status(500)
                 .body(BaseResponse.from(StatusType.INTERNAL_SERVER_ERROR));

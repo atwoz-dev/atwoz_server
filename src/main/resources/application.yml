@@ -66,7 +66,7 @@ springdoc:
 payment:
   app-store:
     key-id: ${APP_STORE_KEY_ID:key-id}
-    private-key-file-path: ${APP_STORE_PRIVATE_KEY_FILE_PATH:private-key-file-path}
+    private-key-string: ${APP_STORE_PRIVATE_KEY_STRING:private-key-string}
     issuer-id: ${APP_STORE_ISSUER_ID:issuer-id}
     environment: ${APP_STORE_ENVIRONMENT:Sandbox}
     bundle-id: ${APP_STORE_BUNDLE_ID:bundle-id}

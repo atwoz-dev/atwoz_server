@@ -10,9 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("/payment")
+@RestController
+@RequestMapping("/payment")
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class PaymentController {
     private final AppStorePaymentService appStorePaymentService;
