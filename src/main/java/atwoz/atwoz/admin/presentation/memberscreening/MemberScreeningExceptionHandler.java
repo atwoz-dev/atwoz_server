@@ -1,6 +1,8 @@
-package atwoz.atwoz.admin.presentation;
+package atwoz.atwoz.admin.presentation.memberscreening;
 
+import atwoz.atwoz.admin.command.application.memberscreening.exception.InvalidRejectionReasonException;
 import atwoz.atwoz.admin.command.domain.memberscreening.CannotRejectApprovedScreeningException;
+import atwoz.atwoz.admin.command.domain.memberscreening.MemberScreeningNotFoundException;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -21,5 +23,21 @@ public class MemberScreeningExceptionHandler {
 
         return ResponseEntity.badRequest()
                 .body(BaseResponse.from(StatusType.CANNOT_BE_EDITED));
+    }
+
+    @ExceptionHandler(MemberScreeningNotFoundException.class)
+    public ResponseEntity<BaseResponse<Void>> handleMemberScreeningNotFoundException(MemberScreeningNotFoundException e) {
+        log.warn(e.getMessage());
+
+        return ResponseEntity.status(404)
+                .body(BaseResponse.from(StatusType.NOT_FOUND));
+    }
+
+    @ExceptionHandler(InvalidRejectionReasonException.class)
+    public ResponseEntity<BaseResponse<Void>> handleInvalidRejectionReasonException(InvalidRejectionReasonException e) {
+        log.warn(e.getMessage());
+
+        return ResponseEntity.badRequest()
+                .body(BaseResponse.from(StatusType.INVALID_INPUT_VALUE));
     }
 }
