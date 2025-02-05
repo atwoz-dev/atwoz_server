@@ -47,8 +47,13 @@ auth:
 
 payment:
   app-store:
-    key-id: ${APP_STORE_KEY_ID:key-id}
-    private-key-string: ${APP_STORE_PRIVATE_KEY_STRING:private-key-string}
-    issuer-id: ${APP_STORE_ISSUER_ID:issuer-id}
-    environment: ${APP_STORE_ENVIRONMENT:Sandbox}
-    bundle-id: ${APP_STORE_BUNDLE_ID:bundle-id}
+    key-id: "ABC123XYZ"
+    issuer-id: "1122334455"
+    private-key-string: |
+      -----BEGIN PRIVATE KEY-----
+      MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgVdL3X6MZz4GkPqsh
+      Q3d4v0wJx8aZGm1Kz3KP9vav/0GhRANCAASdp3qH2G3d/J5a+xJ4vLmHZ6QnpACl
+      YF5xTtPOl3qUv9ekYcAI2VzyLQdTFr87Dhwp1iF2Bvowxy1Fs48CcGZd
+      -----END PRIVATE KEY-----
+    bundle-id: "com.example.myapp"
+    environment: "Sandbox"
