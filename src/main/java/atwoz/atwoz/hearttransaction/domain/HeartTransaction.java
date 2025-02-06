@@ -20,10 +20,12 @@ public class HeartTransaction extends BaseEntity {
     @Id
     private Long id;
 
+    @Getter
     private Long memberId;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
+    @Getter
     private TransactionType transactionType;
 
     @Embedded
