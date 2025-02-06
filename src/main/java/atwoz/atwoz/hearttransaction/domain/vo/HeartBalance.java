@@ -19,6 +19,10 @@ public final class HeartBalance {
         return new HeartBalance();
     }
 
+    public static HeartBalance of(Long missionHeartBalance, Long purchaseHeartBalance) {
+        return new HeartBalance(purchaseHeartBalance, missionHeartBalance);
+    }
+
     public HeartBalance useHeart(HeartAmount heartChangeAmount) {
         validateUsingAmount(heartChangeAmount);
         validateBalanceIsUsable(heartChangeAmount);

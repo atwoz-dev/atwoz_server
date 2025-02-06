@@ -1,6 +1,8 @@
 package atwoz.atwoz.payment.application;
 
-import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.heartpurchaseoption.domain.HeartPurchaseOption;
+import atwoz.atwoz.heartpurchaseoption.domain.HeartPurchaseOptionRepository;
+import atwoz.atwoz.payment.application.exception.HeartPurchaseOptionNotFoundException;
 import atwoz.atwoz.payment.application.exception.InvalidOrderException;
 import atwoz.atwoz.payment.application.exception.OrderAlreadyExistsException;
 import atwoz.atwoz.payment.domain.Order;
@@ -15,8 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,11 +37,14 @@ public class AppStorePaymentServiceTest {
     @Mock
     private OrderCommandRepository orderCommandRepository;
 
+    @Mock
+    private HeartPurchaseOptionRepository heartPurchaseOptionRepository;
+
     @InjectMocks
     private AppStorePaymentService appStorePaymentService;
 
     @Test
-    @DisplayName("receiptToken이 검증되고, transactionInfo가 paid 상태이며, transactionId가 처리된 기록이 없는 경우 주문을 생성하고 이벤트를 발생시킨다.")
+    @DisplayName("receiptToken이 검증되고, transactionInfo가 paid 상태이며, transactionId가 처리된 기록이 없는 경우 주문을 생성하고 하트 구매 옵션을 구매한다.")
     public void successWhenReceiptTokenIsVerifiedAndTransactionInfoIsPaidAndTransactionIdIsNotExists() {
         // Given
         String receiptToken = "receiptToken";
@@ -62,19 +68,15 @@ public class AppStorePaymentServiceTest {
         when(orderCommandRepository.existsByTransactionIdAndPaymentMethod(transactionId, PaymentMethod.APP_STORE))
                 .thenReturn(false);
 
-        try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-            // When
-            appStorePaymentService.verifyReceipt(receiptToken, memberId);
+        HeartPurchaseOption heartPurchaseOption = mock(HeartPurchaseOption.class);
+        when(heartPurchaseOptionRepository.findByProductId(productId)).thenReturn(Optional.of(heartPurchaseOption));
 
-            // Then
-            verify(orderCommandRepository, times(1)).save(any(Order.class));
-            eventsMockedStatic.verify(() ->
-                    Events.raise(argThat((HeartPurchased event) ->
-                            event.getMemberId().equals(memberId) &&
-                                    event.getProductId().equals(productId) &&
-                                    event.getQuantity().equals(quantity)
-                    )), times(1));
-        }
+        // When
+        appStorePaymentService.verifyReceipt(receiptToken, memberId);
+
+        // Then
+        verify(orderCommandRepository).save(any(Order.class));
+        verify(heartPurchaseOption).purchase(memberId, quantity);
     }
 
     @Test
@@ -84,9 +86,6 @@ public class AppStorePaymentServiceTest {
         String receiptToken = "receiptToken";
         Long memberId = 1L;
         String signedTransactionInfo = "signedTransactionInfo";
-        String transactionId = "transactionId";
-        String productId = "productId";
-        Integer quantity = 1;
 
         TransactionInfoResponse transactionInfoResponse = new TransactionInfoResponse();
         transactionInfoResponse.signedTransactionInfo(signedTransactionInfo);
@@ -96,15 +95,12 @@ public class AppStorePaymentServiceTest {
         when(tokenParser.parseToTransactionInfo(signedTransactionInfo)).thenReturn(transactionInfo);
         when(transactionInfo.isRevoked()).thenReturn(true);
 
-        try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-            // When & Then
-            assertThatThrownBy(() ->
-                    appStorePaymentService.verifyReceipt(receiptToken, memberId))
-                    .isInstanceOf(InvalidOrderException.class);
+        // When & Then
+        assertThatThrownBy(() ->
+                appStorePaymentService.verifyReceipt(receiptToken, memberId))
+                .isInstanceOf(InvalidOrderException.class);
 
-            verify(orderCommandRepository, never()).save(any(Order.class));
-            eventsMockedStatic.verify(() -> Events.raise(any(HeartPurchased.class)), never());
-        }
+        verify(orderCommandRepository, never()).save(any(Order.class));
     }
 
     @Test
@@ -130,14 +126,42 @@ public class AppStorePaymentServiceTest {
         when(orderCommandRepository.existsByTransactionIdAndPaymentMethod(transactionId, PaymentMethod.APP_STORE))
                 .thenReturn(true);
 
-        try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-            // When & Then
-            assertThatThrownBy(() ->
-                    appStorePaymentService.verifyReceipt(receiptToken, memberId))
-                    .isInstanceOf(OrderAlreadyExistsException.class);
+        // When & Then
+        assertThatThrownBy(() ->
+                appStorePaymentService.verifyReceipt(receiptToken, memberId))
+                .isInstanceOf(OrderAlreadyExistsException.class);
+        verify(orderCommandRepository, never()).save(any(Order.class));
+    }
 
-            verify(orderCommandRepository, never()).save(any(Order.class));
-            eventsMockedStatic.verify(() -> Events.raise(any(HeartPurchased.class)), never());
-        }
+    @Test
+    @DisplayName("heartPurchaseOption이 없으면 예외를 던진다.")
+    public void throwExceptionWhenHeartPurchaseOptionIsNotExists() {
+        // Given
+        String receiptToken = "receiptToken";
+        Long memberId = 1L;
+        String signedTransactionInfo = "signedTransactionInfo";
+        String transactionId = "transactionId";
+        String productId = "productId";
+
+        TransactionInfoResponse transactionInfoResponse = new TransactionInfoResponse();
+        transactionInfoResponse.signedTransactionInfo(signedTransactionInfo);
+        when(appStoreClient.getTransactionInfo(receiptToken)).thenReturn(transactionInfoResponse);
+
+        TransactionInfo transactionInfo = mock(TransactionInfo.class);
+        when(tokenParser.parseToTransactionInfo(signedTransactionInfo)).thenReturn(transactionInfo);
+        when(transactionInfo.isRevoked()).thenReturn(false);
+        when(transactionInfo.getTransactionId()).thenReturn(transactionId);
+        when(transactionInfo.getProductId()).thenReturn(productId);
+
+        when(orderCommandRepository.existsByTransactionIdAndPaymentMethod(transactionId, PaymentMethod.APP_STORE))
+                .thenReturn(false);
+
+        when(heartPurchaseOptionRepository.findByProductId(productId)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() ->
+                appStorePaymentService.verifyReceipt(receiptToken, memberId))
+                .isInstanceOf(HeartPurchaseOptionNotFoundException.class);
+        verify(orderCommandRepository).save(any(Order.class));
     }
 }

@@ -1,13 +1,20 @@
 package atwoz.atwoz.member.command.domain.member;
 
+import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
+import atwoz.atwoz.member.command.domain.member.event.PurchaseHeartGained;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
-import atwoz.atwoz.member.command.domain.member.Member;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 public class MemberTest {
 
@@ -76,18 +83,29 @@ public class MemberTest {
     @DisplayName("gainPurchaseHeart 메서드 테스트")
     class GainPurchaseHeartMethodTest {
         @Test
-        @DisplayName("멤버가 하트를 구매하면 구매 하트 잔액이 증가합니다.")
+        @DisplayName("멤버가 하트를 구매하면 구매 하트 잔액이 증가하고 이벤트를 발행합니다.")
         void shouldIncreasePurchaseHeartBalanceWhenMemberPurchasesHeart() {
             // Given
             Member member = Member.fromPhoneNumber("01012345678");
+            Long memberId = 1L;
+            setField(member, "id", memberId);
             HeartAmount purchaseHeartAmount = HeartAmount.from(100L);
             HeartBalance expectedHeartBalance = HeartBalance.init().gainPurchaseHeart(purchaseHeartAmount);
 
-            // When
-            member.gainPurchaseHeart(purchaseHeartAmount);
+            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
+                // When
+                member.gainPurchaseHeart(purchaseHeartAmount);
 
-            // Then
-            Assertions.assertThat(member.getHeartBalance()).isEqualTo(expectedHeartBalance);
+                // Then
+                Assertions.assertThat(member.getHeartBalance()).isEqualTo(expectedHeartBalance);
+                eventsMockedStatic.verify(() ->
+                        Events.raise(argThat((PurchaseHeartGained event) ->
+                                event.getMemberId().equals(memberId) &&
+                                        event.getAmount().equals(purchaseHeartAmount.getAmount()) &&
+                                        event.getMissionHeartBalance().equals(expectedHeartBalance.getMissionHeartBalance()) &&
+                                        event.getPurchaseHeartBalance().equals(expectedHeartBalance.getPurchaseHeartBalance())
+                        )), times(1));
+            }
         }
     }
 
