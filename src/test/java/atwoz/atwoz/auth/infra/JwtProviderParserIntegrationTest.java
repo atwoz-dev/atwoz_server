@@ -5,9 +5,11 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -18,6 +20,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 class JwtProviderParserIntegrationTest {
+
+    @MockBean
+    private RedissonClient redissonClient;
 
     @Value("${jwt.access-token.expiration}")
     private long accessTokenExpiration;
