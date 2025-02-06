@@ -6,9 +6,11 @@ import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.member.command.application.member.MemberAuthService;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.command.application.member.exception.BannedMemberException;
+import atwoz.atwoz.member.command.application.member.exception.MemberLoginConflict;
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
+import atwoz.atwoz.member.command.infra.member.MemberLockRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,6 +40,9 @@ public class MemberAuthServiceTest {
     @Mock
     private TokenRepository tokenRepository;
 
+    @Mock
+    private MemberLockRepository memberLockRepository;
+
     @InjectMocks
     private MemberAuthService memberAuthService;
 
@@ -59,6 +64,7 @@ public class MemberAuthServiceTest {
         // Given
         String phoneNumber = "01012345678";
 
+        Mockito.when(memberLockRepository.getLockForLogin(phoneNumber)).thenReturn(true);
         Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber))
                 .thenReturn(Optional.of(permanentStoppedMember));
 
@@ -75,6 +81,7 @@ public class MemberAuthServiceTest {
         try (MockedStatic<Instant> mockedInstant = Mockito.mockStatic(Instant.class)) {
             mockedInstant.when(Instant::now).thenReturn(fixedInstant);
 
+            Mockito.when(memberLockRepository.getLockForLogin(phoneNumber)).thenReturn(true);
             Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.of(member));
             Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
                     .thenReturn("accessToken");
@@ -98,6 +105,7 @@ public class MemberAuthServiceTest {
         try (MockedStatic<Instant> mockedInstant = Mockito.mockStatic(Instant.class)) {
             mockedInstant.when(Instant::now).thenReturn(fixedInstant);
 
+            Mockito.when(memberLockRepository.getLockForLogin(phoneNumber)).thenReturn(true);
             Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
             Mockito.when(memberCommandRepository.save(Mockito.any(Member.class))).thenReturn(member);
             Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
@@ -111,5 +119,17 @@ public class MemberAuthServiceTest {
             Assertions.assertThat(response.accessToken()).isEqualTo("accessToken");
             Assertions.assertThat(response.isProfileSettingNeeded()).isTrue();
         }
+    }
+
+    @Test
+    @DisplayName("동시 로그인으로 인해, 락을 획득하지 못하는 경우 예외 반환")
+    void shouldThrowExceptionWhenMemberCantGetLock() {
+        // Given
+        String phoneNumber = "01012345678";
+
+        Mockito.when(memberLockRepository.getLockForLogin(phoneNumber)).thenReturn(false);
+
+        // When & Then
+        Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber)).isInstanceOf(MemberLoginConflict.class);
     }
 }
