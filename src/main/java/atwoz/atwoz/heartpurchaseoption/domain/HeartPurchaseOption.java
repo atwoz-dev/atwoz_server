@@ -33,7 +33,7 @@ public class HeartPurchaseOption extends SoftDeleteBaseEntity {
         return new HeartPurchaseOption(amount, price, name);
     }
 
-    public Long getHeartAmount () {
+    public Long getHeartAmount() {
         return amount.getAmount();
     }
 
