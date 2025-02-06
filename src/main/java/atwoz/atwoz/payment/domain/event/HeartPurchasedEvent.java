@@ -5,15 +5,15 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public class HeartPurchased extends Event {
+public class HeartPurchasedEvent extends Event {
     private final Long memberId;
     private final Long amount;
 
-    public static HeartPurchased of(Long memberId, Long amount) {
-        return new HeartPurchased(memberId, amount);
+    public static HeartPurchasedEvent of(Long memberId, Long amount) {
+        return new HeartPurchasedEvent(memberId, amount);
     }
 
-    private HeartPurchased(@NonNull Long memberId, @NonNull Long amount) {
+    private HeartPurchasedEvent(@NonNull Long memberId, @NonNull Long amount) {
         this.memberId = memberId;
         this.amount = amount;
     }

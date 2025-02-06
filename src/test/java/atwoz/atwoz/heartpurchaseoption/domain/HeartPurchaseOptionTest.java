@@ -2,7 +2,7 @@ package atwoz.atwoz.heartpurchaseoption.domain;
 
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.heartpurchaseoption.exception.InvalidHeartPurchaseOptionException;
-import atwoz.atwoz.payment.domain.event.HeartPurchased;
+import atwoz.atwoz.payment.domain.event.HeartPurchasedEvent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -90,7 +90,7 @@ class HeartPurchaseOptionTest {
 
             // Then
             eventsMockedStatic.verify(() ->
-                    Events.raise(argThat((HeartPurchased event) ->
+                    Events.raise(argThat((HeartPurchasedEvent event) ->
                             event.getMemberId().equals(memberId) &&
                                     event.getAmount().equals(expectedAmount)
                     )), times(1));

@@ -3,7 +3,7 @@ package atwoz.atwoz.member.command.domain.member;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
-import atwoz.atwoz.member.command.domain.member.event.PurchaseHeartGained;
+import atwoz.atwoz.member.command.domain.member.event.PurchaseHeartGainedEvent;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -99,7 +99,7 @@ public class MemberTest {
                 // Then
                 Assertions.assertThat(member.getHeartBalance()).isEqualTo(expectedHeartBalance);
                 eventsMockedStatic.verify(() ->
-                        Events.raise(argThat((PurchaseHeartGained event) ->
+                        Events.raise(argThat((PurchaseHeartGainedEvent event) ->
                                 event.getMemberId().equals(memberId) &&
                                         event.getAmount().equals(purchaseHeartAmount.getAmount()) &&
                                         event.getMissionHeartBalance().equals(expectedHeartBalance.getMissionHeartBalance()) &&
