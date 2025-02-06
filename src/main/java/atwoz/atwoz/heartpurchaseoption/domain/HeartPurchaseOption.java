@@ -1,7 +1,9 @@
 package atwoz.atwoz.heartpurchaseoption.domain;
 
 import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
+import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.heartpurchaseoption.exception.InvalidHeartPurchaseOptionException;
+import atwoz.atwoz.payment.domain.event.HeartPurchased;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,6 +35,11 @@ public class HeartPurchaseOption extends SoftDeleteBaseEntity {
 
     public Long getHeartAmount () {
         return amount.getAmount();
+    }
+
+    public void purchase(@NonNull Long memberId, @NonNull Integer quantity) {
+        Long heartAmount = getHeartAmount() * quantity;
+        Events.raise(HeartPurchased.of(memberId, heartAmount));
     }
 
     private HeartPurchaseOption(HeartPurchaseAmount amount, Price price, String name) {
