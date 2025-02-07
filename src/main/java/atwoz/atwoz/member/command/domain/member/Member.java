@@ -6,6 +6,7 @@ import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
 import atwoz.atwoz.member.command.domain.member.exception.MemberNotActiveException;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
+import atwoz.atwoz.member.command.domain.member.vo.PhoneNumber;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,8 +22,8 @@ public class Member extends SoftDeleteBaseEntity {
     @Getter
     private Long id;
 
-    @Getter
-    private String phoneNumber;
+    @Embedded
+    private PhoneNumber phoneNumber;
 
     @Embedded
     private KakaoId kakaoId;
@@ -49,7 +50,7 @@ public class Member extends SoftDeleteBaseEntity {
 
     public static Member fromPhoneNumber(@NonNull String phoneNumber) {
         return Member.builder()
-                .phoneNumber(phoneNumber)
+                .phoneNumber(PhoneNumber.from(phoneNumber))
                 .activityStatus(ActivityStatus.ACTIVE)
                 .heartBalance(HeartBalance.init())
                 .isVip(false)
@@ -71,6 +72,10 @@ public class Member extends SoftDeleteBaseEntity {
         return kakaoId.getValue();
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber.getValue();
+    }
+
     public void changeToDormant() {
         if (!isActive()) {
             throw new MemberNotActiveException();
@@ -84,7 +89,7 @@ public class Member extends SoftDeleteBaseEntity {
     }
 
     public void changePrimaryContactTypeToPhoneNumber(@NonNull String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+        this.phoneNumber = PhoneNumber.from(phoneNumber);
         this.primaryContactType = PrimaryContactType.PHONE_NUMBER;
     }
 

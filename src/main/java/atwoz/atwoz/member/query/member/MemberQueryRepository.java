@@ -55,7 +55,7 @@ public class MemberQueryRepository {
                 .from(member)
                 .where(member.id.eq(memberId))
                 .select(new QMemberContactResponse(
-                        member.phoneNumber,
+                        member.phoneNumber.value,
                         member.kakaoId.value,
                         member.primaryContactType.stringValue())
                 ).fetchOne();
