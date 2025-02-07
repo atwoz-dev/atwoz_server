@@ -15,7 +15,7 @@ public class PhoneNumber {
     private static final String PHONE_NUMBER_REGEX = "^010\\d{8}$";
     private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile(PHONE_NUMBER_REGEX);
 
-    @Column(name = "phone_number")
+    @Column(name = "phone_number", unique = true)
     private final String value;
 
     public static PhoneNumber from(String value) {
