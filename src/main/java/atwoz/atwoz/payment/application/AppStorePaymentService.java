@@ -12,6 +12,7 @@ import atwoz.atwoz.payment.infra.TransactionInfo;
 import com.apple.itunes.storekit.model.TransactionInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class AppStorePaymentService {
     private final OrderCommandRepository orderCommandRepository;
     private final HeartPurchaseOptionRepository heartPurchaseOptionRepository;
 
+    @Transactional
     public void verifyReceipt(String receiptToken, Long memberId) {
         TransactionInfo transactionInfo = getTransactionInfo(receiptToken);
         verifyTransactionInfo(transactionInfo);
