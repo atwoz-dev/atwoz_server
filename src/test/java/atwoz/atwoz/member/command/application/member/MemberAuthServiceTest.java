@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Instant;
@@ -122,7 +123,7 @@ public class MemberAuthServiceTest {
 
         // When
         Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
-        Mockito.when(memberCommandRepository.save(Mockito.any(Member.class))).thenThrow(ConstraintViolationException.class);
+        Mockito.when(memberCommandRepository.save(Mockito.any(Member.class))).thenThrow(DataIntegrityViolationException.class);
 
         // When & Then
         Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber)).isInstanceOf(MemberLoginConflictException.class);
