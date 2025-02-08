@@ -14,4 +14,5 @@ public interface MemberCommandJpaRepository extends JpaRepository<Member, Long> 
     boolean existsByPhoneNumberAndIdNot(String phoneNumber, Long id);
 
     boolean existsByKakaoIdAndIdNot(KakaoId kakaoId, Long id);
+
 }

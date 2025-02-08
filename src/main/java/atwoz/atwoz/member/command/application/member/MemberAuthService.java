@@ -11,6 +11,7 @@ import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -46,7 +47,8 @@ public class MemberAuthService {
         return memberCommandRepository.findByPhoneNumber(phoneNumber).orElseGet(() -> create(phoneNumber));
     }
 
-    private Member create(String phoneNumber) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    protected Member create(String phoneNumber) {
         try {
             return memberCommandRepository.save(Member.fromPhoneNumber(phoneNumber));
         } catch (ConstraintViolationException e) {
