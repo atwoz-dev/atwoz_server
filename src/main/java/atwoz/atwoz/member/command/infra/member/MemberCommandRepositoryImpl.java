@@ -1,8 +1,8 @@
 package atwoz.atwoz.member.command.infra.member;
 
-import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
+import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -37,10 +37,5 @@ public class MemberCommandRepositoryImpl implements MemberCommandRepository {
     @Override
     public boolean existsByKakaoIdAndIdNot(String kakaoId, Long id) {
         return memberCommandJpaRepository.existsByKakaoIdAndIdNot(KakaoId.from(kakaoId), id);
-    }
-
-    @Override
-    public void flush() {
-        memberCommandJpaRepository.flush();
     }
 }
