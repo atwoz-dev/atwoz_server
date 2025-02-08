@@ -10,6 +10,7 @@ import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +52,7 @@ public class MemberAuthService {
     protected Member create(String phoneNumber) {
         try {
             return memberCommandRepository.save(Member.fromPhoneNumber(phoneNumber));
-        } catch (ConstraintViolationException e) {
+        } catch (DataIntegrityViolationException e) {
             throw new MemberLoginConflictException(phoneNumber);
         }
     }
