@@ -1,8 +1,9 @@
 package atwoz.atwoz.member.command.infra.member;
 
-import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
+import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
+import atwoz.atwoz.member.command.domain.member.vo.PhoneNumber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -21,7 +22,7 @@ public class MemberCommandRepositoryImpl implements MemberCommandRepository {
 
     @Override
     public Optional<Member> findByPhoneNumber(String phoneNumber) {
-        return memberCommandJpaRepository.findByPhoneNumber(phoneNumber);
+        return memberCommandJpaRepository.findByPhoneNumber(PhoneNumber.from(phoneNumber));
     }
 
     @Override
@@ -31,7 +32,7 @@ public class MemberCommandRepositoryImpl implements MemberCommandRepository {
 
     @Override
     public boolean existsByPhoneNumberAndIdNot(String phoneNumber, Long id) {
-        return memberCommandJpaRepository.existsByPhoneNumberAndIdNot(phoneNumber, id);
+        return memberCommandJpaRepository.existsByPhoneNumberAndIdNot(PhoneNumber.from(phoneNumber), id);
     }
 
     @Override
