@@ -1,4 +1,4 @@
-package atwoz.atwoz.job.command.domain;
+package atwoz.atwoz.admin.command.domain.job;
 
 public class JobNotFoundException extends RuntimeException {
     public JobNotFoundException() {

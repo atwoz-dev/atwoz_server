@@ -1,7 +1,5 @@
-package atwoz.atwoz.hobby.domain;
+package atwoz.atwoz.admin.command.domain.hobby;
 
-import atwoz.atwoz.hobby.command.domain.Hobby;
-import atwoz.atwoz.hobby.command.domain.InvalidHobbyNameException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-import static atwoz.atwoz.hobby.command.domain.QHobby.hobby;
-import static atwoz.atwoz.job.command.domain.QJob.job;
+import static atwoz.atwoz.admin.command.domain.hobby.QHobby.hobby;
+import static atwoz.atwoz.admin.command.domain.job.QJob.job;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;

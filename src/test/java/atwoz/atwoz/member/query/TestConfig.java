@@ -1,8 +1,8 @@
 package atwoz.atwoz.member.query;
 
 
-import atwoz.atwoz.hobby.command.domain.Hobby;
-import atwoz.atwoz.job.command.domain.Job;
+import atwoz.atwoz.admin.command.domain.hobby.Hobby;
+import atwoz.atwoz.admin.command.domain.job.Job;
 import atwoz.atwoz.member.command.domain.member.DrinkingStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
