@@ -6,8 +6,9 @@ import atwoz.atwoz.heartpurchaseoption.domain.HeartPurchaseOptionRepository;
 import atwoz.atwoz.payment.application.exception.InvalidOrderException;
 import atwoz.atwoz.payment.application.exception.OrderAlreadyExistsException;
 import atwoz.atwoz.payment.domain.*;
-import atwoz.atwoz.payment.infra.AppStoreClientImpl;
+import atwoz.atwoz.payment.infra.AppStoreClient;
 import atwoz.atwoz.payment.domain.OrderCommandRepository;
+import atwoz.atwoz.payment.infra.TransactionInfo;
 import com.apple.itunes.storekit.model.TransactionInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AppStorePaymentService {
-    private final AppStoreClientImpl appStoreClient;
+    private final AppStoreClient appStoreClient;
     private final TokenParser tokenParser;
     private final OrderCommandRepository orderCommandRepository;
     private final HeartPurchaseOptionRepository heartPurchaseOptionRepository;

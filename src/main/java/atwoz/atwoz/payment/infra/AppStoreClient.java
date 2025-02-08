@@ -1,6 +1,5 @@
 package atwoz.atwoz.payment.infra;
 
-import atwoz.atwoz.payment.domain.AppStoreClient;
 import atwoz.atwoz.payment.infra.exception.AppStoreClientException;
 import atwoz.atwoz.payment.infra.exception.InvalidTransactionIdException;
 import com.apple.itunes.storekit.client.APIException;
@@ -12,11 +11,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AppStoreClientImpl implements AppStoreClient {
+public class AppStoreClient {
 
     private final AppStoreServerAPIClient client;
 
-    @Override
     public TransactionInfoResponse getTransactionInfo(@NonNull String transactionId) {
         try {
             return client.getTransactionInfo(transactionId);

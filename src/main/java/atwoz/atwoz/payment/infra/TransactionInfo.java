@@ -1,4 +1,4 @@
-package atwoz.atwoz.payment.domain;
+package atwoz.atwoz.payment.infra;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

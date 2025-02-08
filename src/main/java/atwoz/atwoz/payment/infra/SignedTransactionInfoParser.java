@@ -1,7 +1,6 @@
 package atwoz.atwoz.payment.infra;
 
 import atwoz.atwoz.payment.domain.TokenParser;
-import atwoz.atwoz.payment.domain.TransactionInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;

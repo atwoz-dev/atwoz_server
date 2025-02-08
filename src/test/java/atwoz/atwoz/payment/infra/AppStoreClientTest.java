@@ -17,10 +17,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AppStoreClientImplTest {
+class AppStoreClientTest {
 
     @InjectMocks
-    private AppStoreClientImpl appStoreClient;
+    private AppStoreClient appStoreClient;
 
     @Mock
     private AppStoreServerAPIClient appStoreServerAPIClient;

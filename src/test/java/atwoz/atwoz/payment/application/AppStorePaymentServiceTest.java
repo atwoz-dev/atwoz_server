@@ -8,8 +8,8 @@ import atwoz.atwoz.payment.application.exception.OrderAlreadyExistsException;
 import atwoz.atwoz.payment.domain.Order;
 import atwoz.atwoz.payment.domain.PaymentMethod;
 import atwoz.atwoz.payment.domain.TokenParser;
-import atwoz.atwoz.payment.domain.TransactionInfo;
-import atwoz.atwoz.payment.infra.AppStoreClientImpl;
+import atwoz.atwoz.payment.infra.TransactionInfo;
+import atwoz.atwoz.payment.infra.AppStoreClient;
 import atwoz.atwoz.payment.domain.OrderCommandRepository;
 import com.apple.itunes.storekit.model.TransactionInfoResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.*;
 public class AppStorePaymentServiceTest {
 
     @Mock
-    private AppStoreClientImpl appStoreClient;
+    private AppStoreClient appStoreClient;
 
     @Mock
     private TokenParser tokenParser;
