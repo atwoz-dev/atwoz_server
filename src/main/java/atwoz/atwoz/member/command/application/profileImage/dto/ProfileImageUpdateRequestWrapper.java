@@ -7,5 +7,5 @@ import java.util.List;
 
 @Getter
 public class ProfileImageUpdateRequestWrapper {
-    List<ProfileImageUpdateRequest> requests = new ArrayList<>();
+    private final List<ProfileImageUpdateRequest> requests = new ArrayList<>();
 }

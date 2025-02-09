@@ -19,7 +19,7 @@ public class ProfileImageJdbcRepository {
     @Transactional
     public void saveAll(List<ProfileImage> profileImages) {
 
-        String sql = "INSERT INTO profile_image (member_id, url, profile_order, is_primary, created_at, updated_at) " +
+        String sql = "INSERT INTO profile_images (member_id, url, profile_order, is_primary, created_at, updated_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
         List<Object[]> batchArgs = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();

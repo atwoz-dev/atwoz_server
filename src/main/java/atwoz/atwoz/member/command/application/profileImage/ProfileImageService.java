@@ -52,12 +52,11 @@ public class ProfileImageService {
         List<ProfileImage> profileImages = profileImageCommandRepository.findByMemberId(memberId);
         Set<Long> updatedImageIds = new HashSet<>();
 
-
         List<CompletableFuture<ProfileImage>> future = requestList.stream()
                 .map(request -> uploadImageAsync(request.getImage())
                         .thenApply(imageUrl -> {
                             if (request.getId() != null) {
-                                ProfileImage profileImage = findById(request.getId(), profileImages);
+                                ProfileImage profileImage = findByIdFromImageList(request.getId(), profileImages);
                                 profileImage.update(imageUrl, request.getOrder(), request.getIsPrimary());
                                 updatedImageIds.add(profileImage.getId());
                                 return profileImage;
@@ -90,7 +89,7 @@ public class ProfileImageService {
     @Async
     protected CompletableFuture<String> uploadImageAsync(MultipartFile image) {
         if (image == null)
-            return null;
+            return CompletableFuture.completedFuture(null);
         String imageUrl = s3Uploader.uploadFile(image);
         return CompletableFuture.completedFuture(imageUrl);
     }
@@ -118,7 +117,7 @@ public class ProfileImageService {
     }
 
     private void validateUpdateRequests(List<ProfileImageUpdateRequest> requestList, List<ProfileImage> profileImageList) {
-        long primaryCount = requestList.stream().filter(ProfileImageUpdateRequest::getIsPrimary).count() +
+        long primaryCount = requestList.stream().filter(r -> r.getIsPrimary() && r.getId() == null).count() +
                 profileImageList.stream().filter(ProfileImage::isPrimary).count();
 
         if (primaryCount > 1) {
@@ -151,7 +150,7 @@ public class ProfileImageService {
         return profileImage;
     }
 
-    private ProfileImage findById(Long id, List<ProfileImage> profileImageList) {
+    private ProfileImage findByIdFromImageList(Long id, List<ProfileImage> profileImageList) {
         for (ProfileImage profileImage : profileImageList) {
             if (profileImage.getId().equals(id)) {
                 return profileImage;

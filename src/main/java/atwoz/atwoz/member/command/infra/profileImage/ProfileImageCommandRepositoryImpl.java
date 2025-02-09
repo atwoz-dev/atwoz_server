@@ -42,6 +42,6 @@ public class ProfileImageCommandRepositoryImpl implements ProfileImageCommandRep
 
     @Override
     public java.util.List<ProfileImage> findByMemberId(Long memberId) {
-        return java.util.List.of();
+        return profileImageJpaRepository.findByMemberId(memberId);
     }
 }
