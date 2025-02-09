@@ -1,16 +1,15 @@
-package atwoz.atwoz.admin.command.application;
+package atwoz.atwoz.admin.command.application.admin;
 
-import atwoz.atwoz.admin.command.application.admin.AdminAuthService;
 import atwoz.atwoz.admin.command.application.admin.dto.AdminLoginRequest;
 import atwoz.atwoz.admin.command.application.admin.dto.AdminLoginResponse;
 import atwoz.atwoz.admin.command.application.admin.dto.AdminSignupRequest;
 import atwoz.atwoz.admin.command.application.admin.dto.AdminSignupResponse;
+import atwoz.atwoz.admin.command.application.admin.exception.AdminNotFoundException;
 import atwoz.atwoz.admin.command.application.admin.exception.DuplicateEmailException;
 import atwoz.atwoz.admin.command.domain.admin.Admin;
 import atwoz.atwoz.admin.command.domain.admin.AdminCommandRepository;
 import atwoz.atwoz.admin.command.domain.admin.Email;
 import atwoz.atwoz.admin.command.domain.admin.PasswordHasher;
-import atwoz.atwoz.admin.command.domain.admin.exception.AdminNotFoundException;
 import atwoz.atwoz.admin.command.domain.admin.exception.InvalidPasswordException;
 import atwoz.atwoz.auth.domain.TokenProvider;
 import atwoz.atwoz.auth.domain.TokenRepository;

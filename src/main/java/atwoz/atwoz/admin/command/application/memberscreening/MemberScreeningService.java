@@ -1,7 +1,10 @@
 package atwoz.atwoz.admin.command.application.memberscreening;
 
+import atwoz.atwoz.admin.command.application.memberscreening.dto.MemberScreeningApproveRequest;
+import atwoz.atwoz.admin.command.application.memberscreening.dto.MemberScreeningRejectRequest;
 import atwoz.atwoz.admin.command.domain.memberscreening.MemberScreening;
 import atwoz.atwoz.admin.command.domain.memberscreening.MemberScreeningCommandRepository;
+import atwoz.atwoz.admin.command.domain.memberscreening.MemberScreeningNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,9 +20,26 @@ public class MemberScreeningService {
     @Transactional
     public void create(Long memberId) {
         if (memberScreeningCommandRepository.existsByMemberId(memberId)) {
-            log.warn("이미 존재하는 MemberScreening 입니다. memberId={} ", memberId);
+            log.warn("멤버(id: {})에 대해 중복된 MemberScreening을 생성할 수 없습니다.", memberId);
             return;
         }
         memberScreeningCommandRepository.save(MemberScreening.from(memberId));
+    }
+
+    @Transactional
+    public void approve(MemberScreeningApproveRequest request, Long adminId) {
+        MemberScreening memberScreening = findMemberScreening(request.memberId());
+        memberScreening.approve(adminId);
+    }
+
+    @Transactional
+    public void reject(MemberScreeningRejectRequest request, Long adminId) {
+        MemberScreening memberScreening = findMemberScreening(request.memberId());
+        memberScreening.reject(adminId, MemberScreeningMapper.toRejectionReasonType(request.rejectionReason()));
+    }
+
+    private MemberScreening findMemberScreening(Long memberId) {
+        return memberScreeningCommandRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new MemberScreeningNotFoundException(memberId));
     }
 }

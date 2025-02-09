@@ -17,6 +17,9 @@ spring:
         port: ${REDIS_PORT:6379}
         password: ${REDIS_PASSWORD:}
         ssl: false
+  servlet:
+    multipart:
+      max-request-size: 50MB
 
 cloud:
   aws:
@@ -44,3 +47,7 @@ auth:
     same-site: None
     secure: true
     http-only: true
+
+server:
+  tomcat:
+    max-http-form-post-size: 50MB

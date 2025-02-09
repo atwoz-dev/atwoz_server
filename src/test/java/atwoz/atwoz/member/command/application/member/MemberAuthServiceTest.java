@@ -3,12 +3,13 @@ package atwoz.atwoz.member.command.application.member;
 import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.auth.infra.JwtProvider;
 import atwoz.atwoz.common.enums.Role;
-import atwoz.atwoz.member.command.application.member.MemberAuthService;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.command.application.member.exception.BannedMemberException;
+import atwoz.atwoz.member.command.application.member.exception.MemberLoginConflictException;
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
+import jakarta.validation.ConstraintViolationException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Instant;
@@ -111,5 +113,19 @@ public class MemberAuthServiceTest {
             Assertions.assertThat(response.accessToken()).isEqualTo("accessToken");
             Assertions.assertThat(response.isProfileSettingNeeded()).isTrue();
         }
+    }
+
+    @Test
+    @DisplayName("동시 로그인으로 인해, 유니크 제약조건에 걸린 경우 예외 반환")
+    void shouldThrowExceptionWhenUniqueConstraint() {
+        // Given
+        String phoneNumber = "01012345678";
+
+        // When
+        Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
+        Mockito.when(memberCommandRepository.save(Mockito.any(Member.class))).thenThrow(DataIntegrityViolationException.class);
+
+        // When & Then
+        Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber)).isInstanceOf(MemberLoginConflictException.class);
     }
 }
