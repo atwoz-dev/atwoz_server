@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class MemberAuthSupport {
+public class MemberServiceSupport {
     private final MemberCommandRepository memberCommandRepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

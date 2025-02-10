@@ -18,7 +18,7 @@ import java.time.Instant;
 public class MemberAuthService {
 
     private final MemberCommandRepository memberCommandRepository;
-    private final MemberAuthSupport memberAuthSupport;
+    private final MemberServiceSupport memberServiceSupport;
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;
 
@@ -41,6 +41,6 @@ public class MemberAuthService {
     }
 
     private Member createOrFindMemberByPhoneNumber(String phoneNumber) {
-        return memberCommandRepository.findByPhoneNumber(phoneNumber).orElseGet(() -> memberAuthSupport.create(phoneNumber));
+        return memberCommandRepository.findByPhoneNumber(phoneNumber).orElseGet(() -> memberServiceSupport.create(phoneNumber));
     }
 }

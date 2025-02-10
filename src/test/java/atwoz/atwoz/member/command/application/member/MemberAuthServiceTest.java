@@ -9,7 +9,6 @@ import atwoz.atwoz.member.command.application.member.exception.MemberLoginConfli
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
-import jakarta.validation.ConstraintViolationException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Instant;
@@ -41,7 +39,7 @@ public class MemberAuthServiceTest {
     private TokenRepository tokenRepository;
 
     @Mock
-    private MemberAuthSupport memberAuthSupport;
+    private MemberServiceSupport memberServiceSupport;
 
     @InjectMocks
     private MemberAuthService memberAuthService;
@@ -106,7 +104,7 @@ public class MemberAuthServiceTest {
             Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
             Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
                     .thenReturn("accessToken");
-            Mockito.when(memberAuthSupport.create(phoneNumber)).thenReturn(member);
+            Mockito.when(memberServiceSupport.create(phoneNumber)).thenReturn(member);
 
             // When
             MemberLoginServiceDto response = memberAuthService.login(phoneNumber);
@@ -126,7 +124,7 @@ public class MemberAuthServiceTest {
 
         // When
         Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
-        Mockito.when(memberAuthSupport.create(phoneNumber)).thenThrow(MemberLoginConflictException.class);
+        Mockito.when(memberServiceSupport.create(phoneNumber)).thenThrow(MemberLoginConflictException.class);
 
         // When & Then
         Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber)).isInstanceOf(MemberLoginConflictException.class);
