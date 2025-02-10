@@ -1,8 +1,7 @@
 package atwoz.atwoz.heart.command.domain.heartusagepolicy;
 
 
-import atwoz.atwoz.heart.heartusagepolicy.command.domain.heartusagepolicy.HeartPriceAmount;
-import atwoz.atwoz.heart.heartusagepolicy.command.domain.heartusagepolicy.exception.InvalidHeartPriceAmountException;
+import atwoz.atwoz.heart.command.domain.heartusagepolicy.exception.InvalidHeartPriceAmountException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

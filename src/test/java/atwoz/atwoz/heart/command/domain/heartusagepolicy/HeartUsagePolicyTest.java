@@ -2,8 +2,6 @@ package atwoz.atwoz.heart.command.domain.heartusagepolicy;
 
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.TransactionType;
 import atwoz.atwoz.heart.command.domain.hearttransaction.exception.InvalidHeartTransactionTypeException;
-import atwoz.atwoz.heart.heartusagepolicy.command.domain.heartusagepolicy.HeartPriceAmount;
-import atwoz.atwoz.heart.heartusagepolicy.command.domain.heartusagepolicy.HeartUsagePolicy;
 import atwoz.atwoz.member.command.domain.member.Gender;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

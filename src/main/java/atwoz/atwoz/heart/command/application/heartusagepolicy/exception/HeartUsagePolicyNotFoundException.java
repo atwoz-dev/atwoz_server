@@ -1,4 +1,4 @@
-package atwoz.atwoz.heart.heartusagepolicy.command.application.heartusagepolicy.exception;
+package atwoz.atwoz.heart.command.application.heartusagepolicy.exception;
 
 public class HeartUsagePolicyNotFoundException extends RuntimeException {
     public HeartUsagePolicyNotFoundException(String message) {

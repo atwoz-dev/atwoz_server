@@ -1,4 +1,4 @@
-package atwoz.atwoz.heart.heartusagepolicy.command.application.heartusagepolicy;
+package atwoz.atwoz.heart.command.application.heartusagepolicy;
 
 import atwoz.atwoz.heart.command.domain.hearttransaction.HeartTransaction;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.TransactionType;
