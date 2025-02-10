@@ -1,8 +1,11 @@
 package atwoz.atwoz.heartpurchaseoption.domain;
 
 import atwoz.atwoz.common.event.Events;
-import atwoz.atwoz.heartpurchaseoption.domain.exception.InvalidHeartPurchaseOptionException;
-import atwoz.atwoz.payment.domain.event.HeartPurchasedEvent;
+import atwoz.atwoz.heartpurchaseoption.command.domain.HeartPurchaseAmount;
+import atwoz.atwoz.heartpurchaseoption.command.domain.HeartPurchaseOption;
+import atwoz.atwoz.heartpurchaseoption.command.domain.Price;
+import atwoz.atwoz.heartpurchaseoption.command.domain.exception.InvalidHeartPurchaseOptionException;
+import atwoz.atwoz.payment.command.domain.event.HeartPurchasedEvent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

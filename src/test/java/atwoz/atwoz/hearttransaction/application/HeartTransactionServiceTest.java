@@ -1,7 +1,8 @@
 package atwoz.atwoz.hearttransaction.application;
 
-import atwoz.atwoz.hearttransaction.domain.HeartTransactionCommandRepository;
-import atwoz.atwoz.hearttransaction.domain.vo.TransactionType;
+import atwoz.atwoz.hearttransaction.command.application.HeartTransactionService;
+import atwoz.atwoz.hearttransaction.command.domain.HeartTransactionCommandRepository;
+import atwoz.atwoz.hearttransaction.command.domain.vo.TransactionType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,6 +1,9 @@
 package atwoz.atwoz.payment.domain;
 
-import atwoz.atwoz.payment.domain.exception.InvalidOrderStatusException;
+import atwoz.atwoz.payment.command.domain.Order;
+import atwoz.atwoz.payment.command.domain.OrderStatus;
+import atwoz.atwoz.payment.command.domain.PaymentMethod;
+import atwoz.atwoz.payment.command.domain.exception.InvalidOrderStatusException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

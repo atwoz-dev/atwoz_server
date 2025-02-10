@@ -1,5 +1,6 @@
 package atwoz.atwoz.hearttransaction.domain.vo;
 
+import atwoz.atwoz.hearttransaction.command.domain.vo.HeartAmount;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

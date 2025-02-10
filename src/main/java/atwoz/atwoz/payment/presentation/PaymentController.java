@@ -4,7 +4,7 @@ import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
-import atwoz.atwoz.payment.application.AppStorePaymentService;
+import atwoz.atwoz.payment.command.application.AppStorePaymentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

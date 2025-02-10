@@ -2,8 +2,8 @@ package atwoz.atwoz.member.command.domain.member;
 
 import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
 import atwoz.atwoz.common.event.Events;
-import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
-import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
+import atwoz.atwoz.hearttransaction.command.domain.vo.HeartAmount;
+import atwoz.atwoz.hearttransaction.command.domain.vo.HeartBalance;
 import atwoz.atwoz.member.command.domain.member.event.PurchaseHeartGainedEvent;
 import atwoz.atwoz.member.command.domain.member.exception.MemberNotActiveException;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;

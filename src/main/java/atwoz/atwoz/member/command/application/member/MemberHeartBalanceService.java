@@ -1,6 +1,6 @@
 package atwoz.atwoz.member.command.application.member;
 
-import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
+import atwoz.atwoz.hearttransaction.command.domain.vo.HeartAmount;
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
