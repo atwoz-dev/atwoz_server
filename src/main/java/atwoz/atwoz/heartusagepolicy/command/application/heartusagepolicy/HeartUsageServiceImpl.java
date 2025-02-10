@@ -1,13 +1,13 @@
-package atwoz.atwoz.heartusagepolicy.command.application;
+package atwoz.atwoz.heartusagepolicy.command.application.heartusagepolicy;
 
-import atwoz.atwoz.hearttransaction.command.domain.HeartTransaction;
-import atwoz.atwoz.hearttransaction.command.domain.HeartTransactionCommandRepository;
-import atwoz.atwoz.hearttransaction.command.domain.vo.HeartAmount;
-import atwoz.atwoz.hearttransaction.command.domain.vo.HeartBalance;
-import atwoz.atwoz.hearttransaction.command.domain.vo.TransactionType;
-import atwoz.atwoz.heartusagepolicy.command.application.exception.HeartUsagePolicyNotFoundException;
-import atwoz.atwoz.heartusagepolicy.command.domain.HeartUsagePolicy;
-import atwoz.atwoz.heartusagepolicy.command.domain.HeartUsagePolicyCommandRepository;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.HeartTransaction;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.HeartTransactionCommandRepository;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.vo.HeartAmount;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.vo.HeartBalance;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.vo.TransactionType;
+import atwoz.atwoz.heartusagepolicy.command.application.heartusagepolicy.exception.HeartUsagePolicyNotFoundException;
+import atwoz.atwoz.heartusagepolicy.command.domain.heartusagepolicy.HeartUsagePolicy;
+import atwoz.atwoz.heartusagepolicy.command.domain.heartusagepolicy.HeartUsagePolicyCommandRepository;
 import atwoz.atwoz.member.command.domain.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

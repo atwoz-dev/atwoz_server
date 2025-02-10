@@ -1,6 +1,6 @@
-package atwoz.atwoz.heartusagepolicy.command.domain;
+package atwoz.atwoz.heartusagepolicy.command.domain.heartusagepolicy;
 
-import atwoz.atwoz.hearttransaction.command.domain.vo.TransactionType;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.vo.TransactionType;
 import atwoz.atwoz.member.command.domain.member.Gender;
 import org.springframework.data.jpa.repository.JpaRepository;
 

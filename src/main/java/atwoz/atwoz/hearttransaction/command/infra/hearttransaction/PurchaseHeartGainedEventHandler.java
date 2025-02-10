@@ -1,6 +1,6 @@
-package atwoz.atwoz.hearttransaction.command.infra;
+package atwoz.atwoz.hearttransaction.command.infra.hearttransaction;
 
-import atwoz.atwoz.hearttransaction.command.application.HeartTransactionService;
+import atwoz.atwoz.hearttransaction.command.application.hearttransaction.HeartTransactionService;
 import atwoz.atwoz.member.command.domain.member.event.PurchaseHeartGainedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;

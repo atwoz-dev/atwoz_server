@@ -1,9 +1,9 @@
-package atwoz.atwoz.heartusagepolicy.command.domain;
+package atwoz.atwoz.heartusagepolicy.command.domain.heartusagepolicy;
 
 
 import atwoz.atwoz.common.entity.BaseEntity;
-import atwoz.atwoz.hearttransaction.command.domain.vo.TransactionType;
-import atwoz.atwoz.hearttransaction.command.domain.exception.InvalidHeartTransactionTypeException;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.vo.TransactionType;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.exception.InvalidHeartTransactionTypeException;
 import atwoz.atwoz.member.command.domain.member.Gender;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

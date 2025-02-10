@@ -1,10 +1,10 @@
-package atwoz.atwoz.hearttransaction.command.application;
+package atwoz.atwoz.hearttransaction.command.application.hearttransaction;
 
-import atwoz.atwoz.hearttransaction.command.domain.HeartTransaction;
-import atwoz.atwoz.hearttransaction.command.domain.HeartTransactionCommandRepository;
-import atwoz.atwoz.hearttransaction.command.domain.vo.HeartAmount;
-import atwoz.atwoz.hearttransaction.command.domain.vo.HeartBalance;
-import atwoz.atwoz.hearttransaction.command.domain.vo.TransactionType;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.HeartTransaction;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.HeartTransactionCommandRepository;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.vo.HeartAmount;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.vo.HeartBalance;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.vo.TransactionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

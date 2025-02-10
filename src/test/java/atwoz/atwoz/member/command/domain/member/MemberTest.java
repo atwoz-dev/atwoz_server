@@ -1,8 +1,8 @@
 package atwoz.atwoz.member.command.domain.member;
 
 import atwoz.atwoz.common.event.Events;
-import atwoz.atwoz.hearttransaction.command.domain.vo.HeartAmount;
-import atwoz.atwoz.hearttransaction.command.domain.vo.HeartBalance;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.vo.HeartAmount;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.vo.HeartBalance;
 import atwoz.atwoz.member.command.domain.member.event.PurchaseHeartGainedEvent;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import org.assertj.core.api.Assertions;

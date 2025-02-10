@@ -1,10 +1,10 @@
-package atwoz.atwoz.hearttransaction.command.domain;
+package atwoz.atwoz.hearttransaction.command.domain.hearttransaction;
 
 import atwoz.atwoz.common.entity.BaseEntity;
-import atwoz.atwoz.hearttransaction.command.domain.vo.HeartAmount;
-import atwoz.atwoz.hearttransaction.command.domain.vo.HeartBalance;
-import atwoz.atwoz.hearttransaction.command.domain.vo.TransactionType;
-import atwoz.atwoz.hearttransaction.command.domain.exception.InvalidHeartAmountException;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.vo.HeartAmount;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.vo.HeartBalance;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.vo.TransactionType;
+import atwoz.atwoz.hearttransaction.command.domain.hearttransaction.exception.InvalidHeartAmountException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

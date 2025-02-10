@@ -1,4 +1,4 @@
-package atwoz.atwoz.heartusagepolicy.command.domain.exception;
+package atwoz.atwoz.heartusagepolicy.command.domain.heartusagepolicy.exception;
 
 public class InvalidHeartPriceAmountException extends RuntimeException {
     public InvalidHeartPriceAmountException(String message) {

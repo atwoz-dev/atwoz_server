@@ -1,4 +1,4 @@
-package atwoz.atwoz.hearttransaction.command.domain;
+package atwoz.atwoz.hearttransaction.command.domain.hearttransaction;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
