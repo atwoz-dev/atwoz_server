@@ -1,7 +1,7 @@
 package atwoz.atwoz.hearttransaction.application;
 
 import atwoz.atwoz.hearttransaction.domain.HeartTransaction;
-import atwoz.atwoz.hearttransaction.domain.HeartTransactionRepository;
+import atwoz.atwoz.hearttransaction.domain.HeartTransactionCommandRepository;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
 import atwoz.atwoz.hearttransaction.domain.vo.TransactionType;
@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class HeartTransactionService {
-    private final HeartTransactionRepository heartTransactionRepository;
+    private final HeartTransactionCommandRepository heartTransactionCommandRepository;
 
     @Transactional
     public void createHeartPurchaseTransaction(Long memberId, Long amount, Long missionHeartBalance, Long purchaseHeartBalance) {
@@ -23,6 +23,6 @@ public class HeartTransactionService {
         HeartBalance heartBalance = HeartBalance.of(missionHeartBalance, purchaseHeartBalance);
         HeartAmount heartAmount = HeartAmount.from(amount);
         HeartTransaction heartTransaction = HeartTransaction.of(memberId, transactionType, heartAmount, heartBalance);
-        heartTransactionRepository.save(heartTransaction);
+        heartTransactionCommandRepository.save(heartTransaction);
     }
 }

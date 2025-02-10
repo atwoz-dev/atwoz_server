@@ -1,13 +1,13 @@
 package atwoz.atwoz.heartusagepolicy.application;
 
 import atwoz.atwoz.hearttransaction.domain.HeartTransaction;
-import atwoz.atwoz.hearttransaction.domain.HeartTransactionRepository;
+import atwoz.atwoz.hearttransaction.domain.HeartTransactionCommandRepository;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
 import atwoz.atwoz.hearttransaction.domain.vo.TransactionType;
 import atwoz.atwoz.heartusagepolicy.domain.HeartPriceAmount;
 import atwoz.atwoz.heartusagepolicy.domain.HeartUsagePolicy;
-import atwoz.atwoz.heartusagepolicy.domain.HeartUsagePolicyRepository;
+import atwoz.atwoz.heartusagepolicy.domain.HeartUsagePolicyCommandRepository;
 import atwoz.atwoz.heartusagepolicy.exception.HeartUsagePolicyNotFoundException;
 import atwoz.atwoz.member.command.domain.member.Gender;
 import atwoz.atwoz.member.command.domain.member.Member;
@@ -33,9 +33,9 @@ class HeartUsageServiceImplTest {
     @InjectMocks
     private HeartUsageServiceImpl heartUsageService;
     @Mock
-    private HeartUsagePolicyRepository heartUsagePolicyRepository;
+    private HeartUsagePolicyCommandRepository heartUsagePolicyCommandRepository;
     @Mock
-    private HeartTransactionRepository heartTransactionRepository;
+    private HeartTransactionCommandRepository heartTransactionCommandRepository;
 
     @Test
     @DisplayName("하트 사용 정책이 없는 경우 예외 발생")
@@ -48,15 +48,15 @@ class HeartUsageServiceImplTest {
                 .build();
         setField(member, "profile", memberProfile);
         TransactionType transactionType = TransactionType.MESSAGE;
-        when(heartUsagePolicyRepository.findByGenderAndTransactionType(eq(gender), eq(transactionType)))
+        when(heartUsagePolicyCommandRepository.findByGenderAndTransactionType(eq(gender), eq(transactionType)))
                 .thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> heartUsageService.useHeart(member, transactionType))
                 .isInstanceOf(HeartUsagePolicyNotFoundException.class);
 
-        verify(heartUsagePolicyRepository, atMostOnce()).findByGenderAndTransactionType(eq(gender), eq(transactionType));
-        verify(heartTransactionRepository, never()).save(any(HeartTransaction.class));
+        verify(heartUsagePolicyCommandRepository, atMostOnce()).findByGenderAndTransactionType(eq(gender), eq(transactionType));
+        verify(heartTransactionCommandRepository, never()).save(any(HeartTransaction.class));
     }
 
     @Test
@@ -81,9 +81,9 @@ class HeartUsageServiceImplTest {
         HeartPriceAmount heartPriceAmount = HeartPriceAmount.from(10L);
         HeartUsagePolicy heartUsagePolicy = HeartUsagePolicy.of(transactionType, gender, heartPriceAmount);
 
-        when(heartUsagePolicyRepository.findByGenderAndTransactionType(eq(gender), eq(transactionType)))
+        when(heartUsagePolicyCommandRepository.findByGenderAndTransactionType(eq(gender), eq(transactionType)))
                 .thenReturn(Optional.of(heartUsagePolicy));
-        when(heartTransactionRepository.save(any(HeartTransaction.class)))
+        when(heartTransactionCommandRepository.save(any(HeartTransaction.class)))
                 .thenAnswer(invocation -> {
                     HeartTransaction heartTransaction = invocation.getArgument(0);
                     setField(heartTransaction, "id", 1L);
@@ -98,8 +98,8 @@ class HeartUsageServiceImplTest {
         assertThat(heartTransaction.getHeartAmount()).isEqualTo(expectedHeartAmount);
         assertThat(heartTransaction.getHeartBalance()).isEqualTo(heartBalanceBeforeUsingHeart);
 
-        verify(heartUsagePolicyRepository, atMostOnce()).findByGenderAndTransactionType(eq(gender), eq(transactionType));
-        verify(heartTransactionRepository, atMostOnce()).save(any(HeartTransaction.class));
+        verify(heartUsagePolicyCommandRepository, atMostOnce()).findByGenderAndTransactionType(eq(gender), eq(transactionType));
+        verify(heartTransactionCommandRepository, atMostOnce()).save(any(HeartTransaction.class));
     }
 
     @Test
@@ -123,9 +123,9 @@ class HeartUsageServiceImplTest {
         HeartPriceAmount heartPriceAmount = HeartPriceAmount.from(10L);
         HeartUsagePolicy heartUsagePolicy = HeartUsagePolicy.of(transactionType, gender, heartPriceAmount);
 
-        when(heartUsagePolicyRepository.findByGenderAndTransactionType(eq(gender), eq(transactionType)))
+        when(heartUsagePolicyCommandRepository.findByGenderAndTransactionType(eq(gender), eq(transactionType)))
                 .thenReturn(Optional.of(heartUsagePolicy));
-        when(heartTransactionRepository.save(any(HeartTransaction.class)))
+        when(heartTransactionCommandRepository.save(any(HeartTransaction.class)))
                 .thenAnswer(invocation -> {
                     HeartTransaction heartTransaction = invocation.getArgument(0);
                     setField(heartTransaction, "id", 1L);
@@ -141,7 +141,7 @@ class HeartUsageServiceImplTest {
         assertThat(heartTransaction.getHeartAmount()).isEqualTo(expectedHeartAmount);
         assertThat(heartTransaction.getHeartBalance()).isEqualTo(expectedHeartBalance);
 
-        verify(heartUsagePolicyRepository, atMostOnce()).findByGenderAndTransactionType(eq(gender), eq(transactionType));
-        verify(heartTransactionRepository, atMostOnce()).save(any(HeartTransaction.class));
+        verify(heartUsagePolicyCommandRepository, atMostOnce()).findByGenderAndTransactionType(eq(gender), eq(transactionType));
+        verify(heartTransactionCommandRepository, atMostOnce()).save(any(HeartTransaction.class));
     }
 }

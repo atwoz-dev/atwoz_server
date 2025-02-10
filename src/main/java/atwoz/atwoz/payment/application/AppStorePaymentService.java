@@ -2,7 +2,7 @@ package atwoz.atwoz.payment.application;
 
 import atwoz.atwoz.payment.application.exception.HeartPurchaseOptionNotFoundException;
 import atwoz.atwoz.heartpurchaseoption.domain.HeartPurchaseOption;
-import atwoz.atwoz.heartpurchaseoption.domain.HeartPurchaseOptionRepository;
+import atwoz.atwoz.heartpurchaseoption.domain.HeartPurchaseOptionCommandRepository;
 import atwoz.atwoz.payment.application.exception.InvalidOrderException;
 import atwoz.atwoz.payment.application.exception.OrderAlreadyExistsException;
 import atwoz.atwoz.payment.domain.*;
@@ -20,7 +20,7 @@ public class AppStorePaymentService {
     private final AppStoreClient appStoreClient;
     private final TokenParser tokenParser;
     private final OrderCommandRepository orderCommandRepository;
-    private final HeartPurchaseOptionRepository heartPurchaseOptionRepository;
+    private final HeartPurchaseOptionCommandRepository heartPurchaseOptionCommandRepository;
 
     @Transactional
     public void verifyReceipt(String receiptToken, Long memberId) {
@@ -51,7 +51,7 @@ public class AppStorePaymentService {
     }
 
     private void purchaseHeart(Long memberId, String productId, Integer quantity) {
-        HeartPurchaseOption heartPurchaseOption = heartPurchaseOptionRepository.findByProductId(productId)
+        HeartPurchaseOption heartPurchaseOption = heartPurchaseOptionCommandRepository.findByProductId(productId)
                 .orElseThrow(() -> new HeartPurchaseOptionNotFoundException("하트 구매 옵션이 존재하지 않습니다. product id:" + productId));
         heartPurchaseOption.purchase(memberId, quantity);
     }

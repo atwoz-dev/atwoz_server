@@ -1,6 +1,6 @@
 package atwoz.atwoz.hearttransaction.application;
 
-import atwoz.atwoz.hearttransaction.domain.HeartTransactionRepository;
+import atwoz.atwoz.hearttransaction.domain.HeartTransactionCommandRepository;
 import atwoz.atwoz.hearttransaction.domain.vo.TransactionType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class HeartTransactionServiceTest {
     @Mock
-    private HeartTransactionRepository heartTransactionRepository;
+    private HeartTransactionCommandRepository heartTransactionCommandRepository;
 
     @InjectMocks
     private HeartTransactionService heartTransactionService;
@@ -33,7 +33,7 @@ class HeartTransactionServiceTest {
         heartTransactionService.createHeartPurchaseTransaction(memberId, amount, missionHeartBalance, purchaseHeartBalance);
 
         // then
-        verify(heartTransactionRepository).save(argThat(heartTransaction ->
+        verify(heartTransactionCommandRepository).save(argThat(heartTransaction ->
                 heartTransaction.getMemberId().equals(memberId) &&
                         heartTransaction.getTransactionType() == TransactionType.PURCHASE &&
                         heartTransaction.getHeartAmount().getAmount().equals(amount) &&

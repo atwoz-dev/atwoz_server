@@ -1,7 +1,7 @@
 package atwoz.atwoz.payment.application;
 
 import atwoz.atwoz.heartpurchaseoption.domain.HeartPurchaseOption;
-import atwoz.atwoz.heartpurchaseoption.domain.HeartPurchaseOptionRepository;
+import atwoz.atwoz.heartpurchaseoption.domain.HeartPurchaseOptionCommandRepository;
 import atwoz.atwoz.payment.application.exception.HeartPurchaseOptionNotFoundException;
 import atwoz.atwoz.payment.application.exception.InvalidOrderException;
 import atwoz.atwoz.payment.application.exception.OrderAlreadyExistsException;
@@ -38,7 +38,7 @@ public class AppStorePaymentServiceTest {
     private OrderCommandRepository orderCommandRepository;
 
     @Mock
-    private HeartPurchaseOptionRepository heartPurchaseOptionRepository;
+    private HeartPurchaseOptionCommandRepository heartPurchaseOptionCommandRepository;
 
     @InjectMocks
     private AppStorePaymentService appStorePaymentService;
@@ -69,7 +69,7 @@ public class AppStorePaymentServiceTest {
                 .thenReturn(false);
 
         HeartPurchaseOption heartPurchaseOption = mock(HeartPurchaseOption.class);
-        when(heartPurchaseOptionRepository.findByProductId(productId)).thenReturn(Optional.of(heartPurchaseOption));
+        when(heartPurchaseOptionCommandRepository.findByProductId(productId)).thenReturn(Optional.of(heartPurchaseOption));
 
         // When
         appStorePaymentService.verifyReceipt(receiptToken, memberId);
@@ -156,7 +156,7 @@ public class AppStorePaymentServiceTest {
         when(orderCommandRepository.existsByTransactionIdAndPaymentMethod(transactionId, PaymentMethod.APP_STORE))
                 .thenReturn(false);
 
-        when(heartPurchaseOptionRepository.findByProductId(productId)).thenReturn(Optional.empty());
+        when(heartPurchaseOptionCommandRepository.findByProductId(productId)).thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() ->
