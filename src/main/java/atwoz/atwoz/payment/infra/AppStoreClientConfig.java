@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Base64;
+
 @Configuration
 public class AppStoreClientConfig {
 
@@ -17,6 +19,8 @@ public class AppStoreClientConfig {
             @Value("${payment.app-store.bundle-id}") String bundleId,
             @Value("${payment.app-store.environment}") String environmentValue) {
         Environment environment = Environment.fromValue(environmentValue);
-        return new AppStoreServerAPIClient(privateKeyString, keyId, issuerId, bundleId, environment);
+        byte[] decodedBytes = Base64.getDecoder().decode(privateKeyString);
+        String decodedPrivateKeyString = new String(decodedBytes);
+        return new AppStoreServerAPIClient(decodedPrivateKeyString, keyId, issuerId, bundleId, environment);
     }
 }
