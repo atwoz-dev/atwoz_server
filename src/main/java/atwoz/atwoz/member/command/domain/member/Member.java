@@ -1,8 +1,10 @@
 package atwoz.atwoz.member.command.domain.member;
 
 import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
+import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
+import atwoz.atwoz.member.command.domain.member.event.PurchaseHeartGainedEvent;
 import atwoz.atwoz.member.command.domain.member.exception.MemberNotActiveException;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
@@ -111,6 +113,7 @@ public class Member extends SoftDeleteBaseEntity {
 
     public void gainPurchaseHeart(HeartAmount heartAmount) {
         heartBalance = heartBalance.gainPurchaseHeart(heartAmount);
+        Events.raise(PurchaseHeartGainedEvent.of(id, heartAmount.getAmount(), heartBalance.getMissionHeartBalance(), heartBalance.getPurchaseHeartBalance()));
     }
 
     public void gainMissionHeart(HeartAmount heartAmount) {

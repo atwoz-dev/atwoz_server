@@ -1,4 +1,4 @@
-package atwoz.atwoz.order.exception;
+package atwoz.atwoz.payment.domain.exception;
 
 public class InvalidOrderStatusException extends RuntimeException {
     public InvalidOrderStatusException(String message) {

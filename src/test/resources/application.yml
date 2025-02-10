@@ -51,3 +51,16 @@ auth:
 server:
   tomcat:
     max-http-form-post-size: 50MB
+
+payment:
+  app-store:
+    key-id: "ABC123XYZ"
+    issuer-id: "1122334455"
+    private-key-string: |
+      -----BEGIN PRIVATE KEY-----
+      MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgVdL3X6MZz4GkPqsh
+      Q3d4v0wJx8aZGm1Kz3KP9vav/0GhRANCAASdp3qH2G3d/J5a+xJ4vLmHZ6QnpACl
+      YF5xTtPOl3qUv9ekYcAI2VzyLQdTFr87Dhwp1iF2Bvowxy1Fs48CcGZd
+      -----END PRIVATE KEY-----
+    bundle-id: "com.example.myapp"
+    environment: "Sandbox"

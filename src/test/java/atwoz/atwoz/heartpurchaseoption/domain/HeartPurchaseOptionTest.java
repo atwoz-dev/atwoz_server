@@ -1,13 +1,19 @@
 package atwoz.atwoz.heartpurchaseoption.domain;
 
+import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.heartpurchaseoption.exception.InvalidHeartPurchaseOptionException;
+import atwoz.atwoz.payment.domain.event.HeartPurchasedEvent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.MockedStatic;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
 
 class HeartPurchaseOptionTest {
     @ParameterizedTest
@@ -63,5 +69,31 @@ class HeartPurchaseOptionTest {
 
         // then
         assertThat(heartPurchaseOption).isNotNull();
+    }
+
+    @Test
+    @DisplayName("purchase를 호출하면 이벤트를 호출한다")
+    void publishEventWhenCallPurchaseMethod() {
+        // given
+        Long amount = 10L;
+        HeartPurchaseAmount heartPurchaseAmount = HeartPurchaseAmount.from(amount);
+        Price price = Price.from(1000L);
+        String name = "name";
+        HeartPurchaseOption heartPurchaseOption = HeartPurchaseOption.of(heartPurchaseAmount, price, name);
+        Long memberId = 1L;
+        Integer quantity = 5;
+        Long expectedAmount = amount * quantity;
+
+        try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
+            // When
+            heartPurchaseOption.purchase(memberId, quantity);
+
+            // Then
+            eventsMockedStatic.verify(() ->
+                    Events.raise(argThat((HeartPurchasedEvent event) ->
+                            event.getMemberId().equals(memberId) &&
+                                    event.getAmount().equals(expectedAmount)
+                    )), times(1));
+        }
     }
 }
