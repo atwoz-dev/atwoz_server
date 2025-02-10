@@ -4,8 +4,10 @@ import atwoz.atwoz.auth.presentation.RefreshTokenCookieProperties;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.member.MemberAuthService;
+import atwoz.atwoz.member.command.application.member.dto.MemberLoginRequest;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginResponse;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -21,8 +23,8 @@ public class MemberAuthController {
     private final MemberAuthService memberAuthService;
 
     @PostMapping("/login")
-    public ResponseEntity<BaseResponse<MemberLoginResponse>> login(@RequestBody String phoneNumber) {
-        MemberLoginServiceDto loginServiceDto = memberAuthService.login(phoneNumber);
+    public ResponseEntity<BaseResponse<MemberLoginResponse>> login(@Valid @RequestBody MemberLoginRequest request) {
+        MemberLoginServiceDto loginServiceDto = memberAuthService.login(request.phoneNumber());
 
         HttpHeaders headers = new HttpHeaders();
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", loginServiceDto.refreshToken())
