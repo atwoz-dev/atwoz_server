@@ -2,7 +2,7 @@ package atwoz.atwoz.heartpurchaseoption.domain;
 
 import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
 import atwoz.atwoz.common.event.Events;
-import atwoz.atwoz.heartpurchaseoption.exception.InvalidHeartPurchaseOptionException;
+import atwoz.atwoz.heartpurchaseoption.domain.exception.InvalidHeartPurchaseOptionException;
 import atwoz.atwoz.payment.domain.event.HeartPurchasedEvent;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

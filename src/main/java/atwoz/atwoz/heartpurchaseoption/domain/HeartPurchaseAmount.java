@@ -1,6 +1,6 @@
 package atwoz.atwoz.heartpurchaseoption.domain;
 
-import atwoz.atwoz.heartpurchaseoption.exception.InvalidHeartPurchaseAmountException;
+import atwoz.atwoz.heartpurchaseoption.domain.exception.InvalidHeartPurchaseAmountException;
 import jakarta.persistence.Embeddable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

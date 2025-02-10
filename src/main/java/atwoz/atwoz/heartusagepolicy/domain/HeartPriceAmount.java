@@ -1,6 +1,6 @@
 package atwoz.atwoz.heartusagepolicy.domain;
 
-import atwoz.atwoz.heartusagepolicy.exception.InvalidHeartPriceAmountException;
+import atwoz.atwoz.heartusagepolicy.domain.exception.InvalidHeartPriceAmountException;
 import jakarta.persistence.Embeddable;
 import lombok.NonNull;
 

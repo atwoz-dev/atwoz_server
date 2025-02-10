@@ -1,4 +1,4 @@
-package atwoz.atwoz.heartpurchaseoption.exception;
+package atwoz.atwoz.heartpurchaseoption.domain.exception;
 
 public class InvalidHeartPurchaseOptionException extends RuntimeException {
     public InvalidHeartPurchaseOptionException(String message) {

@@ -4,7 +4,7 @@ import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartAmount;
 import atwoz.atwoz.hearttransaction.domain.vo.HeartBalance;
 import atwoz.atwoz.hearttransaction.domain.vo.TransactionType;
-import atwoz.atwoz.hearttransaction.exception.InvalidHeartAmountException;
+import atwoz.atwoz.hearttransaction.domain.exception.InvalidHeartAmountException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
