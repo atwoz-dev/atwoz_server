@@ -1,7 +1,7 @@
 package atwoz.atwoz.heartpurchaseoption.domain;
 
-import atwoz.atwoz.heartpurchaseoption.command.domain.Price;
-import atwoz.atwoz.heartpurchaseoption.command.domain.exception.InvalidPriceException;
+import atwoz.atwoz.payment.command.domain.heartpurchaseoption.Price;
+import atwoz.atwoz.payment.command.domain.heartpurchaseoption.exception.InvalidPriceException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

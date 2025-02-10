@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.command.infra.member;
 
 import atwoz.atwoz.member.command.application.member.MemberHeartBalanceService;
-import atwoz.atwoz.payment.command.domain.event.HeartPurchasedEvent;
+import atwoz.atwoz.payment.command.domain.order.event.HeartPurchasedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
