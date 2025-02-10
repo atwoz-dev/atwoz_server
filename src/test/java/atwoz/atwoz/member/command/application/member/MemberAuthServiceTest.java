@@ -40,6 +40,9 @@ public class MemberAuthServiceTest {
     @Mock
     private TokenRepository tokenRepository;
 
+    @Mock
+    private MemberAuthSupport memberAuthSupport;
+
     @InjectMocks
     private MemberAuthService memberAuthService;
 
@@ -101,9 +104,9 @@ public class MemberAuthServiceTest {
             mockedInstant.when(Instant::now).thenReturn(fixedInstant);
 
             Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
-            Mockito.when(memberCommandRepository.save(Mockito.any(Member.class))).thenReturn(member);
             Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
                     .thenReturn("accessToken");
+            Mockito.when(memberAuthSupport.create(phoneNumber)).thenReturn(member);
 
             // When
             MemberLoginServiceDto response = memberAuthService.login(phoneNumber);
@@ -123,7 +126,7 @@ public class MemberAuthServiceTest {
 
         // When
         Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
-        Mockito.when(memberCommandRepository.save(Mockito.any(Member.class))).thenThrow(DataIntegrityViolationException.class);
+        Mockito.when(memberAuthSupport.create(phoneNumber)).thenThrow(MemberLoginConflictException.class);
 
         // When & Then
         Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber)).isInstanceOf(MemberLoginConflictException.class);
