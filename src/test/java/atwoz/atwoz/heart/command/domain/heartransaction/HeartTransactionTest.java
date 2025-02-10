@@ -1,4 +1,4 @@
-package atwoz.atwoz.hearttransaction.domain;
+package atwoz.atwoz.heart.command.domain.heartransaction;
 
 import atwoz.atwoz.heart.command.domain.hearttransaction.HeartTransaction;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;

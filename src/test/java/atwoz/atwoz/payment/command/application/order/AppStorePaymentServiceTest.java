@@ -1,8 +1,7 @@
-package atwoz.atwoz.payment.application;
+package atwoz.atwoz.payment.command.application.order;
 
 import atwoz.atwoz.payment.command.domain.heartpurchaseoption.HeartPurchaseOption;
 import atwoz.atwoz.payment.command.domain.heartpurchaseoption.HeartPurchaseOptionCommandRepository;
-import atwoz.atwoz.payment.command.application.order.AppStorePaymentService;
 import atwoz.atwoz.payment.command.application.order.exception.HeartPurchaseOptionNotFoundException;
 import atwoz.atwoz.payment.command.application.order.exception.InvalidOrderException;
 import atwoz.atwoz.payment.command.application.order.exception.OrderAlreadyExistsException;

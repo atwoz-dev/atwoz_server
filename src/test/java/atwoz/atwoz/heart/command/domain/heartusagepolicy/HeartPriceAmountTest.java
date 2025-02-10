@@ -1,4 +1,4 @@
-package atwoz.atwoz.heartusagepolicy.domain;
+package atwoz.atwoz.heart.command.domain.heartusagepolicy;
 
 
 import atwoz.atwoz.heart.heartusagepolicy.command.domain.heartusagepolicy.HeartPriceAmount;

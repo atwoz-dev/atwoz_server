@@ -1,4 +1,4 @@
-package atwoz.atwoz.hearttransaction.domain.vo;
+package atwoz.atwoz.heart.command.domain.heartransaction.vo;
 
 import atwoz.atwoz.heart.command.domain.hearttransaction.exception.InvalidHeartAmountException;
 import atwoz.atwoz.heart.command.domain.hearttransaction.exception.InvalidHeartBalanceException;

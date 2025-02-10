@@ -1,4 +1,4 @@
-package atwoz.atwoz.hearttransaction.domain.vo;
+package atwoz.atwoz.heart.command.domain.heartransaction.vo;
 
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import org.junit.jupiter.api.DisplayName;

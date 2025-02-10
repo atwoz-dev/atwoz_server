@@ -1,6 +1,5 @@
-package atwoz.atwoz.payment.infra;
+package atwoz.atwoz.payment.command.infra.order;
 
-import atwoz.atwoz.payment.command.infra.order.AppStoreClient;
 import atwoz.atwoz.payment.command.infra.order.exception.AppStoreClientException;
 import atwoz.atwoz.payment.command.infra.order.exception.InvalidTransactionIdException;
 import com.apple.itunes.storekit.client.APIException;
