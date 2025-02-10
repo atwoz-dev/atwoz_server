@@ -1,7 +1,5 @@
-package atwoz.atwoz.job.domain;
+package atwoz.atwoz.admin.command.domain.job;
 
-import atwoz.atwoz.job.command.domain.InvalidJobNameException;
-import atwoz.atwoz.job.command.domain.Job;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

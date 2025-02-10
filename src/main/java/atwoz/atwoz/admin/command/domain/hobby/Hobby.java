@@ -1,4 +1,4 @@
-package atwoz.atwoz.hobby.command.domain;
+package atwoz.atwoz.admin.command.domain.hobby;
 
 import atwoz.atwoz.common.entity.BaseEntity;
 import jakarta.persistence.*;
