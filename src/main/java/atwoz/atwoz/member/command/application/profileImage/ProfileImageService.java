@@ -46,12 +46,16 @@ public class ProfileImageService {
         // 반영된 엔티티와 업로드 요청을 합쳐서, 검증.
         validateRequestsWithProfileImages(imageUploadRequests, profileImages);
 
+        // 비동기로 s3 요청.
         List<CompletableFuture<ProfileImage>> futures = imageUploadRequests.stream()
                 .map(request -> handleImageUpload(request, memberId, profileImages))
                 .collect(Collectors.toList());
 
+
+        // 비동기 결과 병합 (기존 엔티티 + 새롭게 추가된 엔티티).
         List<ProfileImage> profileImageList = gatherProfileImages(futures);
 
+        // DB 반영.
         profileImageCommandRepository.saveAll(profileImageList);
         return ProfileImageMapper.toList(profileImageList);
     }
@@ -111,10 +115,9 @@ public class ProfileImageService {
     private void validateImageType(List<ProfileImageUploadRequest> requests) {
         requests.stream().forEach(r -> {
             MultipartFile image = r.getImage();
-            if (image != null && !image.getContentType().startsWith("image/"))
+            if (image != null && !image.getContentType().startsWith("image/")) {
                 throw new InvalidImageFileException();
-
-            else if (image == null && r.getId() == null) {
+            } else if (image == null && r.getId() == null) {
                 throw new InvalidImageFileException();
             }
         });
@@ -140,6 +143,7 @@ public class ProfileImageService {
     private ProfileImage processUploadedImage(ProfileImageUploadRequest request, Long memberId, List<ProfileImage> profileImages, String imageUrl) {
         if (request.getId() != null && imageUrl != null) { // 기존 프로필 이미지의 파일을 교체하는 경우.
             ProfileImage profileImage = findById(request.getId(), profileImages);
+            s3Uploader.deleteFile(profileImage.getUrl()); // 기존 이미지 삭제.
             profileImage.updateUrl(imageUrl);
             return profileImage;
         } else if (request.getId() != null && imageUrl == null) { // 기존 프로필 이미지를 유지하는 경우.
@@ -157,6 +161,4 @@ public class ProfileImageService {
                 .isPrimary(request.getIsPrimary())
                 .build();
     }
-
-
 }

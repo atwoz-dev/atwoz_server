@@ -1,7 +1,6 @@
 package atwoz.atwoz.member.command.application.profileimage;
 
 import atwoz.atwoz.member.command.application.profileImage.ProfileImageService;
-import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUpdateRequest;
 import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadRequest;
 import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadResponse;
 import atwoz.atwoz.member.command.application.profileImage.exception.*;
@@ -9,8 +8,8 @@ import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImageCommandRepository;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.command.infra.profileImage.S3Uploader;
-import org.aspectj.util.Reflection;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -41,200 +40,159 @@ public class ProfileImageTest {
 
     @Nested
     class UploadTest {
-        @Test
-        @DisplayName("이미지 파일이 아닌 경우, 단일 업로드 실패.")
-        public void isFailWhenFileIsNotImage() {
-            // Given
-            MultipartFile textFile = new MockMultipartFile("file", "test.txt", "text/plain", "test".getBytes());
-            Long memberId = 1L;
+        List<ProfileImageUploadRequest> goodRequests;
+        List<ProfileImage> existsProfileImages;
 
-            List<ProfileImageUploadRequest> request = List.of(new ProfileImageUploadRequest(textFile, true, 1));
-
-            // When & Then
-            Assertions.assertThatThrownBy(() -> profileImageService.save(memberId, request)).isInstanceOf(InvalidImageFileException.class);
-        }
-
-        @Test
-        @DisplayName("대표 이미지가 존재하는 경우, 대표 이미지 단일 업로드 실패.")
-        public void isFailWhenUploadPrimaryImageIfAlreadyExists() {
-            // Given
-            MultipartFile imageFile = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "test".getBytes());
-            Long memberId = 1L;
-
-            Mockito.when(profileImageCommandRepository.existsByMemberIdAndIsPrimary(memberId)).thenReturn(true);
-            List<ProfileImageUploadRequest> request = List.of(new ProfileImageUploadRequest(imageFile, true, 1));
-
-            // When & Then
-            Assertions.assertThatThrownBy(() -> profileImageService.save(memberId, request)).isInstanceOf(PrimaryImageAlreadyExistsException.class);
-        }
-
-        @Test
-        @DisplayName("이미지 파일이면서 대표 이미지인 경우, 단일 업로드 성공.")
-        public void saveWhenFileIsImageAndIsPrimaryTrue() {
-            // Given
-            MultipartFile imageFile = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
-            Long memberId = 1L;
-            List<ProfileImageUploadRequest> request = List.of(new ProfileImageUploadRequest(imageFile, true, 1));
-
-            Mockito.when(s3Uploader.uploadImageAsync(Mockito.any(MultipartFile.class))).thenReturn(CompletableFuture.completedFuture("imageUrl"));
-
-            // When
-            List<ProfileImageUploadResponse> profileImageUploadResponse = profileImageService.save(memberId, request);
-
-            // Then
-            Assertions.assertThat(profileImageUploadResponse).isNotNull();
-            Assertions.assertThat(profileImageUploadResponse.getFirst().isPrimary()).isTrue();
-        }
-
-        @Test
-        @DisplayName("이미지 파일이면서 대표 이미지가 아닌 경우, 단일 업로드 성공.")
-        public void saveWhenFileIsImageAndIsPrimaryFalse() {
-            // Given
-            MultipartFile imageFile = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
-            Long memberId = 1L;
-            List<ProfileImageUploadRequest> request = List.of(new ProfileImageUploadRequest(imageFile, false, 1));
-
-            Mockito.when(s3Uploader.uploadImageAsync(Mockito.any(MultipartFile.class))).thenReturn(CompletableFuture.completedFuture("imageUrl"));
-
-            // When
-            List<ProfileImageUploadResponse> profileImageUploadResponse = profileImageService.save(memberId, request);
-
-            // Then
-            Assertions.assertThat(profileImageUploadResponse).isNotNull();
-            Assertions.assertThat(profileImageUploadResponse.getFirst().isPrimary()).isFalse();
-        }
-
-        @Test
-        @DisplayName("이미지 파일이 아닌 요청이 포함되어 있는 경우, 다중 업로드 실패")
-        public void isFailWhenInvalidFileRequest() {
-            // Given
-            Long memberId = 1L;
-            MultipartFile textFile = new MockMultipartFile("file", "test.txt", "text/plain", "test".getBytes());
-            MultipartFile imageFile = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
-            List<ProfileImageUploadRequest> request = List.of(new ProfileImageUploadRequest(textFile, true, 1), new ProfileImageUploadRequest(imageFile, false, 1));
-
-            // When & Then
-            Assertions.assertThatThrownBy(() -> profileImageService.save(memberId, request)).isInstanceOf(InvalidImageFileException.class);
-        }
-
-        @Test
-        @DisplayName("대표 이미지가 두 개 포함되어 있는 경우, 다중 업로드 실패")
-        public void isFailWhenMultiplePrimaryImages() {
-            // Given
-            Long memberId = 1L;
+        @BeforeEach
+        void setUp() {
             MultipartFile imageFile1 = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
             MultipartFile imageFile2 = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
-            List<ProfileImageUploadRequest> request = List.of(new ProfileImageUploadRequest(imageFile1, true, 1), new ProfileImageUploadRequest(imageFile2, true, 1));
+            goodRequests = List.of(new ProfileImageUploadRequest(1L, imageFile1, false, 3), new ProfileImageUploadRequest(null, imageFile2, false, 4));
 
-            // When & Then
-            Assertions.assertThatThrownBy(() -> profileImageService.save(memberId, request)).isInstanceOf(InvalidPrimaryProfileImageCountException.class);
-        }
-
-        @Test
-        @DisplayName("대표 이미지 1개가 포함되어 있으며 모든 파일이 이미지 파일인 경우, 성공")
-        public void saveMultipleProfileImages() {
-            // Given
-            Long memberId = 1L;
-            MultipartFile imageFile1 = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
-            MultipartFile imageFile2 = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
-            MultipartFile imageFile3 = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
-            List<ProfileImageUploadRequest> request = List.of(new ProfileImageUploadRequest(imageFile1, true, 1),
-                    new ProfileImageUploadRequest(imageFile2, false, 2),
-                    new ProfileImageUploadRequest(imageFile3, false, 3));
-            // When
-            Mockito.when(s3Uploader.uploadImageAsync(Mockito.any(MultipartFile.class))).thenReturn(CompletableFuture.completedFuture("imageUrl"));
-            List<ProfileImageUploadResponse> profileImageUploadResponse = profileImageService.save(memberId, request);
-
-            // Then
-            Assertions.assertThat(profileImageUploadResponse).isNotNull();
-            Assertions.assertThat(profileImageUploadResponse.getFirst().isPrimary()).isTrue();
-            for (int i = 1; i <= profileImageUploadResponse.size(); i++) {
-                Assertions.assertThat(profileImageUploadResponse.get(i - 1).order()).isEqualTo(i);
-            }
-        }
-    }
-
-    @Nested
-    class UpdateTest {
-        @Test
-        @DisplayName("대표 이미지가 이미 있는 경우, 또 다른 대표 이미지를 설정할 경우 실패.")
-        public void isFailWhenPrimaryProfileImageExists() {
-            // Given
-            Long memberId = 1L;
-            List<ProfileImage> existsProfileImage = List.of(ProfileImage.builder()
-                    .memberId(memberId)
-                    .order(1)
-                    .imageUrl(ImageUrl.from("imageUrl"))
-                    .isPrimary(true)
-                    .build());
-
-            MultipartFile imageFile1 = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
-            MultipartFile imageFile2 = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
-            List<ProfileImageUpdateRequest> request = List.of(new ProfileImageUpdateRequest(null, imageFile1, true, 1), new ProfileImageUpdateRequest(null, imageFile2, false, 1));
-
-            Mockito.when(s3Uploader.uploadFile(Mockito.any(MultipartFile.class))).thenReturn("imageUrl");
-            Mockito.when(profileImageCommandRepository.findByMemberId(memberId)).thenReturn(existsProfileImage);
-
-            // When & Then
-            Assertions.assertThatThrownBy(() -> profileImageService.update(memberId, request)).isInstanceOf(InvalidPrimaryProfileImageCountException.class);
-        }
-
-        @Test
-        @DisplayName("이미지 파일이 아닐 경우, 이미지 업로드 실패")
-        public void isFailWhenInvalidFileRequest() {
-            // Given
-            Long memberId = 1L;
-            List<ProfileImage> existsProfileImage = List.of(ProfileImage.builder()
-                    .memberId(memberId)
-                    .order(1)
-                    .imageUrl(ImageUrl.from("imageUrl"))
-                    .isPrimary(true)
-                    .build());
-
-            MultipartFile imageFile1 = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
-            MultipartFile imageFile2 = new MockMultipartFile("file", "image.jpeg", "text/plain", "image".getBytes());
-            List<ProfileImageUpdateRequest> request = List.of(new ProfileImageUpdateRequest(null, imageFile1, false, 1), new ProfileImageUpdateRequest(null, imageFile2, false, 2));
-
-            Mockito.when(s3Uploader.uploadFile(Mockito.any(MultipartFile.class))).thenReturn("imageUrl");
-            Mockito.when(profileImageCommandRepository.findByMemberId(memberId)).thenReturn(existsProfileImage);
-
-            // When & Then
-            Assertions.assertThatThrownBy(() -> profileImageService.update(memberId, request)).isInstanceOf(InvalidImageFileException.class);
-        }
-
-        @Test
-        @DisplayName("대표 이미지가 1개이며, 모든 파일이 이미지일 경우 업로드 성공")
-        public void updateProfileImage() {
-            // Given
-            Long memberId = 1L;
-            ProfileImage profileImage = ProfileImage.builder()
-                    .memberId(memberId)
+            ProfileImage profileImage1 = ProfileImage.builder()
+                    .memberId(1L)
                     .order(1)
                     .imageUrl(ImageUrl.from("imageUrl"))
                     .isPrimary(true)
                     .build();
 
-            List<ProfileImage> existsProfileImage = List.of(profileImage);
-            ReflectionTestUtils.setField(profileImage, "id", 1L);
+            ProfileImage profileImage2 = ProfileImage.builder()
+                    .memberId(1L)
+                    .order(2)
+                    .imageUrl(ImageUrl.from("imageUrl"))
+                    .isPrimary(false)
+                    .build();
+
+            ReflectionTestUtils.setField(profileImage1, "id", 1L);
+            ReflectionTestUtils.setField(profileImage2, "id", 2L);
+
+            existsProfileImages = List.of(profileImage1, profileImage2);
+        }
 
 
+        @Test
+        @DisplayName("이미지 파일이 아닌 경우, 업로드 실패.")
+        public void isFailWhenFileIsNotImage() {
+            // Given
+            Long memberId = 1L;
+            MultipartFile textFile = new MockMultipartFile("file", "image.jpeg", "text", "image".getBytes());
+            List<ProfileImageUploadRequest> request = List.of(new ProfileImageUploadRequest(1L, textFile, false, 3));
+
+            // When & Then
+            Assertions.assertThatThrownBy(() -> profileImageService.save(memberId, request))
+                    .isInstanceOf(InvalidImageFileException.class);
+
+        }
+
+        @Test
+        @DisplayName("대표 이미지가 이미 존재하는 경우. 새롭게 대표 이미지를 업로드하면 실패.")
+        public void isFailWhenUploadPrimaryImageIfAlreadyExists() {
+            // Given
+            Long memberId = 1L;
+            MultipartFile imageFile = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
+            List<ProfileImageUploadRequest> request = List.of(new ProfileImageUploadRequest(null, imageFile, true, 3));
+
+            Mockito.when(profileImageCommandRepository.findByMemberId(memberId)).thenReturn(existsProfileImages);
+
+            // When & Then
+            Assertions.assertThatThrownBy(() -> profileImageService.save(memberId, request))
+                    .isInstanceOf(InvalidPrimaryProfileImageCountException.class);
+        }
+
+        @Test
+        @DisplayName("순서가 중복되는 경우 실패.")
+        public void isFailWhenOrderIsDuplicated() {
+            // Given
+            Long memberId = 1L;
+            int duplicatedOrder = 3;
+            MultipartFile imageFile = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
+            List<ProfileImageUploadRequest> request = List.of(new ProfileImageUploadRequest(null, imageFile, true, duplicatedOrder));
+
+
+            Mockito.when(profileImageCommandRepository.findByMemberId(memberId)).thenReturn(
+                    List.of(ProfileImage.builder()
+                            .isPrimary(true)
+                            .imageUrl(ImageUrl.from("imageUrl"))
+                            .memberId(1L)
+                            .order(duplicatedOrder)
+                            .build())
+            );
+
+            // When & Then
+            Assertions.assertThatThrownBy(() -> profileImageService.save(memberId, request))
+                    .isInstanceOf(DuplicateProfileImageOrderException.class);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 프로필 이미지를 업데이트하는 경우, 업데이트 실패")
+        public void isFailWhenUpdateNotExistedProfileImage() {
+            // Given
+            Long memberId = 1L;
+            Long notExistedId = 2L;
+            MultipartFile imageFile1 = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
+            MultipartFile imageFile2 = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
+            List<ProfileImageUploadRequest> requests = List.of(new ProfileImageUploadRequest(notExistedId, imageFile1, true, 3), new ProfileImageUploadRequest(null, imageFile2, false, 4));
+
+            Mockito.when(profileImageCommandRepository.findByMemberId(memberId)).thenReturn(List.of());
+
+            // When & Then
+            Assertions.assertThatThrownBy(() -> profileImageService.save(memberId, requests))
+                    .isInstanceOf(ProfileImageNotFoundException.class);
+        }
+
+        @Test
+        @DisplayName("정상적인 요청의 경우, 초기 업로드 성공.")
+        public void saveWhenProfileImageNotExists() {
+            // Given
+            Long memberId = 1L;
 
             MultipartFile imageFile1 = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
             MultipartFile imageFile2 = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
-            List<ProfileImageUpdateRequest> request = List.of(new ProfileImageUpdateRequest(1L, imageFile1, false, 3), new ProfileImageUpdateRequest(null, imageFile1, false, 1), new ProfileImageUpdateRequest(null, imageFile2, true, 2));
+            List<ProfileImageUploadRequest> firstRequests = List.of(new ProfileImageUploadRequest(null, imageFile1, true, 3), new ProfileImageUploadRequest(null, imageFile2, false, 4));
 
-            Mockito.when(s3Uploader.uploadFile(Mockito.any(MultipartFile.class))).thenReturn("imageUrl");
-            Mockito.when(profileImageCommandRepository.findByMemberId(memberId)).thenReturn(existsProfileImage);
-
+            Mockito.when(profileImageCommandRepository.findByMemberId(memberId)).thenReturn(List.of());
+            Mockito.when(s3Uploader.uploadImageAsync(Mockito.any())).thenReturn(CompletableFuture.completedFuture("imageUrl"));
 
             // When
-            List<ProfileImageUploadResponse> response = profileImageService.update(memberId, request);
+            List<ProfileImageUploadResponse> response = profileImageService.save(memberId, firstRequests);
 
             // Then
             Assertions.assertThat(response).isNotNull();
-            Assertions.assertThat(profileImage.getOrder()).isEqualTo(3);
-            Assertions.assertThat(profileImage.isPrimary()).isFalse();
-            Assertions.assertThat(response.size()).isEqualTo(3);
+            Assertions.assertThat(response).size().isEqualTo(firstRequests.size());
+
+            for (ProfileImageUploadResponse profileImageUploadResponse : response) {
+                Assertions.assertThat(profileImageUploadResponse).isNotNull();
+                Assertions.assertThat(profileImageUploadResponse.imageUrl()).isEqualTo("imageUrl");
+            }
+        }
+
+        @Test
+        @DisplayName("기존 프로필 이미지 업데이트와 업로드 함께 성공.")
+        public void uploadWithpdate() {
+            // Given
+            Long memberId = 1L;
+
+            Mockito.when(profileImageCommandRepository.findByMemberId(memberId)).thenReturn(existsProfileImages);
+            Mockito.when(s3Uploader.uploadImageAsync(Mockito.any())).thenReturn(CompletableFuture.completedFuture("imageUrl"));
+
+            // When
+            List<ProfileImageUploadResponse> response = profileImageService.save(memberId, goodRequests);
+
+            // Then
+            Assertions.assertThat(response).isNotNull();
+            for (ProfileImageUploadResponse profileImageUploadResponse : response) {
+                Assertions.assertThat(profileImageUploadResponse).isNotNull();
+                Assertions.assertThat(profileImageUploadResponse.imageUrl()).isEqualTo("imageUrl");
+            }
+
+            ProfileImage profileImage = existsProfileImages.stream().filter(i -> i.getId() == 1L)
+                    .findFirst().get();
+            ProfileImageUploadRequest request = goodRequests.stream().filter(i -> i.getId() == 1L)
+                    .findFirst().get();
+
+            Assertions.assertThat(profileImage.getId()).isEqualTo(request.getId());
+            Assertions.assertThat(profileImage.getOrder()).isEqualTo(request.getOrder());
+            Assertions.assertThat(profileImage.isPrimary()).isEqualTo(request.getIsPrimary());
         }
     }
 
@@ -258,12 +216,7 @@ public class ProfileImageTest {
             // Given
             Long profileImageId = 1L;
             Long memberId = 1L;
-            ProfileImage profileImage = ProfileImage.builder()
-                    .memberId(2L)
-                    .imageUrl(ImageUrl.from("url"))
-                    .order(1)
-                    .isPrimary(true)
-                    .build();
+            ProfileImage profileImage = ProfileImage.builder().memberId(2L).imageUrl(ImageUrl.from("url")).order(1).isPrimary(true).build();
             Mockito.when(profileImageCommandRepository.findById(profileImageId)).thenReturn(Optional.of(profileImage));
 
             // When & Then
@@ -276,14 +229,8 @@ public class ProfileImageTest {
             // Given
             Long profileImageId = 1L;
             Long memberId = 1L;
-            ProfileImage profileImage = ProfileImage.builder()
-                    .memberId(memberId)
-                    .imageUrl(ImageUrl.from("url"))
-                    .order(1)
-                    .isPrimary(true)
-                    .build();
-            Mockito.when(profileImageCommandRepository.findById(profileImageId))
-                    .thenReturn(Optional.of(profileImage));
+            ProfileImage profileImage = ProfileImage.builder().memberId(memberId).imageUrl(ImageUrl.from("url")).order(1).isPrimary(true).build();
+            Mockito.when(profileImageCommandRepository.findById(profileImageId)).thenReturn(Optional.of(profileImage));
 
             // When & Then
             Assertions.assertThatCode(() -> profileImageService.delete(profileImageId, memberId)).doesNotThrowAnyException();

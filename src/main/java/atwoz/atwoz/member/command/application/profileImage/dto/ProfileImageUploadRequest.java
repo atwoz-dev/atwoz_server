@@ -12,9 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProfileImageUploadRequest {
-    MultipartFile image;
-
     Long id;
+
+    MultipartFile image;
 
     @NotNull(message = "대표 프로필 여부를 입력해주세요.")
     Boolean isPrimary;
