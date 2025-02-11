@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @ExtendWith(MockitoExtension.class)
 public class ProfileImageTest {
@@ -75,7 +76,7 @@ public class ProfileImageTest {
             Long memberId = 1L;
             List<ProfileImageUploadRequest> request = List.of(new ProfileImageUploadRequest(imageFile, true, 1));
 
-            Mockito.when(s3Uploader.uploadFile(Mockito.any(MultipartFile.class))).thenReturn("imageUrl");
+            Mockito.when(s3Uploader.uploadImageAsync(Mockito.any(MultipartFile.class))).thenReturn(CompletableFuture.completedFuture("imageUrl"));
 
             // When
             List<ProfileImageUploadResponse> profileImageUploadResponse = profileImageService.save(memberId, request);
@@ -93,7 +94,7 @@ public class ProfileImageTest {
             Long memberId = 1L;
             List<ProfileImageUploadRequest> request = List.of(new ProfileImageUploadRequest(imageFile, false, 1));
 
-            Mockito.when(s3Uploader.uploadFile(Mockito.any(MultipartFile.class))).thenReturn("imageUrl");
+            Mockito.when(s3Uploader.uploadImageAsync(Mockito.any(MultipartFile.class))).thenReturn(CompletableFuture.completedFuture("imageUrl"));
 
             // When
             List<ProfileImageUploadResponse> profileImageUploadResponse = profileImageService.save(memberId, request);
@@ -141,7 +142,7 @@ public class ProfileImageTest {
                     new ProfileImageUploadRequest(imageFile2, false, 2),
                     new ProfileImageUploadRequest(imageFile3, false, 3));
             // When
-            Mockito.when(s3Uploader.uploadFile(Mockito.any(MultipartFile.class))).thenReturn("imageUrl");
+            Mockito.when(s3Uploader.uploadImageAsync(Mockito.any(MultipartFile.class))).thenReturn(CompletableFuture.completedFuture("imageUrl"));
             List<ProfileImageUploadResponse> profileImageUploadResponse = profileImageService.save(memberId, request);
 
             // Then

@@ -8,11 +8,9 @@ import atwoz.atwoz.member.command.application.member.exception.BannedMemberExcep
 import atwoz.atwoz.member.command.application.member.exception.MemberLoginConflictException;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
-import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -28,7 +26,6 @@ public class MemberAuthService {
     @Transactional
     public MemberLoginServiceDto login(String phoneNumber) {
         Member member = createOrFindMemberByPhoneNumber(phoneNumber);
-
         if (member.isBanned()) {
             throw new BannedMemberException();
         }
@@ -48,8 +45,7 @@ public class MemberAuthService {
         return memberCommandRepository.findByPhoneNumber(phoneNumber).orElseGet(() -> create(phoneNumber));
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected Member create(String phoneNumber) {
+    private Member create(String phoneNumber) {
         try {
             return memberCommandRepository.save(Member.fromPhoneNumber(phoneNumber));
         } catch (DataIntegrityViolationException e) {

@@ -1,8 +1,8 @@
 package atwoz.atwoz.member.command.application.member;
 
-import atwoz.atwoz.hobby.command.domain.HobbyRepository;
-import atwoz.atwoz.job.command.domain.JobNotFoundException;
-import atwoz.atwoz.job.command.domain.JobRepository;
+import atwoz.atwoz.admin.command.domain.hobby.HobbyCommandRepository;
+import atwoz.atwoz.admin.command.domain.job.JobCommandRepository;
+import atwoz.atwoz.admin.command.domain.job.JobNotFoundException;
 import atwoz.atwoz.member.command.application.member.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.domain.member.Member;
@@ -19,8 +19,8 @@ import java.util.Set;
 public class MemberProfileService {
 
     private final MemberCommandRepository memberCommandRepository;
-    private final JobRepository jobRepository;
-    private final HobbyRepository hobbyRepository;
+    private final JobCommandRepository jobCommandRepository;
+    private final HobbyCommandRepository hobbyCommandRepository;
 
     @Transactional
     public void updateMember(Long memberId, MemberProfileUpdateRequest request) {
@@ -38,13 +38,13 @@ public class MemberProfileService {
     }
 
     private void validateJobId(Long jobId) {
-        if (jobId != null && !jobRepository.existsById(jobId)) {
+        if (jobId != null && !jobCommandRepository.existsById(jobId)) {
             throw new JobNotFoundException();
         }
     }
 
     private void validateHobbyIds(Set<Long> hobbyIdList) {
-        if (hobbyIdList != null && hobbyRepository.countAllByIdIsIn(hobbyIdList) != hobbyIdList.size()) {
+        if (hobbyIdList != null && hobbyCommandRepository.countAllByIdIsIn(hobbyIdList) != hobbyIdList.size()) {
             throw new InvalidHobbyIdException();
         }
     }
