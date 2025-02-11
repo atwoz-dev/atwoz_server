@@ -9,7 +9,6 @@ import atwoz.atwoz.member.command.application.member.exception.MemberLoginConfli
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
-import jakarta.validation.ConstraintViolationException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -101,9 +100,9 @@ public class MemberAuthServiceTest {
             mockedInstant.when(Instant::now).thenReturn(fixedInstant);
 
             Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
-            Mockito.when(memberCommandRepository.save(Mockito.any(Member.class))).thenReturn(member);
             Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
                     .thenReturn("accessToken");
+            Mockito.when(memberCommandRepository.save(Mockito.any())).thenReturn(member);
 
             // When
             MemberLoginServiceDto response = memberAuthService.login(phoneNumber);
@@ -123,7 +122,7 @@ public class MemberAuthServiceTest {
 
         // When
         Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
-        Mockito.when(memberCommandRepository.save(Mockito.any(Member.class))).thenThrow(DataIntegrityViolationException.class);
+        Mockito.when(memberCommandRepository.save(Mockito.any())).thenThrow(DataIntegrityViolationException.class);
 
         // When & Then
         Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber)).isInstanceOf(MemberLoginConflictException.class);

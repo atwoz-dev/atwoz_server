@@ -28,7 +28,7 @@ public class ProfileImageService {
         validateRequestList(memberId, requestList);
 
         List<CompletableFuture<ProfileImage>> future = requestList.stream()
-                .map(request -> uploadImageAsync(request.getImage())
+                .map(request -> s3Uploader.uploadImageAsync(request.getImage())
                         .thenApply(imageUrl -> ProfileImage.builder()
                                 .memberId(memberId)
                                 .imageUrl(ImageUrl.from(imageUrl))
@@ -48,12 +48,6 @@ public class ProfileImageService {
         ProfileImage profileImage = findByIdAndMemberId(id, memberId);
         s3Uploader.deleteFile(profileImage.getUrl());
         profileImageCommandRepository.delete(profileImage);
-    }
-
-    @Async
-    protected CompletableFuture<String> uploadImageAsync(MultipartFile image) {
-        String imageUrl = s3Uploader.uploadFile(image);
-        return CompletableFuture.completedFuture(imageUrl);
     }
 
     private List<ProfileImage> gatherProfileImages(List<CompletableFuture<ProfileImage>> futures) {

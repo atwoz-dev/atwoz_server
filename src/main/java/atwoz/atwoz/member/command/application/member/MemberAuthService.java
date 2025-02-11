@@ -5,9 +5,11 @@ import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.command.application.member.exception.BannedMemberException;
+import atwoz.atwoz.member.command.application.member.exception.MemberLoginConflictException;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +20,6 @@ import java.time.Instant;
 public class MemberAuthService {
 
     private final MemberCommandRepository memberCommandRepository;
-    private final MemberAuthSupport memberAuthSupport;
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;
 
@@ -41,6 +42,14 @@ public class MemberAuthService {
     }
 
     private Member createOrFindMemberByPhoneNumber(String phoneNumber) {
-        return memberCommandRepository.findByPhoneNumber(phoneNumber).orElseGet(() -> memberAuthSupport.create(phoneNumber));
+        return memberCommandRepository.findByPhoneNumber(phoneNumber).orElseGet(() -> create(phoneNumber));
+    }
+
+    private Member create(String phoneNumber) {
+        try {
+            return memberCommandRepository.save(Member.fromPhoneNumber(phoneNumber));
+        } catch (DataIntegrityViolationException e) {
+            throw new MemberLoginConflictException(phoneNumber);
+        }
     }
 }
