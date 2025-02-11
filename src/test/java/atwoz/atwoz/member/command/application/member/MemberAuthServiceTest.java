@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Instant;
@@ -37,9 +38,6 @@ public class MemberAuthServiceTest {
 
     @Mock
     private TokenRepository tokenRepository;
-
-    @Mock
-    private MemberServiceSupport memberServiceSupport;
 
     @InjectMocks
     private MemberAuthService memberAuthService;
@@ -104,7 +102,7 @@ public class MemberAuthServiceTest {
             Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
             Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
                     .thenReturn("accessToken");
-            Mockito.when(memberServiceSupport.create(phoneNumber)).thenReturn(member);
+            Mockito.when(memberCommandRepository.save(Mockito.any())).thenReturn(member);
 
             // When
             MemberLoginServiceDto response = memberAuthService.login(phoneNumber);
@@ -124,7 +122,7 @@ public class MemberAuthServiceTest {
 
         // When
         Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
-        Mockito.when(memberServiceSupport.create(phoneNumber)).thenThrow(MemberLoginConflictException.class);
+        Mockito.when(memberCommandRepository.save(Mockito.any())).thenThrow(DataIntegrityViolationException.class);
 
         // When & Then
         Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber)).isInstanceOf(MemberLoginConflictException.class);
