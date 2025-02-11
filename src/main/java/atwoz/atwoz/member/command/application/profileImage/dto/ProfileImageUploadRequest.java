@@ -14,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProfileImageUploadRequest {
     MultipartFile image;
 
+    Long id;
+
     @NotNull(message = "대표 프로필 여부를 입력해주세요.")
     Boolean isPrimary;
 

@@ -53,6 +53,15 @@ public class ProfileImage extends BaseEntity {
         setOrder(order);
     }
 
+    public void updateBasicInfo(int order, boolean isPrimary) {
+        setOrder(order);
+        setPrimary(isPrimary);
+    }
+
+    public void updateUrl(String imageUrl) {
+        if (imageUrl != null) setImageUrl(ImageUrl.from(imageUrl));
+    }
+
     private void setMemberId(@NonNull Long memberId) {
         this.memberId = memberId;
     }

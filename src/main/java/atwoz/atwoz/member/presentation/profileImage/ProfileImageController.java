@@ -5,7 +5,6 @@ import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.profileImage.ProfileImageService;
-import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUpdateRequestWrapper;
 import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadRequestWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -20,14 +19,8 @@ public class ProfileImageController {
     private final ProfileImageService profileImageService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BaseResponse<Void>> uploadProfileImage(@ModelAttribute ProfileImageUploadRequestWrapper request, @AuthPrincipal AuthContext authContext) {
+    public ResponseEntity<BaseResponse<Void>> updateProfileImage(@ModelAttribute ProfileImageUploadRequestWrapper request, @AuthPrincipal AuthContext authContext) {
         profileImageService.save(authContext.getId(), request.getRequests());
-        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
-    }
-
-    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BaseResponse<Void>> updateProfileImage(@ModelAttribute ProfileImageUpdateRequestWrapper request, @AuthPrincipal AuthContext authContext) {
-        profileImageService.update(authContext.getId(), request.getRequests());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 

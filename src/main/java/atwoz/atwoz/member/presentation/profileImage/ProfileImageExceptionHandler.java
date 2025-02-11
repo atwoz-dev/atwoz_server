@@ -23,14 +23,6 @@ public class ProfileImageExceptionHandler {
                 .body(BaseResponse.from(StatusType.BAD_REQUEST));
     }
 
-    @ExceptionHandler(PrimaryImageAlreadyExistsException.class)
-    public ResponseEntity<BaseResponse<Void>> handlePrimaryImageAlreadyExistsException(PrimaryImageAlreadyExistsException e) {
-        log.warn("대표 이미지 설정에 실패하였습니다. {}", e.getMessage());
-
-        return ResponseEntity.badRequest()
-                .body(BaseResponse.from(StatusType.BAD_REQUEST));
-    }
-
     @ExceptionHandler(ProfileImageMemberIdMismatchException.class)
     public ResponseEntity<BaseResponse<Void>> handleProfileImageMemberIdMismatchException(ProfileImageMemberIdMismatchException e) {
         log.warn("프로필 이미지가 유저와 일치하지 않습니다. {}", e.getMessage());
@@ -63,19 +55,13 @@ public class ProfileImageExceptionHandler {
                 .body(BaseResponse.from(StatusType.BAD_REQUEST));
     }
 
-    @ExceptionHandler(InvalidIsPrimaryException.class)
-    public ResponseEntity<BaseResponse<Void>> handleInvalidIsPrimaryException(InvalidIsPrimaryException e) {
-        log.warn("이미지 업로드에 실패하였습니다.", e.getMessage());
+    @ExceptionHandler(DuplicateProfileImageOrderException.class)
+    public ResponseEntity<BaseResponse<Void>> handleDuplicateProfileImageOrderException(DuplicateProfileImageOrderException e) {
+        log.warn("이미지 업로드에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
                 .body(BaseResponse.from(StatusType.BAD_REQUEST));
     }
 
-    @ExceptionHandler(InvalidMemberIdException.class)
-    public ResponseEntity<BaseResponse<Void>> handleInvalidMemberIdException(InvalidMemberIdException e) {
-        log.warn("잘못된 유저 ID 입니다. {}", e.getMessage());
 
-        return ResponseEntity.badRequest()
-                .body(BaseResponse.from(StatusType.BAD_REQUEST));
-    }
 }
