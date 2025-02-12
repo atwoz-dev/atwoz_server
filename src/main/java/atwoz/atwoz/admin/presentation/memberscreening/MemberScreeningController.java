@@ -3,9 +3,9 @@ package atwoz.atwoz.admin.presentation.memberscreening;
 import atwoz.atwoz.admin.command.application.memberscreening.MemberScreeningService;
 import atwoz.atwoz.admin.command.application.memberscreening.dto.MemberScreeningApproveRequest;
 import atwoz.atwoz.admin.command.application.memberscreening.dto.MemberScreeningRejectRequest;
-import atwoz.atwoz.admin.query.ScreeningMemberData;
+import atwoz.atwoz.admin.query.ScreeningMember;
 import atwoz.atwoz.admin.query.ScreeningMemberQueryRepository;
-import atwoz.atwoz.admin.query.ScreeningMemberSearchCondition;
+import atwoz.atwoz.admin.query.ScreeningSearchCondition;
 import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.enums.StatusType;
@@ -44,8 +44,8 @@ public class MemberScreeningController {
     }
 
     @GetMapping
-    public ResponseEntity<BaseResponse<Page<ScreeningMemberData>>> getScreenings(
-            @Valid @ModelAttribute ScreeningMemberSearchCondition condition,
+    public ResponseEntity<BaseResponse<Page<ScreeningMember>>> getScreenings(
+            @Valid @ModelAttribute ScreeningSearchCondition condition,
             Pageable pageable
     ) {
         return ResponseEntity.ok(

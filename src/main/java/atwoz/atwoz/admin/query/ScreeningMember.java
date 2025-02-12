@@ -2,16 +2,14 @@ package atwoz.atwoz.admin.query;
 
 import com.querydsl.core.annotations.QueryProjection;
 
-public record ScreeningMemberData(
+public record ScreeningMember(
         String nickname,
         String gender,
-        String screeningStatus,
         String joinedDate,
-        int warningCount,
-        String activityStatus,
-        String bannedReason
+        String screeningStatus,
+        String rejectionReason
 ) {
     @QueryProjection
-    public ScreeningMemberData {
+    public ScreeningMember {
     }
 }

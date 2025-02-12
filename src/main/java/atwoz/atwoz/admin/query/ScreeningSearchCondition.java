@@ -5,7 +5,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
-public record ScreeningMemberSearchCondition(
+public record ScreeningSearchCondition(
         String screeningStatus,
         String nickname,
 
