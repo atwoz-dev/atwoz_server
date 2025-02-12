@@ -71,12 +71,4 @@ payment:
     environment: ${APP_STORE_ENVIRONMENT:Sandbox}
     bundle-id: ${APP_STORE_BUNDLE_ID:bundle-id}
 
-logging:
-  level:
-   org:
-    springframework:
-     transaction:
-       interceptor: TRACE
-    hibernate:
-     transaction: TRACE
 
