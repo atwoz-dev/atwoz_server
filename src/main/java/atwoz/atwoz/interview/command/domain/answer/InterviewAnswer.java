@@ -1,5 +1,7 @@
 package atwoz.atwoz.interview.command.domain.answer;
 
+import atwoz.atwoz.interview.command.application.answer.FirstInterviewSubmittedEvent;
+import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.interview.command.domain.answer.exception.InvalidInterviewAnswerContentException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,6 +26,13 @@ public class InterviewAnswer {
 
     public static InterviewAnswer of(Long questionId, Long memberId, String content) {
         return new InterviewAnswer(questionId, memberId, content);
+    }
+
+    public void submit(boolean hasInterviewAnswer) {
+        if (hasInterviewAnswer) {
+            return;
+        }
+        Events.raise(new FirstInterviewSubmittedEvent(memberId));
     }
 
     private InterviewAnswer(Long questionId, Long memberId, String content) {
