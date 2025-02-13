@@ -54,7 +54,7 @@ class MemberScreeningTest {
         void approveRejectedScreening() {
             // given
             MemberScreening screening = MemberScreening.from(10L);
-            screening.reject(1L, RejectionReasonType.CONTACT_INFO_IN_PROFILE);
+            screening.reject(1L, RejectionReasonType.CONTACT_IN_PROFILE);
 
             // when
             screening.approve(2L);
@@ -109,12 +109,12 @@ class MemberScreeningTest {
             screening.reject(3L, RejectionReasonType.INAPPROPRIATE_IMAGE);
 
             // when
-            screening.reject(4L, RejectionReasonType.CONTACT_INFO_IN_PROFILE);
+            screening.reject(4L, RejectionReasonType.CONTACT_IN_PROFILE);
 
             // then
             assertThat(screening.getStatus()).isEqualTo(ScreeningStatus.REJECTED);
             assertThat(screening.getAdminId()).isEqualTo(4L);
-            assertThat(screening.getRejectionReason()).isEqualTo(RejectionReasonType.CONTACT_INFO_IN_PROFILE);
+            assertThat(screening.getRejectionReason()).isEqualTo(RejectionReasonType.CONTACT_IN_PROFILE);
         }
 
         @Test
@@ -125,7 +125,7 @@ class MemberScreeningTest {
             screening.approve(10L);
 
             // when & then
-            assertThatThrownBy(() -> screening.reject(11L, RejectionReasonType.CONTACT_INFO_IN_PROFILE))
+            assertThatThrownBy(() -> screening.reject(11L, RejectionReasonType.CONTACT_IN_PROFILE))
                     .isInstanceOf(CannotRejectApprovedScreeningException.class);
         }
     }
