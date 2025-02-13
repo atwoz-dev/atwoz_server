@@ -2,6 +2,7 @@ package atwoz.atwoz.admin.query;
 
 import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.admin.command.domain.memberscreening.MemberScreening;
+import atwoz.atwoz.member.command.domain.member.Gender;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;
@@ -48,11 +49,17 @@ class ScreeningMemberQueryRepositoryTest {
         em.flush();
         em.clear();
 
-        ScreeningSearchCondition condition = new ScreeningSearchCondition(null, null, null, null, null);
+        ScreeningSearchCondition condition = new ScreeningSearchCondition(
+                null,
+                null,
+                null,
+                null,
+                null
+        );
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<ScreeningMember> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
+        Page<ScreeningMemberView> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
 
         // then
         assertThat(screeningMembers.getTotalElements()).isEqualTo(2);
@@ -77,11 +84,17 @@ class ScreeningMemberQueryRepositoryTest {
         em.flush();
         em.clear();
 
-        ScreeningSearchCondition condition = new ScreeningSearchCondition("PENDING", null, null, null, null);
+        ScreeningSearchCondition condition = new ScreeningSearchCondition(
+                "PENDING",
+                null,
+                null,
+                null,
+                null
+        );
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<ScreeningMember> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
+        Page<ScreeningMemberView> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
 
         // then
         assertThat(screeningMembers.getTotalElements()).isEqualTo(2);
@@ -106,11 +119,17 @@ class ScreeningMemberQueryRepositoryTest {
         em.flush();
         em.clear();
 
-        ScreeningSearchCondition condition = new ScreeningSearchCondition("APPROVED", null, null, null, null);
+        ScreeningSearchCondition condition = new ScreeningSearchCondition(
+                "APPROVED",
+                null,
+                null,
+                null,
+                null
+        );
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<ScreeningMember> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
+        Page<ScreeningMemberView> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
 
         // then
         assertThat(screeningMembers.getTotalElements()).isZero();
@@ -133,11 +152,17 @@ class ScreeningMemberQueryRepositoryTest {
         em.flush();
         em.clear();
 
-        ScreeningSearchCondition condition = new ScreeningSearchCondition(null, "member1", null, null, null);
+        ScreeningSearchCondition condition = new ScreeningSearchCondition(
+                null,
+                "member1",
+                null,
+                null,
+                null
+        );
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<ScreeningMember> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
+        Page<ScreeningMemberView> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
 
         // then
         assertThat(screeningMembers.getTotalElements()).isEqualTo(1);
@@ -161,11 +186,17 @@ class ScreeningMemberQueryRepositoryTest {
         em.flush();
         em.clear();
 
-        ScreeningSearchCondition condition = new ScreeningSearchCondition(null, null, "01011111111", null, null);
+        ScreeningSearchCondition condition = new ScreeningSearchCondition(
+                null,
+                null,
+                "01011111111",
+                null,
+                null
+        );
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<ScreeningMember> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
+        Page<ScreeningMemberView> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
 
         // then
         assertThat(screeningMembers.getTotalElements()).isEqualTo(1);
@@ -199,12 +230,49 @@ class ScreeningMemberQueryRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<ScreeningMember> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
+        Page<ScreeningMemberView> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
 
         // then
         assertThat(screeningMembers.getTotalElements()).isEqualTo(2);
         assertThat(screeningMembers.getContent()).extracting("nickname")
                 .containsExactlyInAnyOrder("member1", "member2");
+    }
+
+    @Test
+    @DisplayName("모든 조건을 설정해 심사를 조회합니다.")
+    void findScreenings() {
+        // given
+        Member member1 = createMember("member1", "01011111111");
+        Member member2 = createMember("member2", "01022222222");
+        em.persist(member1);
+        em.persist(member2);
+
+        MemberScreening screening1 = MemberScreening.from(member1.getId());
+        MemberScreening screening2 = MemberScreening.from(member2.getId());
+        em.persist(screening1);
+        em.persist(screening2);
+
+        em.flush();
+        em.clear();
+
+        ScreeningSearchCondition condition = new ScreeningSearchCondition(
+                "PENDING",
+                "member1",
+                "01011111111",
+                LocalDate.EPOCH,
+                LocalDate.now().plusDays(1)
+        );
+        PageRequest pageRequest = PageRequest.of(0, 10);
+
+        // when
+        Page<ScreeningMemberView> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
+
+        // then
+        assertThat(screeningMembers.getTotalElements()).isEqualTo(1);
+        assertThat(screeningMembers.getContent().getFirst().screeningStatus()).isEqualTo("PENDING");
+        assertThat(screeningMembers.getContent().getFirst().nickname()).isEqualTo("member1");
+        assertThat(screeningMembers.getContent().getFirst().gender()).isEqualTo("MALE");
+        assertThat(screeningMembers.getContent().getFirst().rejectionReason()).isNull();
     }
 
     private Member createMember(String nickname, String phoneNumber) {
@@ -213,6 +281,7 @@ class ScreeningMemberQueryRepositoryTest {
                 .profile(
                         MemberProfile.builder()
                                 .nickname(Nickname.from(nickname))
+                                .gender(Gender.MALE)
                                 .build()
                 )
                 .build();

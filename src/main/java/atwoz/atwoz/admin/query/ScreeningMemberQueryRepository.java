@@ -21,9 +21,9 @@ public class ScreeningMemberQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public Page<ScreeningMember> findScreeningMembers(ScreeningSearchCondition condition, Pageable pageable) {
-        List<ScreeningMember> content = queryFactory
-                .select(new QScreeningMember(
+    public Page<ScreeningMemberView> findScreeningMembers(ScreeningSearchCondition condition, Pageable pageable) {
+        List<ScreeningMemberView> content = queryFactory
+                .select(new QScreeningMemberView(
                         member.profile.nickname.value,
                         member.profile.gender.stringValue(),
                         member.createdAt.stringValue(),
