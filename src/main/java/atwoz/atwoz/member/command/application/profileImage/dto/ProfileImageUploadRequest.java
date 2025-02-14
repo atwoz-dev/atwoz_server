@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.command.application.profileImage.dto;
 
+import atwoz.atwoz.member.command.application.profileImage.dto.support.ValidImage;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProfileImageUploadRequest {
     Long id;
 
+    @ValidImage
     MultipartFile image;
 
     @NotNull(message = "대표 프로필 여부를 입력해주세요.")

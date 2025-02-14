@@ -28,8 +28,8 @@ public class ProfileImageService {
 
     @Transactional
     public List<ProfileImageUploadResponse> save(Long memberId, List<ProfileImageUploadRequest> requestList) {
-        // request 파일 검증.
-        validateImageType(requestList);
+        // 빈 파일로 이미지를 업데이트하려는 경우 검증.
+        validateImageUploadRequest(requestList);
 
         List<ProfileImage> profileImages = profileImageCommandRepository.findByMemberId(memberId);
 
@@ -77,9 +77,9 @@ public class ProfileImageService {
 
     private void updateByRequests(List<ProfileImageUploadRequest> imageUpdateRequests, List<ProfileImage> profileImages) {
         imageUpdateRequests.forEach(r -> {
-            ProfileImage profileImage = profileImages.stream().filter(p -> p.getId() == r.getId())
+            ProfileImage profileImage = profileImages.stream().filter(p -> p.getId().equals(r.getId()))
                     .findFirst()
-                    .orElseThrow(() -> new ProfileImageNotFoundException());
+                    .orElseThrow(ProfileImageNotFoundException::new);
 
             profileImage.updateBasicInfo(r.getOrder(), r.getIsPrimary());
         });
@@ -112,27 +112,25 @@ public class ProfileImageService {
         }
     }
 
-    private void validateImageType(List<ProfileImageUploadRequest> requests) {
-        requests.stream().forEach(r -> {
+    private void validateImageUploadRequest(List<ProfileImageUploadRequest> requests) {
+        requests.forEach(r -> {
             MultipartFile image = r.getImage();
-            if (image != null && !image.getContentType().startsWith("image/")) {
-                throw new InvalidImageFileException();
-            } else if (image == null && r.getId() == null) {
-                throw new InvalidImageFileException();
+            if (image == null && r.getId() == null) {
+                throw new EmptyImageUploadException();
             }
         });
     }
 
     private ProfileImage findByIdAndMemberId(Long profileImageId, Long memberId) {
-        ProfileImage profileImage = profileImageCommandRepository.findById(profileImageId).orElseThrow(() -> new ProfileImageNotFoundException());
-        if (profileImage.getMemberId() != memberId) {
+        ProfileImage profileImage = profileImageCommandRepository.findById(profileImageId).orElseThrow(ProfileImageNotFoundException::new);
+        if (!profileImage.getMemberId().equals(memberId)) {
             throw new ProfileImageMemberIdMismatchException();
         }
         return profileImage;
     }
 
     private ProfileImage findById(Long profileImageId, List<ProfileImage> profileImages) {
-        return profileImages.stream().filter(p -> p.getId() == profileImageId).findFirst().orElse(null);
+        return profileImages.stream().filter(p -> p.getId().equals(profileImageId)).findFirst().orElse(null);
     }
 
     private CompletableFuture<ProfileImage> handleImageUpload(ProfileImageUploadRequest request, Long memberId, List<ProfileImage> profileImages) {
@@ -146,7 +144,7 @@ public class ProfileImageService {
             s3Uploader.deleteFile(profileImage.getUrl()); // 기존 이미지 삭제.
             profileImage.updateUrl(imageUrl);
             return profileImage;
-        } else if (request.getId() != null && imageUrl == null) { // 기존 프로필 이미지를 유지하는 경우.
+        } else if (request.getId() != null) { // 기존 프로필 이미지를 유지하는 경우.
             return findById(request.getId(), profileImages);
         } else { // 새로운 프로필 이미지를 추가하는 경우.
             return createNewProfileImage(request, memberId, imageUrl);

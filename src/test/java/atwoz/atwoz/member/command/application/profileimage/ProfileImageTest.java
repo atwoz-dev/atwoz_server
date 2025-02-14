@@ -3,7 +3,10 @@ package atwoz.atwoz.member.command.application.profileimage;
 import atwoz.atwoz.member.command.application.profileImage.ProfileImageService;
 import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadRequest;
 import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadResponse;
-import atwoz.atwoz.member.command.application.profileImage.exception.*;
+import atwoz.atwoz.member.command.application.profileImage.exception.DuplicateProfileImageOrderException;
+import atwoz.atwoz.member.command.application.profileImage.exception.InvalidPrimaryProfileImageCountException;
+import atwoz.atwoz.member.command.application.profileImage.exception.ProfileImageMemberIdMismatchException;
+import atwoz.atwoz.member.command.application.profileImage.exception.ProfileImageNotFoundException;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImageCommandRepository;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
@@ -67,21 +70,6 @@ public class ProfileImageTest {
             ReflectionTestUtils.setField(profileImage2, "id", 2L);
 
             existsProfileImages = List.of(profileImage1, profileImage2);
-        }
-
-
-        @Test
-        @DisplayName("이미지 파일이 아닌 경우, 업로드 실패.")
-        public void isFailWhenFileIsNotImage() {
-            // Given
-            Long memberId = 1L;
-            MultipartFile textFile = new MockMultipartFile("file", "image.jpeg", "text", "image".getBytes());
-            List<ProfileImageUploadRequest> request = List.of(new ProfileImageUploadRequest(1L, textFile, false, 3));
-
-            // When & Then
-            Assertions.assertThatThrownBy(() -> profileImageService.save(memberId, request))
-                    .isInstanceOf(InvalidImageFileException.class);
-
         }
 
         @Test
@@ -168,7 +156,7 @@ public class ProfileImageTest {
 
         @Test
         @DisplayName("기존 프로필 이미지 업데이트와 업로드 함께 성공.")
-        public void uploadWithpdate() {
+        public void uploadWithUpdate() {
             // Given
             Long memberId = 1L;
 
@@ -186,9 +174,9 @@ public class ProfileImageTest {
             }
 
             ProfileImage profileImage = existsProfileImages.stream().filter(i -> i.getId() == 1L)
-                    .findFirst().get();
+                    .findFirst().orElseThrow(RuntimeException::new);
             ProfileImageUploadRequest request = goodRequests.stream().filter(i -> i.getId() == 1L)
-                    .findFirst().get();
+                    .findFirst().orElseThrow(RuntimeException::new);
 
             Assertions.assertThat(profileImage.getId()).isEqualTo(request.getId());
             Assertions.assertThat(profileImage.getOrder()).isEqualTo(request.getOrder());
