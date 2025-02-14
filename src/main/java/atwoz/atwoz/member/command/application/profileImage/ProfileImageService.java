@@ -81,7 +81,7 @@ public class ProfileImageService {
                     .findFirst()
                     .orElseThrow(ProfileImageNotFoundException::new);
 
-            profileImage.updateBasicInfo(r.getOrder(), r.getIsPrimary());
+            profileImage.updateOrderAndPrimary(r.getOrder(), r.getIsPrimary());
         });
     }
 

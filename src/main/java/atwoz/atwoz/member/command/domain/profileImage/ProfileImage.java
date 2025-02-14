@@ -47,13 +47,7 @@ public class ProfileImage extends BaseEntity {
         return isPrimary;
     }
 
-    public void update(String imageUrl, int order, boolean isPrimary) {
-        if (imageUrl != null) setImageUrl(ImageUrl.from(imageUrl));
-        setPrimary(isPrimary);
-        setOrder(order);
-    }
-
-    public void updateBasicInfo(int order, boolean isPrimary) {
+    public void updateOrderAndPrimary(int order, boolean isPrimary) {
         setOrder(order);
         setPrimary(isPrimary);
     }
