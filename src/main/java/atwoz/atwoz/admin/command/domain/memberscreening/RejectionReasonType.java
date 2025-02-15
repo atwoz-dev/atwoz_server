@@ -8,7 +8,7 @@ public enum RejectionReasonType {
     INAPPROPRIATE_IMAGE("부적절한 사진"),
     EXPLICIT_CONTENT("과도한 성적 컨텐츠"),
     OFFENSIVE_LANGUAGE("욕설 또는 불쾌한 표현"),
-    CONTACT_INFO_IN_PROFILE("프로필 연락처 노출");
+    CONTACT_IN_PROFILE("프로필 연락처 노출");
 
     private final String description;
 

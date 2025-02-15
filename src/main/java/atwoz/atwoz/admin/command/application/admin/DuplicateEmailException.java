@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.command.application.admin.exception;
+package atwoz.atwoz.admin.command.application.admin;
 
 public class DuplicateEmailException extends RuntimeException {
     public DuplicateEmailException() {

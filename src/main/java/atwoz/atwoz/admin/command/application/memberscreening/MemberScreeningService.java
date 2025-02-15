@@ -1,10 +1,10 @@
 package atwoz.atwoz.admin.command.application.memberscreening;
 
-import atwoz.atwoz.admin.command.application.memberscreening.dto.MemberScreeningApproveRequest;
-import atwoz.atwoz.admin.command.application.memberscreening.dto.MemberScreeningRejectRequest;
 import atwoz.atwoz.admin.command.domain.memberscreening.MemberScreening;
 import atwoz.atwoz.admin.command.domain.memberscreening.MemberScreeningCommandRepository;
 import atwoz.atwoz.admin.command.domain.memberscreening.MemberScreeningNotFoundException;
+import atwoz.atwoz.admin.presentation.memberscreening.dto.MemberScreeningApproveRequest;
+import atwoz.atwoz.admin.presentation.memberscreening.dto.MemberScreeningRejectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

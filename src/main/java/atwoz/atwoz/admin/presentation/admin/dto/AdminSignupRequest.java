@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.command.application.admin.dto;
+package atwoz.atwoz.admin.presentation.admin.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

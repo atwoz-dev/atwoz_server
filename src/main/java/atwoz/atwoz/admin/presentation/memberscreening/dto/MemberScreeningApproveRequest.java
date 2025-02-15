@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.command.application.memberscreening.dto;
+package atwoz.atwoz.admin.presentation.memberscreening.dto;
 
 import jakarta.validation.constraints.NotNull;
 
