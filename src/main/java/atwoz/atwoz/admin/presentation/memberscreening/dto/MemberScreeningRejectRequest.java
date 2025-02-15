@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.command.application.memberscreening.dto;
+package atwoz.atwoz.admin.presentation.memberscreening.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

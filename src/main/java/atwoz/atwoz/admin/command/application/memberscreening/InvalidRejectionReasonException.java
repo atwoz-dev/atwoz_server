@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.command.application.memberscreening.exception;
+package atwoz.atwoz.admin.command.application.memberscreening;
 
 public class InvalidRejectionReasonException extends RuntimeException {
     public InvalidRejectionReasonException(String rejectionReason) {

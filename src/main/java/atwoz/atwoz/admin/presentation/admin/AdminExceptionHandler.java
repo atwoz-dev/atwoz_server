@@ -1,7 +1,7 @@
 package atwoz.atwoz.admin.presentation.admin;
 
-import atwoz.atwoz.admin.command.application.admin.exception.AdminNotFoundException;
-import atwoz.atwoz.admin.command.application.admin.exception.DuplicateEmailException;
+import atwoz.atwoz.admin.command.application.admin.AdminNotFoundException;
+import atwoz.atwoz.admin.command.application.admin.DuplicateEmailException;
 import atwoz.atwoz.admin.command.domain.admin.exception.IncorrectPasswordException;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;

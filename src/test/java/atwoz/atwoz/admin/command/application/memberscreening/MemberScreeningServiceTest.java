@@ -1,12 +1,11 @@
 package atwoz.atwoz.admin.command.application.memberscreening;
 
-import atwoz.atwoz.admin.command.application.memberscreening.dto.MemberScreeningApproveRequest;
-import atwoz.atwoz.admin.command.application.memberscreening.dto.MemberScreeningRejectRequest;
-import atwoz.atwoz.admin.command.application.memberscreening.exception.InvalidRejectionReasonException;
 import atwoz.atwoz.admin.command.domain.memberscreening.MemberScreening;
 import atwoz.atwoz.admin.command.domain.memberscreening.MemberScreeningCommandRepository;
 import atwoz.atwoz.admin.command.domain.memberscreening.MemberScreeningNotFoundException;
 import atwoz.atwoz.admin.command.domain.memberscreening.RejectionReasonType;
+import atwoz.atwoz.admin.presentation.memberscreening.dto.MemberScreeningApproveRequest;
+import atwoz.atwoz.admin.presentation.memberscreening.dto.MemberScreeningRejectRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

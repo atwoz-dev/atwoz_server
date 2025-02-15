@@ -1,8 +1,8 @@
 package atwoz.atwoz.admin.presentation.memberscreening;
 
 import atwoz.atwoz.admin.command.application.memberscreening.MemberScreeningService;
-import atwoz.atwoz.admin.command.application.memberscreening.dto.MemberScreeningApproveRequest;
-import atwoz.atwoz.admin.command.application.memberscreening.dto.MemberScreeningRejectRequest;
+import atwoz.atwoz.admin.presentation.memberscreening.dto.MemberScreeningApproveRequest;
+import atwoz.atwoz.admin.presentation.memberscreening.dto.MemberScreeningRejectRequest;
 import atwoz.atwoz.admin.query.ScreeningMemberQueryRepository;
 import atwoz.atwoz.admin.query.ScreeningMemberView;
 import atwoz.atwoz.admin.query.ScreeningSearchCondition;

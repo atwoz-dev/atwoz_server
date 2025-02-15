@@ -1,6 +1,6 @@
 package atwoz.atwoz.admin.presentation.memberscreening;
 
-import atwoz.atwoz.admin.command.application.memberscreening.exception.InvalidRejectionReasonException;
+import atwoz.atwoz.admin.command.application.memberscreening.InvalidRejectionReasonException;
 import atwoz.atwoz.admin.command.domain.memberscreening.CannotRejectApprovedScreeningException;
 import atwoz.atwoz.admin.command.domain.memberscreening.MemberScreeningNotFoundException;
 import atwoz.atwoz.common.enums.StatusType;

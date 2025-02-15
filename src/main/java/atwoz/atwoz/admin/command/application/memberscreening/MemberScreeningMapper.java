@@ -1,6 +1,5 @@
 package atwoz.atwoz.admin.command.application.memberscreening;
 
-import atwoz.atwoz.admin.command.application.memberscreening.exception.InvalidRejectionReasonException;
 import atwoz.atwoz.admin.command.domain.memberscreening.RejectionReasonType;
 import lombok.NoArgsConstructor;
 
