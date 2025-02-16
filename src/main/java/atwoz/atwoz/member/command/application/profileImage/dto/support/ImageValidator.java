@@ -11,7 +11,6 @@ public class ImageValidator implements ConstraintValidator<ValidImage, Multipart
         if (multipartFile != null && !multipartFile.getContentType().startsWith("image/")) {
             return false;
         }
-        multipartFile.getContentType();
         return true;
     }
 }

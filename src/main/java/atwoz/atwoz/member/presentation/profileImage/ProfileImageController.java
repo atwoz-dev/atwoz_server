@@ -30,5 +30,4 @@ public class ProfileImageController {
         profileImageService.delete(id, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
-
 }

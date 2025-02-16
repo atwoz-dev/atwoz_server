@@ -27,27 +27,26 @@ public class ProfileImageService {
     private final S3Uploader s3Uploader;
 
     @Transactional
-    public List<ProfileImageUploadResponse> save(Long memberId, List<ProfileImageUploadRequest> requestList) {
+    public List<ProfileImageUploadResponse> save(Long memberId, List<ProfileImageUploadRequest> requests) {
         // 빈 파일로 이미지를 업데이트하려는 경우 검증.
-        validateImageUploadRequest(requestList);
+        validateImageUploadRequest(requests);
 
         List<ProfileImage> profileImages = profileImageCommandRepository.findByMemberId(memberId);
 
         // 새롭게 추가되는 프로필 이미지.
-        List<ProfileImageUploadRequest> imageUploadRequests = requestList.stream().filter(r -> r.getId() == null).toList();
+        List<ProfileImageUploadRequest> imageUploadRequests = requests.stream().filter(r -> r.getId() == null).toList();
 
         // 기존 이미지를 업데이트.
-        List<ProfileImageUploadRequest> imageUpdateRequests = requestList.stream().filter(r -> r.getId() != null).toList();
+        List<ProfileImageUploadRequest> imageUpdateRequests = requests.stream().filter(r -> r.getId() != null).toList();
 
         // 업데이트 요청을 엔티티에 반영.
         updateByRequests(imageUpdateRequests, profileImages);
-
 
         // 반영된 엔티티와 업로드 요청을 합쳐서, 검증.
         validateRequestsWithProfileImages(imageUploadRequests, profileImages);
 
         // 비동기로 s3 요청.
-        List<CompletableFuture<ProfileImage>> futures = imageUploadRequests.stream()
+        List<CompletableFuture<ProfileImage>> futures = requests.stream()
                 .map(request -> handleImageUpload(request, memberId, profileImages))
                 .collect(Collectors.toList());
 
@@ -139,7 +138,8 @@ public class ProfileImageService {
     }
 
     private ProfileImage processUploadedImage(ProfileImageUploadRequest request, Long memberId, List<ProfileImage> profileImages, String imageUrl) {
-        if (request.getId() != null && imageUrl != null) { // 기존 프로필 이미지의 파일을 교체하는 경우.
+        if (isReplacedImage(request, imageUrl)) { // 기존 프로필 이미지의 파일을 교체하는 경우.
+            System.out.println("replace : " + request.getId());
             ProfileImage profileImage = findById(request.getId(), profileImages);
             s3Uploader.deleteFile(profileImage.getUrl()); // 기존 이미지 삭제.
             profileImage.updateUrl(imageUrl);
@@ -149,6 +149,13 @@ public class ProfileImageService {
         } else { // 새로운 프로필 이미지를 추가하는 경우.
             return createNewProfileImage(request, memberId, imageUrl);
         }
+    }
+
+    private boolean isReplacedImage(ProfileImageUploadRequest request, String imageUrl) {
+        if (request.getId() != null && imageUrl != null) {
+            return true;
+        }
+        return false;
     }
 
     private ProfileImage createNewProfileImage(ProfileImageUploadRequest request, Long memberId, String imageUrl) {

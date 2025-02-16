@@ -3,10 +3,7 @@ package atwoz.atwoz.member.command.application.profileimage;
 import atwoz.atwoz.member.command.application.profileImage.ProfileImageService;
 import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadRequest;
 import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadResponse;
-import atwoz.atwoz.member.command.application.profileImage.exception.DuplicateProfileImageOrderException;
-import atwoz.atwoz.member.command.application.profileImage.exception.InvalidPrimaryProfileImageCountException;
-import atwoz.atwoz.member.command.application.profileImage.exception.ProfileImageMemberIdMismatchException;
-import atwoz.atwoz.member.command.application.profileImage.exception.ProfileImageNotFoundException;
+import atwoz.atwoz.member.command.application.profileImage.exception.*;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImageCommandRepository;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
@@ -30,7 +27,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @ExtendWith(MockitoExtension.class)
-public class ProfileImageTest {
+public class ProfileImageServiceTest {
 
     @InjectMocks
     private ProfileImageService profileImageService;
@@ -126,6 +123,19 @@ public class ProfileImageTest {
             // When & Then
             Assertions.assertThatThrownBy(() -> profileImageService.save(memberId, requests))
                     .isInstanceOf(ProfileImageNotFoundException.class);
+        }
+
+        @Test
+        @DisplayName("비어있는 파일을 업로드 대상으로 하는 경우, 업데이트 실패")
+        public void isFailWhenUpdateWithEmptyFile() {
+            // Given
+            Long memberId = 1L;
+            List<ProfileImageUploadRequest> emptyFileRequests = List.of(new ProfileImageUploadRequest(null, null, false, 3));
+
+
+            // When & Then
+            Assertions.assertThatThrownBy(() -> profileImageService.save(memberId, emptyFileRequests))
+                    .isInstanceOf(EmptyImageUploadException.class);
         }
 
         @Test
