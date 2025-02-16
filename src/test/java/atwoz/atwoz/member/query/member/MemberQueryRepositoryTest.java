@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.query;
+package atwoz.atwoz.member.query.member;
 
 import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.admin.command.domain.hobby.Hobby;
@@ -7,7 +7,6 @@ import atwoz.atwoz.member.command.domain.member.DrinkingStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
-import atwoz.atwoz.member.query.member.MemberQueryRepository;
 import atwoz.atwoz.member.query.member.view.MemberContactView;
 import atwoz.atwoz.member.query.member.view.MemberProfileView;
 import org.assertj.core.api.Assertions;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
@@ -49,7 +47,6 @@ public class MemberQueryRepositoryTest {
 
         @Test
         @DisplayName("존재하는 아이디인 경우, 프로필 조회 성공.")
-        @Transactional
         void isSuccessWhenMemberIsExists() {
             // Given
             Job job = Job.from("직업1");

@@ -1,6 +1,5 @@
 package atwoz.atwoz.member.query.profileimage;
 
-import atwoz.atwoz.member.command.domain.profileImage.QProfileImage;
 import atwoz.atwoz.member.query.profileimage.view.ProfileImageView;
 import atwoz.atwoz.member.query.profileimage.view.QProfileImageView;
 import com.querydsl.jpa.JPQLQueryFactory;
@@ -24,7 +23,7 @@ public class ProfileImageQueryRepository {
                         profileImage.imageUrl.value,
                         profileImage.isPrimary,
                         profileImage.order
-                )).orderBy(profileImage.order.desc())
+                )).orderBy(profileImage.order.asc())
                 .fetch();
     }
 }
