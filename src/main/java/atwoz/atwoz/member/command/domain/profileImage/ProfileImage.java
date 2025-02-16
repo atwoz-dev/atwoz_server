@@ -1,8 +1,8 @@
 package atwoz.atwoz.member.command.domain.profileImage;
 
 import atwoz.atwoz.common.entity.BaseEntity;
-import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.command.domain.profileImage.exception.InvalidOrderException;
+import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,8 +13,10 @@ import lombok.*;
 public class ProfileImage extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long id;
 
+    @Getter
     private Long memberId;
 
     @Embedded
@@ -37,16 +39,21 @@ public class ProfileImage extends BaseEntity {
         return imageUrl.getValue();
     }
 
-    public Long getMemberId() {
-        return memberId;
-    }
-
     public Integer getOrder() {
         return order;
     }
 
     public Boolean isPrimary() {
         return isPrimary;
+    }
+
+    public void updateOrderAndPrimary(int order, boolean isPrimary) {
+        setOrder(order);
+        setPrimary(isPrimary);
+    }
+
+    public void updateUrl(String imageUrl) {
+        if (imageUrl != null) setImageUrl(ImageUrl.from(imageUrl));
     }
 
     private void setMemberId(@NonNull Long memberId) {
