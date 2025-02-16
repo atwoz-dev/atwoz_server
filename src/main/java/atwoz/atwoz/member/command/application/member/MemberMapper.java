@@ -1,6 +1,6 @@
 package atwoz.atwoz.member.command.application.member;
 
-import atwoz.atwoz.member.command.application.member.dto.MemberProfileUpdateRequest;
+import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;

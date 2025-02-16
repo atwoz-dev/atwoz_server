@@ -1,9 +1,9 @@
 package atwoz.atwoz.member.query.member;
 
-import atwoz.atwoz.member.query.member.dto.MemberContactResponse;
-import atwoz.atwoz.member.query.member.dto.MemberProfileResponse;
-import atwoz.atwoz.member.query.member.dto.QMemberContactResponse;
-import atwoz.atwoz.member.query.member.dto.QMemberProfileResponse;
+import atwoz.atwoz.member.query.member.view.MemberContactView;
+import atwoz.atwoz.member.query.member.view.MemberProfileView;
+import atwoz.atwoz.member.query.member.view.QMemberContactView;
+import atwoz.atwoz.member.query.member.view.QMemberProfileView;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -21,15 +21,15 @@ import static com.querydsl.core.group.GroupBy.list;
 public class MemberQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public Optional<MemberProfileResponse> findProfileByMemberId(Long memberId) {
-        MemberProfileResponse memberProfileResponse = queryFactory
+    public Optional<MemberProfileView> findProfileByMemberId(Long memberId) {
+        MemberProfileView memberProfileView = queryFactory
                 .from(member)
                 .leftJoin(hobby).on(hobby.id.in(member.profile.hobbyIds))
                 .leftJoin(job).on(job.id.eq(member.profile.jobId))
                 .where(member.id.eq(memberId))
                 .transform(
                         groupBy(member.id).as(
-                                new QMemberProfileResponse(
+                                new QMemberProfileView(
                                         member.profile.nickname.value,
                                         member.profile.age,
                                         member.profile.gender.stringValue(),
@@ -47,19 +47,19 @@ public class MemberQueryRepository {
                 ).get(memberId);
 
 
-        return Optional.ofNullable(memberProfileResponse);
+        return Optional.ofNullable(memberProfileView);
     }
 
-    public Optional<MemberContactResponse> findContactsByMemberId(Long memberId) {
-        MemberContactResponse memberContactResponse = queryFactory
+    public Optional<MemberContactView> findContactsByMemberId(Long memberId) {
+        MemberContactView memberContactView = queryFactory
                 .from(member)
                 .where(member.id.eq(memberId))
-                .select(new QMemberContactResponse(
+                .select(new QMemberContactView(
                         member.phoneNumber.value,
                         member.kakaoId.value,
                         member.primaryContactType.stringValue())
                 ).fetchOne();
 
-        return Optional.ofNullable(memberContactResponse);
+        return Optional.ofNullable(memberContactView);
     }
 }

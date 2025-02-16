@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.command.application.profileImage.dto.support;
+package atwoz.atwoz.member.presentation.profileimage.dto.support;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

@@ -1,11 +1,11 @@
-package atwoz.atwoz.member.presentation.profileImage;
+package atwoz.atwoz.member.presentation.profileimage;
 
 import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.profileImage.ProfileImageService;
-import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadRequestWrapper;
+import atwoz.atwoz.member.presentation.profileimage.dto.ProfileImageUploadRequestWrapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;

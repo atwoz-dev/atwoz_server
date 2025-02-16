@@ -1,6 +1,6 @@
-package atwoz.atwoz.member.command.application.profileImage.dto;
+package atwoz.atwoz.member.presentation.profileimage.dto;
 
-import atwoz.atwoz.member.command.application.profileImage.dto.support.ValidImage;
+import atwoz.atwoz.member.presentation.profileimage.dto.support.ValidImage;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

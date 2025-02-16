@@ -1,27 +1,37 @@
 package atwoz.atwoz.member.query;
 
+import atwoz.atwoz.QuerydslConfig;
+import atwoz.atwoz.admin.command.domain.hobby.Hobby;
+import atwoz.atwoz.admin.command.domain.job.Job;
+import atwoz.atwoz.member.command.domain.member.DrinkingStatus;
+import atwoz.atwoz.member.command.domain.member.Member;
+import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.query.member.MemberQueryRepository;
-import atwoz.atwoz.member.query.member.dto.MemberContactResponse;
-import atwoz.atwoz.member.query.member.dto.MemberProfileResponse;
+import atwoz.atwoz.member.query.member.view.MemberContactView;
+import atwoz.atwoz.member.query.member.view.MemberProfileView;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 
 @DataJpaTest
-@Import({TestConfig.class, MemberQueryRepository.class})
+@Import({QuerydslConfig.class, MemberQueryRepository.class})
 public class MemberQueryRepositoryTest {
 
     @Autowired
     private MemberQueryRepository memberQueryRepository;
 
     @Autowired
-    private TestConfig.TestData testData;
+    private TestEntityManager entityManager;
 
     @Nested
     @DisplayName("프로필 조회 테스트")
@@ -39,22 +49,42 @@ public class MemberQueryRepositoryTest {
 
         @Test
         @DisplayName("존재하는 아이디인 경우, 프로필 조회 성공.")
+        @Transactional
         void isSuccessWhenMemberIsExists() {
             // Given
-            Long existMemberId = testData.member().getId();
+            Job job = Job.from("직업1");
+            Hobby hobby1 = Hobby.from("취미1");
+            Hobby hobby2 = Hobby.from("취미2");
+            entityManager.persist(job);
+            entityManager.persist(hobby1);
+            entityManager.persist(hobby2);
+
+            entityManager.flush();
+
+            Member member = Member.fromPhoneNumber("01012345678");
+            MemberProfile updateProfile = MemberProfile.builder()
+                    .age(10)
+                    .height(20)
+                    .drinkingStatus(DrinkingStatus.NONE)
+                    .jobId(job.getId())
+                    .hobbyIds(Set.of(hobby1.getId(), hobby2.getId()))
+                    .build();
+
+            member.updateProfile(updateProfile);
+            entityManager.persist(member);
+            entityManager.flush();
 
             // When
-            MemberProfileResponse memberProfileResponse = memberQueryRepository.findProfileByMemberId(existMemberId).orElse(null);
-
-            MemberProfile savedMemberProfile = testData.member().getProfile();
+            MemberProfileView memberProfileView = memberQueryRepository.findProfileByMemberId(member.getId()).orElse(null);
 
             // Then
-            Assertions.assertThat(memberProfileResponse).isNotNull();
-            Assertions.assertThat(memberProfileResponse.getAge()).isEqualTo(savedMemberProfile.getAge());
-            Assertions.assertThat(memberProfileResponse.getHeight()).isEqualTo(savedMemberProfile.getHeight());
-            Assertions.assertThat(memberProfileResponse.getDrinkingStatus()).isEqualTo(savedMemberProfile.getDrinkingStatus().toString());
-            Assertions.assertThat(memberProfileResponse.getJob()).isEqualTo(testData.job().getName());
-            Assertions.assertThat(memberProfileResponse.getHobbies().size()).isEqualTo(savedMemberProfile.getHobbyIds().size());
+            MemberProfile savedMemberProfile = member.getProfile();
+            Assertions.assertThat(memberProfileView).isNotNull();
+            Assertions.assertThat(memberProfileView.age()).isEqualTo(savedMemberProfile.getAge());
+            Assertions.assertThat(memberProfileView.height()).isEqualTo(savedMemberProfile.getHeight());
+            Assertions.assertThat(memberProfileView.drinkingStatus()).isEqualTo(savedMemberProfile.getDrinkingStatus().toString());
+            Assertions.assertThat(memberProfileView.job()).isEqualTo(job.getName());
+            Assertions.assertThat(memberProfileView.hobbies().size()).isEqualTo(savedMemberProfile.getHobbyIds().size());
         }
     }
 
@@ -77,16 +107,21 @@ public class MemberQueryRepositoryTest {
         @DisplayName("아이디가 존재하는 경우 연락처 조회 성공.")
         void isSuccessWhenMemberIsExists() {
             // Given
-            Long existMemberId = testData.member().getId();
+            Member member = Member.fromPhoneNumber("01012345678");
+            member.changePrimaryContactTypeToKakao(KakaoId.from("kakaoId"));
+            entityManager.persist(member);
+            entityManager.flush();
+
+            Long existMemberId = member.getId();
 
             // When
-            MemberContactResponse memberContactResponse = memberQueryRepository.findContactsByMemberId(existMemberId).orElse(null);
+            MemberContactView memberContactView = memberQueryRepository.findContactsByMemberId(existMemberId).orElse(null);
 
             // Then
-            Assertions.assertThat(memberContactResponse).isNotNull();
-            Assertions.assertThat(memberContactResponse.getPhoneNumber()).isEqualTo(testData.member().getPhoneNumber());
-            Assertions.assertThat(memberContactResponse.getKakaoId()).isEqualTo(testData.member().getKakaoId());
-            Assertions.assertThat(memberContactResponse.getPrimaryContactType()).isEqualTo(testData.member().getPrimaryContactType().toString());
+            Assertions.assertThat(memberContactView).isNotNull();
+            Assertions.assertThat(memberContactView.phoneNumber()).isEqualTo(member.getPhoneNumber());
+            Assertions.assertThat(memberContactView.kakaoId()).isEqualTo(member.getKakaoId());
+            Assertions.assertThat(memberContactView.primaryContactType()).isEqualTo(member.getPrimaryContactType().toString());
         }
     }
 }

@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.presentation.profileImage;
+package atwoz.atwoz.member.presentation.profileimage;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
