@@ -3,10 +3,10 @@ package atwoz.atwoz.member.query.member;
 import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.admin.command.domain.hobby.Hobby;
 import atwoz.atwoz.admin.command.domain.job.Job;
-import atwoz.atwoz.member.command.domain.member.DrinkingStatus;
-import atwoz.atwoz.member.command.domain.member.Member;
+import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
+import atwoz.atwoz.member.command.domain.member.vo.Nickname;
 import atwoz.atwoz.member.query.member.view.MemberContactView;
 import atwoz.atwoz.member.query.member.view.MemberProfileView;
 import org.assertj.core.api.Assertions;
@@ -62,7 +62,14 @@ public class MemberQueryRepositoryTest {
             MemberProfile updateProfile = MemberProfile.builder()
                     .age(10)
                     .height(20)
+                    .highestEducation(HighestEducation.ASSOCIATE)
+                    .nickname(Nickname.from("nickname"))
+                    .region(Region.DAEJEON)
+                    .gender(Gender.MALE)
+                    .smokingStatus(SmokingStatus.DAILY)
+                    .mbti(Mbti.ENFJ)
                     .drinkingStatus(DrinkingStatus.NONE)
+                    .religion(Religion.BUDDHIST)
                     .jobId(job.getId())
                     .hobbyIds(Set.of(hobby1.getId(), hobby2.getId()))
                     .build();
@@ -82,6 +89,13 @@ public class MemberQueryRepositoryTest {
             Assertions.assertThat(memberProfileView.drinkingStatus()).isEqualTo(savedMemberProfile.getDrinkingStatus().toString());
             Assertions.assertThat(memberProfileView.job()).isEqualTo(job.getName());
             Assertions.assertThat(memberProfileView.hobbies().size()).isEqualTo(savedMemberProfile.getHobbyIds().size());
+            Assertions.assertThat(memberProfileView.nickname()).isEqualTo(savedMemberProfile.getNickname().getValue());
+            Assertions.assertThat(memberProfileView.region()).isEqualTo(savedMemberProfile.getRegion().toString());
+            Assertions.assertThat(memberProfileView.gender()).isEqualTo(savedMemberProfile.getGender().toString());
+            Assertions.assertThat(memberProfileView.smokingStatus()).isEqualTo(savedMemberProfile.getSmokingStatus().toString());
+            Assertions.assertThat(memberProfileView.mbti()).isEqualTo(savedMemberProfile.getMbti().toString());
+            Assertions.assertThat(memberProfileView.drinkingStatus()).isEqualTo(savedMemberProfile.getDrinkingStatus().toString());
+            Assertions.assertThat(memberProfileView.religion()).isEqualTo(savedMemberProfile.getReligion().toString());
         }
     }
 
