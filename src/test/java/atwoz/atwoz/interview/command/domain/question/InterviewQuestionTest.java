@@ -27,7 +27,7 @@ class InterviewQuestionTest {
 
     @Test
     @DisplayName("of 메서드에서 content가 blank이면 예외를 던집니다.")
-    void throwsExceptionWhenContentIsEmpty() {
+    void throwsExceptionWhenContentIsBlank() {
         // given
         String content = " ";
         InterviewCategory interviewCategory = InterviewCategory.PERSONAL;
