@@ -5,15 +5,15 @@ import com.querydsl.core.annotations.QueryProjection;
 import java.util.List;
 
 public record ScreeningDetailView(
-    Long screeningId,
-    Long memberId,
+        long screeningId,
+        long memberId,
     String screeningStatus,
     String rejectionReason,
     String nickname,
-    Integer age,
+        int age,
     String gender,
     String joinedDate,
-    List<String> profileImageUrls
+        List<ProfileImageView> profileImages
     // TODO: interviews
 ) {
     @QueryProjection

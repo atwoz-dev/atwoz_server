@@ -16,11 +16,10 @@ public class ScreeningDetailQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    // TODO: profile image order?
     public ScreeningDetailView findById(Long screeningId) {
-        ScreeningDetailView screeningDetailView = queryFactory
+        return queryFactory
                 .from(member)
-                .join(screening).on(screening.id.eq(member.id))
+                .join(screening).on(screening.memberId.eq(member.id))
                 .leftJoin(profileImage).on(profileImage.memberId.eq(member.id))
                 .where(screening.id.eq(screeningId))
                 .transform(
@@ -34,11 +33,14 @@ public class ScreeningDetailQueryRepository {
                                         member.profile.age,
                                         member.profile.gender.stringValue(),
                                         member.createdAt.stringValue(),
-                                        list(profileImage.imageUrl)
+                                        list(new QProfileImageView(
+                                                profileImage.imageUrl.value,
+                                                profileImage.order,
+                                                profileImage.isPrimary
+                                        ))
                                 )
-                        ))
+                        )
+                )
                 .get(screeningId);
-
-        return screeningDetailView;
     }
 }

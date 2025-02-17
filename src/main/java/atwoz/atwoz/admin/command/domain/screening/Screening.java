@@ -12,30 +12,26 @@ import static jakarta.persistence.EnumType.STRING;
 @Entity
 @Table(name = "screenings")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Screening extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Getter
     private Long memberId;
 
-    @Getter
     private Long adminId;
 
     @Enumerated(STRING)
     @Column(columnDefinition = "varchar(50)")
-    @Getter
     private RejectionReasonType rejectionReason;
 
     @Enumerated(STRING)
     @Column(columnDefinition = "varchar(50)")
-    @Getter
     private ScreeningStatus status;
 
     @Version
-    @Getter
     private Long version;
 
     public static Screening from(Long memberId) {
