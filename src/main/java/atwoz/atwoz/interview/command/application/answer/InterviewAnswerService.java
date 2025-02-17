@@ -1,5 +1,6 @@
 package atwoz.atwoz.interview.command.application.answer;
 
+import atwoz.atwoz.interview.command.application.answer.exception.InterviewAnserAlreadyExistsException;
 import atwoz.atwoz.interview.command.application.answer.exception.InterviewQuestionIsNotPublicException;
 import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;
 import atwoz.atwoz.interview.presentation.answer.dto.InterviewAnswerSaveRequest;
@@ -20,15 +21,18 @@ public class InterviewAnswerService {
 
     @Transactional
     public void saveAnswer(InterviewAnswerSaveRequest request, Long memberId) {
-        validateQuestion(request.interviewQuestionId());
+        validateQuestion(request.interviewQuestionId(), memberId);
         createInterviewAnswer(request.interviewQuestionId(), memberId, request.answerContent());
     }
 
-    private void validateQuestion(Long questionId) {
+    private void validateQuestion(Long questionId, Long memberId) {
         InterviewQuestion interviewQuestion = interviewQuestionCommandRepository.findById(questionId)
                 .orElseThrow(() -> new InterviewQuestionNotFoundException());
         if (!interviewQuestion.isPublic()) {
             throw new InterviewQuestionIsNotPublicException();
+        }
+        if (interviewAnswerCommandRepository.existsByQuestionIdAndMemberId(questionId, memberId)) {
+            throw new InterviewAnserAlreadyExistsException();
         }
     }
 
