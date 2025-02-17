@@ -4,6 +4,7 @@ import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.interview.command.domain.question.exception.InvalidInterviewQuestionContentException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
@@ -20,6 +21,7 @@ public class InterviewQuestion extends BaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private InterviewCategory category;
 
+    @Getter
     private boolean isPublic;
 
     public static InterviewQuestion of(String content, InterviewCategory category, boolean isPublic) {

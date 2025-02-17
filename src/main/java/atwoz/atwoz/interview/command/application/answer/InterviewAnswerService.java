@@ -1,5 +1,7 @@
 package atwoz.atwoz.interview.command.application.answer;
 
+import atwoz.atwoz.interview.command.application.answer.exception.InterviewQuestionIsNotPublicException;
+import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;
 import atwoz.atwoz.interview.presentation.answer.dto.InterviewAnswerSaveRequest;
 import atwoz.atwoz.interview.command.application.answer.exception.InterviewQuestionNotFoundException;
 import atwoz.atwoz.interview.command.domain.answer.InterviewAnswer;
@@ -23,8 +25,10 @@ public class InterviewAnswerService {
     }
 
     private void validateQuestion(Long questionId) {
-        if (!interviewQuestionCommandRepository.existsById(questionId)) {
-            throw new InterviewQuestionNotFoundException();
+        InterviewQuestion interviewQuestion = interviewQuestionCommandRepository.findById(questionId)
+                .orElseThrow(() -> new InterviewQuestionNotFoundException());
+        if (!interviewQuestion.isPublic()) {
+            throw new InterviewQuestionIsNotPublicException();
         }
     }
 
