@@ -30,13 +30,13 @@ public class InterviewAnswerService {
 
     private InterviewAnswer createInterviewAnswer(Long questionId, Long memberId, String content) {
         InterviewAnswer interviewAnswer = InterviewAnswer.of(questionId, memberId, content);
-        if (hasInterviewAnswer(memberId)) {
+        if (isFirstInterviewAnswer(memberId)) {
             interviewAnswer.submitFirstInterviewAnswer();
         }
         return interviewAnswerCommandRepository.save(interviewAnswer);
     }
 
-    private boolean hasInterviewAnswer(Long memberId) {
+    private boolean isFirstInterviewAnswer(Long memberId) {
         return !interviewAnswerCommandRepository.existsByMemberId(memberId);
     }
 }
