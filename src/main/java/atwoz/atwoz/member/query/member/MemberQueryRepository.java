@@ -52,13 +52,14 @@ public class MemberQueryRepository {
 
     public Optional<MemberContactView> findContactsByMemberId(Long memberId) {
         MemberContactView memberContactView = queryFactory
-                .from(member)
-                .where(member.id.eq(memberId))
                 .select(new QMemberContactView(
                         member.phoneNumber.value,
                         member.kakaoId.value,
                         member.primaryContactType.stringValue())
-                ).fetchOne();
+                )
+                .from(member)
+                .where(member.id.eq(memberId))
+                .fetchOne();
 
         return Optional.ofNullable(memberContactView);
     }

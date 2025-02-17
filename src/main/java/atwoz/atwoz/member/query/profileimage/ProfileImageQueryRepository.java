@@ -16,14 +16,16 @@ public class ProfileImageQueryRepository {
     private final JPQLQueryFactory queryFactory;
 
     public List<ProfileImageView> findByMemberId(Long memberId) {
-        return queryFactory.from(profileImage)
-                .where(profileImage.memberId.eq(memberId))
+        return queryFactory
                 .select(new QProfileImageView(
                         profileImage.id,
                         profileImage.imageUrl.value,
                         profileImage.isPrimary,
                         profileImage.order
-                )).orderBy(profileImage.order.asc())
+                ))
+                .from(profileImage)
+                .where(profileImage.memberId.eq(memberId))
+                .orderBy(profileImage.order.asc())
                 .fetch();
     }
 }
