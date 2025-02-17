@@ -1,12 +1,12 @@
-package atwoz.atwoz.admin.command.application.memberscreening;
+package atwoz.atwoz.admin.command.application.screening;
 
-import atwoz.atwoz.admin.command.domain.memberscreening.RejectionReasonType;
+import atwoz.atwoz.admin.command.domain.screening.RejectionReasonType;
 import lombok.NoArgsConstructor;
 
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
-public class MemberScreeningMapper {
+public class ScreeningMapper {
 
     public static RejectionReasonType toRejectionReasonType(String rejectionReason) {
         try {
