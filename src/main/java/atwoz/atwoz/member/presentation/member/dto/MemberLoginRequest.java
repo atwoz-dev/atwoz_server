@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.command.application.member.dto;
+package atwoz.atwoz.member.presentation.member.dto;
 
 import jakarta.validation.constraints.Pattern;
 

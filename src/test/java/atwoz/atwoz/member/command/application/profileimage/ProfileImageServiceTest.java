@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.command.application.profileimage;
 
 import atwoz.atwoz.member.command.application.profileImage.ProfileImageService;
-import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadRequest;
+import atwoz.atwoz.member.presentation.profileimage.dto.ProfileImageUploadRequest;
 import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadResponse;
 import atwoz.atwoz.member.command.application.profileImage.exception.*;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;

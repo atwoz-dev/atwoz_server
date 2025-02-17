@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.command.application.profileImage.dto;
+package atwoz.atwoz.member.presentation.profileimage.dto;
 
 import jakarta.validation.Valid;
 import lombok.Getter;
