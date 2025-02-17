@@ -29,10 +29,7 @@ public class InterviewAnswer extends BaseEntity {
         return new InterviewAnswer(questionId, memberId, content);
     }
 
-    public void submit(boolean hasInterviewAnswer) {
-        if (hasInterviewAnswer) {
-            return;
-        }
+    public void submitFirstInterviewAnswer() {
         Events.raise(new FirstInterviewSubmittedEvent(memberId));
     }
 
