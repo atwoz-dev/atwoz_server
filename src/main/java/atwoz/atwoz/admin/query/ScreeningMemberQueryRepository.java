@@ -24,6 +24,7 @@ public class ScreeningMemberQueryRepository {
     public Page<ScreeningMemberView> findScreeningMembers(ScreeningSearchCondition condition, Pageable pageable) {
         List<ScreeningMemberView> content = queryFactory
                 .select(new QScreeningMemberView(
+                        memberScreening.id,
                         member.profile.nickname.value,
                         member.profile.gender.stringValue(),
                         member.createdAt.stringValue(),
