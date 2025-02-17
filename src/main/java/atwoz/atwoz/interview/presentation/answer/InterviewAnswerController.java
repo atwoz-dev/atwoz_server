@@ -4,6 +4,7 @@ import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.interview.command.application.answer.InterviewAnswerService;
 import atwoz.atwoz.interview.presentation.answer.dto.InterviewAnswerSaveRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +19,7 @@ public class InterviewAnswerController {
     private final InterviewAnswerService interviewAnswerService;
 
     @PostMapping
-    public void saveAnswer(@RequestBody InterviewAnswerSaveRequest request, @AuthPrincipal AuthContext authContext) {
+    public void saveAnswer(@Valid @RequestBody InterviewAnswerSaveRequest request, @AuthPrincipal AuthContext authContext) {
         interviewAnswerService.saveAnswer(request, authContext.getId());
     }
 }
