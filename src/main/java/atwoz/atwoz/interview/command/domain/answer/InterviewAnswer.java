@@ -1,5 +1,6 @@
 package atwoz.atwoz.interview.command.domain.answer;
 
+import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.interview.command.application.answer.FirstInterviewSubmittedEvent;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.interview.command.domain.answer.exception.InvalidInterviewAnswerContentException;
@@ -13,7 +14,7 @@ import lombok.NonNull;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class InterviewAnswer {
+public class InterviewAnswer extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
