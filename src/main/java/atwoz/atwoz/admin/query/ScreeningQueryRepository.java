@@ -12,26 +12,27 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static atwoz.atwoz.admin.command.domain.memberscreening.QMemberScreening.memberScreening;
+import static atwoz.atwoz.admin.command.domain.screening.QScreening.screening;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
 
 @Repository
 @RequiredArgsConstructor
-public class ScreeningMemberQueryRepository {
+public class ScreeningQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public Page<ScreeningMemberView> findScreeningMembers(ScreeningSearchCondition condition, Pageable pageable) {
-        List<ScreeningMemberView> content = queryFactory
-                .select(new QScreeningMemberView(
+    public Page<ScreeningView> findScreenings(ScreeningSearchCondition condition, Pageable pageable) {
+        List<ScreeningView> content = queryFactory
+                .select(new QScreeningView(
+                        screening.id,
                         member.profile.nickname.value,
                         member.profile.gender.stringValue(),
                         member.createdAt.stringValue(),
-                        memberScreening.status.stringValue(),
-                        memberScreening.rejectionReason.stringValue()
+                        screening.status.stringValue(),
+                        screening.rejectionReason.stringValue()
                 ))
-                .from(memberScreening)
-                .join(member).on(member.id.eq(memberScreening.id))
+                .from(screening)
+                .join(member).on(member.id.eq(screening.id))
                 .where(
                         screeningStatusEq(condition.screeningStatus()),
                         nicknameEq(condition.nickname()),
@@ -45,9 +46,9 @@ public class ScreeningMemberQueryRepository {
 
         long totalCount = Optional.ofNullable(
                 queryFactory
-                        .select(memberScreening.count())
-                        .from(memberScreening)
-                        .join(member).on(member.id.eq(memberScreening.id))
+                        .select(screening.count())
+                        .from(screening)
+                        .join(member).on(member.id.eq(screening.id))
                         .where(
                                 screeningStatusEq(condition.screeningStatus()),
                                 nicknameEq(condition.nickname()),
@@ -65,7 +66,7 @@ public class ScreeningMemberQueryRepository {
         if (screeningStatus == null) {
             return null;
         }
-        return memberScreening.status.stringValue().eq(screeningStatus);
+        return screening.status.stringValue().eq(screeningStatus);
     }
 
     private BooleanExpression nicknameEq(String nickname) {

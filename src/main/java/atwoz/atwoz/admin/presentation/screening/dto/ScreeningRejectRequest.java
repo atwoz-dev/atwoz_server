@@ -1,10 +1,10 @@
-package atwoz.atwoz.admin.presentation.memberscreening.dto;
+package atwoz.atwoz.admin.presentation.screening.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record MemberScreeningRejectRequest(
+public record ScreeningRejectRequest(
         @NotNull(message = "멤버 id는 null일 수 없습니다.")
         Long memberId,
 

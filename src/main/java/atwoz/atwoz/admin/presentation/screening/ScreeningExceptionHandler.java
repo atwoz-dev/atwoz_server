@@ -1,8 +1,8 @@
-package atwoz.atwoz.admin.presentation.memberscreening;
+package atwoz.atwoz.admin.presentation.screening;
 
-import atwoz.atwoz.admin.command.application.memberscreening.InvalidRejectionReasonException;
-import atwoz.atwoz.admin.command.domain.memberscreening.CannotRejectApprovedScreeningException;
-import atwoz.atwoz.admin.command.domain.memberscreening.MemberScreeningNotFoundException;
+import atwoz.atwoz.admin.command.application.screening.InvalidRejectionReasonException;
+import atwoz.atwoz.admin.command.domain.screening.CannotRejectApprovedScreeningException;
+import atwoz.atwoz.admin.command.domain.screening.ScreeningNotFoundException;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class MemberScreeningExceptionHandler {
+public class ScreeningExceptionHandler {
 
     @ExceptionHandler(CannotRejectApprovedScreeningException.class)
     public ResponseEntity<BaseResponse<Void>> handleCannotRejectApprovedScreeningException(CannotRejectApprovedScreeningException e) {
@@ -25,8 +25,8 @@ public class MemberScreeningExceptionHandler {
                 .body(BaseResponse.from(StatusType.CANNOT_BE_EDITED));
     }
 
-    @ExceptionHandler(MemberScreeningNotFoundException.class)
-    public ResponseEntity<BaseResponse<Void>> handleMemberScreeningNotFoundException(MemberScreeningNotFoundException e) {
+    @ExceptionHandler(ScreeningNotFoundException.class)
+    public ResponseEntity<BaseResponse<Void>> handleScreeningNotFoundException(ScreeningNotFoundException e) {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)

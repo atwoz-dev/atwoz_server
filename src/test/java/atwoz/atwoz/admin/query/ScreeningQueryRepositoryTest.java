@@ -1,7 +1,7 @@
 package atwoz.atwoz.admin.query;
 
 import atwoz.atwoz.QuerydslConfig;
-import atwoz.atwoz.admin.command.domain.memberscreening.MemberScreening;
+import atwoz.atwoz.admin.command.domain.screening.Screening;
 import atwoz.atwoz.member.command.domain.member.Gender;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
@@ -21,14 +21,14 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import({QuerydslConfig.class, ScreeningMemberQueryRepository.class})
-class ScreeningMemberQueryRepositoryTest {
+@Import({QuerydslConfig.class, ScreeningQueryRepository.class})
+class ScreeningQueryRepositoryTest {
 
     @Autowired
     private TestEntityManager em;
 
     @Autowired
-    private ScreeningMemberQueryRepository screeningMemberQueryRepository;
+    private ScreeningQueryRepository screeningQueryRepository;
 
     @Test
     @DisplayName("조건 없이 전체 심사를 조회합니다.")
@@ -41,8 +41,8 @@ class ScreeningMemberQueryRepositoryTest {
         em.persist(member2);
         em.persist(member3);
 
-        MemberScreening screening1 = MemberScreening.from(member1.getId());
-        MemberScreening screening2 = MemberScreening.from(member2.getId());
+        Screening screening1 = Screening.from(member1.getId());
+        Screening screening2 = Screening.from(member2.getId());
         em.persist(screening1);
         em.persist(screening2);
 
@@ -59,7 +59,7 @@ class ScreeningMemberQueryRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<ScreeningMemberView> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
+        Page<ScreeningView> screeningMembers = screeningQueryRepository.findScreenings(condition, pageRequest);
 
         // then
         assertThat(screeningMembers.getTotalElements()).isEqualTo(2);
@@ -76,8 +76,8 @@ class ScreeningMemberQueryRepositoryTest {
         em.persist(member1);
         em.persist(member2);
 
-        MemberScreening screening1 = MemberScreening.from(member1.getId());
-        MemberScreening screening2 = MemberScreening.from(member2.getId());
+        Screening screening1 = Screening.from(member1.getId());
+        Screening screening2 = Screening.from(member2.getId());
         em.persist(screening1);
         em.persist(screening2);
 
@@ -94,7 +94,7 @@ class ScreeningMemberQueryRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<ScreeningMemberView> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
+        Page<ScreeningView> screeningMembers = screeningQueryRepository.findScreenings(condition, pageRequest);
 
         // then
         assertThat(screeningMembers.getTotalElements()).isEqualTo(2);
@@ -111,8 +111,8 @@ class ScreeningMemberQueryRepositoryTest {
         em.persist(member1);
         em.persist(member2);
 
-        MemberScreening screening1 = MemberScreening.from(member1.getId());
-        MemberScreening screening2 = MemberScreening.from(member2.getId());
+        Screening screening1 = Screening.from(member1.getId());
+        Screening screening2 = Screening.from(member2.getId());
         em.persist(screening1);
         em.persist(screening2);
 
@@ -129,7 +129,7 @@ class ScreeningMemberQueryRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<ScreeningMemberView> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
+        Page<ScreeningView> screeningMembers = screeningQueryRepository.findScreenings(condition, pageRequest);
 
         // then
         assertThat(screeningMembers.getTotalElements()).isZero();
@@ -144,8 +144,8 @@ class ScreeningMemberQueryRepositoryTest {
         em.persist(member1);
         em.persist(member2);
 
-        MemberScreening screening1 = MemberScreening.from(member1.getId());
-        MemberScreening screening2 = MemberScreening.from(member2.getId());
+        Screening screening1 = Screening.from(member1.getId());
+        Screening screening2 = Screening.from(member2.getId());
         em.persist(screening1);
         em.persist(screening2);
 
@@ -162,7 +162,7 @@ class ScreeningMemberQueryRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<ScreeningMemberView> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
+        Page<ScreeningView> screeningMembers = screeningQueryRepository.findScreenings(condition, pageRequest);
 
         // then
         assertThat(screeningMembers.getTotalElements()).isEqualTo(1);
@@ -178,8 +178,8 @@ class ScreeningMemberQueryRepositoryTest {
         em.persist(member1);
         em.persist(member2);
 
-        MemberScreening screening1 = MemberScreening.from(member1.getId());
-        MemberScreening screening2 = MemberScreening.from(member2.getId());
+        Screening screening1 = Screening.from(member1.getId());
+        Screening screening2 = Screening.from(member2.getId());
         em.persist(screening1);
         em.persist(screening2);
 
@@ -196,7 +196,7 @@ class ScreeningMemberQueryRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<ScreeningMemberView> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
+        Page<ScreeningView> screeningMembers = screeningQueryRepository.findScreenings(condition, pageRequest);
 
         // then
         assertThat(screeningMembers.getTotalElements()).isEqualTo(1);
@@ -212,8 +212,8 @@ class ScreeningMemberQueryRepositoryTest {
         em.persist(member1);
         em.persist(member2);
 
-        MemberScreening screening1 = MemberScreening.from(member1.getId());
-        MemberScreening screening2 = MemberScreening.from(member2.getId());
+        Screening screening1 = Screening.from(member1.getId());
+        Screening screening2 = Screening.from(member2.getId());
         em.persist(screening1);
         em.persist(screening2);
 
@@ -230,7 +230,7 @@ class ScreeningMemberQueryRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<ScreeningMemberView> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
+        Page<ScreeningView> screeningMembers = screeningQueryRepository.findScreenings(condition, pageRequest);
 
         // then
         assertThat(screeningMembers.getTotalElements()).isEqualTo(2);
@@ -247,8 +247,8 @@ class ScreeningMemberQueryRepositoryTest {
         em.persist(member1);
         em.persist(member2);
 
-        MemberScreening screening1 = MemberScreening.from(member1.getId());
-        MemberScreening screening2 = MemberScreening.from(member2.getId());
+        Screening screening1 = Screening.from(member1.getId());
+        Screening screening2 = Screening.from(member2.getId());
         em.persist(screening1);
         em.persist(screening2);
 
@@ -265,7 +265,7 @@ class ScreeningMemberQueryRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<ScreeningMemberView> screeningMembers = screeningMemberQueryRepository.findScreeningMembers(condition, pageRequest);
+        Page<ScreeningView> screeningMembers = screeningQueryRepository.findScreenings(condition, pageRequest);
 
         // then
         assertThat(screeningMembers.getTotalElements()).isEqualTo(1);

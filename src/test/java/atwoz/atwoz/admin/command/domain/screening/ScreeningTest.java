@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.command.domain.memberscreening;
+package atwoz.atwoz.admin.command.domain.screening;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class MemberScreeningTest {
+class ScreeningTest {
 
     @Nested
     @DisplayName("from() 메서드 테스트")
@@ -20,7 +20,7 @@ class MemberScreeningTest {
             Long memberId = 1L;
 
             // when
-            MemberScreening screening = MemberScreening.from(memberId);
+            Screening screening = Screening.from(memberId);
 
             // then
             assertThat(screening.getMemberId()).isEqualTo(memberId);
@@ -38,7 +38,7 @@ class MemberScreeningTest {
         @DisplayName("PENDING 상태인 MemberScreening을 approve하면, APPROVED 상태가 되며 거절 사유는 null이 됩니다.")
         void approvePendingScreening() {
             // given
-            MemberScreening screening = MemberScreening.from(10L);
+            Screening screening = Screening.from(10L);
 
             // when
             screening.approve(1L);
@@ -53,7 +53,7 @@ class MemberScreeningTest {
         @DisplayName("REJECTED 상태인 MemberScreening을 approve하면, 다시 APPROVED 상태가 되며 거절 사유는 null이 됩니다.")
         void approveRejectedScreening() {
             // given
-            MemberScreening screening = MemberScreening.from(10L);
+            Screening screening = Screening.from(10L);
             screening.reject(1L, RejectionReasonType.CONTACT_IN_PROFILE);
 
             // when
@@ -69,7 +69,7 @@ class MemberScreeningTest {
         @DisplayName("APPROVED 상태인 MemberScreening을 다시 approve하면, 상태 변화 없이 adminId만 갱신되고 거절 사유는 여전히 null입니다.")
         void approveApprovedScreening() {
             // given
-            MemberScreening screening = MemberScreening.from(10L);
+            Screening screening = Screening.from(10L);
             screening.approve(1L);
 
             // when
@@ -90,7 +90,7 @@ class MemberScreeningTest {
         @DisplayName("PENDING 상태인 MemberScreening을 reject하면, REJECTED 상태가 되며 거절 사유가 설정됩니다.")
         void rejectPendingScreening() {
             // given
-            MemberScreening screening = MemberScreening.from(2L);
+            Screening screening = Screening.from(2L);
 
             // when
             screening.reject(3L, RejectionReasonType.INAPPROPRIATE_IMAGE);
@@ -105,7 +105,7 @@ class MemberScreeningTest {
         @DisplayName("REJECTED 상태인 MemberScreening을 다시 reject하면, 재거절이 가능하며 거절 사유가 덮어씌워집니다.")
         void rejectRejectedScreening() {
             // given
-            MemberScreening screening = MemberScreening.from(2L);
+            Screening screening = Screening.from(2L);
             screening.reject(3L, RejectionReasonType.INAPPROPRIATE_IMAGE);
 
             // when
@@ -121,7 +121,7 @@ class MemberScreeningTest {
         @DisplayName("APPROVED 상태인 MemberScreening을 reject하려고 하면 예외가 발생합니다.")
         void rejectApprovedScreeningThrowsException() {
             // given
-            MemberScreening screening = MemberScreening.from(2L);
+            Screening screening = Screening.from(2L);
             screening.approve(10L);
 
             // when & then

@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.command.domain.memberscreening;
+package atwoz.atwoz.admin.command.domain.screening;
 
 import atwoz.atwoz.common.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -10,39 +10,35 @@ import lombok.NonNull;
 import static jakarta.persistence.EnumType.STRING;
 
 @Entity
-@Table(name = "member_screenings")
+@Table(name = "screenings")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberScreening extends BaseEntity {
+@Getter
+public class Screening extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Getter
     private Long memberId;
 
-    @Getter
     private Long adminId;
 
     @Enumerated(STRING)
     @Column(columnDefinition = "varchar(50)")
-    @Getter
     private RejectionReasonType rejectionReason;
 
     @Enumerated(STRING)
     @Column(columnDefinition = "varchar(50)")
-    @Getter
     private ScreeningStatus status;
 
     @Version
-    @Getter
     private Long version;
 
-    public static MemberScreening from(Long memberId) {
-        return new MemberScreening(memberId, null, null, ScreeningStatus.PENDING);
+    public static Screening from(Long memberId) {
+        return new Screening(memberId, null, null, ScreeningStatus.PENDING);
     }
 
-    private MemberScreening(Long memberId, Long adminId, RejectionReasonType rejectionReason, ScreeningStatus status) {
+    private Screening(Long memberId, Long adminId, RejectionReasonType rejectionReason, ScreeningStatus status) {
         this.memberId = memberId;
         this.adminId = adminId;
         this.rejectionReason = rejectionReason;
