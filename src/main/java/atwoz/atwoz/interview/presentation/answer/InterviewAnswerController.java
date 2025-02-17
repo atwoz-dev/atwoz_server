@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class InterviewAnswerController {
 
-        private final InterviewAnswerService interviewAnswerService;
+    private final InterviewAnswerService interviewAnswerService;
 
-         @PostMapping
-         public void saveAnswer(@RequestBody InterviewAnswerSaveRequest request, @AuthPrincipal AuthContext authContext) {
-             interviewAnswerService.saveAnswer(request, authContext.getId());
-         }
+    @PostMapping
+    public void saveAnswer(@RequestBody InterviewAnswerSaveRequest request, @AuthPrincipal AuthContext authContext) {
+        interviewAnswerService.saveAnswer(request, authContext.getId());
+    }
 }
