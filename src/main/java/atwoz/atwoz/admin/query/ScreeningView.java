@@ -2,7 +2,7 @@ package atwoz.atwoz.admin.query;
 
 import com.querydsl.core.annotations.QueryProjection;
 
-public record ScreeningMemberView(
+public record ScreeningView(
         Long screeningId,
         String nickname,
         String gender,
@@ -11,6 +11,6 @@ public record ScreeningMemberView(
         String rejectionReason
 ) {
     @QueryProjection
-    public ScreeningMemberView {
+    public ScreeningView {
     }
 }

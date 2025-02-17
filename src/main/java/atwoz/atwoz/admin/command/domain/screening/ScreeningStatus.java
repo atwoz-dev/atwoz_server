@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.command.domain.memberscreening;
+package atwoz.atwoz.admin.command.domain.screening;
 
 import lombok.Getter;
 

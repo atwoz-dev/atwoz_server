@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.command.application.memberscreening;
+package atwoz.atwoz.admin.command.application.screening;
 
 import atwoz.atwoz.common.event.Event;
 import lombok.AccessLevel;
