@@ -93,7 +93,7 @@ class InterviewQuestionTest {
 
         @Test
         @DisplayName("update 메서드에서 필드 값이 정상이면 InterviewQuestion 객체를 업데이트 합니다.")
-        void createInterviewQuestionObjectWhenFieldValuesAreValid() {
+        void updateInterviewQuestionObjectWhenFieldValuesAreValid() {
             // given
             InterviewQuestion interviewQuestion = InterviewQuestion.of("content", InterviewCategory.PERSONAL, true);
             String content = "updated content";
