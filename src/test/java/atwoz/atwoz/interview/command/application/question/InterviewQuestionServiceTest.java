@@ -39,7 +39,7 @@ class InterviewQuestionServiceTest {
         when(interviewQuestionCommandRepository.existsByContent(content)).thenReturn(true);
 
         // when & then
-        assertThatThrownBy(() -> interviewQuestionService.saveQuestion(request))
+        assertThatThrownBy(() -> interviewQuestionService.createQuestion(request))
                 .isInstanceOf(InterviewQuestionAlreadyExistsException.class);
     }
 
@@ -55,7 +55,7 @@ class InterviewQuestionServiceTest {
         when(interviewQuestionCommandRepository.existsByContent(content)).thenReturn(false);
 
         // when & then
-        assertThatThrownBy(() -> interviewQuestionService.saveQuestion(request))
+        assertThatThrownBy(() -> interviewQuestionService.createQuestion(request))
                 .isInstanceOf(InvalidInterviewCategoryException.class);
     }
 
@@ -71,7 +71,7 @@ class InterviewQuestionServiceTest {
         when(interviewQuestionCommandRepository.existsByContent(content)).thenReturn(false);
 
         // when
-        interviewQuestionService.saveQuestion(request);
+        interviewQuestionService.createQuestion(request);
 
         // then
         verify(interviewQuestionCommandRepository).save(any(InterviewQuestion.class));

@@ -18,7 +18,7 @@ public class InterviewQuestionService {
     private final InterviewQuestionCommandRepository interviewQuestionCommandRepository;
 
     @Transactional
-    public void saveQuestion(InterviewQuestionSaveRequest request) {
+    public void createQuestion(InterviewQuestionSaveRequest request) {
         validateQuestion(request.questionContent());
         InterviewCategory interviewCategory = InterviewQuestionMapper.toInterviewCategory(request.category());
         createQuestion(request.questionContent(), interviewCategory, request.isPublic());

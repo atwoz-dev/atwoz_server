@@ -16,8 +16,8 @@ public class InterviewQuestionController {
     private final InterviewQuestionService interviewQuestionService;
 
     @PostMapping("/admin/interview/question")
-    public ResponseEntity<BaseResponse<Void>> saveQuestion(@Valid @RequestBody InterviewQuestionSaveRequest request) {
-        interviewQuestionService.saveQuestion(request);
+    public ResponseEntity<BaseResponse<Void>> createQuestion(@Valid @RequestBody InterviewQuestionSaveRequest request) {
+        interviewQuestionService.createQuestion(request);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
