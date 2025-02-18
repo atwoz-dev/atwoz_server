@@ -66,8 +66,8 @@ class InterviewQuestionServiceTest {
         }
 
         @Test
-        @DisplayName("인터뷰 질문을 저장한다.")
-        void saveInterviewQuestion() {
+        @DisplayName("인터뷰 질문을 생성한다.")
+        void createInterviewQuestion() {
             // given
             String content = "content";
             String category = InterviewCategory.PERSONAL.name();
