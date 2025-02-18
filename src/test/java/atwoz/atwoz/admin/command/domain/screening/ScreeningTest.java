@@ -14,7 +14,7 @@ class ScreeningTest {
     class FromMethodTest {
 
         @Test
-        @DisplayName("주어진 memberId로 from()을 호출하면, PENDING 상태의 MemberScreening을 생성합니다.")
+        @DisplayName("주어진 memberId로 from()을 호출하면, PENDING 상태의 Screening을 생성합니다.")
         void createPendingScreening() {
             // given
             Long memberId = 1L;
@@ -35,7 +35,7 @@ class ScreeningTest {
     class ApproveMethodTest {
 
         @Test
-        @DisplayName("PENDING 상태인 MemberScreening을 approve하면, APPROVED 상태가 되며 거절 사유는 null이 됩니다.")
+        @DisplayName("PENDING 상태인 Screening을 approve하면, APPROVED 상태가 되며 거절 사유는 null이 됩니다.")
         void approvePendingScreening() {
             // given
             Screening screening = Screening.from(10L);
@@ -50,7 +50,7 @@ class ScreeningTest {
         }
 
         @Test
-        @DisplayName("REJECTED 상태인 MemberScreening을 approve하면, 다시 APPROVED 상태가 되며 거절 사유는 null이 됩니다.")
+        @DisplayName("REJECTED 상태인 Screening을 approve하면, 다시 APPROVED 상태가 되며 거절 사유는 null이 됩니다.")
         void approveRejectedScreening() {
             // given
             Screening screening = Screening.from(10L);
@@ -66,7 +66,7 @@ class ScreeningTest {
         }
 
         @Test
-        @DisplayName("APPROVED 상태인 MemberScreening을 다시 approve하면, 상태 변화 없이 adminId만 갱신되고 거절 사유는 여전히 null입니다.")
+        @DisplayName("APPROVED 상태인 Screening을 다시 approve하면, 상태 변화 없이 adminId만 갱신되고 거절 사유는 여전히 null입니다.")
         void approveApprovedScreening() {
             // given
             Screening screening = Screening.from(10L);
@@ -87,7 +87,7 @@ class ScreeningTest {
     class RejectMethodTest {
 
         @Test
-        @DisplayName("PENDING 상태인 MemberScreening을 reject하면, REJECTED 상태가 되며 거절 사유가 설정됩니다.")
+        @DisplayName("PENDING 상태인 Screening을 reject하면, REJECTED 상태가 되며 거절 사유가 설정됩니다.")
         void rejectPendingScreening() {
             // given
             Screening screening = Screening.from(2L);
@@ -102,7 +102,7 @@ class ScreeningTest {
         }
 
         @Test
-        @DisplayName("REJECTED 상태인 MemberScreening을 다시 reject하면, 재거절이 가능하며 거절 사유가 덮어씌워집니다.")
+        @DisplayName("REJECTED 상태인 Screening을 다시 reject하면, 재거절이 가능하며 거절 사유가 덮어씌워집니다.")
         void rejectRejectedScreening() {
             // given
             Screening screening = Screening.from(2L);
@@ -118,7 +118,7 @@ class ScreeningTest {
         }
 
         @Test
-        @DisplayName("APPROVED 상태인 MemberScreening을 reject하려고 하면 예외가 발생합니다.")
+        @DisplayName("APPROVED 상태인 Screening을 reject하려고 하면 예외가 발생합니다.")
         void rejectApprovedScreeningThrowsException() {
             // given
             Screening screening = Screening.from(2L);
