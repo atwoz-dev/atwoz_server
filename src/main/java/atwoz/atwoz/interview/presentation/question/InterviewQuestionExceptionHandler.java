@@ -2,6 +2,7 @@ package atwoz.atwoz.interview.presentation.question;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
+import atwoz.atwoz.interview.command.application.answer.exception.InterviewQuestionNotFoundException;
 import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionAlreadyExistsException;
 import atwoz.atwoz.interview.command.application.question.exception.InvalidInterviewCategoryException;
 import lombok.extern.slf4j.Slf4j;
@@ -30,5 +31,13 @@ public class InterviewQuestionExceptionHandler {
 
         return ResponseEntity.badRequest()
                 .body(BaseResponse.from(StatusType.INVALID_TYPE_VALUE));
+    }
+
+    @ExceptionHandler(InterviewQuestionNotFoundException.class)
+    public ResponseEntity<BaseResponse<Void>> handleInterviewQuestionNotFoundException(InterviewQuestionNotFoundException e) {
+        log.warn(e.getMessage());
+
+        return ResponseEntity.status(404)
+                .body(BaseResponse.from(StatusType.NOT_FOUND));
     }
 }
