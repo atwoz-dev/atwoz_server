@@ -16,6 +16,7 @@ public class InterviewQuestion extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
     private String content;
 
     @Enumerated(EnumType.STRING)
