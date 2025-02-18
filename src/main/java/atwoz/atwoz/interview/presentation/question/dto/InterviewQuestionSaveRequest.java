@@ -14,7 +14,7 @@ public record InterviewQuestionSaveRequest(
 
         @Schema(
                 description = "인터뷰 질문 카테고리",
-                allowableValues = {"personal", "social", "romantic"},
+                allowableValues = {"PERSONAL", "SOCIAL", "ROMANTIC"},
                 example = "personal"
         )
         @NotBlank(message = "인터뷰 질문 카테고리는 필수입니다.")
