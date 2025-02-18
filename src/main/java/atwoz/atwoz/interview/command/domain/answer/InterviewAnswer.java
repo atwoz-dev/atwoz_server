@@ -4,15 +4,13 @@ import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.interview.command.domain.answer.event.FirstInterviewSubmittedEvent;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.interview.command.domain.answer.exception.InvalidInterviewAnswerContentException;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity
+@Table(name = "interview_answers")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class InterviewAnswer extends BaseEntity {
     @Id

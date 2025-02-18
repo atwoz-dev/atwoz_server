@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity
+@Table(name = "interview_questions")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class InterviewQuestion extends BaseEntity {
     @Id
