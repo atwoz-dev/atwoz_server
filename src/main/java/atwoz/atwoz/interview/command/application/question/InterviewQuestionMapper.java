@@ -1,4 +1,4 @@
-package atwoz.atwoz.interview.command.application.answer;
+package atwoz.atwoz.interview.command.application.question;
 
 import atwoz.atwoz.interview.command.application.question.exception.InvalidInterviewCategoryException;
 import atwoz.atwoz.interview.command.domain.question.InterviewCategory;

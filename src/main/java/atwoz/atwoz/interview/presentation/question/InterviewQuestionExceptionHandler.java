@@ -2,7 +2,7 @@ package atwoz.atwoz.interview.presentation.question;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
-import atwoz.atwoz.interview.command.application.answer.exception.InterviewQuestionNotFoundException;
+import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionNotFoundException;
 import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionAlreadyExistsException;
 import atwoz.atwoz.interview.command.application.question.exception.InvalidInterviewCategoryException;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,6 @@
 package atwoz.atwoz.interview.command.application.question;
 
-import atwoz.atwoz.interview.command.application.answer.exception.InterviewQuestionNotFoundException;
+import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionNotFoundException;
 import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionAlreadyExistsException;
 import atwoz.atwoz.interview.command.application.question.exception.InvalidInterviewCategoryException;
 import atwoz.atwoz.interview.command.domain.question.InterviewCategory;

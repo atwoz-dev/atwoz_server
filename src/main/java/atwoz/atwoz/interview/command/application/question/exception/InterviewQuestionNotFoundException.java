@@ -1,4 +1,4 @@
-package atwoz.atwoz.interview.command.application.answer.exception;
+package atwoz.atwoz.interview.command.application.question.exception;
 
 public class InterviewQuestionNotFoundException extends RuntimeException {
     public InterviewQuestionNotFoundException() {
