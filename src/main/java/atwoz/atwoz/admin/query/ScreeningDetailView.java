@@ -7,14 +7,14 @@ import java.util.List;
 public record ScreeningDetailView(
         long screeningId,
         long memberId,
-    String screeningStatus,
-    String rejectionReason,
-    String nickname,
+        String screeningStatus,
+        String rejectionReason,
+        String nickname,
         int age,
-    String gender,
-    String joinedDate,
+        String gender,
+        String joinedDate,
         List<ProfileImageView> profileImages
-    // TODO: interviews
+        // TODO: interviews
 ) {
     @QueryProjection
     public ScreeningDetailView {
