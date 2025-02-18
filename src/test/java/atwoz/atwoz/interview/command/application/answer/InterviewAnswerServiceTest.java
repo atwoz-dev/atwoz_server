@@ -1,8 +1,8 @@
 package atwoz.atwoz.interview.command.application.answer;
 
-import atwoz.atwoz.interview.command.application.answer.exception.InterviewAnserAlreadyExistsException;
-import atwoz.atwoz.interview.command.application.answer.exception.InterviewQuestionIsNotPublicException;
-import atwoz.atwoz.interview.command.application.answer.exception.InterviewQuestionNotFoundException;
+import atwoz.atwoz.interview.command.application.answer.exception.InterviewAnswerAlreadyExistsException;
+import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionIsNotPublicException;
+import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionNotFoundException;
 import atwoz.atwoz.interview.command.domain.answer.InterviewAnswer;
 import atwoz.atwoz.interview.command.domain.answer.InterviewAnswerCommandRepository;
 import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;
@@ -82,7 +82,7 @@ class InterviewAnswerServiceTest {
 
         // when & then
         assertThatThrownBy(() -> interviewAnswerService.saveAnswer(request, memberId))
-                .isInstanceOf(InterviewAnserAlreadyExistsException.class);
+                .isInstanceOf(InterviewAnswerAlreadyExistsException.class);
     }
 
     @Test
