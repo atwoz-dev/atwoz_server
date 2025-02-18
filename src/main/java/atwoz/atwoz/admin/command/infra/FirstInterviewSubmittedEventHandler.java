@@ -1,7 +1,7 @@
 package atwoz.atwoz.admin.command.infra;
 
-import atwoz.atwoz.admin.command.application.screening.FirstInterviewSubmittedEvent;
 import atwoz.atwoz.admin.command.application.screening.ScreeningService;
+import atwoz.atwoz.interview.command.domain.answer.event.FirstInterviewSubmittedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
