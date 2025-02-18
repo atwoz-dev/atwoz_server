@@ -63,11 +63,11 @@ public class AdminAuthService {
                 .orElseThrow(AdminNotFoundException::new);
     }
 
-    private String createAccessToken(Long id, Instant issuedAt) {
+    private String createAccessToken(long id, Instant issuedAt) {
         return tokenProvider.createAccessToken(id, Role.ADMIN, issuedAt);
     }
 
-    private String createRefreshToken(Long id, Instant issuedAt) {
+    private String createRefreshToken(long id, Instant issuedAt) {
         return tokenProvider.createRefreshToken(id, Role.ADMIN, issuedAt);
     }
 }
