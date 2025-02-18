@@ -45,4 +45,10 @@ public class InterviewQuestion extends BaseEntity {
     private void setCategory(@NonNull InterviewCategory category) {
         this.category = category;
     }
+
+    public void update(String content, InterviewCategory interviewCategory, boolean isPublic) {
+        setContent(content);
+        setCategory(interviewCategory);
+        this.isPublic = isPublic;
+    }
 }
