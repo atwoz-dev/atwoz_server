@@ -1,7 +1,7 @@
 package atwoz.atwoz.interview.command.domain.answer;
 
 import atwoz.atwoz.common.entity.BaseEntity;
-import atwoz.atwoz.interview.command.application.answer.FirstInterviewSubmittedEvent;
+import atwoz.atwoz.interview.command.domain.answer.event.FirstInterviewSubmittedEvent;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.interview.command.domain.answer.exception.InvalidInterviewAnswerContentException;
 import jakarta.persistence.Entity;

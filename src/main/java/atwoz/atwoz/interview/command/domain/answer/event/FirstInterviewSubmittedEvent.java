@@ -1,7 +1,6 @@
-package atwoz.atwoz.interview.command.application.answer;
+package atwoz.atwoz.interview.command.domain.answer.event;
 
 import atwoz.atwoz.common.event.Event;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
