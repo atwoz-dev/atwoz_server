@@ -75,7 +75,6 @@ class ScreeningServiceTest {
             long adminId = 999L;
 
             Screening screening = mock(Screening.class);
-            when(screening.getId()).thenReturn(screeningId);
             when(screeningCommandRepository.findById(screeningId)).thenReturn(Optional.of(screening));
 
             // when
@@ -110,7 +109,6 @@ class ScreeningServiceTest {
             long adminId = 999L;
 
             Screening screening = mock(Screening.class);
-            when(screening.getId()).thenReturn(screeningId);
             when(screeningCommandRepository.findById(screeningId)).thenReturn(Optional.of(screening));
 
             String rejectionReason = "STOLEN_IMAGE";
@@ -128,16 +126,12 @@ class ScreeningServiceTest {
         void throwExceptionWhenRejectingNonExistentScreening() {
             // given
             long screeningId = 1L;
-            long adminId = 999L;
-
-            Screening screening = mock(Screening.class);
-            when(screening.getId()).thenReturn(screeningId);
             when(screeningCommandRepository.findById(screeningId)).thenReturn(Optional.empty());
 
             ScreeningRejectRequest request = new ScreeningRejectRequest("STOLEN_IMAGE");
 
             // when & then
-            assertThatThrownBy(() -> screeningService.reject(screeningId, adminId, request))
+            assertThatThrownBy(() -> screeningService.reject(screeningId, 999L, request))
                     .isInstanceOf(ScreeningNotFoundException.class);
         }
 
@@ -146,16 +140,13 @@ class ScreeningServiceTest {
         void throwExceptionWhenRejectionReasonNonExists() {
             // given
             long screeningId = 1L;
-            long adminId = 999L;
-
             Screening screening = mock(Screening.class);
-            when(screening.getId()).thenReturn(screeningId);
             when(screeningCommandRepository.findById(screeningId)).thenReturn(Optional.of(screening));
 
             ScreeningRejectRequest request = new ScreeningRejectRequest("NON_EXISTING_REASON");
 
             // when & then
-            assertThatThrownBy(() -> screeningService.reject(screeningId, adminId, request))
+            assertThatThrownBy(() -> screeningService.reject(screeningId, 999L, request))
                     .isInstanceOf(InvalidRejectionReasonException.class);
         }
     }
