@@ -2,7 +2,7 @@ package atwoz.atwoz.interview.presentation.answer;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
-import atwoz.atwoz.interview.command.application.answer.exception.InterviewAnserAlreadyExistsException;
+import atwoz.atwoz.interview.command.application.answer.exception.InterviewAnswerAlreadyExistsException;
 import atwoz.atwoz.interview.command.application.answer.exception.InterviewQuestionIsNotPublicException;
 import atwoz.atwoz.interview.command.application.answer.exception.InterviewQuestionNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -33,8 +33,8 @@ public class InterviewAnswerExceptionHandler {
                 .body(BaseResponse.from(StatusType.BAD_REQUEST));
     }
 
-    @ExceptionHandler(InterviewAnserAlreadyExistsException.class)
-    public ResponseEntity<BaseResponse<Void>> handleInterviewAnserAlreadyExistsException(InterviewAnserAlreadyExistsException e) {
+    @ExceptionHandler(InterviewAnswerAlreadyExistsException.class)
+    public ResponseEntity<BaseResponse<Void>> handleInterviewAnserAlreadyExistsException(InterviewAnswerAlreadyExistsException e) {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()

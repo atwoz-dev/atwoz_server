@@ -1,6 +1,6 @@
 package atwoz.atwoz.interview.command.application.answer;
 
-import atwoz.atwoz.interview.command.application.answer.exception.InterviewAnserAlreadyExistsException;
+import atwoz.atwoz.interview.command.application.answer.exception.InterviewAnswerAlreadyExistsException;
 import atwoz.atwoz.interview.command.application.answer.exception.InterviewQuestionIsNotPublicException;
 import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;
 import atwoz.atwoz.interview.presentation.answer.dto.InterviewAnswerSaveRequest;
@@ -32,7 +32,7 @@ public class InterviewAnswerService {
             throw new InterviewQuestionIsNotPublicException();
         }
         if (interviewAnswerCommandRepository.existsByQuestionIdAndMemberId(questionId, memberId)) {
-            throw new InterviewAnserAlreadyExistsException();
+            throw new InterviewAnswerAlreadyExistsException();
         }
     }
 
