@@ -18,7 +18,7 @@ public class InterviewQuestionService {
 
     @Transactional
     public void createQuestion(InterviewQuestionSaveRequest request) {
-        validateQuestion(request.questionContent());
+        validateQuestionCreation(request.questionContent());
         InterviewCategory interviewCategory = InterviewQuestionMapper.toInterviewCategory(request.category());
         createQuestion(request.questionContent(), interviewCategory, request.isPublic());
     }
@@ -27,11 +27,11 @@ public class InterviewQuestionService {
     public void updateQuestion(Long questionId, InterviewQuestionSaveRequest request) {
         InterviewQuestion interviewQuestion = getInterviewQuestion(questionId);
         InterviewCategory interviewCategory = InterviewQuestionMapper.toInterviewCategory(request.category());
-        validateQuestion(interviewQuestion, request.questionContent());
+        validateQuestionUpdate(interviewQuestion, request.questionContent());
         interviewQuestion.update(request.questionContent(), interviewCategory, request.isPublic());
     }
 
-    private void validateQuestion(String questionContent) {
+    private void validateQuestionCreation(String questionContent) {
         if (interviewQuestionCommandRepository.existsByContent(questionContent)) {
             throw new InterviewQuestionAlreadyExistsException();
         }
@@ -47,7 +47,7 @@ public class InterviewQuestionService {
                 .orElseThrow(() -> new InterviewQuestionNotFoundException());
     }
 
-    private void validateQuestion(InterviewQuestion interviewQuestion, String questionContent) {
+    private void validateQuestionUpdate(InterviewQuestion interviewQuestion, String questionContent) {
         if (interviewQuestion.getContent().equals(questionContent)) {
             return;
         }
