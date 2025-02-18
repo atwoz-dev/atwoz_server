@@ -5,7 +5,7 @@ import atwoz.atwoz.admin.command.domain.hobby.HobbyCommandRepository;
 import atwoz.atwoz.admin.command.domain.job.Job;
 import atwoz.atwoz.admin.command.domain.job.JobCommandRepository;
 import atwoz.atwoz.admin.command.domain.job.JobNotFoundException;
-import atwoz.atwoz.member.command.application.member.dto.MemberProfileUpdateRequest;
+import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.exception.InvalidHobbyIdException;

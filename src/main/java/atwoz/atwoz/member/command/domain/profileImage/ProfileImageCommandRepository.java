@@ -10,4 +10,5 @@ public interface ProfileImageCommandRepository {
     void saveAll(List<ProfileImage> profileImages);
     Optional<ProfileImage> findById(Long id);
     void delete(ProfileImage profileImage);
+    List<ProfileImage> findByMemberId(Long memberId);
 }

@@ -19,13 +19,18 @@ public class ProfileImageJdbcRepository {
     @Transactional
     public void saveAll(List<ProfileImage> profileImages) {
 
-        String sql = "INSERT INTO profile_image (member_id, url, profile_order, is_primary, created_at, updated_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO profile_images (id, member_id, url, profile_order, is_primary, created_at, updated_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE " +
+                "member_id = VALUES(member_id), url = VALUES(url), profile_order = VALUES(profile_order), is_primary = VALUES(is_primary), " +
+                "created_at = VALUES(created_at), updated_at = VALUES(updated_at)";
+
         List<Object[]> batchArgs = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
 
         for (ProfileImage profileImage : profileImages) {
             batchArgs.add(new Object[]{
+                    profileImage.getId(),
                     profileImage.getMemberId(),
                     profileImage.getUrl(),
                     profileImage.getOrder(),

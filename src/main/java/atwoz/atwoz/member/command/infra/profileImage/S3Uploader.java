@@ -74,6 +74,7 @@ public class S3Uploader {
 
     @Async
     public CompletableFuture<String> uploadImageAsync(MultipartFile image) {
+        if (image == null) return CompletableFuture.completedFuture(null);
         String imageUrl = uploadFile(image);
         return CompletableFuture.completedFuture(imageUrl);
     }
