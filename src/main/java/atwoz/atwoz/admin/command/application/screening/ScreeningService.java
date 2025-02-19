@@ -2,7 +2,6 @@ package atwoz.atwoz.admin.command.application.screening;
 
 import atwoz.atwoz.admin.command.domain.screening.Screening;
 import atwoz.atwoz.admin.command.domain.screening.ScreeningCommandRepository;
-import atwoz.atwoz.admin.command.domain.screening.ScreeningNotFoundException;
 import atwoz.atwoz.admin.presentation.screening.ScreeningRejectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

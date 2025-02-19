@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.command.domain.screening;
+package atwoz.atwoz.admin.command.application.screening;
 
 public class ScreeningNotFoundException extends RuntimeException {
     public ScreeningNotFoundException() {

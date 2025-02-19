@@ -3,7 +3,6 @@ package atwoz.atwoz.admin.command.application.screening;
 import atwoz.atwoz.admin.command.domain.screening.RejectionReasonType;
 import atwoz.atwoz.admin.command.domain.screening.Screening;
 import atwoz.atwoz.admin.command.domain.screening.ScreeningCommandRepository;
-import atwoz.atwoz.admin.command.domain.screening.ScreeningNotFoundException;
 import atwoz.atwoz.admin.presentation.screening.ScreeningRejectRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
