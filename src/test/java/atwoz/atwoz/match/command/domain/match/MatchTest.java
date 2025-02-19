@@ -1,5 +1,6 @@
 package atwoz.atwoz.match.command.domain.match;
 
+import atwoz.atwoz.match.command.domain.match.vo.Message;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,10 +13,10 @@ public class MatchTest {
         // Given
         Long requesterId = null;
         Long responderId = 2L;
-        String requestMessage = "매칭을 요청합니다!";
+        Message requestMessage = Message.from("매칭을 요청합니다!");
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> Match.requestMatching(requesterId, responderId, requestMessage))
+        Assertions.assertThatThrownBy(() -> Match.request(requesterId, responderId, requestMessage))
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -25,23 +26,23 @@ public class MatchTest {
         // Given
         Long requesterId = 1L;
         Long responderId = null;
-        String requestMessage = "매칭을 요청합니다!";
+        Message requestMessage = Message.from("매칭을 요청합니다!");
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> Match.requestMatching(requesterId, responderId, requestMessage))
+        Assertions.assertThatThrownBy(() -> Match.request(requesterId, responderId, requestMessage))
                 .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     @DisplayName("요청 메세지가 null인 경우 예외 반환")
-    void throwsExceptionWhenRequestMessageIsNull() {
+    void throwsExceptionWhenMessageIsNull() {
         // Given
         Long requesterId = 1L;
-        Long responderId = 2L;
-        String requestMessage = null;
+        Long responderId = null;
+        Message requestMessage = null;
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> Match.requestMatching(requesterId, responderId, requestMessage))
+        Assertions.assertThatThrownBy(() -> Match.request(requesterId, responderId, requestMessage))
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -51,10 +52,10 @@ public class MatchTest {
         // Given
         Long requesterId = 1L;
         Long responderId = 2L;
-        String requestMessage = "매칭을 요청합니다.";
+        Message requestMessage = Message.from("매칭을 요청합니다.");
 
         // When
-        Match match = Match.requestMatching(requesterId, responderId, requestMessage);
+        Match match = Match.request(requesterId, responderId, requestMessage);
 
         // Then
         Assertions.assertThat(match.getRequesterId()).isEqualTo(requesterId);

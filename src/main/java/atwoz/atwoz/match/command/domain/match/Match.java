@@ -1,5 +1,6 @@
 package atwoz.atwoz.match.command.domain.match;
 
+import atwoz.atwoz.match.command.domain.match.vo.Message;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,16 +25,18 @@ public class Match {
     private Long responderId;
 
     @Getter
-    private String requestMessage;
+    @Embedded
+    private Message requestMessage;
 
     @Getter
-    private String responseMessage;
+    @Embedded
+    private Message responseMessage;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
     private MatchStatus status;
 
-    public static Match requestMatching(@NonNull Long requesterId, @NonNull Long responderId, @NonNull String requestMessage) {
+    public static Match request(long requesterId, long responderId, @NonNull Message requestMessage) {
         /**
          * TODO : 매칭을 요청하는 경우, 하트 소비 이벤트 발행!
          */
