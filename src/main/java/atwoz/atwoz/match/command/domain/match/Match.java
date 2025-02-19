@@ -26,10 +26,16 @@ public class Match {
 
     @Getter
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "value", column = @Column(name = "request_message"))
+    })
     private Message requestMessage;
 
     @Getter
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "value", column = @Column(name = "response_message"))
+    })
     private Message responseMessage;
 
     @Enumerated(EnumType.STRING)

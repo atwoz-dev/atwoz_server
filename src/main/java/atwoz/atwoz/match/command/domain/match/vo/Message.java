@@ -11,7 +11,6 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Embeddable
 @NoArgsConstructor(access = PROTECTED, force = true)
-@EqualsAndHashCode
 public class Message {
 
     @Getter
