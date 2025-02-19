@@ -1,8 +1,8 @@
 package atwoz.atwoz.admin.presentation.screening;
 
 import atwoz.atwoz.admin.command.application.screening.InvalidRejectionReasonException;
+import atwoz.atwoz.admin.command.application.screening.ScreeningNotFoundException;
 import atwoz.atwoz.admin.command.domain.screening.CannotRejectApprovedScreeningException;
-import atwoz.atwoz.admin.command.domain.screening.ScreeningNotFoundException;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
