@@ -17,19 +17,26 @@ public class Match {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
     private Long requesterId;
 
+    @Getter
     private Long responderId;
 
+    @Getter
     private String requestMessage;
 
+    @Getter
     private String responseMessage;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
     private MatchStatus status;
 
-    public static Match of(@NonNull Long requesterId, @NonNull Long responderId, @NonNull String requestMessage) {
+    public static Match requestMatching(@NonNull Long requesterId, @NonNull Long responderId, @NonNull String requestMessage) {
+        /**
+         * TODO : 매칭을 요청하는 경우, 하트 소비 이벤트 발행!
+         */
         return Match.builder()
                 .requesterId(requesterId)
                 .responderId(responderId)
