@@ -1,13 +1,9 @@
-package atwoz.atwoz.admin.presentation.screening.dto;
+package atwoz.atwoz.admin.presentation.screening;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public record ScreeningRejectRequest(
-        @NotNull(message = "멤버 id는 null일 수 없습니다.")
-        Long memberId,
-
         @Schema(
                 description = "반려 사유",
                 allowableValues = {"STOLEN_IMAGE", "INAPPROPRIATE_IMAGE", "EXPLICIT_CONTENT", "OFFENSIVE_LANGUAGE", "CONTACT_IN_PROFILE"},

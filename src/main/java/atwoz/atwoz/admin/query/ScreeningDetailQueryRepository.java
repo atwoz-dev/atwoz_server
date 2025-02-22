@@ -16,7 +16,7 @@ public class ScreeningDetailQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public ScreeningDetailView findById(Long screeningId) {
+    public ScreeningDetailView findById(long screeningId) {
         return queryFactory
                 .from(member)
                 .join(screening).on(screening.memberId.eq(member.id))
