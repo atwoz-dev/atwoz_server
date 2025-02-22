@@ -2,6 +2,9 @@ package atwoz.atwoz.admin.query;
 
 import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.admin.command.domain.screening.Screening;
+import atwoz.atwoz.interview.command.domain.answer.InterviewAnswer;
+import atwoz.atwoz.interview.command.domain.question.InterviewCategory;
+import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;
 import atwoz.atwoz.member.command.domain.member.Gender;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
@@ -33,38 +36,52 @@ class ScreeningDetailQueryRepositoryTest {
     void findById() {
         // given
         Member member = createMember();
-        em.persist(member);
+        long memberId = (Long) em.persistAndGetId(member);
 
-        Screening screening = Screening.from(member.getId());
-        em.persist(screening);
+        Screening screening = Screening.from(memberId);
+        long screeningId = (Long) em.persistAndGetId(screening);
 
-        ProfileImage profileImage1 = createProfileImage(member.getId(), "image_url_1", true);
-        ProfileImage profileImage2 = createProfileImage(member.getId(), "image_url_2", false);
+        ProfileImage profileImage1 = createProfileImage(memberId, "image_url_1", true);
+        ProfileImage profileImage2 = createProfileImage(memberId, "image_url_2", false);
         em.persist(profileImage1);
         em.persist(profileImage2);
+
+        InterviewQuestion question1 = createInterviewQuestion("question1", true);
+        InterviewQuestion question2 = createInterviewQuestion("question2", false);
+        InterviewQuestion question3 = createInterviewQuestion("question3", true);
+        long question1Id = (Long) em.persistAndGetId(question1);
+        long question2Id = (Long) em.persistAndGetId(question2);
+        em.persist(question3);
+
+        InterviewAnswer answer1 = InterviewAnswer.of(question1Id, memberId, "answer for question1");
+        InterviewAnswer answer2 = InterviewAnswer.of(question2Id, memberId, "answer for question2");
+        em.persist(answer1);
+        em.persist(answer2);
 
         em.flush();
         em.clear();
 
         // when
-        ScreeningDetailView screeningDetail = screeningDetailQueryRepository.findById(screening.getId());
-
-        System.out.println(screeningDetail);
+        ScreeningDetailView screeningDetail = screeningDetailQueryRepository.findById(screeningId);
 
         // then
         assertThat(screeningDetail).isNotNull();
 
         assertThat(screeningDetail.screeningId()).isEqualTo(screening.getId());
-        assertThat(screeningDetail.nickname()).isEqualTo("member");
-        assertThat(screeningDetail.gender()).isEqualTo("MALE");
-        assertThat(screeningDetail.screeningStatus()).isEqualTo(screening.getStatus().toString());
-        assertThat(screeningDetail.rejectionReason()).isNull();
+        assertThat(screeningDetail.profile().nickname()).isEqualTo("member");
+        assertThat(screeningDetail.profile().gender()).isEqualTo("MALE");
+        assertThat(screeningDetail.profile().screeningStatus()).isEqualTo(screening.getStatus().toString());
+        assertThat(screeningDetail.profile().rejectionReason()).isNull();
 
         assertThat(screeningDetail.profileImages()).hasSize(2);
         assertThat(screeningDetail.profileImages()).extracting("imageUrl")
                 .containsExactlyInAnyOrder("image_url_1", "image_url_2");
         assertThat(screeningDetail.profileImages()).extracting("isPrimary")
                 .containsExactlyInAnyOrder(true, false);
+
+        assertThat(screeningDetail.interviews()).hasSize(1);
+        assertThat(screeningDetail.interviews().getFirst().question()).isEqualTo("question1");
+        assertThat(screeningDetail.interviews().getFirst().answer()).isEqualTo("answer for question1");
     }
 
     private Member createMember() {
@@ -86,5 +103,9 @@ class ScreeningDetailQueryRepositoryTest {
                 .imageUrl(ImageUrl.from(imageUrl))
                 .isPrimary(isPrimary)
                 .build();
+    }
+
+    private InterviewQuestion createInterviewQuestion(String question1, boolean isPublic) {
+        return InterviewQuestion.of(question1, InterviewCategory.PERSONAL, isPublic);
     }
 }

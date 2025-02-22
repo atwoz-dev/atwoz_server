@@ -4,6 +4,7 @@ import atwoz.atwoz.admin.command.domain.screening.RejectionReasonType;
 import atwoz.atwoz.admin.command.domain.screening.Screening;
 import atwoz.atwoz.admin.command.domain.screening.ScreeningCommandRepository;
 import atwoz.atwoz.admin.presentation.screening.ScreeningRejectRequest;
+import atwoz.atwoz.admin.query.ScreeningDetailQueryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,9 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ScreeningServiceTest {
+
+    @Mock
+    private ScreeningDetailQueryRepository screeningDetailQueryRepository;
 
     @Mock
     private ScreeningCommandRepository screeningCommandRepository;
