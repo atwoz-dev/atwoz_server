@@ -3,8 +3,8 @@ package atwoz.atwoz.admin.command.application.screening;
 import atwoz.atwoz.admin.command.domain.screening.RejectionReasonType;
 import atwoz.atwoz.admin.command.domain.screening.Screening;
 import atwoz.atwoz.admin.command.domain.screening.ScreeningCommandRepository;
+import atwoz.atwoz.admin.presentation.screening.ScreeningApproveRequest;
 import atwoz.atwoz.admin.presentation.screening.ScreeningRejectRequest;
-import atwoz.atwoz.admin.query.ScreeningDetailQueryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,9 +21,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ScreeningServiceTest {
-
-    @Mock
-    private ScreeningDetailQueryRepository screeningDetailQueryRepository;
 
     @Mock
     private ScreeningCommandRepository screeningCommandRepository;
@@ -81,7 +78,7 @@ class ScreeningServiceTest {
             when(screeningCommandRepository.findById(screeningId)).thenReturn(Optional.of(screening));
 
             // when
-            screeningService.approve(screeningId, adminId);
+            screeningService.approve(screeningId, new ScreeningApproveRequest(1L), adminId);
 
             // then
             verify(screening).approve(adminId);
@@ -95,7 +92,7 @@ class ScreeningServiceTest {
             when(screeningCommandRepository.findById(screeningId)).thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> screeningService.approve(screeningId, 999L))
+            assertThatThrownBy(() -> screeningService.approve(screeningId, new ScreeningApproveRequest(1L), 999L))
                     .isInstanceOf(ScreeningNotFoundException.class);
         }
     }
@@ -115,7 +112,7 @@ class ScreeningServiceTest {
             when(screeningCommandRepository.findById(screeningId)).thenReturn(Optional.of(screening));
 
             String rejectionReason = "STOLEN_IMAGE";
-            ScreeningRejectRequest request = new ScreeningRejectRequest(rejectionReason);
+            ScreeningRejectRequest request = new ScreeningRejectRequest(rejectionReason, 1L);
 
             // when
             screeningService.reject(screeningId, adminId, request);
@@ -131,7 +128,7 @@ class ScreeningServiceTest {
             long screeningId = 1L;
             when(screeningCommandRepository.findById(screeningId)).thenReturn(Optional.empty());
 
-            ScreeningRejectRequest request = new ScreeningRejectRequest("STOLEN_IMAGE");
+            ScreeningRejectRequest request = new ScreeningRejectRequest("STOLEN_IMAGE", 1L);
 
             // when & then
             assertThatThrownBy(() -> screeningService.reject(screeningId, 999L, request))
@@ -146,7 +143,7 @@ class ScreeningServiceTest {
             Screening screening = mock(Screening.class);
             when(screeningCommandRepository.findById(screeningId)).thenReturn(Optional.of(screening));
 
-            ScreeningRejectRequest request = new ScreeningRejectRequest("NON_EXISTING_REASON");
+            ScreeningRejectRequest request = new ScreeningRejectRequest("NON_EXISTING_REASON", 1L);
 
             // when & then
             assertThatThrownBy(() -> screeningService.reject(screeningId, 999L, request))
