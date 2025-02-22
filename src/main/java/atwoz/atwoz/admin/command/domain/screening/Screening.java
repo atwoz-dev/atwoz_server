@@ -44,6 +44,10 @@ public class Screening extends BaseEntity {
         this.status = status;
     }
 
+    public boolean hasVersionConflict(long version) {
+        return this.version == version;
+    }
+
     public void approve(long adminId) {
         setAdminId(adminId);
         changeScreeningStatus(ScreeningStatus.APPROVED);

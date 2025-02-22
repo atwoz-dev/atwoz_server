@@ -10,6 +10,8 @@ public record ScreeningRejectRequest(
                 example = "STOLEN_IMAGE"
         )
         @NotBlank(message = "반려 사유를 선택해주세요.")
-        String rejectionReason
+        String rejectionReason,
+
+        long version
 ) {
 }

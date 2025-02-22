@@ -39,9 +39,10 @@ public class ScreeningController {
     @PostMapping("/{screeningId}/approve")
     public ResponseEntity<BaseResponse<Void>> approve(
             @PathVariable long screeningId,
+            @RequestBody ScreeningApproveRequest request,
             @AuthPrincipal AuthContext authContext
     ) {
-        screeningService.approve(screeningId, authContext.getId());
+        screeningService.approve(screeningId, request, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(OK));
     }
 

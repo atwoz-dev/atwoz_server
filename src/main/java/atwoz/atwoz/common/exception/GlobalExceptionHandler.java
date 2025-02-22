@@ -2,9 +2,9 @@ package atwoz.atwoz.common.exception;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
-import jakarta.persistence.OptimisticLockException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,9 +26,9 @@ public class GlobalExceptionHandler {
                 .body(BaseResponse.of(StatusType.BAD_REQUEST, errors));
     }
 
-    @ExceptionHandler(OptimisticLockException.class)
-    public ResponseEntity<BaseResponse<List<String>>> handleOptimisticLockException(OptimisticLockException e) {
-        log.warn("Optimistic lock exception", e);
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ResponseEntity<BaseResponse<List<String>>> handleOptimisticLockingFailureException(OptimisticLockingFailureException e) {
+        log.warn("Optimistic locking failure exception", e);
 
         return ResponseEntity.status(409)
                 .body(BaseResponse.from(StatusType.CONFLICT));

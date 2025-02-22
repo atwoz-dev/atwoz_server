@@ -2,9 +2,11 @@ package atwoz.atwoz.admin.command.application.screening;
 
 import atwoz.atwoz.admin.command.domain.screening.Screening;
 import atwoz.atwoz.admin.command.domain.screening.ScreeningCommandRepository;
+import atwoz.atwoz.admin.presentation.screening.ScreeningApproveRequest;
 import atwoz.atwoz.admin.presentation.screening.ScreeningRejectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,14 +29,24 @@ public class ScreeningService {
     }
 
     @Transactional
-    public void approve(long screeningId, long adminId) {
+    public void approve(long screeningId, ScreeningApproveRequest request, long adminId) {
         Screening screening = findById(screeningId);
+
+        if (screening.hasVersionConflict(request.version())) {
+            throw new OptimisticLockingFailureException("심사를 승인할 수 없습니다.");
+        }
+
         screening.approve(adminId);
     }
 
     @Transactional
     public void reject(long screeningId, long adminId, ScreeningRejectRequest request) {
         Screening screening = findById(screeningId);
+
+        if (screening.hasVersionConflict(request.version())) {
+            throw new OptimisticLockingFailureException("심사를 반려할 수 없습니다.");
+        }
+
         screening.reject(adminId, toRejectionReasonType(request.rejectionReason()));
     }
 
