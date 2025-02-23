@@ -32,7 +32,7 @@ class ScreeningDetailQueryRepositoryTest {
     private ScreeningDetailQueryRepository screeningDetailQueryRepository;
 
     @Test
-    @DisplayName("심사를 상세 조회합니다.")
+    @DisplayName("상세 심사를 조회합니다.")
     void findById() {
         // given
         Member member = createMember();

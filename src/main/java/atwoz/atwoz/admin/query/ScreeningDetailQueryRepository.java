@@ -49,9 +49,8 @@ public class ScreeningDetailQueryRepository {
                         profileImage.order,
                         profileImage.isPrimary
                 ))
-                .from(member)
-                .join(profileImage).on(profileImage.memberId.eq(member.id))
-                .where(member.id.eq(profile.memberId()))
+                .from(profileImage)
+                .where(profileImage.memberId.eq(profile.memberId()))
                 .fetch();
 
         List<ScreeningDetailInterviewView> interviews = queryFactory
@@ -59,8 +58,7 @@ public class ScreeningDetailQueryRepository {
                         interviewQuestion.content,
                         interviewAnswer.content
                 ))
-                .from(member)
-                .join(interviewAnswer).on(member.id.eq(interviewAnswer.memberId))
+                .from(interviewAnswer)
                 .join(interviewQuestion).on(interviewAnswer.questionId.eq(interviewQuestion.id))
                 .where(interviewQuestion.isPublic.eq(true), interviewAnswer.memberId.eq(profile.memberId()))
                 .fetch();
