@@ -38,7 +38,7 @@ public class MatchTest {
     void throwsExceptionWhenMessageIsNull() {
         // Given
         Long requesterId = 1L;
-        Long responderId = null;
+        Long responderId = 2L;
         Message requestMessage = null;
 
         // When & Then
