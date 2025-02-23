@@ -45,7 +45,7 @@ public class Screening extends BaseEntity {
     }
 
     public boolean hasVersionConflict(long version) {
-        return this.version == version;
+        return this.version != version;
     }
 
     public void approve(long adminId) {
