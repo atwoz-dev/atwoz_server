@@ -41,6 +41,7 @@ public class Match {
     })
     private Message responseMessage;
 
+    @Getter
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
     private MatchStatus status;
@@ -61,10 +62,6 @@ public class Match {
     }
 
     public static Match request(long requesterId, long responderId, @NonNull Message requestMessage) {
-        /**
-         * TODO : 매칭을 요청하는 경우, 하트 소비 이벤트 발행!
-         * TODO : 상대방에게 알림을 발생시키기 위한 이벤트 발행!
-         */
         Events.raise(MatchRequestedEvent.of(requesterId, responderId));
 
         return Match.builder()

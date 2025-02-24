@@ -10,9 +10,9 @@ public interface MatchJpaRepository extends JpaRepository<Match, Long> {
             SELECT CASE WHEN COUNT(m) > 0 THEN true ELSE false 
             END
             FROM Match m
-            WHERE ((m.requesterId = :idOne AND m.responderId = :idTwo)
-            OR (m.requesterId = :idTwo AND m.responderId = :idOne))
+            WHERE ((m.requesterId = :memberId AND m.responderId = :anotherMemberId)
+            OR (m.requesterId = :anotherMemberId AND m.responderId = :memberId))
             AND m.status <> 'EXPIRED'
             """)
-    boolean existsActiveMatchBetween(Long idOne, Long idTwo);
+    boolean existsActiveMatchBetween(Long memberId, Long anotherMemberId);
 }

@@ -21,8 +21,8 @@ public class MatchRepositoryImpl implements MatchRepository {
     }
 
     @Override
-    public boolean existsActiveMatchBetween(Long idOne, Long idTwo) {
-        return matchJpaRepository.existsActiveMatchBetween(idOne, idTwo);
+    public boolean existsActiveMatchBetween(Long memberId, Long anotherMemberId) {
+        return matchJpaRepository.existsActiveMatchBetween(memberId, anotherMemberId);
     }
 
     @Override

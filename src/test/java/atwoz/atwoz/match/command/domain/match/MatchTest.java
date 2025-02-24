@@ -1,5 +1,6 @@
 package atwoz.atwoz.match.command.domain.match;
 
+import atwoz.atwoz.match.command.domain.match.exception.InvalidMatchStatusChangeException;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 public class MatchTest {
 
     @Nested
+    @DisplayName("매치 요청 테스트")
     class Request {
         @Test
         @DisplayName("요청자 아이디가 null인 경우 예외 반환")
@@ -67,7 +69,39 @@ public class MatchTest {
         }
     }
 
+    @Nested
+    @DisplayName("매치 상태 변경 테스트")
+    class ChangeStatus {
 
+        @Test
+        @DisplayName("현재 값이 Waiting 상태가 아닌 경우, 예외 반환")
+        void throwsExceptionWhenStatusIsNotWaiting() {
+            // Given
+            Long requesterId = 1L;
+            Long responderId = 2L;
+            Message requestMessage = Message.from("매칭을 요청합니다.");
+            Match match = Match.request(requesterId, responderId, requestMessage);
+            match.expired();
 
+            // When & Then
+            Assertions.assertThatThrownBy(() -> match.approve())
+                    .isInstanceOf(InvalidMatchStatusChangeException.class);
+        }
 
+        @Test
+        @DisplayName("현재 값이 Waiting 상태인 경우, 예외 반환")
+        void changeStatus() {
+            // Given
+            Long requesterId = 1L;
+            Long responderId = 2L;
+            Message requestMessage = Message.from("매칭을 요청합니다.");
+            Match match = Match.request(requesterId, responderId, requestMessage);
+
+            // When
+            match.approve();
+
+            // Then
+            Assertions.assertThat(match.getStatus()).isEqualTo(MatchStatus.MATCHED);
+        }
+    }
 }
