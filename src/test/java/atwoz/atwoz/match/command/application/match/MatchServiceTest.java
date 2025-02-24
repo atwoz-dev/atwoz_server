@@ -2,6 +2,7 @@ package atwoz.atwoz.match.command.application.match;
 
 import atwoz.atwoz.match.command.application.match.exception.ExistsMatchException;
 import atwoz.atwoz.match.command.domain.match.MatchRepository;
+import atwoz.atwoz.match.presentation.dto.MatchRequestDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ public class MatchServiceTest {
         Long requesterId = 1L;
         Long responderId = 2L;
         String requestMessage = "매칭을 요청합니다!";
+        MatchRequestDto requestDto = new MatchRequestDto(responderId, requestMessage);
 
         Mockito.doAnswer(invocation -> {
             Runnable runnable = invocation.getArgument(1);
@@ -34,11 +36,11 @@ public class MatchServiceTest {
             return null;
         }).when(matchRepository).withNamedLock(Mockito.any(), Mockito.any());
 
-        Mockito.when(matchRepository.existsActiveMatchBetween(requesterId, responderId))
+        Mockito.when(matchRepository.existsActiveMatchBetween(requesterId, requestDto.responderId()))
                 .thenReturn(true);
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> matchService.request(requesterId, responderId, requestMessage))
+        Assertions.assertThatThrownBy(() -> matchService.request(requesterId, requestDto))
                 .isInstanceOf(ExistsMatchException.class);
     }
 
@@ -50,6 +52,7 @@ public class MatchServiceTest {
         Long requesterId = 1L;
         Long responderId = 2L;
         String requestMessage = "매칭을 요청합니다!";
+        MatchRequestDto requestDto = new MatchRequestDto(responderId, requestMessage);
 
         Mockito.doAnswer(invocation -> {
             Runnable runnable = invocation.getArgument(1);
@@ -57,11 +60,11 @@ public class MatchServiceTest {
             return null;
         }).when(matchRepository).withNamedLock(Mockito.any(), Mockito.any());
 
-        Mockito.when(matchRepository.existsActiveMatchBetween(requesterId, responderId))
+        Mockito.when(matchRepository.existsActiveMatchBetween(requesterId, requestDto.responderId()))
                 .thenReturn(false);
 
         // When
-        matchService.request(requesterId, responderId, requestMessage);
+        matchService.request(requesterId, requestDto);
 
         // Then
         Mockito.verify(matchRepository).save(

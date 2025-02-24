@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.*;
 public class MatchController {
     private final MatchService matchService;
 
-    @PostMapping("/request/{id}")
-    public ResponseEntity<BaseResponse<Void>> requestMatch(@PathVariable("id") long responderId, @RequestBody MatchRequestDto matchRequestDto, @AuthPrincipal AuthContext authContext) {
-        matchService.request(authContext.getId(), responderId, matchRequestDto.requestMessage());
+    @PostMapping("/request")
+    public ResponseEntity<BaseResponse<Void>> requestMatch(@RequestBody MatchRequestDto matchRequestDto, @AuthPrincipal AuthContext authContext) {
+        matchService.request(authContext.getId(), matchRequestDto);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 }

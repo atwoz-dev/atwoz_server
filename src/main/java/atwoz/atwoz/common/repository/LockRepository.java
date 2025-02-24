@@ -1,4 +1,4 @@
-package atwoz.atwoz.match.command.infra.match;
+package atwoz.atwoz.common.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -6,14 +6,12 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class MatchJdbcRepository {
-
+public class LockRepository {
     private final JdbcTemplate jdbcTemplate;
-    private final static int LOCK_HOLD_TIME = 10;
 
-    public void getLock(String key) {
+    public void getLock(String key, int lockWaitingTime) {
         String sql = "SELECT GET_LOCK(?, ?)";
-        jdbcTemplate.queryForObject(sql, Boolean.class, key, LOCK_HOLD_TIME);
+        jdbcTemplate.queryForObject(sql, Boolean.class, lockWaitingTime);
     }
 
     public void releaseLock(String key) {

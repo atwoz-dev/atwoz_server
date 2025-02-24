@@ -4,6 +4,7 @@ import atwoz.atwoz.match.command.application.match.exception.ExistsMatchExceptio
 import atwoz.atwoz.match.command.domain.match.Match;
 import atwoz.atwoz.match.command.domain.match.MatchRepository;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
+import atwoz.atwoz.match.presentation.dto.MatchRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,15 +15,15 @@ public class MatchService {
     private final MatchRepository matchRepository;
 
     @Transactional
-    public void request(Long requesterId, Long responderId, String requestMessage) {
-        String key = generateKey(requesterId, responderId);
+    public void request(Long requesterId, MatchRequestDto requestDto) {
+        String key = generateKey(requesterId, requestDto.responderId());
 
         matchRepository.withNamedLock(key, () -> {
-            if (existsMutualMatch(requesterId, responderId)) {
+            if (existsMutualMatch(requesterId, requestDto.responderId())) {
                 throw new ExistsMatchException();
             }
 
-            Match match = Match.request(requesterId, responderId, Message.from(requestMessage));
+            Match match = Match.request(requesterId, requestDto.responderId(), Message.from(requestDto.requestMessage()));
             matchRepository.save(match);
         });
     }
@@ -33,6 +34,6 @@ public class MatchService {
     }
 
     private String generateKey(Long requesterId, Long responderId) {
-        return Math.max(requesterId, responderId) + "" + Math.min(requesterId, responderId);
+        return Math.max(requesterId, responderId) + ":" + Math.min(requesterId, responderId);
     }
 }
