@@ -34,6 +34,14 @@ public class GlobalExceptionHandler {
                 .body(BaseResponse.from(StatusType.CONFLICT));
     }
 
+    @ExceptionHandler(CannotGetLockException.class)
+    public ResponseEntity<BaseResponse<Void>> handleCannotGetLockException(CannotGetLockException e) {
+        log.warn("Can not Get NamedLock Exception", e);
+
+        return ResponseEntity.status(409)
+                .body(BaseResponse.from(StatusType.CONFLICT));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<BaseResponse<Void>> handleGlobalException(Exception exception, HttpServletRequest request) {
         String requestInfo = "Request URI: " + request.getRequestURI() + ", Method: " + request.getMethod();

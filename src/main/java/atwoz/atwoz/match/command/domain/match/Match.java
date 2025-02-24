@@ -1,6 +1,7 @@
 package atwoz.atwoz.match.command.domain.match;
 
 import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.match.command.domain.match.event.MatchRequestCompletedEvent;
 import atwoz.atwoz.match.command.domain.match.event.MatchRequestedEvent;
 import atwoz.atwoz.match.command.domain.match.exception.InvalidMatchStatusChangeException;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
@@ -63,6 +64,7 @@ public class Match {
 
     public static Match request(long requesterId, long responderId, @NonNull Message requestMessage) {
         Events.raise(MatchRequestedEvent.of(requesterId, responderId));
+        Events.raise(MatchRequestCompletedEvent.of(requesterId, responderId));
 
         return Match.builder()
                 .requesterId(requesterId)

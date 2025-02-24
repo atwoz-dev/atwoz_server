@@ -11,7 +11,7 @@ public class LockRepository {
 
     public void getLock(String key, int lockWaitingTime) {
         String sql = "SELECT GET_LOCK(?, ?)";
-        jdbcTemplate.queryForObject(sql, Boolean.class, lockWaitingTime);
+        jdbcTemplate.queryForObject(sql, Boolean.class, key, lockWaitingTime);
     }
 
     public void releaseLock(String key) {
