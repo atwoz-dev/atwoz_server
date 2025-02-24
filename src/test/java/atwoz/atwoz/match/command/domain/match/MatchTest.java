@@ -59,6 +59,7 @@ public class MatchTest {
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
 
+
             // When
             Match match = Match.request(requesterId, responderId, requestMessage);
 

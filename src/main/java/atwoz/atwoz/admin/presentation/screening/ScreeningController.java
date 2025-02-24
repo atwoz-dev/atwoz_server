@@ -1,8 +1,6 @@
 package atwoz.atwoz.admin.presentation.screening;
 
 import atwoz.atwoz.admin.command.application.screening.ScreeningService;
-import atwoz.atwoz.admin.presentation.screening.dto.ScreeningApproveRequest;
-import atwoz.atwoz.admin.presentation.screening.dto.ScreeningRejectRequest;
 import atwoz.atwoz.admin.query.*;
 import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
@@ -25,24 +23,6 @@ public class ScreeningController {
     private final ScreeningQueryRepository screeningQueryRepository;
     private final ScreeningDetailQueryRepository screeningDetailQueryRepository;
 
-    @PostMapping("/approve")
-    public ResponseEntity<BaseResponse<Void>> approve(
-            @Valid @RequestBody ScreeningApproveRequest request,
-            @AuthPrincipal AuthContext authContext
-    ) {
-        screeningService.approve(request, authContext.getId());
-        return ResponseEntity.ok(BaseResponse.from(OK));
-    }
-
-    @PostMapping("/reject")
-    public ResponseEntity<BaseResponse<Void>> reject(
-            @Valid @RequestBody ScreeningRejectRequest request,
-            @AuthPrincipal AuthContext authContext
-    ) {
-        screeningService.reject(request, authContext.getId());
-        return ResponseEntity.ok(BaseResponse.from(OK));
-    }
-
     @GetMapping
     public ResponseEntity<BaseResponse<Page<ScreeningView>>> getScreenings(
             @Valid @ModelAttribute ScreeningSearchCondition condition,
@@ -52,7 +32,27 @@ public class ScreeningController {
     }
 
     @GetMapping("/{screeningId}")
-    public ResponseEntity<BaseResponse<ScreeningDetailView>> getScreeningDetail(@PathVariable Long screeningId) {
+    public ResponseEntity<BaseResponse<ScreeningDetailView>> getScreeningDetail(@PathVariable long screeningId) {
         return ResponseEntity.ok(BaseResponse.of(OK, screeningDetailQueryRepository.findById(screeningId)));
+    }
+
+    @PostMapping("/{screeningId}/approve")
+    public ResponseEntity<BaseResponse<Void>> approve(
+            @PathVariable long screeningId,
+            @RequestBody ScreeningApproveRequest request,
+            @AuthPrincipal AuthContext authContext
+    ) {
+        screeningService.approve(screeningId, request, authContext.getId());
+        return ResponseEntity.ok(BaseResponse.from(OK));
+    }
+
+    @PostMapping("/{screeningId}/reject")
+    public ResponseEntity<BaseResponse<Void>> reject(
+            @PathVariable long screeningId,
+            @Valid @RequestBody ScreeningRejectRequest request,
+            @AuthPrincipal AuthContext authContext
+    ) {
+        screeningService.reject(screeningId, authContext.getId(), request);
+        return ResponseEntity.ok(BaseResponse.from(OK));
     }
 }

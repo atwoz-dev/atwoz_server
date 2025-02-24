@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 import static jakarta.persistence.EnumType.STRING;
 
@@ -34,31 +33,35 @@ public class Screening extends BaseEntity {
     @Version
     private Long version;
 
-    public static Screening from(Long memberId) {
+    public static Screening from(long memberId) {
         return new Screening(memberId, null, null, ScreeningStatus.PENDING);
     }
 
-    private Screening(Long memberId, Long adminId, RejectionReasonType rejectionReason, ScreeningStatus status) {
+    private Screening(long memberId, Long adminId, RejectionReasonType rejectionReason, ScreeningStatus status) {
         this.memberId = memberId;
         this.adminId = adminId;
         this.rejectionReason = rejectionReason;
         this.status = status;
     }
 
-    public void approve(Long adminId) {
+    public boolean hasVersionConflict(long version) {
+        return this.version != version;
+    }
+
+    public void approve(long adminId) {
         setAdminId(adminId);
         changeScreeningStatus(ScreeningStatus.APPROVED);
         setRejectionReason(null);
     }
 
-    public void reject(Long adminId, RejectionReasonType rejectionReason) {
+    public void reject(long adminId, RejectionReasonType rejectionReason) {
         validateNotApproved();
         setAdminId(adminId);
         changeScreeningStatus(ScreeningStatus.REJECTED);
         setRejectionReason(rejectionReason);
     }
 
-    private void setAdminId(@NonNull Long adminId) {
+    private void setAdminId(long adminId) {
         this.adminId = adminId;
     }
 

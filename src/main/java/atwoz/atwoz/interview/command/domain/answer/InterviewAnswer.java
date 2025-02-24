@@ -1,11 +1,12 @@
 package atwoz.atwoz.interview.command.domain.answer;
 
 import atwoz.atwoz.common.entity.BaseEntity;
-import atwoz.atwoz.interview.command.domain.answer.event.FirstInterviewSubmittedEvent;
 import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.interview.command.domain.answer.event.FirstInterviewSubmittedEvent;
 import atwoz.atwoz.interview.command.domain.answer.exception.InvalidInterviewAnswerContentException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
@@ -21,6 +22,7 @@ public class InterviewAnswer extends BaseEntity {
 
     private Long memberId;
 
+    @Getter
     private String content;
 
     public static InterviewAnswer of(Long questionId, Long memberId, String content) {
