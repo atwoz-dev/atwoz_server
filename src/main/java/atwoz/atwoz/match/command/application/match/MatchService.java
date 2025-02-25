@@ -33,19 +33,19 @@ public class MatchService {
 
     @Transactional
     public void approve(Long responderId, MatchResponseDto respondDto) {
-        Match match = getWaitingMatchById(respondDto.matchId());
+        Match match = getWaitingMatchByIdAndResponderId(respondDto.matchId(), responderId);
         match.approve();
     }
 
     @Transactional
     public void reject(Long responderId, MatchResponseDto respondDto) {
-        Match match = getWaitingMatchById(respondDto.matchId());
+        Match match = getWaitingMatchByIdAndResponderId(respondDto.matchId(), responderId);
         match.reject();
     }
 
     @Transactional
     public void rejectCheck(Long memberId, Long matchId) {
-        Match match = getRejectedMatchById(matchId);
+        Match match = getRejectedMatchByIdAndRequesterId(matchId, memberId);
         match.checkRejected();
     }
 
@@ -57,14 +57,18 @@ public class MatchService {
         return Math.max(requesterId, responderId) + ":" + Math.min(requesterId, responderId);
     }
 
-    private Match getWaitingMatchById(Long id) {
-        Match match = matchRepository.findById(id).orElseThrow(MatchNotFoundException::new);
+    private Match getWaitingMatchByIdAndResponderId(Long id, Long responderId) {
+        Match match = matchRepository.findByIdAndResponderId(id, responderId)
+                .orElseThrow(MatchNotFoundException::new);
+
         if (match.getStatus() != MatchStatus.WAITING) throw new MatchNotFoundException();
         return match;
     }
 
-    private Match getRejectedMatchById(Long id) {
-        Match match = matchRepository.findById(id).orElseThrow(MatchNotFoundException::new);
+    private Match getRejectedMatchByIdAndRequesterId(Long id, Long requesterId) {
+        Match match = matchRepository.findByIdAndRequesterId(id, requesterId)
+                .orElseThrow(MatchNotFoundException::new);
+
         if (match.getStatus() != MatchStatus.REJECTED) throw new MatchNotFoundException();
         return match;
     }

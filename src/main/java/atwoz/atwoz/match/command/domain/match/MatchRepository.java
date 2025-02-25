@@ -10,4 +10,8 @@ public interface MatchRepository {
     void withNamedLock(String key, Runnable action);
 
     Optional<Match> findById(Long id);
+
+    Optional<Match> findByIdAndRequesterId(Long id, Long requesterId);
+
+    Optional<Match> findByIdAndResponderId(Long id, Long responderId);
 }

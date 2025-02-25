@@ -31,7 +31,7 @@ public class MatchController {
 
     @PutMapping("/reject")
     public ResponseEntity<BaseResponse<Void>> rejectMatch(@RequestBody MatchResponseDto matchResponseDto, @AuthPrincipal AuthContext authContext) {
-        matchService.approve(authContext.getId(), matchResponseDto);
+        matchService.reject(authContext.getId(), matchResponseDto);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
