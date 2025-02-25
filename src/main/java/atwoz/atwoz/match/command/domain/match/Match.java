@@ -3,6 +3,7 @@ package atwoz.atwoz.match.command.domain.match;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.match.command.domain.match.event.MatchRequestCompletedEvent;
 import atwoz.atwoz.match.command.domain.match.event.MatchRequestedEvent;
+import atwoz.atwoz.match.command.domain.match.event.MatchRespondedEvent;
 import atwoz.atwoz.match.command.domain.match.exception.InvalidMatchStatusChangeException;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import jakarta.persistence.*;
@@ -50,16 +51,19 @@ public class Match {
     public void approve() {
         validateChangeStatus();
         status = MatchStatus.MATCHED;
+        Events.raise(MatchRespondedEvent.of(requesterId, responderId, status));
     }
 
     public void expire() {
         validateChangeStatus();
         status = MatchStatus.EXPIRED;
+        Events.raise(MatchRespondedEvent.of(requesterId, responderId, status));
     }
 
     public void reject() {
         validateChangeStatus();
         status = MatchStatus.REJECTED;
+        Events.raise(MatchRespondedEvent.of(requesterId, responderId, status));
     }
 
     public void checkRejected() {
