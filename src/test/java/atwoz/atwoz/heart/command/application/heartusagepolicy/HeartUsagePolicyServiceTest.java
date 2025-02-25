@@ -31,9 +31,9 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @ExtendWith(MockitoExtension.class)
-class HeartUsageServiceImplTest {
+class HeartUsagePolicyServiceTest {
     @InjectMocks
-    private HeartUsageServiceImpl heartUsageService;
+    private HeartUsagePolicyService heartUsageService;
     @Mock
     private HeartUsagePolicyCommandRepository heartUsagePolicyCommandRepository;
     @Mock

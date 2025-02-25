@@ -17,12 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class HeartUsageServiceImpl implements HeartUsageService {
+public class HeartUsagePolicyService {
     private final HeartUsagePolicyCommandRepository heartUsagePolicyCommandRepository;
     private final HeartTransactionCommandRepository heartTransactionCommandRepository;
     private final MemberCommandRepository memberCommandRepository;
 
-    @Override
     @Transactional
     public HeartTransaction useHeart(long memberId, TransactionType transactionType) {
         Member member = getMember(memberId);
