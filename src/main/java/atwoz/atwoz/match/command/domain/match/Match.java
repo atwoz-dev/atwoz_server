@@ -1,5 +1,9 @@
 package atwoz.atwoz.match.command.domain.match;
 
+import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.match.command.domain.match.event.MatchRequestCompletedEvent;
+import atwoz.atwoz.match.command.domain.match.event.MatchRequestedEvent;
+import atwoz.atwoz.match.command.domain.match.exception.InvalidMatchStatusChangeException;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,19 +42,40 @@ public class Match {
     })
     private Message responseMessage;
 
+    @Getter
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
     private MatchStatus status;
 
+    public void approve() {
+        validateChangeStatus();
+        status = MatchStatus.MATCHED;
+    }
+
+    public void expired() {
+        validateChangeStatus();
+        status = MatchStatus.EXPIRED;
+    }
+
+    public void rejected() {
+        validateChangeStatus();
+        status = MatchStatus.REJECTED;
+    }
+
     public static Match request(long requesterId, long responderId, @NonNull Message requestMessage) {
-        /**
-         * TODO : 매칭을 요청하는 경우, 하트 소비 이벤트 발행!
-         */
+        Events.raise(MatchRequestedEvent.of(requesterId, responderId));
+        Events.raise(MatchRequestCompletedEvent.of(requesterId, responderId));
+
         return Match.builder()
                 .requesterId(requesterId)
                 .responderId(responderId)
                 .requestMessage(requestMessage)
                 .status(MatchStatus.WAITING)
                 .build();
+    }
+
+    private void validateChangeStatus() {
+        if (status != MatchStatus.WAITING)
+            throw new InvalidMatchStatusChangeException();
     }
 }
