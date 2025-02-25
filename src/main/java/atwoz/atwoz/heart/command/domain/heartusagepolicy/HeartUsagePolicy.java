@@ -43,7 +43,10 @@ public class HeartUsagePolicy extends BaseEntity {
         return this.transactionType;
     }
 
-    public Long getAmount() {
+    public Long getAmount(boolean isVip) {
+        if (isVip) {
+            return 0L;
+        }
         return this.heartPriceAmount.getAmount();
     }
 
