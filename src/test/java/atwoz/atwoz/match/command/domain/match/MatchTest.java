@@ -82,7 +82,7 @@ public class MatchTest {
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
             Match match = Match.request(requesterId, responderId, requestMessage);
-            match.expired();
+            match.expire();
 
             // When & Then
             Assertions.assertThatThrownBy(() -> match.approve())
@@ -103,6 +103,37 @@ public class MatchTest {
 
             // Then
             Assertions.assertThat(match.getStatus()).isEqualTo(MatchStatus.MATCHED);
+        }
+
+        @Test
+        @DisplayName("현재 값이 Reject 상태가 아닌 경우, Check 상태로 변경 시, 예외 반환")
+        void throwsExceptionWhenStatusIsNotReject() {
+            // Given
+            Long requesterId = 1L;
+            Long responderId = 2L;
+            Message requestMessage = Message.from("매칭을 요청합니다.");
+            Match match = Match.request(requesterId, responderId, requestMessage);
+
+            // When & Then
+            Assertions.assertThatThrownBy(() -> match.checkRejected())
+                    .isInstanceOf(InvalidMatchStatusChangeException.class);
+        }
+
+        @Test
+        @DisplayName("현재 값이 Reject 상태인 경우, Check 상태로 변경.")
+        void changeStatusToCheck() {
+            // Given
+            Long requesterId = 1L;
+            Long responderId = 2L;
+            Message requestMessage = Message.from("매칭을 요청합니다.");
+            Match match = Match.request(requesterId, responderId, requestMessage);
+            match.reject();
+
+            // When
+            match.checkRejected();
+
+            // Then
+            Assertions.assertThat(match.getStatus()).isEqualTo(MatchStatus.REJECT_CHECKED);
         }
     }
 }

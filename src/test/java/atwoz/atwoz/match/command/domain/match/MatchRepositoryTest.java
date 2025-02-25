@@ -68,7 +68,7 @@ public class MatchRepositoryTest {
         String requestMessage = "매치를 신청합니다.";
 
         Match match = Match.request(requesterId, responderId, Message.from(requestMessage));
-        match.expired();
+        match.expire();
         entityManager.persist(match);
         entityManager.flush();
 

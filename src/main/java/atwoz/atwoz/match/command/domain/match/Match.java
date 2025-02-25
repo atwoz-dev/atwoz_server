@@ -52,14 +52,19 @@ public class Match {
         status = MatchStatus.MATCHED;
     }
 
-    public void expired() {
+    public void expire() {
         validateChangeStatus();
         status = MatchStatus.EXPIRED;
     }
 
-    public void rejected() {
+    public void reject() {
         validateChangeStatus();
         status = MatchStatus.REJECTED;
+    }
+
+    public void checkRejected() {
+        validateChangeRejectChecked();
+        status = MatchStatus.REJECT_CHECKED;
     }
 
     public static Match request(long requesterId, long responderId, @NonNull Message requestMessage) {
@@ -76,6 +81,11 @@ public class Match {
 
     private void validateChangeStatus() {
         if (status != MatchStatus.WAITING)
+            throw new InvalidMatchStatusChangeException();
+    }
+
+    private void validateChangeRejectChecked() {
+        if (status != MatchStatus.REJECTED)
             throw new InvalidMatchStatusChangeException();
     }
 }
