@@ -1,15 +1,19 @@
 package atwoz.atwoz.match.command.domain.match;
 
+import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.common.repository.LockRepository;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import atwoz.atwoz.match.command.infra.match.MatchRepositoryImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
+
+import static org.mockito.Mockito.mockStatic;
 
 @Import({MatchRepositoryImpl.class, LockRepository.class})
 @DataJpaTest
@@ -29,7 +33,10 @@ public class MatchRepositoryTest {
         Long requesterId = 2L;
         String requestMessage = "매치를 신청합니다.";
 
-        Match match = Match.request(requesterId, responderId, Message.from(requestMessage));
+        Match match;
+        try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
+            match = Match.request(requesterId, responderId, Message.from(requestMessage));
+        }
         entityManager.persist(match);
         entityManager.flush();
 
@@ -67,7 +74,10 @@ public class MatchRepositoryTest {
 
         String requestMessage = "매치를 신청합니다.";
 
-        Match match = Match.request(requesterId, responderId, Message.from(requestMessage));
+        Match match;
+        try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
+            match = Match.request(requesterId, responderId, Message.from(requestMessage));
+        }
         match.expired();
         entityManager.persist(match);
         entityManager.flush();
