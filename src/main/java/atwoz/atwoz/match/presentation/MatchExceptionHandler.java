@@ -2,7 +2,6 @@ package atwoz.atwoz.match.presentation;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
-import atwoz.atwoz.heart.command.domain.hearttransaction.exception.InsufficientHeartBalanceException;
 import atwoz.atwoz.match.command.application.match.exception.ExistsMatchException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -22,13 +21,5 @@ public class MatchExceptionHandler {
 
         return ResponseEntity.badRequest()
                 .body(BaseResponse.from(StatusType.BAD_REQUEST));
-    }
-
-    @ExceptionHandler(InsufficientHeartBalanceException.class)
-    public ResponseEntity<BaseResponse<Void>> handleInsufficientHeartBalanceException(InsufficientHeartBalanceException e) {
-        log.warn("하트 잔액이 부족합니다. {}", e.getMessage());
-
-        return ResponseEntity.badRequest()
-                .body(BaseResponse.from(StatusType.INSUFFICIENT_HEARTS));
     }
 }
