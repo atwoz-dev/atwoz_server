@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class MatchRequestedEventHandler {
+public class HeartUsageEventHandler {
     private final HeartUsagePolicyService heartUsageService;
 
     @EventListener(value = MatchRequestedEvent.class)
