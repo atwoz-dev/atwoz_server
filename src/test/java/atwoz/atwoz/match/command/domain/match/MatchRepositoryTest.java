@@ -78,7 +78,8 @@ public class MatchRepositoryTest {
         try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
             match = Match.request(requesterId, responderId, Message.from(requestMessage));
         }
-        match.expired();
+
+        match.expire();
         entityManager.persist(match);
         entityManager.flush();
 

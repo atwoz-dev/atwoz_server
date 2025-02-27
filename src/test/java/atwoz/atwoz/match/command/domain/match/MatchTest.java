@@ -1,5 +1,6 @@
 package atwoz.atwoz.match.command.domain.match;
 
+import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.match.command.domain.match.exception.InvalidMatchStatusChangeException;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import org.assertj.core.api.Assertions;
@@ -89,14 +90,16 @@ public class MatchTest {
             Long requesterId = 1L;
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
+            Message responseMessage = Message.from("매칭을 수락합니다.");
             Match match;
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
                 match = Match.request(requesterId, responderId, requestMessage);
+                match.expire();
             }
-            match.expired();
+
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> match.approve())
+            Assertions.assertThatThrownBy(() -> match.approve(responseMessage))
                     .isInstanceOf(InvalidMatchStatusChangeException.class);
         }
 
@@ -107,11 +110,13 @@ public class MatchTest {
             Long requesterId = 1L;
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
+            Message responseMessage = Message.from("매칭을 수락합니다.");
+
             Match match;
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
                 match = Match.request(requesterId, responderId, requestMessage);
             }
-            Message responseMessage = Message.from("매칭을 수락합니다.");
+
 
             // When
             match.approve(responseMessage);
@@ -128,7 +133,11 @@ public class MatchTest {
             Long requesterId = 1L;
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
-            Match match = Match.request(requesterId, responderId, requestMessage);
+            Match match;
+
+            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
+                match = Match.request(requesterId, responderId, requestMessage);
+            }
 
             // When & Then
             Assertions.assertThatThrownBy(() -> match.checkRejected())
@@ -143,8 +152,14 @@ public class MatchTest {
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
             Message responseMessage = Message.from("매칭을 거절합니다.");
-            Match match = Match.request(requesterId, responderId, requestMessage);
-            match.reject(responseMessage);
+
+
+            Match match;
+            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
+                match = Match.request(requesterId, responderId, requestMessage);
+                match.reject(responseMessage);
+            }
+
 
             // When
             match.checkRejected();
