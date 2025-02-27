@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class MatchRepositoryImpl implements MatchRepository {
@@ -37,5 +39,20 @@ public class MatchRepositoryImpl implements MatchRepository {
         } finally {
             lockRepository.releaseLock(key);
         }
+    }
+
+    @Override
+    public Optional<Match> findById(Long id) {
+        return matchJpaRepository.findById(id);
+    }
+
+    @Override
+    public Optional<Match> findByIdAndRequesterId(Long id, Long requesterId) {
+        return matchJpaRepository.findByIdAndRequesterId(id, requesterId);
+    }
+
+    @Override
+    public Optional<Match> findByIdAndResponderId(Long id, Long responderId) {
+        return matchJpaRepository.findByIdAndResponderId(id, responderId);
     }
 }
