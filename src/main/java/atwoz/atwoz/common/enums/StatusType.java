@@ -25,6 +25,7 @@ public enum StatusType {
     CANNOT_BE_DELETED(400, "400400", "Cannot be deleted"),
     EXISTS_NOTIFICATION_DATETIME(400, "400500", "Exists Reservation Time"),
     CANNOT_BE_EDITED(400, "400600", "Cannot be edited"),
+    INSUFFICIENT_HEARTS(400, "400700", "Insufficient heart balance"),
 
     UNAUTHORIZED(401, "401", "Unauthorized"),
     MISSING_ACCESS_TOKEN(401, "401001", "Missing Access Token"),

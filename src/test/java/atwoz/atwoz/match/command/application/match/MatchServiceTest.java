@@ -1,5 +1,6 @@
 package atwoz.atwoz.match.command.application.match;
 
+import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.match.command.application.match.exception.ExistsMatchException;
 import atwoz.atwoz.match.command.domain.match.MatchRepository;
 import atwoz.atwoz.match.presentation.dto.MatchRequestDto;
@@ -9,8 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.mockito.Mockito.mockStatic;
 
 @ExtendWith(MockitoExtension.class)
 public class MatchServiceTest {
@@ -64,7 +68,9 @@ public class MatchServiceTest {
                 .thenReturn(false);
 
         // When
-        matchService.request(requesterId, requestDto);
+        try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
+            matchService.request(requesterId, requestDto);
+        }
 
         // Then
         Mockito.verify(matchRepository).save(

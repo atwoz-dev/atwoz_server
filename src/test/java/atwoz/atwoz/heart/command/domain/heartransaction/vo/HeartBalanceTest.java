@@ -1,7 +1,7 @@
 package atwoz.atwoz.heart.command.domain.heartransaction.vo;
 
+import atwoz.atwoz.heart.command.domain.hearttransaction.exception.InsufficientHeartBalanceException;
 import atwoz.atwoz.heart.command.domain.hearttransaction.exception.InvalidHeartAmountException;
-import atwoz.atwoz.heart.command.domain.hearttransaction.exception.InvalidHeartBalanceException;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartBalance;
 import org.junit.jupiter.api.DisplayName;
@@ -192,7 +192,7 @@ class HeartBalanceTest {
             // when
             // then
             assertThatThrownBy(() -> heartBalance.useHeart(heartAmount))
-                    .isInstanceOf(InvalidHeartBalanceException.class);
+                    .isInstanceOf(InsufficientHeartBalanceException.class);
         }
 
         @Test

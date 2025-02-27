@@ -9,8 +9,10 @@ import atwoz.atwoz.heart.command.domain.heartusagepolicy.HeartPriceAmount;
 import atwoz.atwoz.heart.command.domain.heartusagepolicy.HeartUsagePolicy;
 import atwoz.atwoz.heart.command.domain.heartusagepolicy.HeartUsagePolicyCommandRepository;
 import atwoz.atwoz.heart.command.application.heartusagepolicy.exception.HeartUsagePolicyNotFoundException;
+import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.domain.member.Gender;
 import atwoz.atwoz.member.command.domain.member.Member;
+import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,30 +31,47 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @ExtendWith(MockitoExtension.class)
-class HeartUsageServiceImplTest {
+class HeartUsagePolicyServiceTest {
     @InjectMocks
-    private HeartUsageServiceImpl heartUsageService;
+    private HeartUsagePolicyService heartUsageService;
     @Mock
     private HeartUsagePolicyCommandRepository heartUsagePolicyCommandRepository;
     @Mock
     private HeartTransactionCommandRepository heartTransactionCommandRepository;
+    @Mock
+    private MemberCommandRepository memberCommandRepository;
+
+    @Test
+    @DisplayName("멤버가 존재하지 않는 경우 예외 발생")
+    void shouldThrowExceptionWhenMemberNotFound() {
+        // given
+        Long memberId = 1L;
+        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> heartUsageService.useHeart(memberId, TransactionType.MESSAGE))
+                .isInstanceOf(MemberNotFoundException.class);
+    }
 
     @Test
     @DisplayName("하트 사용 정책이 없는 경우 예외 발생")
     void shouldThrowExceptionWhenHeartUsagePolicyNotFound() {
         // given
         Member member = Member.fromPhoneNumber("01012345678");
+        Long memberId = 1L;
+        setField(member, "id", memberId);
         Gender gender = Gender.MALE;
         MemberProfile memberProfile = MemberProfile.builder()
                 .gender(gender)
                 .build();
         setField(member, "profile", memberProfile);
+        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(member));
         TransactionType transactionType = TransactionType.MESSAGE;
         when(heartUsagePolicyCommandRepository.findByGenderAndTransactionType(eq(gender), eq(transactionType)))
                 .thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> heartUsageService.useHeart(member, transactionType))
+        assertThatThrownBy(() -> heartUsageService.useHeart(memberId, transactionType))
                 .isInstanceOf(HeartUsagePolicyNotFoundException.class);
 
         verify(heartUsagePolicyCommandRepository, atMostOnce()).findByGenderAndTransactionType(eq(gender), eq(transactionType));
@@ -72,6 +91,7 @@ class HeartUsageServiceImplTest {
                 .gender(gender)
                 .build();
         setField(member, "profile", memberProfile);
+        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(member));
 
         HeartBalance heartBalanceBeforeUsingHeart = HeartBalance.init();
         setField(heartBalanceBeforeUsingHeart, "purchaseHeartBalance", 100L);
@@ -92,7 +112,7 @@ class HeartUsageServiceImplTest {
         HeartAmount expectedHeartAmount = HeartAmount.from(0L);
 
         // when
-        HeartTransaction heartTransaction = heartUsageService.useHeart(member, transactionType);
+        HeartTransaction heartTransaction = heartUsageService.useHeart(memberId, transactionType);
 
         // then
         assertThat(heartTransaction.getHeartAmount()).isEqualTo(expectedHeartAmount);
@@ -108,13 +128,14 @@ class HeartUsageServiceImplTest {
         // given
         Member member = Member.fromPhoneNumber("01012345678");
         Long memberId = 1L;
-
         setField(member, "id", memberId);
         Gender gender = Gender.MALE;
         MemberProfile memberProfile = MemberProfile.builder()
                 .gender(gender)
                 .build();
         setField(member, "profile", memberProfile);
+        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(member));
+
         HeartBalance heartBalanceBeforeUsingHeart = HeartBalance.init();
         setField(heartBalanceBeforeUsingHeart, "purchaseHeartBalance", 100L);
         setField(heartBalanceBeforeUsingHeart, "missionHeartBalance", 100L);
@@ -135,7 +156,7 @@ class HeartUsageServiceImplTest {
         HeartBalance expectedHeartBalance = heartBalanceBeforeUsingHeart.useHeart(expectedHeartAmount);
 
         // when
-        HeartTransaction heartTransaction = heartUsageService.useHeart(member, transactionType);
+        HeartTransaction heartTransaction = heartUsageService.useHeart(memberId, transactionType);
 
         // then
         assertThat(heartTransaction.getHeartAmount()).isEqualTo(expectedHeartAmount);
