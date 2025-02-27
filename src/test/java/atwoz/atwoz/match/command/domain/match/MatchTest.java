@@ -81,11 +81,12 @@ public class MatchTest {
             Long requesterId = 1L;
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
+            Message responseMessage = Message.from("매칭을 수락합니다.");
             Match match = Match.request(requesterId, responderId, requestMessage);
             match.expire();
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> match.approve())
+            Assertions.assertThatThrownBy(() -> match.approve(responseMessage))
                     .isInstanceOf(InvalidMatchStatusChangeException.class);
         }
 
@@ -96,13 +97,15 @@ public class MatchTest {
             Long requesterId = 1L;
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
+            Message responseMessage = Message.from("매칭을 수락합니다.");
             Match match = Match.request(requesterId, responderId, requestMessage);
 
             // When
-            match.approve();
+            match.approve(responseMessage);
 
             // Then
             Assertions.assertThat(match.getStatus()).isEqualTo(MatchStatus.MATCHED);
+            Assertions.assertThat(match.getResponseMessage().getValue()).isEqualTo(responseMessage.getValue());
         }
 
         @Test
@@ -126,8 +129,9 @@ public class MatchTest {
             Long requesterId = 1L;
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
+            Message responseMessage = Message.from("매칭을 거절합니다.");
             Match match = Match.request(requesterId, responderId, requestMessage);
-            match.reject();
+            match.reject(responseMessage);
 
             // When
             match.checkRejected();

@@ -34,13 +34,13 @@ public class MatchService {
     @Transactional
     public void approve(Long responderId, MatchResponseDto respondDto) {
         Match match = getWaitingMatchByIdAndResponderId(respondDto.matchId(), responderId);
-        match.approve();
+        match.approve(Message.from(respondDto.responseMessage()));
     }
 
     @Transactional
     public void reject(Long responderId, MatchResponseDto respondDto) {
         Match match = getWaitingMatchByIdAndResponderId(respondDto.matchId(), responderId);
-        match.reject();
+        match.reject(Message.from(respondDto.responseMessage()));
     }
 
     @Transactional

@@ -48,21 +48,23 @@ public class Match {
     @Column(columnDefinition = "varchar(50)")
     private MatchStatus status;
 
-    public void approve() {
+    public void approve(@NonNull Message message) {
         validateChangeStatus();
         status = MatchStatus.MATCHED;
+        responseMessage = message;
+        Events.raise(MatchRespondedEvent.of(requesterId, responderId, status));
+    }
+
+    public void reject(@NonNull Message message) {
+        validateChangeStatus();
+        status = MatchStatus.REJECTED;
+        responseMessage = message;
         Events.raise(MatchRespondedEvent.of(requesterId, responderId, status));
     }
 
     public void expire() {
         validateChangeStatus();
         status = MatchStatus.EXPIRED;
-        Events.raise(MatchRespondedEvent.of(requesterId, responderId, status));
-    }
-
-    public void reject() {
-        validateChangeStatus();
-        status = MatchStatus.REJECTED;
         Events.raise(MatchRespondedEvent.of(requesterId, responderId, status));
     }
 

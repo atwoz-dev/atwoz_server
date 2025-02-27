@@ -117,7 +117,7 @@ public class MatchServiceTest {
             String responseMessage = "매치 수락할게요";
             Match match = Match.request(requesterId, responderId, Message.from(responseMessage));
 
-            match.reject();
+            match.reject(Message.from(responseMessage));
             MatchResponseDto responseDto = new MatchResponseDto(matchId, responseMessage);
 
             Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
@@ -148,6 +148,7 @@ public class MatchServiceTest {
 
             // Then
             Assertions.assertThat(match.getStatus()).isEqualTo(MatchStatus.MATCHED);
+            Assertions.assertThat(match.getResponseMessage().getValue()).isEqualTo(responseMessage);
         }
     }
 
@@ -182,7 +183,7 @@ public class MatchServiceTest {
             String responseMessage = "매치 수락할게요";
             Match match = Match.request(requesterId, responderId, Message.from(responseMessage));
 
-            match.approve();
+            match.approve(Message.from(responseMessage));
             MatchResponseDto responseDto = new MatchResponseDto(matchId, responseMessage);
 
             Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
@@ -200,8 +201,9 @@ public class MatchServiceTest {
             Long requesterId = 1L;
             Long responderId = 2L;
             Long matchId = 3L;
+            String requestMessage = "매치 신청할게요";
             String responseMessage = "매치 거절할게요";
-            Match match = Match.request(requesterId, responderId, Message.from(responseMessage));
+            Match match = Match.request(requesterId, responderId, Message.from(requestMessage));
 
             MatchResponseDto responseDto = new MatchResponseDto(matchId, responseMessage);
 
@@ -213,13 +215,68 @@ public class MatchServiceTest {
 
             // Then
             Assertions.assertThat(match.getStatus()).isEqualTo(MatchStatus.REJECTED);
+            Assertions.assertThat(match.getResponseMessage().getValue()).isEqualTo(responseMessage);
         }
     }
 
     @Nested
     @DisplayName("매치 거절 확인 테스트")
     class RejectCheck {
-        
+
+        @DisplayName("매치 상태가 거절이 아닌 경우, 예외 발생")
+        @Test
+        void throwsExceptionWhenMatchStatusIsNotRejected() {
+            // Given
+            Long requesterId = 1L;
+            Long responderId = 2L;
+            Long matchId = 3L;
+            String requestMessage = "매치 신청할게요";
+
+            Match match = Match.request(requesterId, responderId, Message.from(requestMessage));
+            Mockito.when(matchRepository.findByIdAndRequesterId(matchId, requesterId))
+                    .thenReturn(Optional.of(match));
+
+            // When & Then
+            Assertions.assertThatThrownBy(() -> matchService.rejectCheck(requesterId, matchId))
+                    .isInstanceOf(MatchNotFoundException.class);
+        }
+
+        @DisplayName("매치가 존재하지 않는 경우, 예외 발생")
+        @Test
+        void throwsExceptionWhenRequesterIdIsNotEqualMemberId() {
+            // Given
+            Long requesterId = 2L;
+            Long matchId = 3L;
+
+            Mockito.when(matchRepository.findByIdAndRequesterId(matchId, requesterId))
+                    .thenReturn(Optional.empty());
+
+            // When & Then
+            Assertions.assertThatThrownBy(() -> matchService.rejectCheck(requesterId, matchId))
+                    .isInstanceOf(MatchNotFoundException.class);
+        }
+
+        @DisplayName("매치가 존재하며, 해당 상태가 거절일 경우 상태 변경")
+        void checkMatch() {
+            // Given
+            Long requesterId = 1L;
+            Long responderId = 2L;
+            Long matchId = 3L;
+            String requestMessage = "매치 신청할게요";
+            String responseMessage = "매치 거절할게요";
+
+            Match match = Match.request(requesterId, responderId, Message.from(requestMessage));
+            match.reject(Message.from(responseMessage));
+
+            Mockito.when(matchRepository.findByIdAndRequesterId(matchId, requesterId))
+                    .thenReturn(Optional.of(match));
+
+            // When
+            matchService.rejectCheck(requesterId, matchId);
+
+            // Then
+            Assertions.assertThat(match.getStatus()).isEqualTo(MatchStatus.REJECT_CHECKED);
+        }
     }
 
 
