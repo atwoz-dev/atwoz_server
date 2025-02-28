@@ -32,14 +32,14 @@ public class MatchService {
     }
 
     @Transactional
-    public void approve(Long responderId, MatchResponseDto respondDto) {
-        Match match = getWaitingMatchByIdAndResponderId(respondDto.matchId(), responderId);
+    public void approve(Long matchId, Long responderId, MatchResponseDto respondDto) {
+        Match match = getWaitingMatchByIdAndResponderId(matchId, responderId);
         match.approve(Message.from(respondDto.responseMessage()));
     }
 
     @Transactional
-    public void reject(Long responderId, MatchResponseDto respondDto) {
-        Match match = getWaitingMatchByIdAndResponderId(respondDto.matchId(), responderId);
+    public void reject(Long matchId, Long responderId, MatchResponseDto respondDto) {
+        Match match = getWaitingMatchByIdAndResponderId(matchId, responderId);
         match.reject(Message.from(respondDto.responseMessage()));
     }
 

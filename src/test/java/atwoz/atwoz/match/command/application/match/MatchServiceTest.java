@@ -105,13 +105,13 @@ public class MatchServiceTest {
             Long responderId = 1L;
             Long matchId = 1L;
             String responseMessage = "매치 수락할게요";
-            MatchResponseDto responseDto = new MatchResponseDto(matchId, responseMessage);
+            MatchResponseDto responseDto = new MatchResponseDto(responseMessage);
 
             Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
                     .thenReturn(Optional.empty());
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> matchService.approve(matchId, responseDto))
+            Assertions.assertThatThrownBy(() -> matchService.approve(matchId, responderId, responseDto))
                     .isInstanceOf(MatchNotFoundException.class);
         }
 
@@ -123,7 +123,7 @@ public class MatchServiceTest {
             Long responderId = 2L;
             Long matchId = 3L;
             String responseMessage = "매치 수락할게요";
-            MatchResponseDto responseDto = new MatchResponseDto(matchId, responseMessage);
+            MatchResponseDto responseDto = new MatchResponseDto(responseMessage);
             Match match;
 
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
@@ -134,7 +134,7 @@ public class MatchServiceTest {
                     .thenReturn(Optional.of(match));
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> matchService.approve(responderId, responseDto))
+            Assertions.assertThatThrownBy(() -> matchService.approve(matchId, responderId, responseDto))
                     .isInstanceOf(MatchNotFoundException.class);
         }
 
@@ -151,14 +151,14 @@ public class MatchServiceTest {
                 match = Match.request(requesterId, responderId, Message.from(responseMessage));
             }
 
-            MatchResponseDto responseDto = new MatchResponseDto(matchId, responseMessage);
+            MatchResponseDto responseDto = new MatchResponseDto(responseMessage);
 
             Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
                     .thenReturn(Optional.of(match));
 
             // When
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                matchService.approve(responderId, responseDto);
+                matchService.approve(matchId, responderId, responseDto);
             }
 
             // Then
@@ -178,13 +178,13 @@ public class MatchServiceTest {
             Long responderId = 1L;
             Long matchId = 1L;
             String responseMessage = "매치 거절할게요";
-            MatchResponseDto responseDto = new MatchResponseDto(matchId, responseMessage);
+            MatchResponseDto responseDto = new MatchResponseDto(responseMessage);
 
             Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
                     .thenReturn(Optional.empty());
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> matchService.reject(matchId, responseDto))
+            Assertions.assertThatThrownBy(() -> matchService.reject(matchId, responderId, responseDto))
                     .isInstanceOf(MatchNotFoundException.class);
         }
 
@@ -196,7 +196,7 @@ public class MatchServiceTest {
             Long responderId = 2L;
             Long matchId = 3L;
             String responseMessage = "매치 수락할게요";
-            MatchResponseDto responseDto = new MatchResponseDto(matchId, responseMessage);
+            MatchResponseDto responseDto = new MatchResponseDto(responseMessage);
 
             Match match;
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
@@ -208,7 +208,7 @@ public class MatchServiceTest {
                     .thenReturn(Optional.of(match));
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> matchService.reject(responderId, responseDto))
+            Assertions.assertThatThrownBy(() -> matchService.reject(matchId, responderId, responseDto))
                     .isInstanceOf(MatchNotFoundException.class);
         }
 
@@ -227,14 +227,14 @@ public class MatchServiceTest {
                 match = Match.request(requesterId, responderId, Message.from(requestMessage));
             }
 
-            MatchResponseDto responseDto = new MatchResponseDto(matchId, responseMessage);
+            MatchResponseDto responseDto = new MatchResponseDto(responseMessage);
 
             Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
                     .thenReturn(Optional.of(match));
 
             // When
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                matchService.reject(responderId, responseDto);
+                matchService.reject(matchId, responderId, responseDto);
             }
 
             // Then
