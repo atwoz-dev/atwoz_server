@@ -10,9 +10,7 @@ import atwoz.atwoz.match.command.domain.match.vo.Message;
 import atwoz.atwoz.match.presentation.dto.MatchRequestDto;
 import atwoz.atwoz.match.presentation.dto.MatchResponseDto;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -23,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mockStatic;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -34,6 +31,20 @@ public class MatchServiceTest {
 
     @InjectMocks
     private MatchService matchService;
+
+    private static MockedStatic<Events> mockedEvents;
+
+    @BeforeEach
+    void setUp() {
+        mockedEvents = Mockito.mockStatic(Events.class);
+        mockedEvents.when(() -> Events.raise(Mockito.any()))
+                .thenAnswer(invocation -> null);
+    }
+
+    @AfterEach
+    void tearDown() {
+        mockedEvents.close();
+    }
 
     @Nested
     @DisplayName("매치 요청 테스트")
@@ -81,9 +92,8 @@ public class MatchServiceTest {
                     .thenReturn(false);
 
             // When
-            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                matchService.request(requesterId, requestDto);
-            }
+            matchService.request(requesterId, requestDto);
+
 
             // Then
             Mockito.verify(matchRepository).save(
@@ -124,12 +134,10 @@ public class MatchServiceTest {
             Long matchId = 3L;
             String responseMessage = "매치 수락할게요";
             MatchResponseDto responseDto = new MatchResponseDto(responseMessage);
-            Match match;
 
-            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                match = Match.request(requesterId, responderId, Message.from(responseMessage));
-                match.reject(Message.from(responseMessage));
-            }
+            Match match = Match.request(requesterId, responderId, Message.from(responseMessage));
+            match.reject(Message.from(responseMessage));
+
             Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
                     .thenReturn(Optional.of(match));
 
@@ -146,10 +154,8 @@ public class MatchServiceTest {
             Long responderId = 2L;
             Long matchId = 3L;
             String responseMessage = "매치 수락할게요";
-            Match match;
-            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                match = Match.request(requesterId, responderId, Message.from(responseMessage));
-            }
+            Match match = Match.request(requesterId, responderId, Message.from(responseMessage));
+
 
             MatchResponseDto responseDto = new MatchResponseDto(responseMessage);
 
@@ -157,9 +163,8 @@ public class MatchServiceTest {
                     .thenReturn(Optional.of(match));
 
             // When
-            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                matchService.approve(matchId, responderId, responseDto);
-            }
+            matchService.approve(matchId, responderId, responseDto);
+
 
             // Then
             Assertions.assertThat(match.getStatus()).isEqualTo(MatchStatus.MATCHED);
@@ -198,11 +203,9 @@ public class MatchServiceTest {
             String responseMessage = "매치 수락할게요";
             MatchResponseDto responseDto = new MatchResponseDto(responseMessage);
 
-            Match match;
-            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                match = Match.request(requesterId, responderId, Message.from(responseMessage));
-                match.approve(Message.from(responseMessage));
-            }
+            Match match = Match.request(requesterId, responderId, Message.from(responseMessage));
+            match.approve(Message.from(responseMessage));
+
 
             Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
                     .thenReturn(Optional.of(match));
@@ -223,9 +226,8 @@ public class MatchServiceTest {
             String responseMessage = "매치 거절할게요";
             Match match;
 
-            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                match = Match.request(requesterId, responderId, Message.from(requestMessage));
-            }
+            match = Match.request(requesterId, responderId, Message.from(requestMessage));
+
 
             MatchResponseDto responseDto = new MatchResponseDto(responseMessage);
 
@@ -233,9 +235,8 @@ public class MatchServiceTest {
                     .thenReturn(Optional.of(match));
 
             // When
-            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                matchService.reject(matchId, responderId, responseDto);
-            }
+            matchService.reject(matchId, responderId, responseDto);
+
 
             // Then
             Assertions.assertThat(match.getStatus()).isEqualTo(MatchStatus.REJECTED);
@@ -256,10 +257,7 @@ public class MatchServiceTest {
             Long matchId = 3L;
             String requestMessage = "매치 신청할게요";
 
-            Match match;
-            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                match = Match.request(requesterId, responderId, Message.from(requestMessage));
-            }
+            Match match = Match.request(requesterId, responderId, Message.from(requestMessage));
 
             Mockito.when(matchRepository.findByIdAndRequesterId(matchId, requesterId))
                     .thenReturn(Optional.of(match));
@@ -294,11 +292,9 @@ public class MatchServiceTest {
             String requestMessage = "매치 신청할게요";
             String responseMessage = "매치 거절할게요";
 
-            Match match;
-            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                match = Match.request(requesterId, responderId, Message.from(requestMessage));
-                match.reject(Message.from(responseMessage));
-            }
+            Match match = Match.request(requesterId, responderId, Message.from(requestMessage));
+            match.reject(Message.from(responseMessage));
+
 
             Mockito.when(matchRepository.findByIdAndRequesterId(matchId, requesterId))
                     .thenReturn(Optional.of(match));
