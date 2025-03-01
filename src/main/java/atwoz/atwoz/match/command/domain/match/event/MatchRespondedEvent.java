@@ -11,9 +11,9 @@ import lombok.Getter;
 public class MatchRespondedEvent extends Event {
     Long requesterId;
     Long responderId;
-    MatchStatus matchStatus;
+    String matchStatus;
 
     public static MatchRespondedEvent of(Long requesterId, Long responderId, MatchStatus matchStatus) {
-        return new MatchRespondedEvent(requesterId, responderId, matchStatus);
+        return new MatchRespondedEvent(requesterId, responderId, matchStatus.toString());
     }
 }

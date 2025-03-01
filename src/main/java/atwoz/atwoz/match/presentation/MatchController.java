@@ -30,8 +30,8 @@ public class MatchController {
     }
 
     @PatchMapping("/{matchId}/reject")
-    public ResponseEntity<BaseResponse<Void>> rejectMatch(@PathVariable Long matchId, @RequestBody MatchResponseDto matchResponseDto, @AuthPrincipal AuthContext authContext) {
-        matchService.reject(matchId, authContext.getId(), matchResponseDto);
+    public ResponseEntity<BaseResponse<Void>> rejectMatch(@PathVariable Long matchId, @AuthPrincipal AuthContext authContext) {
+        matchService.reject(matchId, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 

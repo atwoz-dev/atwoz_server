@@ -140,7 +140,7 @@ public class MatchTest {
             }
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> match.checkRejected())
+            Assertions.assertThatThrownBy(match::checkRejected)
                     .isInstanceOf(InvalidMatchStatusChangeException.class);
         }
 
@@ -157,7 +157,7 @@ public class MatchTest {
             Match match;
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
                 match = Match.request(requesterId, responderId, requestMessage);
-                match.reject(responseMessage);
+                match.reject();
             }
 
 

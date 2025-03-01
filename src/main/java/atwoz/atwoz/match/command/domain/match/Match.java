@@ -55,10 +55,9 @@ public class Match {
         Events.raise(MatchRespondedEvent.of(requesterId, responderId, status));
     }
 
-    public void reject(@NonNull Message message) {
+    public void reject() {
         validateChangeStatus();
         status = MatchStatus.REJECTED;
-        responseMessage = message;
         Events.raise(MatchRespondedEvent.of(requesterId, responderId, status));
     }
 

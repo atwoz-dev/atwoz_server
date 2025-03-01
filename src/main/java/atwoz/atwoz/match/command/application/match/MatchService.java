@@ -1,6 +1,7 @@
 package atwoz.atwoz.match.command.application.match;
 
 import atwoz.atwoz.match.command.application.match.exception.ExistsMatchException;
+import atwoz.atwoz.match.command.application.match.exception.InvalidMatchUpdateException;
 import atwoz.atwoz.match.command.application.match.exception.MatchNotFoundException;
 import atwoz.atwoz.match.command.domain.match.Match;
 import atwoz.atwoz.match.command.domain.match.MatchRepository;
@@ -38,14 +39,14 @@ public class MatchService {
     }
 
     @Transactional
-    public void reject(Long matchId, Long responderId, MatchResponseDto respondDto) {
+    public void reject(Long matchId, Long responderId) {
         Match match = getWaitingMatchByIdAndResponderId(matchId, responderId);
-        match.reject(Message.from(respondDto.responseMessage()));
+        match.reject();
     }
 
     @Transactional
-    public void rejectCheck(Long memberId, Long matchId) {
-        Match match = getRejectedMatchByIdAndRequesterId(matchId, memberId);
+    public void rejectCheck(Long requesterId, Long matchId) {
+        Match match = getRejectedMatchByIdAndRequesterId(matchId, requesterId);
         match.checkRejected();
     }
 
@@ -61,7 +62,7 @@ public class MatchService {
         Match match = matchRepository.findByIdAndResponderId(id, responderId)
                 .orElseThrow(MatchNotFoundException::new);
 
-        if (match.getStatus() != MatchStatus.WAITING) throw new MatchNotFoundException();
+        if (match.getStatus() != MatchStatus.WAITING) throw new InvalidMatchUpdateException();
         return match;
     }
 
@@ -69,7 +70,7 @@ public class MatchService {
         Match match = matchRepository.findByIdAndRequesterId(id, requesterId)
                 .orElseThrow(MatchNotFoundException::new);
 
-        if (match.getStatus() != MatchStatus.REJECTED) throw new MatchNotFoundException();
+        if (match.getStatus() != MatchStatus.REJECTED) throw new InvalidMatchUpdateException();
         return match;
     }
 }
