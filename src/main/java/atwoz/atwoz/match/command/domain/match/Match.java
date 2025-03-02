@@ -3,6 +3,7 @@ package atwoz.atwoz.match.command.domain.match;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.match.command.domain.match.event.MatchRequestCompletedEvent;
 import atwoz.atwoz.match.command.domain.match.event.MatchRequestedEvent;
+import atwoz.atwoz.match.command.domain.match.event.MatchRespondedEvent;
 import atwoz.atwoz.match.command.domain.match.exception.InvalidMatchStatusChangeException;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import jakarta.persistence.*;
@@ -47,19 +48,28 @@ public class Match {
     @Column(columnDefinition = "varchar(50)")
     private MatchStatus status;
 
-    public void approve() {
+    public void approve(@NonNull Message message) {
         validateChangeStatus();
         status = MatchStatus.MATCHED;
+        responseMessage = message;
+        Events.raise(MatchRespondedEvent.of(requesterId, responderId, status));
     }
 
-    public void expired() {
-        validateChangeStatus();
-        status = MatchStatus.EXPIRED;
-    }
-
-    public void rejected() {
+    public void reject() {
         validateChangeStatus();
         status = MatchStatus.REJECTED;
+        Events.raise(MatchRespondedEvent.of(requesterId, responderId, status));
+    }
+
+    public void expire() {
+        validateChangeStatus();
+        status = MatchStatus.EXPIRED;
+        Events.raise(MatchRespondedEvent.of(requesterId, responderId, status));
+    }
+
+    public void checkRejected() {
+        validateChangeRejectChecked();
+        status = MatchStatus.REJECT_CHECKED;
     }
 
     public static Match request(long requesterId, long responderId, @NonNull Message requestMessage) {
@@ -76,6 +86,11 @@ public class Match {
 
     private void validateChangeStatus() {
         if (status != MatchStatus.WAITING)
+            throw new InvalidMatchStatusChangeException();
+    }
+
+    private void validateChangeRejectChecked() {
+        if (status != MatchStatus.REJECTED)
             throw new InvalidMatchStatusChangeException();
     }
 }

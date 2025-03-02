@@ -90,14 +90,16 @@ public class MatchTest {
             Long requesterId = 1L;
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
+            Message responseMessage = Message.from("매칭을 수락합니다.");
             Match match;
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
                 match = Match.request(requesterId, responderId, requestMessage);
+                match.expire();
             }
-            match.expired();
+
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> match.approve())
+            Assertions.assertThatThrownBy(() -> match.approve(responseMessage))
                     .isInstanceOf(InvalidMatchStatusChangeException.class);
         }
 
@@ -108,16 +110,62 @@ public class MatchTest {
             Long requesterId = 1L;
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
+            Message responseMessage = Message.from("매칭을 수락합니다.");
+
             Match match;
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
                 match = Match.request(requesterId, responderId, requestMessage);
             }
 
+
             // When
-            match.approve();
+            match.approve(responseMessage);
 
             // Then
             Assertions.assertThat(match.getStatus()).isEqualTo(MatchStatus.MATCHED);
+            Assertions.assertThat(match.getResponseMessage().getValue()).isEqualTo(responseMessage.getValue());
+        }
+
+        @Test
+        @DisplayName("현재 값이 Reject 상태가 아닌 경우, Check 상태로 변경 시, 예외 반환")
+        void throwsExceptionWhenStatusIsNotReject() {
+            // Given
+            Long requesterId = 1L;
+            Long responderId = 2L;
+            Message requestMessage = Message.from("매칭을 요청합니다.");
+            Match match;
+
+            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
+                match = Match.request(requesterId, responderId, requestMessage);
+            }
+
+            // When & Then
+            Assertions.assertThatThrownBy(match::checkRejected)
+                    .isInstanceOf(InvalidMatchStatusChangeException.class);
+        }
+
+        @Test
+        @DisplayName("현재 값이 Reject 상태인 경우, Check 상태로 변경.")
+        void changeStatusToCheck() {
+            // Given
+            Long requesterId = 1L;
+            Long responderId = 2L;
+            Message requestMessage = Message.from("매칭을 요청합니다.");
+            Message responseMessage = Message.from("매칭을 거절합니다.");
+
+
+            Match match;
+            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
+                match = Match.request(requesterId, responderId, requestMessage);
+                match.reject();
+            }
+
+
+            // When
+            match.checkRejected();
+
+            // Then
+            Assertions.assertThat(match.getStatus()).isEqualTo(MatchStatus.REJECT_CHECKED);
         }
     }
 }

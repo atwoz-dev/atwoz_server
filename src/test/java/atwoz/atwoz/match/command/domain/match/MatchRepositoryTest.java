@@ -5,15 +5,16 @@ import atwoz.atwoz.common.repository.LockRepository;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import atwoz.atwoz.match.command.infra.match.MatchRepositoryImpl;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-
-import static org.mockito.Mockito.mockStatic;
 
 @Import({MatchRepositoryImpl.class, LockRepository.class})
 @DataJpaTest
@@ -25,6 +26,21 @@ public class MatchRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
 
+    private static MockedStatic<Events> mockedEvents;
+
+
+    @BeforeEach
+    void setUp() {
+        mockedEvents = Mockito.mockStatic(Events.class);
+        mockedEvents.when(() -> Events.raise(Mockito.any()))
+                .thenAnswer(invocation -> null);
+    }
+
+    @AfterEach
+    void tearDown() {
+        mockedEvents.close();
+    }
+
     @Test
     @DisplayName("서로 매치가 존재하는 경우 True 반환.")
     void getTrueWhenMatchExistsBetween() {
@@ -33,10 +49,8 @@ public class MatchRepositoryTest {
         Long requesterId = 2L;
         String requestMessage = "매치를 신청합니다.";
 
-        Match match;
-        try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-            match = Match.request(requesterId, responderId, Message.from(requestMessage));
-        }
+        Match match = Match.request(requesterId, responderId, Message.from(requestMessage));
+
         entityManager.persist(match);
         entityManager.flush();
 
@@ -74,11 +88,34 @@ public class MatchRepositoryTest {
 
         String requestMessage = "매치를 신청합니다.";
 
-        Match match;
-        try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-            match = Match.request(requesterId, responderId, Message.from(requestMessage));
-        }
-        match.expired();
+        Match match = Match.request(requesterId, responderId, Message.from(requestMessage));
+        match.expire();
+
+        entityManager.persist(match);
+        entityManager.flush();
+
+        // When
+        boolean result = matchRepository.existsActiveMatchBetween(requesterId, responderId);
+        boolean otherResult = matchRepository.existsActiveMatchBetween(responderId, requesterId);
+
+        // Then
+        Assertions.assertThat(result).isFalse();
+        Assertions.assertThat(otherResult).isFalse();
+    }
+
+    @Test
+    @DisplayName("거절 확인이 된 매치가 존재하는 경우, False 반환")
+    void getFalseWhenRejectCheckedMatchExistsBetween() {
+        // Given
+        Long requesterId = 1L;
+        Long responderId = 2L;
+
+        String requestMessage = "매치를 신청합니다.";
+
+        Match match = Match.request(requesterId, responderId, Message.from(requestMessage));
+        match.reject();
+        match.checkRejected();
+
         entityManager.persist(match);
         entityManager.flush();
 
