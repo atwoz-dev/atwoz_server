@@ -3,6 +3,7 @@ package atwoz.atwoz.member.query.member;
 import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.admin.command.domain.hobby.Hobby;
 import atwoz.atwoz.admin.command.domain.job.Job;
+import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.match.command.domain.match.Match;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import atwoz.atwoz.member.command.domain.member.*;
@@ -16,10 +17,9 @@ import atwoz.atwoz.member.query.member.view.MemberContactView;
 import atwoz.atwoz.member.query.member.view.MemberProfileView;
 import atwoz.atwoz.member.query.member.view.OtherMemberProfileView;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -149,10 +149,15 @@ public class MemberQueryRepositoryTest {
         Member otherMember;
         String profileImageUrl = "primaryImage";
         String jobName = "직업1";
+        static MockedStatic<Events> mockedEvents;
 
 
         @BeforeEach
         void setUp() {
+            mockedEvents = Mockito.mockStatic(Events.class);
+            mockedEvents.when(() -> Events.raise(Mockito.any()))
+                    .thenAnswer(invocation -> null);
+
             Job job = Job.from(jobName);
             Hobby hobby1 = Hobby.from("취미1");
             Hobby hobby2 = Hobby.from("취미2");
@@ -201,6 +206,11 @@ public class MemberQueryRepositoryTest {
             entityManager.persist(profileImage1);
             entityManager.persist(profileImage2);
             entityManager.flush();
+        }
+
+        @AfterEach
+        void tearDown() {
+            mockedEvents.close();
         }
 
         @Test
