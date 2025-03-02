@@ -3,6 +3,8 @@ package atwoz.atwoz.match.presentation;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.match.command.application.match.exception.ExistsMatchException;
+import atwoz.atwoz.match.command.application.match.exception.InvalidMatchUpdateException;
+import atwoz.atwoz.match.command.application.match.exception.MatchNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -18,6 +20,22 @@ public class MatchExceptionHandler {
     @ExceptionHandler(ExistsMatchException.class)
     public ResponseEntity<BaseResponse<Void>> handleExistsMatchException(ExistsMatchException e) {
         log.warn("매치 요청에 실패하였습니다. {}", e.getMessage());
+
+        return ResponseEntity.badRequest()
+                .body(BaseResponse.from(StatusType.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(MatchNotFoundException.class)
+    public ResponseEntity<BaseResponse<Void>> handleMatchNotFoundException(MatchNotFoundException e) {
+        log.warn("해당 매치를 찾을 수 없습니다. {}", e.getMessage());
+
+        return ResponseEntity.status(404)
+                .body(BaseResponse.from(StatusType.NOT_FOUND));
+    }
+
+    @ExceptionHandler(InvalidMatchUpdateException.class)
+    public ResponseEntity<BaseResponse<Void>> handleInvalidMatchUpdateException(InvalidMatchUpdateException e) {
+        log.warn("해당 매치의 상태를 변경할 수 없습니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
                 .body(BaseResponse.from(StatusType.BAD_REQUEST));
