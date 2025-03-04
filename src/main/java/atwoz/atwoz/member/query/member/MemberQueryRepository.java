@@ -108,6 +108,7 @@ public class MemberQueryRepository {
                                 )
                         )).get(otherMemberId);
 
+
         return Optional.ofNullable(otherMemberProfileView);
     }
 
@@ -116,4 +117,6 @@ public class MemberQueryRepository {
                 .or(match.requesterId.eq(otherMemberId).and(match.responderId.eq(memberId))))
                 .and(match.status.notIn(MatchStatus.REJECT_CHECKED, MatchStatus.EXPIRED));
     }
+
+
 }

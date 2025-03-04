@@ -5,6 +5,7 @@ import atwoz.atwoz.admin.command.domain.hobby.Hobby;
 import atwoz.atwoz.admin.command.domain.job.Job;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.match.command.domain.match.Match;
+import atwoz.atwoz.match.command.domain.match.MatchStatus;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
@@ -12,10 +13,7 @@ import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
-import atwoz.atwoz.member.query.member.view.BasicMemberInfo;
-import atwoz.atwoz.member.query.member.view.MemberContactView;
-import atwoz.atwoz.member.query.member.view.MemberProfileView;
-import atwoz.atwoz.member.query.member.view.OtherMemberProfileView;
+import atwoz.atwoz.member.query.member.view.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.mockito.MockedStatic;
@@ -250,19 +248,7 @@ public class MemberQueryRepositoryTest {
             Assertions.assertThat(memberProfileView.id()).isEqualTo(otherMember.getId());
 
             // BasicInfo.
-            Assertions.assertThat(basicMemberInfo.nickname()).isEqualTo(otherMemberProfile.getNickname().getValue());
-            Assertions.assertThat(basicMemberInfo.profileImageUrl()).isEqualTo(profileImageUrl);
-            Assertions.assertThat(basicMemberInfo.age()).isEqualTo(otherMemberProfile.getAge());
-            Assertions.assertThat(basicMemberInfo.gender()).isEqualTo(otherMemberProfile.getGender().toString());
-            Assertions.assertThat(basicMemberInfo.height()).isEqualTo(otherMemberProfile.getHeight());
-            Assertions.assertThat(basicMemberInfo.job()).isEqualTo(jobName);
-            Assertions.assertThat(basicMemberInfo.hobbies().size()).isEqualTo(2);
-            Assertions.assertThat(basicMemberInfo.mbti()).isEqualTo(otherMemberProfile.getMbti().toString());
-            Assertions.assertThat(basicMemberInfo.region()).isEqualTo(otherMemberProfile.getRegion().toString());
-            Assertions.assertThat(basicMemberInfo.smokingStatus()).isEqualTo(otherMemberProfile.getSmokingStatus().toString());
-            Assertions.assertThat(basicMemberInfo.drinkingStatus()).isEqualTo(otherMemberProfile.getDrinkingStatus().toString());
-            Assertions.assertThat(basicMemberInfo.highestEducation()).isEqualTo(otherMemberProfile.getHighestEducation().toString());
-            Assertions.assertThat(basicMemberInfo.religion()).isEqualTo(otherMemberProfile.getReligion().toString());
+            assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
 
             // MatchInfo
             Assertions.assertThat(memberProfileView.matchInfo().matchId()).isNull();
@@ -293,19 +279,7 @@ public class MemberQueryRepositoryTest {
             Assertions.assertThat(memberProfileView.id()).isEqualTo(otherMember.getId());
 
             // BasicInfo.
-            Assertions.assertThat(basicMemberInfo.nickname()).isEqualTo(otherMemberProfile.getNickname().getValue());
-            Assertions.assertThat(basicMemberInfo.profileImageUrl()).isEqualTo(profileImageUrl);
-            Assertions.assertThat(basicMemberInfo.age()).isEqualTo(otherMemberProfile.getAge());
-            Assertions.assertThat(basicMemberInfo.gender()).isEqualTo(otherMemberProfile.getGender().toString());
-            Assertions.assertThat(basicMemberInfo.height()).isEqualTo(otherMemberProfile.getHeight());
-            Assertions.assertThat(basicMemberInfo.job()).isEqualTo(jobName);
-            Assertions.assertThat(basicMemberInfo.hobbies().size()).isEqualTo(2);
-            Assertions.assertThat(basicMemberInfo.mbti()).isEqualTo(otherMemberProfile.getMbti().toString());
-            Assertions.assertThat(basicMemberInfo.region()).isEqualTo(otherMemberProfile.getRegion().toString());
-            Assertions.assertThat(basicMemberInfo.smokingStatus()).isEqualTo(otherMemberProfile.getSmokingStatus().toString());
-            Assertions.assertThat(basicMemberInfo.drinkingStatus()).isEqualTo(otherMemberProfile.getDrinkingStatus().toString());
-            Assertions.assertThat(basicMemberInfo.highestEducation()).isEqualTo(otherMemberProfile.getHighestEducation().toString());
-            Assertions.assertThat(basicMemberInfo.religion()).isEqualTo(otherMemberProfile.getReligion().toString());
+            assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
 
             // MatchInfo
             Assertions.assertThat(memberProfileView.matchInfo().matchId()).isNull();
@@ -338,19 +312,7 @@ public class MemberQueryRepositoryTest {
             Assertions.assertThat(memberProfileView.id()).isEqualTo(otherMember.getId());
 
             // BasicInfo.
-            Assertions.assertThat(basicMemberInfo.nickname()).isEqualTo(otherMemberProfile.getNickname().getValue());
-            Assertions.assertThat(basicMemberInfo.profileImageUrl()).isEqualTo(profileImageUrl);
-            Assertions.assertThat(basicMemberInfo.age()).isEqualTo(otherMemberProfile.getAge());
-            Assertions.assertThat(basicMemberInfo.gender()).isEqualTo(otherMemberProfile.getGender().toString());
-            Assertions.assertThat(basicMemberInfo.height()).isEqualTo(otherMemberProfile.getHeight());
-            Assertions.assertThat(basicMemberInfo.job()).isEqualTo(jobName);
-            Assertions.assertThat(basicMemberInfo.hobbies().size()).isEqualTo(2);
-            Assertions.assertThat(basicMemberInfo.mbti()).isEqualTo(otherMemberProfile.getMbti().toString());
-            Assertions.assertThat(basicMemberInfo.region()).isEqualTo(otherMemberProfile.getRegion().toString());
-            Assertions.assertThat(basicMemberInfo.smokingStatus()).isEqualTo(otherMemberProfile.getSmokingStatus().toString());
-            Assertions.assertThat(basicMemberInfo.drinkingStatus()).isEqualTo(otherMemberProfile.getDrinkingStatus().toString());
-            Assertions.assertThat(basicMemberInfo.highestEducation()).isEqualTo(otherMemberProfile.getHighestEducation().toString());
-            Assertions.assertThat(basicMemberInfo.religion()).isEqualTo(otherMemberProfile.getReligion().toString());
+            assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
 
             // MatchInfo
             Assertions.assertThat(memberProfileView.matchInfo().matchId()).isNull();
@@ -381,29 +343,11 @@ public class MemberQueryRepositoryTest {
             Assertions.assertThat(memberProfileView.id()).isEqualTo(otherMember.getId());
 
             // BasicInfo.
-            Assertions.assertThat(basicMemberInfo.nickname()).isEqualTo(otherMemberProfile.getNickname().getValue());
-            Assertions.assertThat(basicMemberInfo.profileImageUrl()).isEqualTo(profileImageUrl);
-            Assertions.assertThat(basicMemberInfo.age()).isEqualTo(otherMemberProfile.getAge());
-            Assertions.assertThat(basicMemberInfo.gender()).isEqualTo(otherMemberProfile.getGender().toString());
-            Assertions.assertThat(basicMemberInfo.height()).isEqualTo(otherMemberProfile.getHeight());
-            Assertions.assertThat(basicMemberInfo.job()).isEqualTo(jobName);
-            Assertions.assertThat(basicMemberInfo.hobbies().size()).isEqualTo(2);
-            Assertions.assertThat(basicMemberInfo.mbti()).isEqualTo(otherMemberProfile.getMbti().toString());
-            Assertions.assertThat(basicMemberInfo.region()).isEqualTo(otherMemberProfile.getRegion().toString());
-            Assertions.assertThat(basicMemberInfo.smokingStatus()).isEqualTo(otherMemberProfile.getSmokingStatus().toString());
-            Assertions.assertThat(basicMemberInfo.drinkingStatus()).isEqualTo(otherMemberProfile.getDrinkingStatus().toString());
-            Assertions.assertThat(basicMemberInfo.highestEducation()).isEqualTo(otherMemberProfile.getHighestEducation().toString());
-            Assertions.assertThat(basicMemberInfo.religion()).isEqualTo(otherMemberProfile.getReligion().toString());
+            assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
 
             // MatchInfo
-            Assertions.assertThat(memberProfileView.matchInfo().matchId()).isEqualTo(match.getId());
+            assertionsMatchInfo(memberProfileView.matchInfo(), match);
             Assertions.assertThat(memberProfileView.matchInfo().requesterId()).isEqualTo(member.getId());
-            Assertions.assertThat(memberProfileView.matchInfo().responderId()).isEqualTo(otherMember.getId());
-            Assertions.assertThat(memberProfileView.matchInfo().requestMessage()).isEqualTo(match.getRequestMessage().getValue());
-            Assertions.assertThat(memberProfileView.matchInfo().responseMessage()).isNull();
-            Assertions.assertThat(memberProfileView.matchInfo().matchStatus()).isEqualTo(match.getStatus().toString());
-            Assertions.assertThat(memberProfileView.matchInfo().contactType()).isEqualTo(otherMember.getPrimaryContactType().toString());
-            Assertions.assertThat(memberProfileView.matchInfo().contact()).isNull(); // 매치가 성사되지 않았으므로.
         }
 
         @Test
@@ -432,31 +376,13 @@ public class MemberQueryRepositoryTest {
             Assertions.assertThat(memberProfileView.id()).isEqualTo(otherMember.getId());
 
             // BasicInfo.
-            Assertions.assertThat(basicMemberInfo.nickname()).isEqualTo(otherMemberProfile.getNickname().getValue());
-            Assertions.assertThat(basicMemberInfo.profileImageUrl()).isEqualTo(profileImageUrl);
-            Assertions.assertThat(basicMemberInfo.age()).isEqualTo(otherMemberProfile.getAge());
-            Assertions.assertThat(basicMemberInfo.gender()).isEqualTo(otherMemberProfile.getGender().toString());
-            Assertions.assertThat(basicMemberInfo.height()).isEqualTo(otherMemberProfile.getHeight());
-            Assertions.assertThat(basicMemberInfo.job()).isEqualTo(jobName);
-            Assertions.assertThat(basicMemberInfo.hobbies().size()).isEqualTo(2);
-            Assertions.assertThat(basicMemberInfo.mbti()).isEqualTo(otherMemberProfile.getMbti().toString());
-            Assertions.assertThat(basicMemberInfo.region()).isEqualTo(otherMemberProfile.getRegion().toString());
-            Assertions.assertThat(basicMemberInfo.smokingStatus()).isEqualTo(otherMemberProfile.getSmokingStatus().toString());
-            Assertions.assertThat(basicMemberInfo.drinkingStatus()).isEqualTo(otherMemberProfile.getDrinkingStatus().toString());
-            Assertions.assertThat(basicMemberInfo.highestEducation()).isEqualTo(otherMemberProfile.getHighestEducation().toString());
-            Assertions.assertThat(basicMemberInfo.religion()).isEqualTo(otherMemberProfile.getReligion().toString());
+            assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
 
             // MatchInfo
-            Assertions.assertThat(memberProfileView.matchInfo().matchId()).isEqualTo(match.getId());
+            assertionsMatchInfo(memberProfileView.matchInfo(), match);
             Assertions.assertThat(memberProfileView.matchInfo().requesterId()).isEqualTo(member.getId());
-            Assertions.assertThat(memberProfileView.matchInfo().responderId()).isEqualTo(otherMember.getId());
-            Assertions.assertThat(memberProfileView.matchInfo().requestMessage()).isEqualTo(match.getRequestMessage().getValue());
-            Assertions.assertThat(memberProfileView.matchInfo().responseMessage()).isEqualTo(match.getResponseMessage().getValue());
-            Assertions.assertThat(memberProfileView.matchInfo().matchStatus()).isEqualTo(match.getStatus().toString());
-            Assertions.assertThat(memberProfileView.matchInfo().contactType()).isEqualTo(otherMember.getPrimaryContactType().toString());
-            Assertions.assertThat(memberProfileView.matchInfo().contact()).isEqualTo(otherMember.getPhoneNumber());
         }
-        
+
         @Test
         @DisplayName("상대방이 매치를 거절한 경우, 기본 정보와 연락처를 제외한 매치 정보를 함께 조회.")
         void getBasicInfoWithMatchInfoNotIncludingContactWhenWaitingMatchNotExists() {
@@ -483,6 +409,14 @@ public class MemberQueryRepositoryTest {
             Assertions.assertThat(memberProfileView.id()).isEqualTo(otherMember.getId());
 
             // BasicInfo.
+            assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
+
+            // MatchInfo
+            assertionsMatchInfo(memberProfileView.matchInfo(), match);
+            Assertions.assertThat(memberProfileView.matchInfo().requesterId()).isEqualTo(member.getId());
+        }
+
+        private void assertionsBasicInfo(BasicMemberInfo basicMemberInfo, MemberProfile otherMemberProfile) {
             Assertions.assertThat(basicMemberInfo.nickname()).isEqualTo(otherMemberProfile.getNickname().getValue());
             Assertions.assertThat(basicMemberInfo.profileImageUrl()).isEqualTo(profileImageUrl);
             Assertions.assertThat(basicMemberInfo.age()).isEqualTo(otherMemberProfile.getAge());
@@ -496,16 +430,24 @@ public class MemberQueryRepositoryTest {
             Assertions.assertThat(basicMemberInfo.drinkingStatus()).isEqualTo(otherMemberProfile.getDrinkingStatus().toString());
             Assertions.assertThat(basicMemberInfo.highestEducation()).isEqualTo(otherMemberProfile.getHighestEducation().toString());
             Assertions.assertThat(basicMemberInfo.religion()).isEqualTo(otherMemberProfile.getReligion().toString());
+        }
 
-            // MatchInfo
-            Assertions.assertThat(memberProfileView.matchInfo().matchId()).isEqualTo(match.getId());
-            Assertions.assertThat(memberProfileView.matchInfo().requesterId()).isEqualTo(member.getId());
-            Assertions.assertThat(memberProfileView.matchInfo().responderId()).isEqualTo(otherMember.getId());
-            Assertions.assertThat(memberProfileView.matchInfo().requestMessage()).isEqualTo(match.getRequestMessage().getValue());
-            Assertions.assertThat(memberProfileView.matchInfo().responseMessage()).isNull();
-            Assertions.assertThat(memberProfileView.matchInfo().matchStatus()).isEqualTo(match.getStatus().toString());
-            Assertions.assertThat(memberProfileView.matchInfo().contactType()).isEqualTo(otherMember.getPrimaryContactType().toString());
-            Assertions.assertThat(memberProfileView.matchInfo().contact()).isNull(); // 매치가 성사되지 않았으므로.
+        private void assertionsMatchInfo(MatchInfo matchInfo, Match match) {
+            Assertions.assertThat(matchInfo.matchId()).isEqualTo(match.getId());
+            Assertions.assertThat(matchInfo.responderId()).isEqualTo(otherMember.getId());
+            Assertions.assertThat(matchInfo.requestMessage()).isEqualTo(match.getRequestMessage().getValue());
+            Assertions.assertThat(matchInfo.responseMessage()).isEqualTo(match.getResponseMessage() == null ? null : match.getResponseMessage().getValue());
+            Assertions.assertThat(matchInfo.matchStatus()).isEqualTo(match.getStatus().toString());
+            Assertions.assertThat(matchInfo.contactType()).isEqualTo(otherMember.getPrimaryContactType().toString());
+
+
+            if (!match.getStatus().equals(MatchStatus.MATCHED)) {
+                Assertions.assertThat(matchInfo.contact()).isNull(); // 매치가 성사되지 않았으므로.
+            } else if (otherMember.getPrimaryContactType().equals(PrimaryContactType.PHONE_NUMBER)) {
+                Assertions.assertThat(matchInfo.contact()).isEqualTo(otherMember.getPhoneNumber());
+            } else if (otherMember.getPrimaryContactType().equals(PrimaryContactType.KAKAO)) {
+                Assertions.assertThat(matchInfo.contact()).isEqualTo(otherMember.getKakaoId());
+            }
         }
     }
 
