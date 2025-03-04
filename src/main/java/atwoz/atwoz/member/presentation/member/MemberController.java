@@ -10,6 +10,7 @@ import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.query.member.MemberQueryRepository;
 import atwoz.atwoz.member.query.member.view.MemberContactView;
 import atwoz.atwoz.member.query.member.view.MemberProfileView;
+import atwoz.atwoz.member.query.member.view.OtherMemberProfileView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,17 @@ public class MemberController {
     @GetMapping("/profile")
     public ResponseEntity<BaseResponse<MemberProfileView>> getMyProfile(@AuthPrincipal AuthContext authContext) {
         MemberProfileView response = memberQueryRepository.findProfileByMemberId(authContext.getId()).orElse(null);
+        if (response == null) {
+            return ResponseEntity.status(404)
+                    .body(BaseResponse.from(StatusType.NOT_FOUND));
+        }
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, response));
+    }
+
+    @GetMapping("/{memberId}")
+    public ResponseEntity<BaseResponse<OtherMemberProfileView>> getOtherProfile(@AuthPrincipal AuthContext authContext, @PathVariable Long memberId) {
+        OtherMemberProfileView response = memberQueryRepository.findOtherProfileByMemberId(authContext.getId(), memberId).orElse(null);
+
         if (response == null) {
             return ResponseEntity.status(404)
                     .body(BaseResponse.from(StatusType.NOT_FOUND));

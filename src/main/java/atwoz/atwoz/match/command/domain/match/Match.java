@@ -21,6 +21,7 @@ public class Match {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long id;
 
     @Getter

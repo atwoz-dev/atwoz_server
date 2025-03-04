@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 public class ProfileImageMapper {
     private static ProfileImageUploadResponse toUploadResponse(ProfileImage profileImage) {
         return ProfileImageUploadResponse.builder()
+                .id(profileImage.getId())
                 .imageUrl(profileImage.getUrl())
                 .order(profileImage.getOrder())
                 .isPrimary(profileImage.isPrimary())
