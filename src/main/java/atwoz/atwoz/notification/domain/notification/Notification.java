@@ -47,27 +47,27 @@ public class Notification extends SoftDeleteBaseEntity {
         this.isRead = false;
     }
 
-    public void setSenderId(long senderId) {
+    private void setSenderId(long senderId) {
         this.senderId = senderId;
     }
 
-    public void setSenderType(@NonNull SenderType senderType) {
+    private void setSenderType(@NonNull SenderType senderType) {
         this.senderType = senderType;
     }
 
-    public void setReceiverId(long receiverId) {
+    private void setReceiverId(long receiverId) {
         this.receiverId = receiverId;
     }
 
-    public void setType(@NonNull NotificationType type) {
+    private void setType(@NonNull NotificationType type) {
         this.type = type;
     }
 
-    public void setTitle(@NonNull String title) {
+    private void setTitle(@NonNull String title) {
         this.title = title;
     }
 
-    public void setContent(@NonNull String content) {
+    private void setContent(@NonNull String content) {
         this.content = content;
     }
 }
