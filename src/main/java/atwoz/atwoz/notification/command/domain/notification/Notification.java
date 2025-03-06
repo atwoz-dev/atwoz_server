@@ -1,4 +1,4 @@
-package atwoz.atwoz.notification.domain.notification;
+package atwoz.atwoz.notification.command.domain.notification;
 
 import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
 import jakarta.persistence.*;
