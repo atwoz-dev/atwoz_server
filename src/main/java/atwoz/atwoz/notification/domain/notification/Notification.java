@@ -1,4 +1,4 @@
-package atwoz.atwoz.notification.domain;
+package atwoz.atwoz.notification.domain.notification;
 
 import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
 import jakarta.persistence.*;
@@ -37,7 +37,7 @@ public class Notification extends SoftDeleteBaseEntity {
     private Boolean isRead;
 
     @Builder
-    public Notification(Long senderId, SenderType senderType, Long receiverId, NotificationType type, String title, String content) {
+    private Notification(Long senderId, SenderType senderType, Long receiverId, NotificationType type, String title, String content) {
         setSenderId(senderId);
         setSenderType(senderType);
         setReceiverId(receiverId);
