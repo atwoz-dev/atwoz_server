@@ -1,4 +1,4 @@
-package atwoz.atwoz.notification.infra;
+package atwoz.atwoz.notification.command.infra;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
