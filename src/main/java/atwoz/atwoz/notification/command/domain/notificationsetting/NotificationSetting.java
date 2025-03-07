@@ -19,12 +19,12 @@ public class NotificationSetting extends SoftDeleteBaseEntity {
 
     private String deviceToken;
 
-    private Boolean isOptedIn;
+    private Boolean optInStatus;
 
-    private NotificationSetting(Long memberId, String deviceToken, Boolean isOptedIn) {
+    private NotificationSetting(Long memberId, String deviceToken, Boolean optInStatus) {
         this.memberId = memberId;
         this.deviceToken = deviceToken;
-        this.isOptedIn = isOptedIn;
+        this.optInStatus = optInStatus;
     }
 
     public static NotificationSetting of(long memberId) {
@@ -36,18 +36,18 @@ public class NotificationSetting extends SoftDeleteBaseEntity {
     }
 
     public void optIn() {
-        setOptedIn(true);
+        setOptInStatus(true);
     }
 
     public void optOut() {
-        setOptedIn(false);
+        setOptInStatus(false);
     }
 
     private void setDeviceToken(@NonNull String deviceToken) {
         this.deviceToken = deviceToken;
     }
 
-    public void setOptedIn(boolean optedIn) {
-        isOptedIn = optedIn;
+    private void setOptInStatus(boolean optInStatus) {
+        this.optInStatus = optInStatus;
     }
 }
