@@ -4,6 +4,7 @@ import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Entity
 @Table(name = "notification_settings")
@@ -16,17 +17,37 @@ public class NotificationSetting extends SoftDeleteBaseEntity {
 
     private Long memberId;
 
-    private Long deviceId;
+    private String deviceToken;
 
     private Boolean isOptedIn;
 
-    private NotificationSetting(Long memberId, Long deviceId, Boolean isOptedIn) {
+    private NotificationSetting(Long memberId, String deviceToken, Boolean isOptedIn) {
         this.memberId = memberId;
-        this.deviceId = deviceId;
+        this.deviceToken = deviceToken;
         this.isOptedIn = isOptedIn;
     }
 
-    public static NotificationSetting of(long memberId, long deviceId, boolean isOptedIn) {
-        return new NotificationSetting(memberId, deviceId, isOptedIn);
+    public static NotificationSetting of(long memberId) {
+        return new NotificationSetting(memberId, null, false);
+    }
+
+    public void updateDeviceToken(String deviceToken) {
+        setDeviceToken(deviceToken);
+    }
+
+    public void optIn() {
+        setOptedIn(true);
+    }
+
+    public void optOut() {
+        setOptedIn(false);
+    }
+
+    private void setDeviceToken(@NonNull String deviceToken) {
+        this.deviceToken = deviceToken;
+    }
+
+    public void setOptedIn(boolean optedIn) {
+        isOptedIn = optedIn;
     }
 }

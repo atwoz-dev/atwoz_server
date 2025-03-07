@@ -30,7 +30,7 @@ public class ScreeningService {
 
     @Transactional
     public void approve(long screeningId, ScreeningApproveRequest request, long adminId) {
-        Screening screening = findById(screeningId);
+        Screening screening = getScreening(screeningId);
 
         if (screening.hasVersionConflict(request.version())) {
             throw new OptimisticLockingFailureException("심사를 승인할 수 없습니다.");
@@ -41,7 +41,7 @@ public class ScreeningService {
 
     @Transactional
     public void reject(long screeningId, long adminId, ScreeningRejectRequest request) {
-        Screening screening = findById(screeningId);
+        Screening screening = getScreening(screeningId);
 
         if (screening.hasVersionConflict(request.version())) {
             throw new OptimisticLockingFailureException("심사를 반려할 수 없습니다.");
@@ -50,7 +50,7 @@ public class ScreeningService {
         screening.reject(adminId, toRejectionReasonType(request.rejectionReason()));
     }
 
-    private Screening findById(long id) {
+    private Screening getScreening(long id) {
         return screeningCommandRepository.findById(id)
                 .orElseThrow(ScreeningNotFoundException::new);
     }
