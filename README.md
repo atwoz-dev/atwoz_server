@@ -19,6 +19,9 @@
 
 ## 시스템 아키텍처
 
+<br>
+
+## 컨텍스트 맵
 
 <br>
 
@@ -43,10 +46,6 @@ member                  // 하위 도메인
 - 25.03.09 기준
 
 ![awtoz_erd_250309](https://github.com/user-attachments/assets/366fd8d4-8c50-4f4a-ba6d-f746061c7349)
-
-<br>
-
-## 컨텍스트 맵
 
 <br>
 
