@@ -13,7 +13,6 @@ import java.util.Optional;
 public class ProfileImageCommandRepositoryImpl implements ProfileImageCommandRepository {
 
     private final ProfileImageJpaRepository profileImageJpaRepository;
-    private final ProfileImageJdbcRepository profileImageJdbcRepository;
 
     @Override
     public ProfileImage save(ProfileImage profileImage) {
@@ -27,7 +26,7 @@ public class ProfileImageCommandRepositoryImpl implements ProfileImageCommandRep
 
     @Override
     public void saveAll(List<ProfileImage> profileImages) {
-        profileImageJdbcRepository.saveAll(profileImages);
+        profileImageJpaRepository.saveAll(profileImages);
     }
 
     @Override
