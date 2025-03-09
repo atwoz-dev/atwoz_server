@@ -25,6 +25,7 @@
 <br>
 
 ## 컨텍스트 맵
+<img width="587" alt="Screenshot 2025-03-09 at 6 59 11 PM" src="https://github.com/user-attachments/assets/06e8217f-45b2-4fd6-a5fe-d84a5ef45cc3" />
 
 <br>
 
