@@ -20,6 +20,9 @@
 
 ## 시스템 아키텍처
 
+<img width="790" alt="system_architecture" src="https://github.com/user-attachments/assets/26729ce0-c3cf-4878-a742-5355a52076ad" />
+
+
 <br>
 
 ## 컨텍스트 맵
