@@ -1,5 +1,7 @@
 package atwoz.atwoz.community.command.domain.introduction;
 
+import atwoz.atwoz.common.entity.BaseEntity;
+import atwoz.atwoz.community.command.domain.introduction.exception.InvalidIntroductionContentException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,12 +24,19 @@ public class Introduction {
     @Getter
     private String content;
 
-    public static Introduction write(@NonNull Long memberId, @NonNull String content) {
+    public static Introduction write(@NonNull Long memberId, String content) {
         return new Introduction(memberId, content);
     }
 
     private Introduction(Long memberId, String content) {
+        validateContent(content);
         this.memberId = memberId;
         this.content = content;
+    }
+
+    private void validateContent(String content) {
+        if (content == null || content.isEmpty() || content.length() < 30)  {
+            throw new InvalidIntroductionContentException();
+        }
     }
 }
