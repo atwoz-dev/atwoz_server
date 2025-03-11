@@ -1,12 +1,12 @@
-package atwoz.atwoz.community.command.domain.introduction;
+package atwoz.atwoz.community.command.domain.selfintroduction;
 
-import atwoz.atwoz.community.command.domain.introduction.exception.InvalidIntroductionContentException;
+import atwoz.atwoz.community.command.domain.selfintroduction.exception.InvalidSelfIntroductionContentException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-public class IntroductionTest {
+public class SelfIntroductionTest {
 
     @Nested
     @DisplayName("셀프 소개 생성 실패 테스트")
@@ -19,7 +19,7 @@ public class IntroductionTest {
             String content = "셀프 소개 내용.";
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> Introduction.write(memberId, content))
+            Assertions.assertThatThrownBy(() -> SelfIntroduction.write(memberId, content))
                     .isInstanceOf(NullPointerException.class);
         }
 
@@ -31,8 +31,8 @@ public class IntroductionTest {
             String content = null;
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> Introduction.write(memberId, content))
-                    .isInstanceOf(InvalidIntroductionContentException.class);
+            Assertions.assertThatThrownBy(() -> SelfIntroduction.write(memberId, content))
+                    .isInstanceOf(NullPointerException.class);
         }
 
         @Test
@@ -43,8 +43,8 @@ public class IntroductionTest {
             String content = "30자 이하.";
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> Introduction.write(memberId, content))
-                    .isInstanceOf(InvalidIntroductionContentException.class);
+            Assertions.assertThatThrownBy(() -> SelfIntroduction.write(memberId, content))
+                    .isInstanceOf(InvalidSelfIntroductionContentException.class);
         }
     }
 
@@ -56,11 +56,11 @@ public class IntroductionTest {
         String content = "셀프 소개 내용이 공백 포함하여 최소 30자 이상이어야 합니다.";
 
         // When
-        Introduction introduction = Introduction.write(memberId, content);
+        SelfIntroduction selfIntroduction = SelfIntroduction.write(memberId, content);
 
         // Then
-        Assertions.assertThat(introduction).isNotNull();
-        Assertions.assertThat(introduction.getMemberId()).isEqualTo(memberId);
-        Assertions.assertThat(introduction.getContent()).isEqualTo(content);
+        Assertions.assertThat(selfIntroduction).isNotNull();
+        Assertions.assertThat(selfIntroduction.getMemberId()).isEqualTo(memberId);
+        Assertions.assertThat(selfIntroduction.getContent()).isEqualTo(content);
     }
 }
