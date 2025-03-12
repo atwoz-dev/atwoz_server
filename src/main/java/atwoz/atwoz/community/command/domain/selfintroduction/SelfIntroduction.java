@@ -1,6 +1,7 @@
 package atwoz.atwoz.community.command.domain.selfintroduction;
 
 import atwoz.atwoz.community.command.domain.selfintroduction.exception.InvalidSelfIntroductionContentException;
+import atwoz.atwoz.community.command.domain.selfintroduction.exception.InvalidSelfIntroductionTitleException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -21,14 +22,19 @@ public class SelfIntroduction {
     private Long memberId;
 
     @Getter
+    private String title;
+
+    @Getter
     private String content;
 
-    public static SelfIntroduction write(Long memberId, String content) {
-        return new SelfIntroduction(memberId, content);
+    public static SelfIntroduction write(Long memberId, String title, String content) {
+        return new SelfIntroduction(memberId, title, content);
     }
 
-    private SelfIntroduction(@NonNull Long memberId, @NonNull String content) {
+    private SelfIntroduction(@NonNull Long memberId, @NonNull String title, @NonNull String content) {
+        validateTitle(title);
         validateContent(content);
+
         this.memberId = memberId;
         this.content = content;
     }
@@ -37,5 +43,9 @@ public class SelfIntroduction {
         if (content.isBlank() || content.length() < 30) {
             throw new InvalidSelfIntroductionContentException();
         }
+    }
+
+    private void validateTitle(String title) {
+        if (title.isBlank()) throw new InvalidSelfIntroductionTitleException();
     }
 }
