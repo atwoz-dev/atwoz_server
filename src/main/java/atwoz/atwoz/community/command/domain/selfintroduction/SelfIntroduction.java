@@ -36,6 +36,7 @@ public class SelfIntroduction {
         validateContent(content);
 
         this.memberId = memberId;
+        this.title = title;
         this.content = content;
     }
 

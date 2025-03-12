@@ -8,6 +8,7 @@ import atwoz.atwoz.community.command.application.selfintroduction.SelfIntroducti
 import atwoz.atwoz.community.presentation.selfintroduction.dto.SelfIntroductionWriteRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ public class SelfIntroductionController {
 
     private final SelfIntroductionService selfIntroductionService;
 
+    @PostMapping
     public ResponseEntity<BaseResponse<Void>> write(@RequestBody SelfIntroductionWriteRequest request, @AuthPrincipal AuthContext authContext) {
         selfIntroductionService.write(request, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
