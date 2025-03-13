@@ -37,6 +37,10 @@ public class Member extends SoftDeleteBaseEntity {
     @Getter
     private boolean isVip;
 
+    @Embedded
+    @Getter
+    private Grade grade;
+
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
     private ActivityStatus activityStatus;
