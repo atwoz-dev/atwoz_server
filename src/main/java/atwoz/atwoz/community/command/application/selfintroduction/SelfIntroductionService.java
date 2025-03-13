@@ -27,21 +27,21 @@ public class SelfIntroductionService {
     @Transactional
     public void update(SelfIntroductionWriteRequest request, Long memberId, Long id) {
         validateMemberId(memberId);
-        validateSelfIntroductionIdWithMemberId(id, memberId);
-
         SelfIntroduction selfIntroduction = getSelfIntroductionById(id);
+        validateSelfIntroductionIdWithMemberId(selfIntroduction.getMemberId(), memberId);
+
         selfIntroduction.update(request.title(), request.content());
     }
 
     @Transactional
     public void delete(Long id, Long memberId) {
         validateMemberId(memberId);
-        validateSelfIntroductionIdWithMemberId(id, memberId);
+        validateSelfIntroductionIdWithMemberId(getSelfIntroductionById(id).getMemberId(), memberId);
         selfIntroductionCommandRepository.deleteById(id);
     }
 
-    private void validateSelfIntroductionIdWithMemberId(Long selfIntroductionId, Long memberId) {
-        if (selfIntroductionId != memberId) {
+    private void validateSelfIntroductionIdWithMemberId(Long memberIdFromSelfIntroduction, Long memberId) {
+        if (memberIdFromSelfIntroduction != memberId) {
             throw new NotMatchedMemberIdException();
         }
     }
