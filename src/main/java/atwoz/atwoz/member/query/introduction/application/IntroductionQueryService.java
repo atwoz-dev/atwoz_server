@@ -1,0 +1,122 @@
+package atwoz.atwoz.member.query.introduction.application;
+
+import atwoz.atwoz.member.command.domain.member.Grade;
+import atwoz.atwoz.member.query.introduction.intra.InterviewAnswerQueryResult;
+import atwoz.atwoz.member.query.introduction.intra.IntroductionQueryRepository;
+import atwoz.atwoz.member.query.introduction.intra.MemberIntroductionProfileQueryResult;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+
+@Service
+@RequiredArgsConstructor
+public class IntroductionQueryService {
+    private final IntroductionMemberIdFetcher introductionMemberIdFetcher;
+    private final IntroductionQueryRepository introductionQueryRepository;
+
+    public List<MemberIntroductionProfileView> findDiamondGradeIntroductions(long memberId) {
+        Set<Long> introductionMemberIds = getDiamondGradeIntroductionMemberIds(memberId);
+        List<MemberIntroductionProfileQueryResult> memberIntroductionProfileQueryResults =
+                introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId, introductionMemberIds);
+        List<InterviewAnswerQueryResult> interviewAnswerQueryResults =
+                introductionQueryRepository.findAllInterviewAnswerInfoByMemberIds(introductionMemberIds);
+        return MemberIntroductionProfileViewMapper.mapWithDefaultTag(
+                memberIntroductionProfileQueryResults, interviewAnswerQueryResults);
+    }
+
+    public List<MemberIntroductionProfileView> findSameHobbyIntroductions(long memberId) {
+        Set<Long> introductionMemberIds = getSameHobbyIntroductionMemberIds(memberId);
+        List<MemberIntroductionProfileQueryResult> memberIntroductionProfileQueryResults =
+                introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId, introductionMemberIds);
+        List<InterviewAnswerQueryResult> interviewAnswerQueryResults =
+                introductionQueryRepository.findAllInterviewAnswerInfoByMemberIds(introductionMemberIds);
+        return MemberIntroductionProfileViewMapper.mapWithSameHobbyTag(
+                memberIntroductionProfileQueryResults, interviewAnswerQueryResults);
+    }
+
+    public List<MemberIntroductionProfileView> findSameReligionIntroductions(long memberId) {
+        Set<Long> introductionMemberIds = getSameReligionIntroductionMemberIds(memberId);
+        List<MemberIntroductionProfileQueryResult> memberIntroductionProfileQueryResults =
+                introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId, introductionMemberIds);
+        List<InterviewAnswerQueryResult> interviewAnswerQueryResults =
+                introductionQueryRepository.findAllInterviewAnswerInfoByMemberIds(introductionMemberIds);
+        return MemberIntroductionProfileViewMapper.mapWithSameReligionTag(
+                memberIntroductionProfileQueryResults, interviewAnswerQueryResults);
+    }
+
+    public List<MemberIntroductionProfileView> findSameRegionIntroductions(long memberId) {
+        Set<Long> introductionMemberIds = getSameRegionIntroductionMemberIds(memberId);
+        List<MemberIntroductionProfileQueryResult> memberIntroductionProfileQueryResults =
+                introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId, introductionMemberIds);
+        List<InterviewAnswerQueryResult> interviewAnswerQueryResults =
+                introductionQueryRepository.findAllInterviewAnswerInfoByMemberIds(introductionMemberIds);
+        return MemberIntroductionProfileViewMapper.mapWithDefaultTag(
+                memberIntroductionProfileQueryResults, interviewAnswerQueryResults);
+    }
+
+    public List<MemberIntroductionProfileView> findRecentlyJoinedIntroductions(long memberId) {
+        Set<Long> introductionMemberIds = getRecentlyJoinedIntroductionMemberIds(memberId);
+        List<MemberIntroductionProfileQueryResult> memberIntroductionProfileQueryResults =
+                introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId, introductionMemberIds);
+        List<InterviewAnswerQueryResult> interviewAnswerQueryResults =
+                introductionQueryRepository.findAllInterviewAnswerInfoByMemberIds(introductionMemberIds);
+        return MemberIntroductionProfileViewMapper.mapWithDefaultTag(
+                memberIntroductionProfileQueryResults, interviewAnswerQueryResults);
+    }
+
+    private Set<Long> getDiamondGradeIntroductionMemberIds(long memberId) {
+        return introductionMemberIdFetcher.fetch(
+                memberId,
+                IntroductionCacheKeyPrefix.DIAMOND,
+                Grade.DIAMOND,
+                (excluded, ideal, member, grade) -> IntroductionSearchCondition.ofGrade(excluded, ideal, grade)
+        );
+    }
+
+    private Set<Long> getSameHobbyIntroductionMemberIds(long memberId) {
+        return introductionMemberIdFetcher.fetch(
+                memberId,
+                IntroductionCacheKeyPrefix.SAME_HOBBY,
+                null,
+                (excluded, ideal, member, unused) ->
+                        IntroductionSearchCondition.ofHobbyIds(excluded, ideal, member.getProfile().getHobbyIds())
+        );
+    }
+
+    private Set<Long> getSameReligionIntroductionMemberIds(long memberId) {
+        return introductionMemberIdFetcher.fetch(
+                memberId,
+                IntroductionCacheKeyPrefix.SAME_RELIGION,
+                null,
+                (excluded, ideal, member, unused) ->
+                        IntroductionSearchCondition.ofReligion(excluded, ideal, member.getProfile().getReligion())
+        );
+    }
+
+    private Set<Long> getSameRegionIntroductionMemberIds(long memberId) {
+        return introductionMemberIdFetcher.fetch(
+                memberId,
+                IntroductionCacheKeyPrefix.SAME_REGION,
+                null,
+                (excluded, ideal, member, unused) ->
+                        IntroductionSearchCondition.ofRegion(excluded, ideal, member.getProfile().getRegion())
+        );
+    }
+
+    private Set<Long> getRecentlyJoinedIntroductionMemberIds(long memberId) {
+        return introductionMemberIdFetcher.fetch(
+                memberId,
+                IntroductionCacheKeyPrefix.RECENTLY_JOINED,
+                null,
+                (excluded, ideal, member, unused) ->
+                        IntroductionSearchCondition.ofJoinDate(excluded, ideal, getRecentlyJoinedCutoffDate())
+        );
+    }
+
+    private LocalDateTime getRecentlyJoinedCutoffDate() {
+        return LocalDate.now().minusDays(3).atStartOfDay();
+    }
+}
