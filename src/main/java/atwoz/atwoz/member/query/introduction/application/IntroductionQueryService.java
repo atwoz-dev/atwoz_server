@@ -72,7 +72,7 @@ public class IntroductionQueryService {
                 memberId,
                 IntroductionCacheKeyPrefix.DIAMOND,
                 Grade.DIAMOND,
-                (excluded, ideal, member, grade) -> IntroductionSearchCondition.ofGrade(excluded, ideal, grade)
+                (excluded, ideal, member, grade) -> IntroductionSearchCondition.ofGrade(excluded, ideal, member.getGender().getOpposite(), grade)
         );
     }
 
@@ -82,7 +82,7 @@ public class IntroductionQueryService {
                 IntroductionCacheKeyPrefix.SAME_HOBBY,
                 null,
                 (excluded, ideal, member, unused) ->
-                        IntroductionSearchCondition.ofHobbyIds(excluded, ideal, member.getProfile().getHobbyIds())
+                        IntroductionSearchCondition.ofHobbyIds(excluded, ideal, member.getGender().getOpposite(), member.getProfile().getHobbyIds())
         );
     }
 
@@ -92,7 +92,7 @@ public class IntroductionQueryService {
                 IntroductionCacheKeyPrefix.SAME_RELIGION,
                 null,
                 (excluded, ideal, member, unused) ->
-                        IntroductionSearchCondition.ofReligion(excluded, ideal, member.getProfile().getReligion())
+                        IntroductionSearchCondition.ofReligion(excluded, ideal, member.getGender().getOpposite(), member.getProfile().getReligion())
         );
     }
 
@@ -102,7 +102,7 @@ public class IntroductionQueryService {
                 IntroductionCacheKeyPrefix.SAME_REGION,
                 null,
                 (excluded, ideal, member, unused) ->
-                        IntroductionSearchCondition.ofRegion(excluded, ideal, member.getProfile().getRegion())
+                        IntroductionSearchCondition.ofRegion(excluded, ideal, member.getGender().getOpposite(), member.getProfile().getRegion())
         );
     }
 
@@ -112,7 +112,7 @@ public class IntroductionQueryService {
                 IntroductionCacheKeyPrefix.RECENTLY_JOINED,
                 null,
                 (excluded, ideal, member, unused) ->
-                        IntroductionSearchCondition.ofJoinDate(excluded, ideal, getRecentlyJoinedCutoffDate())
+                        IntroductionSearchCondition.ofJoinDate(excluded, ideal, member.getGender().getOpposite(), getRecentlyJoinedCutoffDate())
         );
     }
 

@@ -23,4 +23,8 @@ public enum Gender {
             throw new InvalidMemberEnumValueException(value);
         }
     }
+
+    public Gender getOpposite() {
+        return this == MALE ? FEMALE : MALE;
+    }
 }

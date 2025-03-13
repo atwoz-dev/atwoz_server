@@ -4,6 +4,7 @@ import atwoz.atwoz.member.command.domain.introduction.MemberIdeal;
 import atwoz.atwoz.member.command.domain.introduction.vo.AgeRange;
 import atwoz.atwoz.member.command.domain.member.*;
 import lombok.Getter;
+import lombok.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -19,11 +20,13 @@ public class IntroductionSearchCondition {
     private final String smokingStatus;
     private final String drinkingStatus;
     private final String memberGrade;
+    private final String gender;
     private final LocalDateTime joinedAfter;
 
     public static IntroductionSearchCondition ofGrade(
             Set<Long> excludedMemberIds,
             MemberIdeal memberIdeal,
+            Gender gender,
             Grade grade
     ) {
         return new IntroductionSearchCondition(
@@ -35,6 +38,7 @@ public class IntroductionSearchCondition {
                 memberIdeal.getSmokingStatus(),
                 memberIdeal.getDrinkingStatus(),
                 grade,
+                gender,
                 null
         );
     }
@@ -42,6 +46,7 @@ public class IntroductionSearchCondition {
     public static IntroductionSearchCondition ofHobbyIds(
             Set<Long> excludedMemberIds,
             MemberIdeal memberIdeal,
+            Gender gender,
             Set<Long> hobbyIds
     ) {
         return new IntroductionSearchCondition(
@@ -53,6 +58,7 @@ public class IntroductionSearchCondition {
                 memberIdeal.getSmokingStatus(),
                 memberIdeal.getDrinkingStatus(),
                 null,
+                gender,
                 null
         );
     }
@@ -60,6 +66,7 @@ public class IntroductionSearchCondition {
     public static IntroductionSearchCondition ofReligion(
             Set<Long> excludedMemberIds,
             MemberIdeal memberIdeal,
+            Gender gender,
             Religion religion
     ) {
         return new IntroductionSearchCondition(
@@ -71,6 +78,7 @@ public class IntroductionSearchCondition {
                 memberIdeal.getSmokingStatus(),
                 memberIdeal.getDrinkingStatus(),
                 null,
+                gender,
                 null
         );
     }
@@ -78,6 +86,7 @@ public class IntroductionSearchCondition {
     public static IntroductionSearchCondition ofRegion(
             Set<Long> excludedMemberIds,
             MemberIdeal memberIdeal,
+            Gender gender,
             Region region
     ) {
         return new IntroductionSearchCondition(
@@ -89,6 +98,7 @@ public class IntroductionSearchCondition {
                 memberIdeal.getSmokingStatus(),
                 memberIdeal.getDrinkingStatus(),
                 null,
+                gender,
                 null
         );
     }
@@ -96,6 +106,7 @@ public class IntroductionSearchCondition {
     public static IntroductionSearchCondition ofJoinDate(
             Set<Long> excludedMemberIds,
             MemberIdeal memberIdeal,
+            Gender gender,
             LocalDateTime joinedAfter
     ) {
         return new IntroductionSearchCondition(
@@ -107,6 +118,7 @@ public class IntroductionSearchCondition {
                 memberIdeal.getSmokingStatus(),
                 memberIdeal.getDrinkingStatus(),
                 null,
+                gender,
                 joinedAfter
         );
     }
@@ -120,6 +132,7 @@ public class IntroductionSearchCondition {
             SmokingStatus smokingStatus,
             DrinkingStatus drinkingStatus,
             Grade memberGrade,
+            @NonNull Gender gender,
             LocalDateTime joinedAfter
     ) {
         this.excludedMemberIds = excludedMemberIds;
@@ -131,6 +144,7 @@ public class IntroductionSearchCondition {
         this.smokingStatus = (smokingStatus != null) ? smokingStatus.name() : null;
         this.drinkingStatus = (drinkingStatus != null) ? drinkingStatus.name() : null;
         this.memberGrade = (memberGrade != null) ? memberGrade.name() : null;
+        this.gender = gender.name();
         this.joinedAfter = joinedAfter;
     }
 }

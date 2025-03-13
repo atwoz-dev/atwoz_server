@@ -4,6 +4,7 @@ import atwoz.atwoz.member.command.application.introduction.exception.MemberIdeal
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.domain.introduction.MemberIdeal;
 import atwoz.atwoz.member.command.domain.introduction.MemberIdealCommandRepository;
+import atwoz.atwoz.member.command.domain.member.Gender;
 import atwoz.atwoz.member.command.domain.member.Grade;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
@@ -93,7 +94,7 @@ class IntroductionMemberIdFetcherTest {
         Member member = mock(Member.class);
         when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(member));
 
-        IntroductionSearchCondition dummyCondition = IntroductionSearchCondition.ofGrade(excludedMemberIds, memberIdeal, Grade.DIAMOND);
+        IntroductionSearchCondition dummyCondition = IntroductionSearchCondition.ofGrade(excludedMemberIds, memberIdeal, Gender.MALE, Grade.DIAMOND);
         IntroductionMemberIdFetcher.IntroductionConditionSupplier<Grade> supplier =
                 (excluded, ideal, m, grade) -> dummyCondition;
 
@@ -136,7 +137,7 @@ class IntroductionMemberIdFetcherTest {
         when(memberIdealCommandRepository.findByMemberId(memberId)).thenReturn(Optional.of(memberIdeal));
         when(memberCommandRepository.findById(memberId)).thenReturn(Optional.empty());
 
-        IntroductionSearchCondition dummyCondition = IntroductionSearchCondition.ofGrade(excludedMemberIds, memberIdeal, Grade.DIAMOND);
+        IntroductionSearchCondition dummyCondition = IntroductionSearchCondition.ofGrade(excludedMemberIds, memberIdeal, Gender.MALE, Grade.DIAMOND);
         IntroductionMemberIdFetcher.IntroductionConditionSupplier<Grade> supplier =
                 (excluded, ideal, m, grade) -> dummyCondition;
 
@@ -171,7 +172,7 @@ class IntroductionMemberIdFetcherTest {
         when(memberIdealCommandRepository.findByMemberId(memberId)).thenReturn(Optional.empty());
 
         MemberIdeal memberIdeal = mock(MemberIdeal.class);
-        IntroductionSearchCondition dummyCondition = IntroductionSearchCondition.ofGrade(excludedMemberIds, memberIdeal, Grade.DIAMOND);
+        IntroductionSearchCondition dummyCondition = IntroductionSearchCondition.ofGrade(excludedMemberIds, memberIdeal, Gender.MALE, Grade.DIAMOND);
         IntroductionMemberIdFetcher.IntroductionConditionSupplier<Grade> supplier =
                 (excluded, ideal, m, grade) -> dummyCondition;
 

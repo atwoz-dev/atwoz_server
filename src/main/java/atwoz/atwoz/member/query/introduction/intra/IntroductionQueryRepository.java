@@ -63,6 +63,7 @@ public class IntroductionQueryRepository {
                         smokingStatusEq(condition.getSmokingStatus()),
                         drinkingStatusEq(condition.getDrinkingStatus()),
                         gradeEq(condition.getMemberGrade()),
+                        genderEq(condition.getGender()),
                         createdAtGoe(condition.getJoinedAfter())
                 )
                 .orderBy(member.id.desc())
@@ -157,6 +158,13 @@ public class IntroductionQueryRepository {
             return null;
         }
         return member.grade.stringValue().eq(grade);
+    }
+
+    private BooleanExpression genderEq(String gender) {
+        if (gender == null) {
+            return null;
+        }
+        return member.profile.gender.stringValue().eq(gender);
     }
 
     private BooleanExpression createdAtGoe(LocalDateTime createdAt) {

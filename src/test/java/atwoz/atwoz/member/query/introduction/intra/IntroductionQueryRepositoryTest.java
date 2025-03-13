@@ -38,7 +38,7 @@ class IntroductionQueryRepositoryTest {
     @DisplayName("findAllIntroductionMemberId 메서드 테스트")
     class FindAllIntroductionMemberIdTest {
         @ParameterizedTest
-        @ValueSource(strings = {"excludedIds", "minAge", "maxAge", "hobbyIds", "religion", "region", "smokingStatus", "drinkingStatus", "memberGrade", "joinedAfter", "null"})
+        @ValueSource(strings = {"excludedIds", "minAge", "maxAge", "hobbyIds", "religion", "region", "smokingStatus", "drinkingStatus", "memberGrade", "gender", "joinedAfter", "null"})
         @DisplayName("search condition에 대한 검증")
         void findIntroductionMemberIdsWhenSuccess(String fieldName) {
             // given
@@ -60,6 +60,7 @@ class IntroductionQueryRepositoryTest {
                     .region(Region.DAEJEON)
                     .smokingStatus(SmokingStatus.DAILY)
                     .drinkingStatus(DrinkingStatus.SOCIAL)
+                    .gender(Gender.MALE)
                     .build();
             member1.updateProfile(profile1);
 
@@ -74,6 +75,7 @@ class IntroductionQueryRepositoryTest {
                     .region(Region.SEOUL)
                     .smokingStatus(SmokingStatus.NONE)
                     .drinkingStatus(DrinkingStatus.NONE)
+                    .gender(Gender.FEMALE)
                     .build();
             member2.updateProfile(profile2);
 
@@ -90,6 +92,7 @@ class IntroductionQueryRepositoryTest {
             when(condition.getSmokingStatus()).thenReturn(fieldName.equals("smokingStatus") ? member1.getProfile().getSmokingStatus().name() : null);
             when(condition.getDrinkingStatus()).thenReturn(fieldName.equals("drinkingStatus") ? member1.getProfile().getDrinkingStatus().name() : null);
             when(condition.getMemberGrade()).thenReturn(fieldName.equals("memberGrade") ? Grade.DIAMOND.name() : null);
+            when(condition.getGender()).thenReturn(fieldName.equals("gender")? member1.getProfile().getGender().name() : null);
             when(condition.getJoinedAfter()).thenReturn(fieldName.equals("joinedAfter") ? member2.getCreatedAt() : null);
 
             // when
@@ -114,6 +117,8 @@ class IntroductionQueryRepositoryTest {
                 assertThat(result).containsExactly(member1.getId());
             } else if (fieldName.equals("memberGrade")) {
                 assertThat(result).isEmpty();
+            } else if (fieldName.equals("gender")) {
+                assertThat(result).containsExactly(member1.getId());
             } else if (fieldName.equals("joinedAfter")) {
                 assertThat(result).containsExactly(member2.getId());
             } else {
