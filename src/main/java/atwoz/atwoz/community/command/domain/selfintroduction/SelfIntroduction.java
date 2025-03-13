@@ -1,5 +1,6 @@
 package atwoz.atwoz.community.command.domain.selfintroduction;
 
+import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.community.command.domain.selfintroduction.exception.InvalidSelfIntroductionContentException;
 import atwoz.atwoz.community.command.domain.selfintroduction.exception.InvalidSelfIntroductionTitleException;
 import jakarta.persistence.*;
@@ -11,7 +12,7 @@ import lombok.NonNull;
 @Entity
 @Table(name = "self_introductions")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SelfIntroduction {
+public class SelfIntroduction extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,12 +32,24 @@ public class SelfIntroduction {
         return new SelfIntroduction(memberId, title, content);
     }
 
-    private SelfIntroduction(@NonNull Long memberId, @NonNull String title, @NonNull String content) {
-        validateTitle(title);
-        validateContent(content);
+    public void update(String title, String content) {
+        setTitle(title);
+        setContent(content);
+    }
 
+    private SelfIntroduction(@NonNull Long memberId, @NonNull String title, @NonNull String content) {
         this.memberId = memberId;
+        setTitle(title);
+        setContent(content);
+    }
+
+    private void setTitle(@NonNull String title) {
+        validateTitle(title);
         this.title = title;
+    }
+
+    private void setContent(@NonNull String content) {
+        validateContent(content);
         this.content = content;
     }
 

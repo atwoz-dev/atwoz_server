@@ -1,5 +1,7 @@
 package atwoz.atwoz.community.command.application.selfintroduction;
 
+import atwoz.atwoz.community.command.application.selfintroduction.exception.NotMatchedMemberIdException;
+import atwoz.atwoz.community.command.application.selfintroduction.exception.SelfIntroductionNotFoundException;
 import atwoz.atwoz.community.command.domain.selfintroduction.SelfIntroduction;
 import atwoz.atwoz.community.command.domain.selfintroduction.SelfIntroductionCommandRepository;
 import atwoz.atwoz.community.presentation.selfintroduction.dto.SelfIntroductionWriteRequest;
@@ -20,6 +22,32 @@ public class SelfIntroductionService {
         validateMemberId(memberId);
         SelfIntroduction selfIntroduction = SelfIntroduction.write(memberId, request.title(), request.content());
         selfIntroductionCommandRepository.save(selfIntroduction);
+    }
+
+    @Transactional
+    public void update(SelfIntroductionWriteRequest request, Long memberId, Long id) {
+        validateMemberId(memberId);
+        validateSelfIntroductionIdWithMemberId(id, memberId);
+
+        SelfIntroduction selfIntroduction = getSelfIntroductionById(id);
+        selfIntroduction.update(request.title(), request.content());
+    }
+
+    @Transactional
+    public void delete(Long id, Long memberId) {
+        validateMemberId(memberId);
+        validateSelfIntroductionIdWithMemberId(id, memberId);
+        selfIntroductionCommandRepository.deleteById(id);
+    }
+
+    private void validateSelfIntroductionIdWithMemberId(Long selfIntroductionId, Long memberId) {
+        if (selfIntroductionId != memberId) {
+            throw new NotMatchedMemberIdException();
+        }
+    }
+
+    private SelfIntroduction getSelfIntroductionById(Long id) {
+        return selfIntroductionCommandRepository.findById(id).orElseThrow(SelfIntroductionNotFoundException::new);
     }
 
     private void validateMemberId(Long memberId) {

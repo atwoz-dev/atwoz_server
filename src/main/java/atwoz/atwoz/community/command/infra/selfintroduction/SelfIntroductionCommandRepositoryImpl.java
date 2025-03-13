@@ -5,6 +5,8 @@ import atwoz.atwoz.community.command.domain.selfintroduction.SelfIntroductionCom
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class SelfIntroductionCommandRepositoryImpl implements SelfIntroductionCommandRepository {
@@ -14,5 +16,16 @@ public class SelfIntroductionCommandRepositoryImpl implements SelfIntroductionCo
     @Override
     public void save(SelfIntroduction selfIntroduction) {
         selfIntroductionJpaRepository.save(selfIntroduction);
+
+    }
+
+    @Override
+    public Optional<SelfIntroduction> findById(Long id) {
+        return selfIntroductionJpaRepository.findById(id);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        selfIntroductionJpaRepository.deleteById(id);
     }
 }

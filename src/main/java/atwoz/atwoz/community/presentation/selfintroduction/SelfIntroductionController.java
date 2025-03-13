@@ -8,10 +8,7 @@ import atwoz.atwoz.community.command.application.selfintroduction.SelfIntroducti
 import atwoz.atwoz.community.presentation.selfintroduction.dto.SelfIntroductionWriteRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/self")
@@ -23,6 +20,18 @@ public class SelfIntroductionController {
     @PostMapping
     public ResponseEntity<BaseResponse<Void>> write(@RequestBody SelfIntroductionWriteRequest request, @AuthPrincipal AuthContext authContext) {
         selfIntroductionService.write(request, authContext.getId());
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<BaseResponse<Void>> update(@PathVariable Long id, @RequestBody SelfIntroductionWriteRequest request, @AuthPrincipal AuthContext authContext) {
+        selfIntroductionService.update(request, authContext.getId(), id);
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<BaseResponse> delete(@PathVariable Long id, @AuthPrincipal AuthContext authContext) {
+        selfIntroductionService.delete(id, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 }
