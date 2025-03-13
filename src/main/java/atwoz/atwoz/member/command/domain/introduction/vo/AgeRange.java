@@ -19,10 +19,6 @@ public class AgeRange {
         this.maxAge = MAX_VALUE;
     }
 
-    public static AgeRange init() {
-        return new AgeRange();
-    }
-
     public static AgeRange of(Integer minAge, Integer maxAge) {
         return new AgeRange(minAge, maxAge);
     }
