@@ -30,10 +30,7 @@ public class AgeRange {
     }
 
     private void validateAgeRange(Integer minAge, Integer maxAge) {
-        if (minAge < MIN_VALUE || maxAge > MAX_VALUE) {
-            throw new InvalidAgeRangeException();
-        }
-        if (minAge > maxAge) {
+        if (minAge < MIN_VALUE || maxAge > MAX_VALUE || minAge > maxAge) {
             throw new InvalidAgeRangeException();
         }
     }
