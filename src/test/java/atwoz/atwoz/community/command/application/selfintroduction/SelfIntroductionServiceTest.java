@@ -1,6 +1,6 @@
 package atwoz.atwoz.community.command.application.selfintroduction;
 
-import atwoz.atwoz.community.command.application.selfintroduction.exception.NotMatchedMemberIdException;
+import atwoz.atwoz.community.command.application.selfintroduction.exception.NotSelfIntroductionAuthorException;
 import atwoz.atwoz.community.command.application.selfintroduction.exception.SelfIntroductionNotFoundException;
 import atwoz.atwoz.community.command.domain.selfintroduction.SelfIntroduction;
 import atwoz.atwoz.community.command.domain.selfintroduction.SelfIntroductionCommandRepository;
@@ -128,7 +128,7 @@ public class SelfIntroductionServiceTest {
 
             // When & Then
             Assertions.assertThatThrownBy(() -> selfIntroductionService.update(new SelfIntroductionWriteRequest(title, content), memberId, selfIntroductionId))
-                    .isInstanceOf(NotMatchedMemberIdException.class);
+                    .isInstanceOf(NotSelfIntroductionAuthorException.class);
         }
 
         @Test
@@ -208,7 +208,7 @@ public class SelfIntroductionServiceTest {
 
             // When & Then
             Assertions.assertThatThrownBy(() -> selfIntroductionService.delete(selfIntroductionId, memberId))
-                    .isInstanceOf(NotMatchedMemberIdException.class);
+                    .isInstanceOf(NotSelfIntroductionAuthorException.class);
         }
 
         @Test

@@ -2,7 +2,7 @@ package atwoz.atwoz.community.presentation.selfintroduction;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
-import atwoz.atwoz.community.command.application.selfintroduction.exception.NotMatchedMemberIdException;
+import atwoz.atwoz.community.command.application.selfintroduction.exception.NotSelfIntroductionAuthorException;
 import atwoz.atwoz.community.command.application.selfintroduction.exception.SelfIntroductionNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +21,8 @@ public class SelfIntroductionExceptionHandler {
                 .body(BaseResponse.from(StatusType.NOT_FOUND));
     }
 
-    @ExceptionHandler(NotMatchedMemberIdException.class)
-    public ResponseEntity<BaseResponse<Void>> handleNotMatchedMemberIdException(NotMatchedMemberIdException e) {
+    @ExceptionHandler(NotSelfIntroductionAuthorException.class)
+    public ResponseEntity<BaseResponse<Void>> handleNotMatchedMemberIdException(NotSelfIntroductionAuthorException e) {
         log.warn("셀프 소개 작성에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.status(401)

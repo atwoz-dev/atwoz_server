@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/self")
+@RequestMapping("/self-introduction")
 @RequiredArgsConstructor
 public class SelfIntroductionController {
 
@@ -23,7 +23,7 @@ public class SelfIntroductionController {
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<BaseResponse<Void>> update(@PathVariable Long id, @RequestBody SelfIntroductionWriteRequest request, @AuthPrincipal AuthContext authContext) {
         selfIntroductionService.update(request, authContext.getId(), id);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
