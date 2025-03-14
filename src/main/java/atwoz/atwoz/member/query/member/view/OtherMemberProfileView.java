@@ -5,7 +5,6 @@ import com.querydsl.core.annotations.QueryProjection;
 import java.util.List;
 
 public record OtherMemberProfileView(
-        Long id,
         BasicMemberInfo basicMemberInfo,
         MatchInfo matchInfo
 ) {
@@ -32,7 +31,7 @@ public record OtherMemberProfileView(
             String contactType,
             String contact
     ) {
-        this(id, new BasicMemberInfo(nickname, profileImageUrl, age, gender, height, job, hobbies, mbti, region, smokingStatus, drinkingStatus, highestEducation, religion),
+        this(new BasicMemberInfo(id, nickname, profileImageUrl, age, gender, height, job, hobbies, mbti, region, smokingStatus, drinkingStatus, highestEducation, religion),
                 new MatchInfo(matchId, requesterId, responderId, requestMessage, responseMessage, matchStatus, contactType, contact));
     }
 }

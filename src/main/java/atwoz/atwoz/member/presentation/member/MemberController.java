@@ -6,14 +6,18 @@ import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.member.MemberContactService;
 import atwoz.atwoz.member.command.application.member.MemberProfileService;
+import atwoz.atwoz.member.presentation.member.dto.MemberProfileResponse;
 import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.query.member.MemberQueryRepository;
+import atwoz.atwoz.member.query.member.view.InterviewResultView;
 import atwoz.atwoz.member.query.member.view.MemberContactView;
 import atwoz.atwoz.member.query.member.view.MemberProfileView;
 import atwoz.atwoz.member.query.member.view.OtherMemberProfileView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/member")
@@ -40,14 +44,16 @@ public class MemberController {
     }
 
     @GetMapping("/{memberId}")
-    public ResponseEntity<BaseResponse<OtherMemberProfileView>> getOtherProfile(@AuthPrincipal AuthContext authContext, @PathVariable Long memberId) {
-        OtherMemberProfileView response = memberQueryRepository.findOtherProfileByMemberId(authContext.getId(), memberId).orElse(null);
+    public ResponseEntity<BaseResponse<MemberProfileResponse>> getOtherProfile(@AuthPrincipal AuthContext authContext, @PathVariable Long memberId) {
+        OtherMemberProfileView profileView = memberQueryRepository.findOtherProfileByMemberId(authContext.getId(), memberId).orElse(null);
+        List<InterviewResultView> interviewResultView = memberQueryRepository.findInterviewsByMemberId(memberId);
 
-        if (response == null) {
+        if (profileView == null) {
             return ResponseEntity.status(404)
                     .body(BaseResponse.from(StatusType.NOT_FOUND));
         }
-        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, response));
+
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, new MemberProfileResponse(profileView, interviewResultView)));
     }
 
     @PostMapping("/profile/dormant")

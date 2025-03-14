@@ -8,10 +8,13 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import static atwoz.atwoz.admin.command.domain.hobby.QHobby.hobby;
 import static atwoz.atwoz.admin.command.domain.job.QJob.job;
+import static atwoz.atwoz.interview.command.domain.answer.QInterviewAnswer.interviewAnswer;
+import static atwoz.atwoz.interview.command.domain.question.QInterviewQuestion.interviewQuestion;
 import static atwoz.atwoz.match.command.domain.match.QMatch.match;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
 import static atwoz.atwoz.member.command.domain.profileImage.QProfileImage.profileImage;
@@ -112,10 +115,23 @@ public class MemberQueryRepository {
         return Optional.ofNullable(otherMemberProfileView);
     }
 
+    public List<InterviewResultView> findInterviewsByMemberId(Long memberId) {
+        return queryFactory
+                .from(interviewQuestion)
+                .innerJoin(interviewAnswer).on(getAnswerJoinCondition(memberId))
+                .select(
+                        new QInterviewResultView(interviewQuestion.content, interviewQuestion.category.stringValue(), interviewAnswer.content)
+                ).fetch();
+    }
+
     private BooleanExpression getMatchJoinCondition(Long memberId, Long otherMemberId) {
         return (match.requesterId.eq(memberId).and(match.responderId.eq(otherMemberId))
                 .or(match.requesterId.eq(otherMemberId).and(match.responderId.eq(memberId))))
                 .and(match.status.notIn(MatchStatus.REJECT_CHECKED, MatchStatus.EXPIRED));
+    }
+
+    private BooleanExpression getAnswerJoinCondition(Long memberId) {
+        return interviewQuestion.id.eq(interviewAnswer.id).and(interviewAnswer.memberId.eq(memberId));
     }
 
 
