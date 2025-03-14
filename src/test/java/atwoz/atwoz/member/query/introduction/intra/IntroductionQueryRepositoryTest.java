@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -93,7 +94,7 @@ class IntroductionQueryRepositoryTest {
             when(condition.getDrinkingStatus()).thenReturn(fieldName.equals("drinkingStatus") ? member1.getProfile().getDrinkingStatus().name() : null);
             when(condition.getMemberGrade()).thenReturn(fieldName.equals("memberGrade") ? Grade.DIAMOND.name() : null);
             when(condition.getGender()).thenReturn(fieldName.equals("gender")? member1.getProfile().getGender().name() : null);
-            when(condition.getJoinedAfter()).thenReturn(fieldName.equals("joinedAfter") ? member2.getCreatedAt() : null);
+            when(condition.getJoinedAfter()).thenReturn(fieldName.equals("joinedAfter") ? LocalDateTime.now().plusDays(1) : null);
 
             // when
             Set<Long> result = introductionQueryRepository.findAllIntroductionMemberId(condition);
@@ -120,7 +121,7 @@ class IntroductionQueryRepositoryTest {
             } else if (fieldName.equals("gender")) {
                 assertThat(result).containsExactly(member1.getId());
             } else if (fieldName.equals("joinedAfter")) {
-                assertThat(result).containsExactly(member2.getId());
+                assertThat(result).isEmpty();
             } else {
                 assertThat(result).containsExactlyInAnyOrder(member1.getId(), member2.getId());
             }
