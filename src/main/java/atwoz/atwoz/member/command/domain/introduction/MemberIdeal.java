@@ -55,18 +55,6 @@ public class MemberIdeal extends BaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private DrinkingStatus drinkingStatus;
 
-    public static MemberIdeal of(
-            Long memberId,
-            AgeRange ageRange,
-            Set<Long> hobbyIds,
-            Region region,
-            Religion religion,
-            SmokingStatus smokingStatus,
-            DrinkingStatus drinkingStatus
-    ) {
-        return new MemberIdeal(memberId, ageRange, hobbyIds, region, religion, smokingStatus, drinkingStatus);
-    }
-
     public static MemberIdeal from(Long id) {
         return new MemberIdeal(id, AgeRange.init(), new HashSet<>(), null, null, null, null);
     }
