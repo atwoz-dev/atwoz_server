@@ -3,12 +3,14 @@ package atwoz.atwoz.notification.command.domain.notificationsetting;
 import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity
 @Table(name = "notification_settings")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class NotificationSetting extends SoftDeleteBaseEntity {
 
     @Id
