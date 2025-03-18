@@ -6,6 +6,8 @@ import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.command.application.member.exception.BannedMemberException;
 import atwoz.atwoz.member.command.application.member.exception.MemberLoginConflictException;
+import atwoz.atwoz.member.command.domain.introduction.MemberIdeal;
+import atwoz.atwoz.member.command.domain.introduction.MemberIdealCommandRepository;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import java.time.Instant;
 public class MemberAuthService {
 
     private final MemberCommandRepository memberCommandRepository;
+    private final MemberIdealCommandRepository memberIdealCommandRepository;
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;
 
@@ -47,7 +50,9 @@ public class MemberAuthService {
 
     private Member create(String phoneNumber) {
         try {
-            return memberCommandRepository.save(Member.fromPhoneNumber(phoneNumber));
+            Member member = memberCommandRepository.save(Member.fromPhoneNumber(phoneNumber));
+            MemberIdeal memberIdeal = memberIdealCommandRepository.save(MemberIdeal.from(member.getId()));
+            return member;
         } catch (DataIntegrityViolationException e) {
             throw new MemberLoginConflictException(phoneNumber);
         }

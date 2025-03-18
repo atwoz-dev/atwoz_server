@@ -67,6 +67,10 @@ public class MemberIdeal extends BaseEntity {
         return new MemberIdeal(memberId, ageRange, hobbyIds, region, religion, smokingStatus, drinkingStatus);
     }
 
+    public static MemberIdeal from(Long id) {
+        return new MemberIdeal(id, null, new HashSet<>(), null, null, null, null);
+    }
+
     private MemberIdeal(
             Long memberId,
             AgeRange ageRange,
