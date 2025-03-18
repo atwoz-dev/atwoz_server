@@ -9,6 +9,7 @@ import atwoz.atwoz.member.command.application.introduction.exception.MemberIdeal
 import atwoz.atwoz.member.presentation.introduction.dto.MemberIdealUpdateRequest;
 import atwoz.atwoz.member.query.introduction.application.MemberIdealView;
 import atwoz.atwoz.member.query.introduction.intra.MemberIdealQueryRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ public class MemberIdealController {
     }
 
     @PatchMapping
-    public ResponseEntity<BaseResponse<Void>> updateIdeal(@RequestBody MemberIdealUpdateRequest request, @AuthPrincipal AuthContext authContext) {
+    public ResponseEntity<BaseResponse<Void>> updateIdeal(@Valid @RequestBody MemberIdealUpdateRequest request, @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
         idealService.update(request, memberId);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
