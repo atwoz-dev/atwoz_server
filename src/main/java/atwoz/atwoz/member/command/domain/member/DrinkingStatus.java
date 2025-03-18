@@ -18,7 +18,7 @@ public enum DrinkingStatus {
     }
 
     public static DrinkingStatus from(String value) {
-        if (value == null) return null;
+        if (value == null || value.isEmpty()) return null;
 
         try {
             return DrinkingStatus.valueOf(value.toUpperCase());

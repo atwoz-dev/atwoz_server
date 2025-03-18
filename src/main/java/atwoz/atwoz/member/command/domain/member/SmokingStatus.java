@@ -18,7 +18,7 @@ public enum SmokingStatus {
     }
 
     public static SmokingStatus from(String value) {
-        if (value == null) return null;
+        if (value == null || value.isEmpty()) return null;
 
         try {
             return SmokingStatus.valueOf(value.toUpperCase());
