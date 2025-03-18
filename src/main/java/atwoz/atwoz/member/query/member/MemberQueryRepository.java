@@ -118,7 +118,7 @@ public class MemberQueryRepository {
     public List<InterviewResultView> findInterviewsByMemberId(Long memberId) {
         return queryFactory
                 .from(interviewQuestion)
-                .innerJoin(interviewAnswer).on(getAnswerJoinCondition(memberId))
+                .innerJoin(interviewAnswer).on(getInterviewAnswerJoinCondition(memberId))
                 .select(
                         new QInterviewResultView(interviewQuestion.content, interviewQuestion.category.stringValue(), interviewAnswer.content)
                 ).fetch();
@@ -130,9 +130,7 @@ public class MemberQueryRepository {
                 .and(match.status.notIn(MatchStatus.REJECT_CHECKED, MatchStatus.EXPIRED));
     }
 
-    private BooleanExpression getAnswerJoinCondition(Long memberId) {
+    private BooleanExpression getInterviewAnswerJoinCondition(Long memberId) {
         return interviewQuestion.id.eq(interviewAnswer.id).and(interviewAnswer.memberId.eq(memberId));
     }
-
-
 }
