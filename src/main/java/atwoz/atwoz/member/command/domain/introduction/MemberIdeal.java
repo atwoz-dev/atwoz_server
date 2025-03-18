@@ -71,6 +71,22 @@ public class MemberIdeal extends BaseEntity {
         return new MemberIdeal(id, null, new HashSet<>(), null, null, null, null);
     }
 
+    public void update(
+            AgeRange ageRange,
+            Set<Long> hobbyIds,
+            Region region,
+            Religion religion,
+            SmokingStatus smokingStatus,
+            DrinkingStatus drinkingStatus
+    ) {
+        this.ageRange = ageRange;
+        this.hobbyIds = hobbyIds;
+        this.region = region;
+        this.religion = religion;
+        this.smokingStatus = smokingStatus;
+        this.drinkingStatus = drinkingStatus;
+    }
+
     private MemberIdeal(
             Long memberId,
             AgeRange ageRange,
