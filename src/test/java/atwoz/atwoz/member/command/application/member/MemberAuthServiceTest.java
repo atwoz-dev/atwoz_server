@@ -106,28 +106,30 @@ public class MemberAuthServiceTest {
         String phoneNumber = "01012345678";
         Instant fixedInstant = Instant.parse("2024-01-01T00:00:00Z");
 
-        MockedStatic<Instant> mockedInstant = Mockito.mockStatic(Instant.class);
-        mockedInstant.when(Instant::now).thenReturn(fixedInstant);
+        try (MockedStatic<Instant> mockedInstant = Mockito.mockStatic(Instant.class);
+             MockedStatic<MemberIdeal> mockedMemberIdeal = Mockito.mockStatic(MemberIdeal.class);
+        ) {
+            mockedInstant.when(Instant::now).thenReturn(fixedInstant);
 
-        Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
-        Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
-                .thenReturn("accessToken");
-        Mockito.when(memberCommandRepository.save(Mockito.any())).thenReturn(member);
+            Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
+            Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
+                    .thenReturn("accessToken");
+            Mockito.when(memberCommandRepository.save(Mockito.any())).thenReturn(member);
 
-        MockedStatic<MemberIdeal> mockedMemberIdeal = Mockito.mockStatic(MemberIdeal.class);
-        MemberIdeal memberIdeal = mock(MemberIdeal.class);
-        mockedMemberIdeal.when(() -> MemberIdeal.from(memberId)).thenReturn(memberIdeal);
-        Mockito.when(memberIdealCommandRepository.save(memberIdeal)).thenReturn(memberIdeal);
+            MemberIdeal memberIdeal = mock(MemberIdeal.class);
+            mockedMemberIdeal.when(() -> MemberIdeal.from(memberId)).thenReturn(memberIdeal);
+            Mockito.when(memberIdealCommandRepository.save(memberIdeal)).thenReturn(memberIdeal);
 
-        // When
-        MemberLoginServiceDto response = memberAuthService.login(phoneNumber);
+            // When
+            MemberLoginServiceDto response = memberAuthService.login(phoneNumber);
 
-        // Then
-        Assertions.assertThat(response.accessToken()).isNotNull();
-        Assertions.assertThat(response.accessToken()).isEqualTo("accessToken");
-        Assertions.assertThat(response.isProfileSettingNeeded()).isTrue();
+            // Then
+            Assertions.assertThat(response.accessToken()).isNotNull();
+            Assertions.assertThat(response.accessToken()).isEqualTo("accessToken");
+            Assertions.assertThat(response.isProfileSettingNeeded()).isTrue();
 
-        verify(memberIdealCommandRepository).save(memberIdeal);
+            verify(memberIdealCommandRepository).save(memberIdeal);
+        }
     }
 
     @Test
