@@ -68,7 +68,7 @@ public class MemberIdeal extends BaseEntity {
     }
 
     public static MemberIdeal from(Long id) {
-        return new MemberIdeal(id, null, new HashSet<>(), null, null, null, null);
+        return new MemberIdeal(id, AgeRange.init(), new HashSet<>(), null, null, null, null);
     }
 
     public void update(
