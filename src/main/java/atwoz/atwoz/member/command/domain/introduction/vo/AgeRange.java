@@ -11,7 +11,7 @@ import lombok.NonNull;
 @EqualsAndHashCode
 public class AgeRange {
     private static final Integer MIN_VALUE = 20;
-    private static final Integer MAX_VALUE = 47;
+    private static final Integer MAX_VALUE = 46;
 
     private final Integer minAge;
     private final Integer maxAge;
