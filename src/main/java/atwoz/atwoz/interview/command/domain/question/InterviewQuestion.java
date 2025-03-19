@@ -14,6 +14,7 @@ import lombok.NonNull;
 public class InterviewQuestion extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long id;
 
     @Getter
@@ -21,6 +22,7 @@ public class InterviewQuestion extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
+    @Getter
     private InterviewCategory category;
 
     @Getter

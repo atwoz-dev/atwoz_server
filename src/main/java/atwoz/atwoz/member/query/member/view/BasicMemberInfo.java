@@ -3,6 +3,7 @@ package atwoz.atwoz.member.query.member.view;
 import java.util.List;
 
 public record BasicMemberInfo(
+        Long id,
         String nickname,
         String profileImageUrl,
         Integer age,

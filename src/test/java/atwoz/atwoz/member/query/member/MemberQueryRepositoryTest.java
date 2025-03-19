@@ -4,6 +4,9 @@ import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.admin.command.domain.hobby.Hobby;
 import atwoz.atwoz.admin.command.domain.job.Job;
 import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.interview.command.domain.answer.InterviewAnswer;
+import atwoz.atwoz.interview.command.domain.question.InterviewCategory;
+import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;
 import atwoz.atwoz.match.command.domain.match.Match;
 import atwoz.atwoz.match.command.domain.match.MatchStatus;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
@@ -23,6 +26,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
+import java.util.List;
 import java.util.Set;
 
 
@@ -245,7 +249,7 @@ public class MemberQueryRepositoryTest {
 
             // Then
             Assertions.assertThat(memberProfileView).isNotNull();
-            Assertions.assertThat(memberProfileView.id()).isEqualTo(otherMember.getId());
+            Assertions.assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
 
             // BasicInfo.
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
@@ -276,7 +280,7 @@ public class MemberQueryRepositoryTest {
 
             // Then
             Assertions.assertThat(memberProfileView).isNotNull();
-            Assertions.assertThat(memberProfileView.id()).isEqualTo(otherMember.getId());
+            Assertions.assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
 
             // BasicInfo.
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
@@ -309,7 +313,7 @@ public class MemberQueryRepositoryTest {
 
             // Then
             Assertions.assertThat(memberProfileView).isNotNull();
-            Assertions.assertThat(memberProfileView.id()).isEqualTo(otherMember.getId());
+            Assertions.assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
 
             // BasicInfo.
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
@@ -340,7 +344,7 @@ public class MemberQueryRepositoryTest {
 
             // Then
             Assertions.assertThat(memberProfileView).isNotNull();
-            Assertions.assertThat(memberProfileView.id()).isEqualTo(otherMember.getId());
+            Assertions.assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
 
             // BasicInfo.
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
@@ -373,7 +377,7 @@ public class MemberQueryRepositoryTest {
 
             // Then
             Assertions.assertThat(memberProfileView).isNotNull();
-            Assertions.assertThat(memberProfileView.id()).isEqualTo(otherMember.getId());
+            Assertions.assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
 
             // BasicInfo.
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
@@ -406,7 +410,7 @@ public class MemberQueryRepositoryTest {
 
             // Then
             Assertions.assertThat(memberProfileView).isNotNull();
-            Assertions.assertThat(memberProfileView.id()).isEqualTo(otherMember.getId());
+            Assertions.assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
 
             // BasicInfo.
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
@@ -451,5 +455,93 @@ public class MemberQueryRepositoryTest {
         }
     }
 
+    @Nested
+    @DisplayName("유저의 인터뷰 질문/답변 조회")
+    class Interviews {
 
+        static MockedStatic<Events> mockedEvents;
+        Long memberId = 10L;
+        Long otherMemberId = 5L;
+        List<InterviewQuestion> questions;
+        List<InterviewAnswer> answers;
+
+        @BeforeEach
+        void setUp() {
+            mockedEvents = Mockito.mockStatic(Events.class);
+            mockedEvents.when(() -> Events.raise(Mockito.any()))
+                    .thenAnswer(invocation -> null);
+
+            InterviewQuestion interviewQuestion1 = InterviewQuestion.of("인터뷰 질문 내용1", InterviewCategory.PERSONAL, true);
+            InterviewQuestion interviewQuestion2 = InterviewQuestion.of("인터뷰 질문 내용2", InterviewCategory.ROMANTIC, true);
+            InterviewQuestion interviewQuestion3 = InterviewQuestion.of("인터뷰 질문 내용3", InterviewCategory.PERSONAL, true);
+            InterviewQuestion interviewQuestion4 = InterviewQuestion.of("인터뷰 질문 내용4", InterviewCategory.PERSONAL, false);
+
+            entityManager.persist(interviewQuestion1);
+            entityManager.persist(interviewQuestion2);
+            entityManager.persist(interviewQuestion3);
+            entityManager.persist(interviewQuestion4);
+            entityManager.flush();
+
+            InterviewAnswer interviewAnswer1 = InterviewAnswer.of(interviewQuestion1.getId(), memberId, "인터뷰 질문 답변1");
+            InterviewAnswer interviewAnswer2 = InterviewAnswer.of(interviewQuestion2.getId(), memberId, "인터뷰 질문 답변2");
+            InterviewAnswer interviewAnswer4 = InterviewAnswer.of(interviewQuestion2.getId(), memberId, "인터뷰 질문 답변4");
+
+            InterviewAnswer otherMemberInterviewAnswer = InterviewAnswer.of(interviewQuestion1.getId(), otherMemberId, "인터뷰 질문 답변1");
+
+            entityManager.persist(interviewAnswer1);
+            entityManager.persist(interviewAnswer2);
+            entityManager.persist(interviewAnswer4);
+            entityManager.persist(otherMemberInterviewAnswer);
+            entityManager.flush();
+
+            questions = List.of(interviewQuestion1, interviewQuestion2, interviewQuestion3, interviewQuestion4);
+            answers = List.of(interviewAnswer1, interviewAnswer2, interviewAnswer4);
+        }
+
+        @AfterEach
+        void tearDown() {
+            mockedEvents.close();
+        }
+
+        @Test
+        @DisplayName("해당 아이디를 가진 멤버의 인터뷰가 존재하지 않는 경우, 빈 값을 얻는다.")
+        void getEmptyListWhenMemberHasNoInterviews() {
+            // Given
+            Long notExistsMemberId = 100L;
+
+            // When
+            List<InterviewResultView> interviewResultViewList = memberQueryRepository.findInterviewsByMemberId(notExistsMemberId);
+
+            // Then
+            Assertions.assertThat(interviewResultViewList.size()).isEqualTo(0);
+        }
+
+        @Test
+        @DisplayName("인터뷰에 답변한 경우, 해당 멤버의 공개 질문과 답변을 모두 조회한다.")
+        void getInterviewResultViewsWhenAnswersExist() {
+            // Given
+            List<InterviewQuestion> publicQuestions = questions.stream().filter(q -> q.isPublic()).toList();
+
+
+            // When
+            List<InterviewResultView> interviewResultViewList = memberQueryRepository.findInterviewsByMemberId(memberId);
+            InterviewResultView interviewResultView1 = interviewResultViewList.get(0);
+            InterviewResultView interviewResultView2 = interviewResultViewList.get(1);
+
+            // Then
+            Assertions.assertThat(interviewResultViewList.size()).isEqualTo(publicQuestions.size());
+
+            Assertions.assertThat(interviewResultView1).isNotNull();
+            Assertions.assertThat(interviewResultView2).isNotNull();
+
+            Assertions.assertThat(interviewResultView1.content()).isEqualTo(publicQuestions.get(0).getContent());
+            Assertions.assertThat(interviewResultView2.content()).isEqualTo(publicQuestions.get(1).getContent());
+
+            Assertions.assertThat(interviewResultView1.category()).isEqualTo(questions.get(0).getCategory().toString());
+            Assertions.assertThat(interviewResultView2.category()).isEqualTo(questions.get(1).getCategory().toString());
+
+            Assertions.assertThat(interviewResultView1.answer()).isEqualTo(answers.get(0).getContent());
+            Assertions.assertThat(interviewResultView2.answer()).isEqualTo(answers.get(1).getContent());
+        }
+    }
 }
