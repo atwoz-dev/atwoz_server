@@ -22,6 +22,7 @@ public class MemberIdeal extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private Long memberId;
 
     @Getter
@@ -54,8 +55,11 @@ public class MemberIdeal extends BaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private DrinkingStatus drinkingStatus;
 
-    public static MemberIdeal of(
-            Long memberId,
+    public static MemberIdeal from(Long id) {
+        return new MemberIdeal(id, AgeRange.init(), new HashSet<>(), null, null, null, null);
+    }
+
+    public void update(
             AgeRange ageRange,
             Set<Long> hobbyIds,
             Region region,
@@ -63,7 +67,12 @@ public class MemberIdeal extends BaseEntity {
             SmokingStatus smokingStatus,
             DrinkingStatus drinkingStatus
     ) {
-        return new MemberIdeal(memberId, ageRange, hobbyIds, region, religion, smokingStatus, drinkingStatus);
+        this.ageRange = ageRange;
+        this.hobbyIds = hobbyIds;
+        this.region = region;
+        this.religion = religion;
+        this.smokingStatus = smokingStatus;
+        this.drinkingStatus = drinkingStatus;
     }
 
     private MemberIdeal(

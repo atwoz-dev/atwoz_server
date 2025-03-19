@@ -15,7 +15,7 @@ public enum Region {
     }
 
     public static Region from(String value) {
-        if (value == null) return null;
+        if (value == null || value.isEmpty()) return null;
 
         try {
             return Region.valueOf(value.toUpperCase());

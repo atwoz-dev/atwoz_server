@@ -3,6 +3,7 @@ package atwoz.atwoz.member.presentation.introduction;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.introduction.exception.MemberIdealNotFoundException;
+import atwoz.atwoz.member.command.domain.introduction.exception.InvalidAgeRangeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,5 +19,13 @@ public class MemberIntroductionExceptionHandler {
 
         return ResponseEntity.status(404)
                 .body(BaseResponse.from(StatusType.NOT_FOUND));
+    }
+
+    @ExceptionHandler(InvalidAgeRangeException.class)
+    public ResponseEntity<BaseResponse<Void>> handleInvalidAgeRangeException(InvalidAgeRangeException e) {
+        log.warn(e.getMessage());
+
+        return ResponseEntity.badRequest()
+                .body(BaseResponse.from(StatusType.BAD_REQUEST));
     }
 }

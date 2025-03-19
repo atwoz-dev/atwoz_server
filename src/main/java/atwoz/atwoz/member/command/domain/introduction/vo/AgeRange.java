@@ -2,14 +2,16 @@ package atwoz.atwoz.member.command.domain.introduction.vo;
 
 import atwoz.atwoz.member.command.domain.introduction.exception.InvalidAgeRangeException;
 import jakarta.persistence.Embeddable;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
 @Embeddable
+@EqualsAndHashCode
 public class AgeRange {
     private static final Integer MIN_VALUE = 20;
-    private static final Integer MAX_VALUE = 47;
+    private static final Integer MAX_VALUE = 46;
 
     private final Integer minAge;
     private final Integer maxAge;
@@ -17,6 +19,10 @@ public class AgeRange {
     protected AgeRange() {
         this.minAge = MIN_VALUE;
         this.maxAge = MAX_VALUE;
+    }
+
+    public static AgeRange init() {
+        return new AgeRange(MIN_VALUE, MAX_VALUE);
     }
 
     public static AgeRange of(Integer minAge, Integer maxAge) {
