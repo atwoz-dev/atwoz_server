@@ -25,7 +25,7 @@ class NotificationSettingTest {
             // then
             assertThat(setting.getMemberId()).isEqualTo(memberId);
             assertThat(setting.getDeviceToken()).isNull();
-            assertThat(setting.getOptInStatus()).isFalse();
+            assertThat(setting.getIsOptedIn()).isFalse();
         }
     }
 
@@ -71,7 +71,7 @@ class NotificationSettingTest {
             setting.optIn();
 
             // then
-            assertThat(setting.getOptInStatus()).isTrue();
+            assertThat(setting.getIsOptedIn()).isTrue();
         }
     }
 
@@ -89,7 +89,7 @@ class NotificationSettingTest {
             setting.optOut();
 
             // then
-            assertThat(setting.getOptInStatus()).isFalse();
+            assertThat(setting.getIsOptedIn()).isFalse();
         }
     }
 }
