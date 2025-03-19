@@ -460,7 +460,8 @@ public class MemberQueryRepositoryTest {
     class Interviews {
 
         static MockedStatic<Events> mockedEvents;
-        Member member;
+        Long memberId = 10L;
+        Long otherMemberId = 5L;
         List<InterviewQuestion> questions;
         List<InterviewAnswer> answers;
 
@@ -470,25 +471,31 @@ public class MemberQueryRepositoryTest {
             mockedEvents.when(() -> Events.raise(Mockito.any()))
                     .thenAnswer(invocation -> null);
 
-            member = Member.fromPhoneNumber("01012345678");
-
             InterviewQuestion interviewQuestion1 = InterviewQuestion.of("인터뷰 질문 내용1", InterviewCategory.PERSONAL, true);
             InterviewQuestion interviewQuestion2 = InterviewQuestion.of("인터뷰 질문 내용2", InterviewCategory.ROMANTIC, true);
+            InterviewQuestion interviewQuestion3 = InterviewQuestion.of("인터뷰 질문 내용3", InterviewCategory.PERSONAL, true);
+            InterviewQuestion interviewQuestion4 = InterviewQuestion.of("인터뷰 질문 내용4", InterviewCategory.PERSONAL, false);
 
             entityManager.persist(interviewQuestion1);
             entityManager.persist(interviewQuestion2);
-            entityManager.persist(member);
+            entityManager.persist(interviewQuestion3);
+            entityManager.persist(interviewQuestion4);
             entityManager.flush();
 
-            InterviewAnswer interviewAnswer1 = InterviewAnswer.of(interviewQuestion1.getId(), member.getId(), "인터뷰 질문 답변1");
-            InterviewAnswer interviewAnswer2 = InterviewAnswer.of(interviewQuestion2.getId(), member.getId(), "인터뷰 질문 답변2");
+            InterviewAnswer interviewAnswer1 = InterviewAnswer.of(interviewQuestion1.getId(), memberId, "인터뷰 질문 답변1");
+            InterviewAnswer interviewAnswer2 = InterviewAnswer.of(interviewQuestion2.getId(), memberId, "인터뷰 질문 답변2");
+            InterviewAnswer interviewAnswer4 = InterviewAnswer.of(interviewQuestion2.getId(), memberId, "인터뷰 질문 답변4");
+
+            InterviewAnswer otherMemberInterviewAnswer = InterviewAnswer.of(interviewQuestion1.getId(), otherMemberId, "인터뷰 질문 답변1");
 
             entityManager.persist(interviewAnswer1);
             entityManager.persist(interviewAnswer2);
+            entityManager.persist(interviewAnswer4);
+            entityManager.persist(otherMemberInterviewAnswer);
             entityManager.flush();
 
-            questions = List.of(interviewQuestion1, interviewQuestion2);
-            answers = List.of(interviewAnswer1, interviewAnswer2);
+            questions = List.of(interviewQuestion1, interviewQuestion2, interviewQuestion3, interviewQuestion4);
+            answers = List.of(interviewAnswer1, interviewAnswer2, interviewAnswer4);
         }
 
         @AfterEach
@@ -510,10 +517,11 @@ public class MemberQueryRepositoryTest {
         }
 
         @Test
-        @DisplayName("인터뷰에 답변한 경우, 질문과 답변을 모두 조회한다.")
+        @DisplayName("인터뷰에 답변한 경우, 해당 멤버의 공개 질문과 답변을 모두 조회한다.")
         void getInterviewResultViewsWhenAnswersExist() {
             // Given
-            Long memberId = member.getId();
+            List<InterviewQuestion> publicQuestions = questions.stream().filter(q -> q.isPublic()).toList();
+
 
             // When
             List<InterviewResultView> interviewResultViewList = memberQueryRepository.findInterviewsByMemberId(memberId);
@@ -521,13 +529,13 @@ public class MemberQueryRepositoryTest {
             InterviewResultView interviewResultView2 = interviewResultViewList.get(1);
 
             // Then
-            Assertions.assertThat(interviewResultViewList.size()).isEqualTo(answers.size());
+            Assertions.assertThat(interviewResultViewList.size()).isEqualTo(publicQuestions.size());
 
             Assertions.assertThat(interviewResultView1).isNotNull();
             Assertions.assertThat(interviewResultView2).isNotNull();
 
-            Assertions.assertThat(interviewResultView1.content()).isEqualTo(questions.get(0).getContent());
-            Assertions.assertThat(interviewResultView2.content()).isEqualTo(questions.get(1).getContent());
+            Assertions.assertThat(interviewResultView1.content()).isEqualTo(publicQuestions.get(0).getContent());
+            Assertions.assertThat(interviewResultView2.content()).isEqualTo(publicQuestions.get(1).getContent());
 
             Assertions.assertThat(interviewResultView1.category()).isEqualTo(questions.get(0).getCategory().toString());
             Assertions.assertThat(interviewResultView2.category()).isEqualTo(questions.get(1).getCategory().toString());

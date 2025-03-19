@@ -121,7 +121,9 @@ public class MemberQueryRepository {
                 .innerJoin(interviewAnswer).on(getInterviewAnswerJoinCondition(memberId))
                 .select(
                         new QInterviewResultView(interviewQuestion.content, interviewQuestion.category.stringValue(), interviewAnswer.content)
-                ).fetch();
+                )
+                .where(interviewQuestion.isPublic.eq(true))
+                .fetch();
     }
 
     private BooleanExpression getMatchJoinCondition(Long memberId, Long otherMemberId) {

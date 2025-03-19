@@ -46,14 +46,14 @@ public class MemberController {
     @GetMapping("/{memberId}")
     public ResponseEntity<BaseResponse<MemberProfileResponse>> getOtherProfile(@AuthPrincipal AuthContext authContext, @PathVariable Long memberId) {
         OtherMemberProfileView profileView = memberQueryRepository.findOtherProfileByMemberId(authContext.getId(), memberId).orElse(null);
-        List<InterviewResultView> interviewResultView = memberQueryRepository.findInterviewsByMemberId(memberId);
+        List<InterviewResultView> interviewResultViews = memberQueryRepository.findInterviewsByMemberId(memberId);
 
         if (profileView == null) {
             return ResponseEntity.status(404)
                     .body(BaseResponse.from(StatusType.NOT_FOUND));
         }
 
-        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, new MemberProfileResponse(profileView, interviewResultView)));
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, new MemberProfileResponse(profileView, interviewResultViews)));
     }
 
     @PostMapping("/profile/dormant")
