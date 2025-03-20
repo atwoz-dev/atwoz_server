@@ -22,8 +22,7 @@ public class ScreeningService {
     @Transactional
     public void create(long memberId) {
         if (screeningCommandRepository.existsByMemberId(memberId)) {
-            log.warn("멤버(id: {})에 대해 중복된 Screening을 생성할 수 없습니다.", memberId);
-            return;
+            throw new DuplicateScreeningException(memberId);
         }
         screeningCommandRepository.save(Screening.from(memberId));
     }

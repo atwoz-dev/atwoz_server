@@ -24,7 +24,7 @@ public class MemberRegisteredEventHandler {
         } catch (DuplicateNotificationSettingException e) {
             log.warn(e.getMessage());
         } catch (Exception e) {
-            log.error("NotificationSetting 생성 중 예외 발생 (memberId: {})", event.getMemberId(), e);
+            log.error("Member(memberId: {})의 NotificationSetting 생성 중 예외가 발생습니다.", event.getMemberId(), e);
         }
     }
 }

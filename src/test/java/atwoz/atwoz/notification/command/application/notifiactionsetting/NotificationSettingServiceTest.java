@@ -16,7 +16,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("NotificationSettingService 테스트")
@@ -47,17 +48,15 @@ class NotificationSettingServiceTest {
         }
 
         @Test
-        @DisplayName("이미 NotificationSetting이 존재하면 생성하지 않습니다.")
-        void createExistingNotificationSetting() {
+        @DisplayName("NotificationSetting이 이미 존재하면 예외를 던집니다.")
+        void createExistingNotificationSettingThrowsException() {
             // given
             long memberId = 1L;
             when(notificationSettingRepository.existsByMemberId(memberId)).thenReturn(true);
 
-            // when
-            notificationSettingService.create(memberId);
-
-            // then
-            verify(notificationSettingRepository, never()).save(any(NotificationSetting.class));
+            // when & then
+            assertThatThrownBy(() -> notificationSettingService.create(memberId))
+                    .isInstanceOf(DuplicateNotificationSettingException.class);
         }
     }
 
