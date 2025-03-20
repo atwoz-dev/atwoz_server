@@ -1,8 +1,11 @@
 package atwoz.atwoz.member.command.domain.introduction;
 
 import atwoz.atwoz.common.entity.BaseEntity;
+import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.member.command.domain.introduction.event.MemberIntroducedEvent;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
@@ -14,12 +17,16 @@ public class MemberIntroduction extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
     private Long memberId;
 
+    @Getter
     private Long introducedMemberId;
 
     public static MemberIntroduction of(Long memberId, Long introducedMemberId) {
-        return new MemberIntroduction(memberId, introducedMemberId);
+        MemberIntroduction memberIntroduction = new MemberIntroduction(memberId, introducedMemberId);
+        Events.raise(MemberIntroducedEvent.of(memberId));
+        return memberIntroduction;
     }
 
     private MemberIntroduction(@NonNull Long memberId, @NonNull Long introducedMemberId) {
