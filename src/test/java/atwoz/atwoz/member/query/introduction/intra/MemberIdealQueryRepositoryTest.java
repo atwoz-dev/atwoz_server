@@ -48,7 +48,7 @@ class MemberIdealQueryRepositoryTest {
     void returnMemberIdealViewWhenMemberIdealIsExists() {
         // given
         long memberId = 1L;
-        MemberIdeal memberIdeal = MemberIdeal.from(memberId);
+        MemberIdeal memberIdeal = MemberIdeal.init(memberId);
         AgeRange ageRange = AgeRange.of(20, 30);
         Hobby hobby1 = Hobby.from("취미1");
         Hobby hobby2 = Hobby.from("취미2");
