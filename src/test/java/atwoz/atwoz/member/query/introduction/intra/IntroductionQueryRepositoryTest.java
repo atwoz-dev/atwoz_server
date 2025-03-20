@@ -2,6 +2,7 @@ package atwoz.atwoz.member.query.introduction.intra;
 
 import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.admin.command.domain.hobby.Hobby;
+import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
 import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
@@ -11,6 +12,8 @@ import atwoz.atwoz.member.query.introduction.application.IntroductionSearchCondi
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -131,6 +134,20 @@ class IntroductionQueryRepositoryTest {
     @Nested
     @DisplayName("findAllMemberIntroductionProfileQueryResultByMemberIds 메서드 테스트")
     class FindAllMemberIntroductionProfileQueryResultByMemberIdsIdsTest {
+        private static MockedStatic<Events> mockedEvents;
+
+        @BeforeEach
+        void setUp() {
+            mockedEvents = Mockito.mockStatic(Events.class);
+            mockedEvents.when(() -> Events.raise(Mockito.any()))
+                    .thenAnswer(invocation -> null);
+        }
+
+        @AfterEach
+        void tearDown() {
+            mockedEvents.close();
+        }
+
         @ParameterizedTest
         @ValueSource(strings = {"introduced", "notIntroduced1", "notIntroduced2"})
         @DisplayName("멤버 ID 목록에 해당하는 회원의 소개 프로필 리턴")
