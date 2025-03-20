@@ -48,18 +48,15 @@ class ScreeningServiceTest {
         }
 
         @Test
-        @DisplayName("이미 동일 멤버의 Screening이 존재한다면 저장하지 않고 경고 로그를 남기고 종료합니다.")
-        void skipCreationWhenAlreadyExists() {
+        @DisplayName("동일 멤버의 Screening이 이미 존재하면 예외를 던집니다.")
+        void createExistingScreeningThrowsException() {
             // given
             long memberId = 100L;
             when(screeningCommandRepository.existsByMemberId(memberId)).thenReturn(true);
 
-            // when
-            screeningService.create(memberId);
-
-            // then
-            verify(screeningCommandRepository).existsByMemberId(memberId);
-            verify(screeningCommandRepository, never()).save(any(Screening.class));
+            // when & then
+            assertThatThrownBy(() -> screeningService.create(memberId))
+                    .isInstanceOf(DuplicateScreeningException.class);
         }
     }
 
