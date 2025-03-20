@@ -55,8 +55,8 @@ public class MemberIdeal extends BaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private DrinkingStatus drinkingStatus;
 
-    public static MemberIdeal from(Long id) {
-        return new MemberIdeal(id, AgeRange.init(), new HashSet<>(), null, null, null, null);
+    public static MemberIdeal from(Long memberId) {
+        return new MemberIdeal(memberId, AgeRange.init(), new HashSet<>(), null, null, null, null);
     }
 
     public void update(
