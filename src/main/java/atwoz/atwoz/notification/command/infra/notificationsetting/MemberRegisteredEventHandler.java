@@ -1,5 +1,6 @@
 package atwoz.atwoz.notification.command.infra.notificationsetting;
 
+import atwoz.atwoz.notification.command.application.notifiactionsetting.DuplicateNotificationSettingException;
 import atwoz.atwoz.notification.command.application.notifiactionsetting.NotificationSettingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,8 @@ public class MemberRegisteredEventHandler {
     public void handle(MemberRegisteredEvent event) {
         try {
             notificationSettingService.create(event.getMemberId());
+        } catch (DuplicateNotificationSettingException e) {
+            log.warn(e.getMessage());
         } catch (Exception e) {
             log.error("NotificationSetting 생성 중 예외 발생 (memberId: {})", event.getMemberId(), e);
         }

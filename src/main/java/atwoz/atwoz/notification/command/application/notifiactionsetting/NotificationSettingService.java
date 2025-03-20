@@ -18,8 +18,7 @@ public class NotificationSettingService {
     @Transactional
     public void create(long memberId) {
         if (notificationSettingRepository.existsByMemberId(memberId)) {
-            log.warn("멤버(id: {})에 대해 중복된 NotificationSetting을 생성할 수 없습니다.", memberId);
-            return;
+            throw new DuplicateNotificationSettingException(memberId);
         }
         notificationSettingRepository.save(NotificationSetting.of(memberId));
     }
