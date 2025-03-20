@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,6 +23,7 @@ public class MemberIdeal extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
     @Column(unique = true)
     private Long memberId;
 
@@ -55,7 +57,7 @@ public class MemberIdeal extends BaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private DrinkingStatus drinkingStatus;
 
-    public static MemberIdeal from(Long memberId) {
+    public static MemberIdeal init(Long memberId) {
         return new MemberIdeal(memberId, AgeRange.init(), new HashSet<>(), null, null, null, null);
     }
 
@@ -67,8 +69,8 @@ public class MemberIdeal extends BaseEntity {
             SmokingStatus smokingStatus,
             DrinkingStatus drinkingStatus
     ) {
-        this.ageRange = ageRange;
-        this.hobbyIds = hobbyIds;
+        setAgeRange(ageRange);
+        setHobbyIds(hobbyIds);
         this.region = region;
         this.religion = religion;
         this.smokingStatus = smokingStatus;
@@ -84,12 +86,24 @@ public class MemberIdeal extends BaseEntity {
             SmokingStatus smokingStatus,
             DrinkingStatus drinkingStatus
     ) {
-        this.memberId = memberId;
-        this.ageRange = ageRange;
-        this.hobbyIds = hobbyIds;
+        setMemberId(memberId);
+        setAgeRange(ageRange);
+        setHobbyIds(hobbyIds);
         this.region = region;
         this.religion = religion;
         this.smokingStatus = smokingStatus;
         this.drinkingStatus = drinkingStatus;
+    }
+
+    private void setMemberId(@NonNull Long memberId) {
+        this.memberId = memberId;
+    }
+
+    private void setAgeRange(@NonNull AgeRange ageRange) {
+        this.ageRange = ageRange;
+    }
+
+    private void setHobbyIds(@NonNull Set<Long> hobbyIds) {
+        this.hobbyIds = hobbyIds;
     }
 }

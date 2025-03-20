@@ -29,7 +29,7 @@ public class MemberIdealService {
         if (memberIdealCommandRepository.existsByMemberId(memberId)) {
             throw new MemberIdealAlreadyExistsException(memberId);
         }
-        MemberIdeal memberIdeal = MemberIdeal.from(memberId);
+        MemberIdeal memberIdeal = MemberIdeal.init(memberId);
         memberIdealCommandRepository.save(memberIdeal);
     }
 
