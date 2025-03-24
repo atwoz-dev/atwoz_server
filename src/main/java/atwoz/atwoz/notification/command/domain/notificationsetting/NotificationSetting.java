@@ -10,17 +10,15 @@ import lombok.NonNull;
 @Entity
 @Table(name = "notification_settings")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class NotificationSetting extends SoftDeleteBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
     private Long id;
 
-    @Getter
     private Long memberId;
 
-    @Getter
     private String deviceToken;
 
     private Boolean isOptedIn;
@@ -37,10 +35,6 @@ public class NotificationSetting extends SoftDeleteBaseEntity {
 
     public void updateDeviceToken(String deviceToken) {
         setDeviceToken(deviceToken);
-    }
-
-    public boolean isOptedIn() {
-        return isOptedIn;
     }
 
     public void optIn() {
