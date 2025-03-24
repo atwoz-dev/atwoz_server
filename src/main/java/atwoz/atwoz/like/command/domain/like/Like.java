@@ -1,5 +1,6 @@
 package atwoz.atwoz.like.command.domain.like;
 
+import atwoz.atwoz.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import lombok.NonNull;
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Like {
+public class Like extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,7 +25,7 @@ public class Like {
 
     private LikeLevel likeLevel;
 
-    public static Like from(Long senderId, Long receiverId, LikeLevel likeLevel) {
+    public static Like of(Long senderId, Long receiverId, LikeLevel likeLevel) {
         return new Like(senderId, receiverId, likeLevel);
     }
 

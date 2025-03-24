@@ -21,7 +21,7 @@ public class LikeTest {
             LikeLevel likeLevel = LikeLevel.INTEREST;
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> Like.from(senderId, receiverId, likeLevel))
+            Assertions.assertThatThrownBy(() -> Like.of(senderId, receiverId, likeLevel))
                     .isInstanceOf(NullPointerException.class);
         }
 
@@ -34,7 +34,7 @@ public class LikeTest {
             LikeLevel likeLevel = LikeLevel.INTEREST;
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> Like.from(senderId, receiverId, likeLevel))
+            Assertions.assertThatThrownBy(() -> Like.of(senderId, receiverId, likeLevel))
                     .isInstanceOf(NullPointerException.class);
         }
 
@@ -47,7 +47,7 @@ public class LikeTest {
             LikeLevel likeLevel = null;
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> Like.from(senderId, receiverId, likeLevel))
+            Assertions.assertThatThrownBy(() -> Like.of(senderId, receiverId, likeLevel))
                     .isInstanceOf(NullPointerException.class);
         }
     }
@@ -61,7 +61,7 @@ public class LikeTest {
         LikeLevel likeLevel = LikeLevel.INTEREST;
 
         // When
-        Like like = Like.from(senderId, receiverId, likeLevel);
+        Like like = Like.of(senderId, receiverId, likeLevel);
 
         // Then
         Assertions.assertThat(like.getSenderId()).isEqualTo(senderId);
