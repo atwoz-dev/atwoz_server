@@ -6,4 +6,6 @@ import java.util.Optional;
 
 public interface MemberIdealCommandRepository extends JpaRepository<MemberIdeal, Long> {
     Optional<MemberIdeal> findByMemberId(Long memberId);
+
+    boolean existsByMemberId(long memberId);
 }

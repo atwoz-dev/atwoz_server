@@ -6,8 +6,6 @@ import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.command.application.member.exception.BannedMemberException;
 import atwoz.atwoz.member.command.application.member.exception.MemberLoginConflictException;
-import atwoz.atwoz.member.command.domain.introduction.MemberIdeal;
-import atwoz.atwoz.member.command.domain.introduction.MemberIdealCommandRepository;
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
@@ -27,9 +25,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.time.Instant;
 import java.util.Optional;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
 @ExtendWith(MockitoExtension.class)
 public class MemberAuthServiceTest {
     private Member permanentStoppedMember;
@@ -38,9 +33,6 @@ public class MemberAuthServiceTest {
 
     @Mock
     private MemberCommandRepository memberCommandRepository;
-
-    @Mock
-    private MemberIdealCommandRepository memberIdealCommandRepository;
 
     @Mock
     private JwtProvider jwtProvider;
@@ -106,19 +98,13 @@ public class MemberAuthServiceTest {
         String phoneNumber = "01012345678";
         Instant fixedInstant = Instant.parse("2024-01-01T00:00:00Z");
 
-        try (MockedStatic<Instant> mockedInstant = Mockito.mockStatic(Instant.class);
-             MockedStatic<MemberIdeal> mockedMemberIdeal = Mockito.mockStatic(MemberIdeal.class);
-        ) {
+        try (MockedStatic<Instant> mockedInstant = Mockito.mockStatic(Instant.class);) {
             mockedInstant.when(Instant::now).thenReturn(fixedInstant);
 
             Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
             Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
                     .thenReturn("accessToken");
             Mockito.when(memberCommandRepository.save(Mockito.any())).thenReturn(member);
-
-            MemberIdeal memberIdeal = mock(MemberIdeal.class);
-            mockedMemberIdeal.when(() -> MemberIdeal.from(memberId)).thenReturn(memberIdeal);
-            Mockito.when(memberIdealCommandRepository.save(memberIdeal)).thenReturn(memberIdeal);
 
             // When
             MemberLoginServiceDto response = memberAuthService.login(phoneNumber);
@@ -127,8 +113,6 @@ public class MemberAuthServiceTest {
             Assertions.assertThat(response.accessToken()).isNotNull();
             Assertions.assertThat(response.accessToken()).isEqualTo("accessToken");
             Assertions.assertThat(response.isProfileSettingNeeded()).isTrue();
-
-            verify(memberIdealCommandRepository).save(memberIdeal);
         }
     }
 

@@ -7,10 +7,12 @@ public enum TransactionType {
     DATING_EXAM,
     PROFILE_EXCHANGE,
     SELF_INTRODUCTION,
+    INTRODUCTION,
     PURCHASE;
 
     public boolean isUsingType() {
-        return this == MESSAGE || this == DATING_EXAM || this == PROFILE_EXCHANGE || this == SELF_INTRODUCTION;
+        return this == MESSAGE || this == DATING_EXAM || this == PROFILE_EXCHANGE || this == SELF_INTRODUCTION ||
+                this == INTRODUCTION;
     }
 
     public boolean isGainingType() {

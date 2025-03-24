@@ -1,6 +1,7 @@
 package atwoz.atwoz.member.command.application.introduction;
 
 import atwoz.atwoz.admin.command.domain.hobby.HobbyCommandRepository;
+import atwoz.atwoz.member.command.application.introduction.exception.MemberIdealAlreadyExistsException;
 import atwoz.atwoz.member.command.application.introduction.exception.MemberIdealNotFoundException;
 import atwoz.atwoz.member.command.domain.introduction.MemberIdeal;
 import atwoz.atwoz.member.command.domain.introduction.MemberIdealCommandRepository;
@@ -22,6 +23,15 @@ import java.util.Set;
 public class MemberIdealService {
     private final MemberIdealCommandRepository memberIdealCommandRepository;
     private final HobbyCommandRepository hobbyCommandRepository;
+
+    @Transactional
+    public void init(long memberId) {
+        if (memberIdealCommandRepository.existsByMemberId(memberId)) {
+            throw new MemberIdealAlreadyExistsException(memberId);
+        }
+        MemberIdeal memberIdeal = MemberIdeal.init(memberId);
+        memberIdealCommandRepository.save(memberIdeal);
+    }
 
     @Transactional
     public void update(MemberIdealUpdateRequest request, long memberId) {
