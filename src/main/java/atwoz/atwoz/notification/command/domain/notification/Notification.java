@@ -67,7 +67,7 @@ public class Notification extends SoftDeleteBaseEntity {
         this.title = title;
     }
 
-    private void setContent(@NonNull String content) {
+    private void setContent(String content) {
         this.content = content;
     }
 }
