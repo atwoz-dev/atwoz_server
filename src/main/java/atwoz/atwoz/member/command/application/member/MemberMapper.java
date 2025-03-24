@@ -9,7 +9,7 @@ public class MemberMapper {
 
     public static MemberProfile toMemberProfile(MemberProfileUpdateRequest memberProfileUpdateRequest) {
         return MemberProfile.builder()
-                .age(memberProfileUpdateRequest.age())
+                .yearOfBirth(memberProfileUpdateRequest.yearOfBirth())
                 .height(memberProfileUpdateRequest.height())
                 .jobId(memberProfileUpdateRequest.jobId())
                 .hobbyIds(memberProfileUpdateRequest.hobbyIds())

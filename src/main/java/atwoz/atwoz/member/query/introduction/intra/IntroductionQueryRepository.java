@@ -57,7 +57,7 @@ public class IntroductionQueryRepository {
                 .from(member)
                 .where(
                         idsNotIn(condition.getExcludedMemberIds()),
-                        ageBetween(condition.getMinAge(), condition.getMaxAge()),
+                        yearBetween(condition.getMinAge(), condition.getMaxAge()),
                         regionEq(condition.getRegion()),
                         religionEq(condition.getReligion()),
                         smokingStatusEq(condition.getSmokingStatus()),
@@ -112,17 +112,21 @@ public class IntroductionQueryRepository {
         return member.id.notIn(id);
     }
 
-    private BooleanExpression ageBetween(Integer minAge, Integer maxAge) {
+    private BooleanExpression yearBetween(Integer minAge, Integer maxAge) {
         if (minAge == null && maxAge == null) {
             return null;
         }
+
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
         if (minAge == null) {
-            return member.profile.age.loe(maxAge);
+            return member.profile.yearOfBirth.goe(currentYear - maxAge + 1);
         }
         if (maxAge == null) {
-            return member.profile.age.goe(minAge);
+            return member.profile.yearOfBirth.loe(currentYear - minAge + 1);
         }
-        return member.profile.age.between(minAge, maxAge);
+
+        return member.profile.yearOfBirth.between(currentYear - maxAge + 1, currentYear - minAge + 1);
     }
 
     private BooleanExpression regionEq(String region) {

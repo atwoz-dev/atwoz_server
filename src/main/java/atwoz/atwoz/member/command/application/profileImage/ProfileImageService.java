@@ -139,7 +139,6 @@ public class ProfileImageService {
 
     private ProfileImage processUploadedImage(ProfileImageUploadRequest request, Long memberId, List<ProfileImage> profileImages, String imageUrl) {
         if (isReplacedImage(request, imageUrl)) { // 기존 프로필 이미지의 파일을 교체하는 경우.
-            System.out.println("replace : " + request.getId());
             ProfileImage profileImage = findById(request.getId(), profileImages);
             s3Uploader.deleteFile(profileImage.getUrl()); // 기존 이미지 삭제.
             profileImage.updateUrl(imageUrl);

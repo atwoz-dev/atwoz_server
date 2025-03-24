@@ -2,7 +2,7 @@ package atwoz.atwoz.like.command.domain.like;
 
 import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.common.event.Events;
-import atwoz.atwoz.like.command.domain.like.event.LikeMakedEvent;
+import atwoz.atwoz.like.command.domain.like.event.LikeCreatedEvent;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -31,7 +31,7 @@ public class Like extends BaseEntity {
     private LikeLevel likeLevel;
 
     public static Like of(Long senderId, Long receiverId, LikeLevel likeLevel) {
-        Events.raise(LikeMakedEvent.of(senderId, receiverId)); // 좋아요 알림을 위한 이벤트.
+        Events.raise(LikeCreatedEvent.of(senderId, receiverId)); // 좋아요 알림을 위한 이벤트.
         return new Like(senderId, receiverId, likeLevel);
     }
 

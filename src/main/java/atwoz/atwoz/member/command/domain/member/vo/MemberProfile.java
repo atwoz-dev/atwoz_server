@@ -15,7 +15,7 @@ public class MemberProfile {
     @Embedded
     private Nickname nickname;
 
-    private Integer age;
+    private Integer yearOfBirth;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
@@ -56,12 +56,12 @@ public class MemberProfile {
 
     @Builder
     private MemberProfile(
-            Nickname nickname, Integer age, Gender gender, Integer height, Long jobId,
+            Nickname nickname, Integer yearOfBirth, Gender gender, Integer height, Long jobId,
             Set<Long> hobbyIds, Mbti mbti, Region region, Religion religion,
             SmokingStatus smokingStatus, DrinkingStatus drinkingStatus, HighestEducation highestEducation
     ) {
         this.nickname = nickname;
-        this.age = age;
+        this.yearOfBirth = yearOfBirth;
         this.gender = gender;
         this.height = height;
         this.jobId = jobId;
@@ -75,7 +75,7 @@ public class MemberProfile {
     }
 
     public boolean isProfileSettingNeeded() {
-        return nickname == null || age == null || gender == null || height == null || jobId == null ||
+        return nickname == null || yearOfBirth == null || gender == null || height == null || jobId == null ||
                 hobbyIds == null || hobbyIds.isEmpty() || mbti == null || region == null || religion == null ||
                 smokingStatus == null || drinkingStatus == null || highestEducation == null;
     }

@@ -90,7 +90,7 @@ class ScreeningDetailQueryRepositoryTest {
                 .profile(
                         MemberProfile.builder()
                                 .nickname(Nickname.from("member"))
-                                .age(20)
+                                .yearOfBirth(20)
                                 .gender(Gender.MALE)
                                 .build()
                 )

@@ -15,7 +15,7 @@ class MemberProfileTest {
     void isNeededProfileSettingWhenNullValueExists() {
         // Given
         MemberProfile memberProfile = MemberProfile.builder()
-                .age(20)
+                .yearOfBirth(20)
                 .height(180)
                 .jobId(1L)
                 .mbti(Mbti.ENFJ)
@@ -38,7 +38,7 @@ class MemberProfileTest {
     void isNeededProfileSettingWhenHobbyListIsEmpty() {
         // Given
         MemberProfile memberProfile = MemberProfile.builder()
-                .age(20)
+                .yearOfBirth(20)
                 .height(180)
                 .jobId(1L)
                 .mbti(Mbti.ENFJ)
@@ -61,7 +61,7 @@ class MemberProfileTest {
     void isNeededProfileSettingWhenHobbyListIsNotEmptyAndNullValueDoesntNotExist() {
         // Given
         MemberProfile memberProfile = MemberProfile.builder()
-                .age(20)
+                .yearOfBirth(20)
                 .height(180)
                 .jobId(1L)
                 .mbti(Mbti.ENFJ)
