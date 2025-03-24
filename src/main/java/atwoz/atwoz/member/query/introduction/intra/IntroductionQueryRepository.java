@@ -57,7 +57,7 @@ public class IntroductionQueryRepository {
                 .from(member)
                 .where(
                         idsNotIn(condition.getExcludedMemberIds()),
-                        yearBetween(condition.getMinAge(), condition.getMaxAge()),
+                        ageBetween(condition.getMinAge(), condition.getMaxAge()),
                         regionEq(condition.getRegion()),
                         religionEq(condition.getReligion()),
                         smokingStatusEq(condition.getSmokingStatus()),
@@ -112,7 +112,7 @@ public class IntroductionQueryRepository {
         return member.id.notIn(id);
     }
 
-    private BooleanExpression yearBetween(Integer minAge, Integer maxAge) {
+    private BooleanExpression ageBetween(Integer minAge, Integer maxAge) {
         if (minAge == null && maxAge == null) {
             return null;
         }
