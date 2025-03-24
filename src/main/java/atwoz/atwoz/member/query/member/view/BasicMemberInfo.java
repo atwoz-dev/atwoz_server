@@ -6,7 +6,7 @@ public record BasicMemberInfo(
         Long id,
         String nickname,
         String profileImageUrl,
-        Integer age,
+        Integer yearOfBirth,
         String gender,
         Integer height,
         String job,
@@ -16,6 +16,7 @@ public record BasicMemberInfo(
         String smokingStatus,
         String drinkingStatus,
         String highestEducation,
-        String religion
+        String religion,
+        String like
 ) {
 }

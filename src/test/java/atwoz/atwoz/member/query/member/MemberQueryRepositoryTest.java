@@ -7,6 +7,8 @@ import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.interview.command.domain.answer.InterviewAnswer;
 import atwoz.atwoz.interview.command.domain.question.InterviewCategory;
 import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;
+import atwoz.atwoz.like.command.domain.like.Like;
+import atwoz.atwoz.like.command.domain.like.LikeLevel;
 import atwoz.atwoz.match.command.domain.match.Match;
 import atwoz.atwoz.match.command.domain.match.MatchStatus;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
@@ -148,7 +150,10 @@ public class MemberQueryRepositoryTest {
     @Nested
     @DisplayName("다른 유저의 프로필 조회")
     class OtherMemberProfile {
+        Member member;
         Member otherMember;
+
+        LikeLevel likeLevel = LikeLevel.INTEREST;
         String profileImageUrl = "primaryImage";
         String jobName = "직업1";
         static MockedStatic<Events> mockedEvents;
@@ -190,6 +195,16 @@ public class MemberQueryRepositoryTest {
             entityManager.persist(otherMember);
             entityManager.flush();
 
+
+            member = Member.fromPhoneNumber("01012345679");
+            entityManager.persist(member);
+            entityManager.flush();
+
+            // 좋아요 생성.
+            Like like = Like.of(member.getId(), otherMember.getId(), likeLevel);
+            entityManager.persist(like);
+            entityManager.flush();
+
             // 프로필 이미지.
             ProfileImage profileImage1 = ProfileImage.builder()
                     .memberId(otherMember.getId())
@@ -219,10 +234,6 @@ public class MemberQueryRepositoryTest {
         @DisplayName("존재하지 않은 아이디인 경우, 빈 값 반환")
         void getNullWhenMemberIdIsNotExists() {
             // Given
-            Member member = Member.fromPhoneNumber("01012345679");
-            entityManager.persist(member);
-            entityManager.flush();
-
             Long otherMemberId = -1L;
 
             // When
@@ -235,11 +246,6 @@ public class MemberQueryRepositoryTest {
         @Test
         @DisplayName("상대방과의 매치가 존재하지 않은 경우, 기본 정보만 조회.")
         void getBasicInfoWhenMatchIsNotExists() {
-            // Given
-            Member member = Member.fromPhoneNumber("01012345679");
-            entityManager.persist(member);
-            entityManager.flush();
-
             // When
             OtherMemberProfileView memberProfileView = memberQueryRepository.findOtherProfileByMemberId(member.getId(), otherMember.getId())
                     .orElse(null);
@@ -262,10 +268,6 @@ public class MemberQueryRepositoryTest {
         @DisplayName("상대방과의 매치가 만료된 경우, 기본 정보만 조회")
         void getBasicInfoWhenExpiredMatchExists() {
             // Given
-            Member member = Member.fromPhoneNumber("01012345679");
-            entityManager.persist(member);
-            entityManager.flush();
-
             Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."));
             match.expire();
             entityManager.persist(match);
@@ -293,10 +295,6 @@ public class MemberQueryRepositoryTest {
         @DisplayName("상대방과의 매치를 거절 확인한 경우, 기본 정보만 조회")
         void getBasicInfoWhenRejectCheckedMatchExists() {
             // Given
-            Member member = Member.fromPhoneNumber("01012345679");
-            entityManager.persist(member);
-            entityManager.flush();
-
             Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."));
             match.reject();
             match.checkRejected();
@@ -326,10 +324,6 @@ public class MemberQueryRepositoryTest {
         @DisplayName("상대방에게 매치를 요청한 경우, 기본 정보와 연락처를 제외한 매치 정보를 함께 조회.")
         void getBasicInfoWithMatchInfoNotIncludingContactWhenWaitingMatchExists() {
             // Given
-            Member member = Member.fromPhoneNumber("01012345679");
-            entityManager.persist(member);
-            entityManager.flush();
-
             Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."));
             entityManager.persist(match);
             entityManager.flush();
@@ -358,10 +352,6 @@ public class MemberQueryRepositoryTest {
         @DisplayName("상대방이 매치를 수락한 경우, 기본 정보와 연락처를 포함한 매치 정보를 조회.")
         void getBasicInfoWithMatchInfoIncludingContactWhenWaitingMatchNotExists() {
             // Given
-            Member member = Member.fromPhoneNumber("01012345679");
-            entityManager.persist(member);
-            entityManager.flush();
-
             Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."));
             match.approve(Message.from("매치 수락합니다!"));
             entityManager.persist(match);
@@ -391,10 +381,6 @@ public class MemberQueryRepositoryTest {
         @DisplayName("상대방이 매치를 거절한 경우, 기본 정보와 연락처를 제외한 매치 정보를 함께 조회.")
         void getBasicInfoWithMatchInfoNotIncludingContactWhenWaitingMatchNotExists() {
             // Given
-            Member member = Member.fromPhoneNumber("01012345679");
-            entityManager.persist(member);
-            entityManager.flush();
-
             Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."));
             match.reject();
             entityManager.persist(match);
@@ -423,7 +409,7 @@ public class MemberQueryRepositoryTest {
         private void assertionsBasicInfo(BasicMemberInfo basicMemberInfo, MemberProfile otherMemberProfile) {
             Assertions.assertThat(basicMemberInfo.nickname()).isEqualTo(otherMemberProfile.getNickname().getValue());
             Assertions.assertThat(basicMemberInfo.profileImageUrl()).isEqualTo(profileImageUrl);
-            Assertions.assertThat(basicMemberInfo.age()).isEqualTo(otherMemberProfile.getAge());
+            Assertions.assertThat(basicMemberInfo.yearOfBirth()).isEqualTo(otherMemberProfile.getAge());
             Assertions.assertThat(basicMemberInfo.gender()).isEqualTo(otherMemberProfile.getGender().toString());
             Assertions.assertThat(basicMemberInfo.height()).isEqualTo(otherMemberProfile.getHeight());
             Assertions.assertThat(basicMemberInfo.job()).isEqualTo(jobName);
@@ -434,6 +420,7 @@ public class MemberQueryRepositoryTest {
             Assertions.assertThat(basicMemberInfo.drinkingStatus()).isEqualTo(otherMemberProfile.getDrinkingStatus().toString());
             Assertions.assertThat(basicMemberInfo.highestEducation()).isEqualTo(otherMemberProfile.getHighestEducation().toString());
             Assertions.assertThat(basicMemberInfo.religion()).isEqualTo(otherMemberProfile.getReligion().toString());
+            Assertions.assertThat(basicMemberInfo.like()).isEqualTo(likeLevel.toString());
         }
 
         private void assertionsMatchInfo(MatchInfo matchInfo, Match match) {

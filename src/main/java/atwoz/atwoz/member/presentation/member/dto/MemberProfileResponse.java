@@ -13,6 +13,6 @@ public record MemberProfileResponse(
         List<InterviewResultView> interviews
 ) {
     public MemberProfileResponse(OtherMemberProfileView otherMemberProfileView, List<InterviewResultView> interviews) {
-        this(otherMemberProfileView.basicMemberInfo(), otherMemberProfileView.matchInfo(), interviews);
+        this(otherMemberProfileView.basicMemberInfo(), otherMemberProfileView.matchInfo().matchId() == null ? null : otherMemberProfileView.matchInfo(), interviews);
     }
 }
