@@ -21,8 +21,8 @@ public class MatchRequestedEventHandler {
                 event.getRequesterId(),
                 "MEMBER",
                 event.getResponderId(),
-                "MATCH_REQUESTED"
+                "SOCIAL_MATCH_REQUESTED"
         );
-        notificationService.send(request);
+        notificationService.sendSocialNotification(request);
     }
 }

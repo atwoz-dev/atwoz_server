@@ -4,10 +4,12 @@ import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundExc
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import atwoz.atwoz.notification.command.domain.notification.Notification;
 import atwoz.atwoz.notification.command.domain.notification.NotificationCommandRepository;
-import atwoz.atwoz.notification.command.domain.notification.NotificationMessageGenerator;
 import atwoz.atwoz.notification.command.domain.notification.NotificationSender;
-import atwoz.atwoz.notification.command.domain.notification.strategy.NotificationMessageContext;
-import atwoz.atwoz.notification.command.domain.notification.strategy.NotificationMessageStrategy;
+import atwoz.atwoz.notification.command.domain.notification.NotificationType;
+import atwoz.atwoz.notification.command.domain.notification.message.MessageGenerator;
+import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplate;
+import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplateFactory;
+import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplateParameters;
 import atwoz.atwoz.notification.command.domain.notificationsetting.NotificationSetting;
 import atwoz.atwoz.notification.command.domain.notificationsetting.NotificationSettingCommandRepository;
 import atwoz.atwoz.notification.command.infra.notification.NotificationRequest;
@@ -16,36 +18,49 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static atwoz.atwoz.notification.command.application.notification.NotificationMapper.toNotification;
-import static atwoz.atwoz.notification.command.domain.notification.NotificationType.MATCH_REQUESTED;
 
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
 
     private final MemberCommandRepository memberCommandRepository;
-    private final NotificationSettingCommandRepository notificationSettingCommandRepository;
     private final NotificationCommandRepository notificationCommandRepository;
+    private final NotificationSettingCommandRepository notificationSettingCommandRepository;
 
+    private final MessageTemplateFactory messageTemplateFactory;
+    private final MessageGenerator messageGenerator;
     private final NotificationSender notificationSender;
 
     @Transactional
-    public void send(NotificationRequest request) {
+    public void sendSocialNotification(NotificationRequest request) {
+        Notification notification = toNotification(request);
         String receiverName = getReceiverName(request.receiverId());
 
-        NotificationMessageGenerator generator = new NotificationMessageGenerator();
-        NotificationMessageStrategy strategy = generator.create(MATCH_REQUESTED, receiverName);
+        MessageTemplate template = createMessageTemplate(notification.getType(), receiverName);
+        notification.setMessage(template, messageGenerator);
 
-        NotificationMessageContext context = new NotificationMessageContext();
-        String title = context.createTitle(strategy);
-        String content = context.createContent(strategy);
-
-        Notification notification = toNotification(request, title, content);
         notificationCommandRepository.save(notification);
+        sendIfOptedIn(request.receiverId(), notification);
+    }
 
-        NotificationSetting receiverSetting = getNotificationSetting(request.receiverId());
-        if (receiverSetting.isOptedIn()) {
-            notificationSender.send(notification, receiverSetting.getDeviceToken());
-        }
+    @Transactional
+    public void sendActionNotification(NotificationRequest request) {
+        Notification notification = toNotification(request);
+
+        MessageTemplate template = createMessageTemplate(notification.getType());
+        notification.setMessage(template, messageGenerator);
+
+        sendIfOptedIn(request.receiverId(), notification);
+    }
+
+    @Transactional
+    public void sendAdminNotification(NotificationRequest request) {
+        Notification notification = toNotification(request);
+
+        MessageTemplate template = createMessageTemplate(notification.getType());
+        notification.setMessage(template, messageGenerator);
+
+        sendIfOptedIn(request.receiverId(), notification);
     }
 
     private String getReceiverName(long receiverId) {
@@ -54,6 +69,21 @@ public class NotificationService {
                 .getProfile()
                 .getNickname()
                 .getValue();
+    }
+
+    private MessageTemplate createMessageTemplate(NotificationType notificationType, String receiverName) {
+        return messageTemplateFactory.create(MessageTemplateParameters.of(notificationType, receiverName));
+    }
+
+    private MessageTemplate createMessageTemplate(NotificationType notificationType) {
+        return messageTemplateFactory.create(MessageTemplateParameters.from(notificationType));
+    }
+
+    private void sendIfOptedIn(long receiverId, Notification notification) {
+        NotificationSetting receiverSetting = getNotificationSetting(receiverId);
+        if (receiverSetting.isOptedIn()) {
+            notificationSender.send(notification, receiverSetting.getDeviceToken());
+        }
     }
 
     private NotificationSetting getNotificationSetting(long receiverId) {

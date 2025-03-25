@@ -13,6 +13,15 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 public class NotificationMapper {
 
+    public static Notification toNotification(NotificationRequest request) {
+        return Notification.builder()
+                .senderId(request.senderId())
+                .senderType(toSenderType(request.senderType()))
+                .receiverId(request.receiverId())
+                .type(toNotificationType(request.notificationType()))
+                .build();
+    }
+
     public static Notification toNotification(NotificationRequest request, String title, String content) {
         return Notification.builder()
                 .senderId(request.senderId())

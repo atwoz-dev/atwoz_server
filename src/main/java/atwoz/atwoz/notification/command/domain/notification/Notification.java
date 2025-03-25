@@ -1,11 +1,10 @@
 package atwoz.atwoz.notification.command.domain.notification;
 
 import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
+import atwoz.atwoz.notification.command.domain.notification.message.MessageGenerator;
+import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplate;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 import static jakarta.persistence.EnumType.STRING;
 
@@ -28,6 +27,7 @@ public class Notification extends SoftDeleteBaseEntity {
 
     @Enumerated(STRING)
     @Column(columnDefinition = "varchar(50)")
+    @Getter
     private NotificationType type;
 
     private String title;
@@ -45,6 +45,11 @@ public class Notification extends SoftDeleteBaseEntity {
         setTitle(title);
         setContent(content);
         this.isRead = false;
+    }
+
+    public void setMessage(MessageTemplate template, MessageGenerator generator) {
+        setTitle(generator.createTitle(template));
+        setContent(generator.createContent(template));
     }
 
     private void setSenderId(long senderId) {
