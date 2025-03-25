@@ -5,11 +5,8 @@ import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import atwoz.atwoz.notification.command.domain.notification.Notification;
 import atwoz.atwoz.notification.command.domain.notification.NotificationCommandRepository;
 import atwoz.atwoz.notification.command.domain.notification.NotificationSender;
-import atwoz.atwoz.notification.command.domain.notification.NotificationType;
 import atwoz.atwoz.notification.command.domain.notification.message.MessageGenerator;
-import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplate;
 import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplateFactory;
-import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplateParameters;
 import atwoz.atwoz.notification.command.domain.notificationsetting.NotificationSetting;
 import atwoz.atwoz.notification.command.domain.notificationsetting.NotificationSettingCommandRepository;
 import atwoz.atwoz.notification.command.infra.notification.NotificationRequest;
@@ -32,35 +29,22 @@ public class NotificationService {
     private final NotificationSender notificationSender;
 
     @Transactional
-    public void sendSocialNotification(NotificationRequest request) {
-        Notification notification = toNotification(request);
-        String receiverName = getReceiverName(request.receiverId());
-
-        MessageTemplate template = createMessageTemplate(notification.getType(), receiverName);
-        notification.setMessage(template, messageGenerator);
-
+    public void send(NotificationRequest request) {
+        Notification notification = createNotification(request);
         notificationCommandRepository.save(notification);
         sendIfOptedIn(request.receiverId(), notification);
     }
 
-    @Transactional
-    public void sendActionNotification(NotificationRequest request) {
+    private Notification createNotification(NotificationRequest request) {
         Notification notification = toNotification(request);
 
-        MessageTemplate template = createMessageTemplate(notification.getType());
-        notification.setMessage(template, messageGenerator);
+        String receiverName = null;
+        if (notification.isSocialType()) {
+            receiverName = getReceiverName(request.receiverId());
+        }
 
-        sendIfOptedIn(request.receiverId(), notification);
-    }
-
-    @Transactional
-    public void sendAdminNotification(NotificationRequest request) {
-        Notification notification = toNotification(request);
-
-        MessageTemplate template = createMessageTemplate(notification.getType());
-        notification.setMessage(template, messageGenerator);
-
-        sendIfOptedIn(request.receiverId(), notification);
+        notification.setMessage(messageTemplateFactory, messageGenerator, receiverName);
+        return notification;
     }
 
     private String getReceiverName(long receiverId) {
@@ -69,14 +53,6 @@ public class NotificationService {
                 .getProfile()
                 .getNickname()
                 .getValue();
-    }
-
-    private MessageTemplate createMessageTemplate(NotificationType notificationType, String receiverName) {
-        return messageTemplateFactory.create(MessageTemplateParameters.of(notificationType, receiverName));
-    }
-
-    private MessageTemplate createMessageTemplate(NotificationType notificationType) {
-        return messageTemplateFactory.create(MessageTemplateParameters.from(notificationType));
     }
 
     private void sendIfOptedIn(long receiverId, Notification notification) {

@@ -7,10 +7,10 @@ public class MessageTemplateFactory {
 
     public MessageTemplate create(MessageTemplateParameters parameters) {
         switch (parameters.getNotificationType()) {
-            case SOCIAL_MATCH_REQUESTED -> {
+            case MATCH_REQUESTED -> {
                 return MatchRequestedMessageTemplate.from(parameters.getReceiverName());
             }
-            case ADMIN_INAPPROPRIATE_CONTENT -> {
+            case INAPPROPRIATE_CONTENT -> {
                 return new InappropriateContentMessageTemplate();
             }
             default -> {
