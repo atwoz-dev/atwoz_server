@@ -1,5 +1,6 @@
 package atwoz.atwoz.notification.command.domain.notification;
 
+import atwoz.atwoz.notification.command.domain.notification.strategy.DefaultMessageStrategy;
 import atwoz.atwoz.notification.command.domain.notification.strategy.MatchRequestedMessageStrategy;
 import atwoz.atwoz.notification.command.domain.notification.strategy.NotificationMessageStrategy;
 
@@ -10,7 +11,9 @@ public class NotificationMessageGenerator {
             case MATCH_REQUESTED -> {
                 return MatchRequestedMessageStrategy.from(receiverName);
             }
-            default -> throw new IllegalArgumentException(notificationType + "는 지원하지 않는 알림 타입입니다.");
+            default -> {
+                return new DefaultMessageStrategy();
+            }
         }
     }
 }
