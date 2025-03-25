@@ -23,6 +23,6 @@ public class MatchRequestedEventHandler {
                 event.getResponderId(),
                 "MATCH_REQUESTED"
         );
-        notificationService.sendNotification(request);
+        notificationService.send(request);
     }
 }

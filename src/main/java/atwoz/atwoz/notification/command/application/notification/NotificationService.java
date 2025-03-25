@@ -2,13 +2,21 @@ package atwoz.atwoz.notification.command.application.notification;
 
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
-import atwoz.atwoz.notification.command.domain.notification.*;
+import atwoz.atwoz.notification.command.domain.notification.Notification;
+import atwoz.atwoz.notification.command.domain.notification.NotificationCommandRepository;
+import atwoz.atwoz.notification.command.domain.notification.NotificationMessageGenerator;
+import atwoz.atwoz.notification.command.domain.notification.NotificationSender;
+import atwoz.atwoz.notification.command.domain.notification.strategy.NotificationMessageContext;
+import atwoz.atwoz.notification.command.domain.notification.strategy.NotificationMessageStrategy;
 import atwoz.atwoz.notification.command.domain.notificationsetting.NotificationSetting;
 import atwoz.atwoz.notification.command.domain.notificationsetting.NotificationSettingCommandRepository;
 import atwoz.atwoz.notification.command.infra.notification.NotificationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static atwoz.atwoz.notification.command.application.notification.NotificationMapper.toNotification;
+import static atwoz.atwoz.notification.command.domain.notification.NotificationType.MATCH_REQUESTED;
 
 @Service
 @RequiredArgsConstructor
@@ -18,17 +26,20 @@ public class NotificationService {
     private final NotificationSettingCommandRepository notificationSettingCommandRepository;
     private final NotificationCommandRepository notificationCommandRepository;
 
-    private final NotificationMessageGenerator messageGenerator;
     private final NotificationSender notificationSender;
 
     @Transactional
-    public void sendNotification(NotificationRequest request) {
+    public void send(NotificationRequest request) {
         String receiverName = getReceiverName(request.receiverId());
-        NotificationType notificationType = NotificationType.valueOf(request.notificationType().toUpperCase());
 
-        String title = messageGenerator.generateTitle(notificationType, receiverName);
-        String content = messageGenerator.generateContent(notificationType);
-        Notification notification = NotificationMapper.toNotification(request, title, content);
+        NotificationMessageGenerator generator = new NotificationMessageGenerator();
+        NotificationMessageStrategy strategy = generator.create(MATCH_REQUESTED, receiverName);
+
+        NotificationMessageContext context = new NotificationMessageContext();
+        String title = context.createTitle(strategy);
+        String content = context.createContent(strategy);
+
+        Notification notification = toNotification(request, title, content);
         notificationCommandRepository.save(notification);
 
         NotificationSetting receiverSetting = getNotificationSetting(request.receiverId());

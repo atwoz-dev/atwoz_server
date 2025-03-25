@@ -1,22 +1,16 @@
 package atwoz.atwoz.notification.command.domain.notification;
 
-import atwoz.atwoz.notification.command.domain.notification.strategy.NotificationMessageStrategyFactory;
-import org.springframework.stereotype.Component;
+import atwoz.atwoz.notification.command.domain.notification.strategy.MatchRequestedMessageStrategy;
+import atwoz.atwoz.notification.command.domain.notification.strategy.NotificationMessageStrategy;
 
-@Component
 public class NotificationMessageGenerator {
 
-    private final NotificationMessageStrategyFactory strategyFactory;
-
-    public NotificationMessageGenerator(NotificationMessageStrategyFactory strategyFactory) {
-        this.strategyFactory = strategyFactory;
-    }
-
-    public String generateTitle(NotificationType type, String receiverName) {
-        return strategyFactory.getStrategy(type).generateTitle(receiverName);
-    }
-
-    public String generateContent(NotificationType type) {
-        return strategyFactory.getStrategy(type).generateContent();
+    public NotificationMessageStrategy create(NotificationType notificationType, String receiverName) {
+        switch (notificationType) {
+            case MATCH_REQUESTED -> {
+                return MatchRequestedMessageStrategy.from(receiverName);
+            }
+            default -> throw new IllegalArgumentException(notificationType + "는 지원하지 않는 알림 타입입니다.");
+        }
     }
 }

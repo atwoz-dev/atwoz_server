@@ -112,7 +112,7 @@ class NotificationSettingServiceTest {
             notificationSettingService.optIn(memberId);
 
             // then
-            assertThat(setting.getIsOptedIn()).isTrue();
+            assertThat(setting.isOptedIn()).isTrue();
         }
 
         @Test
@@ -146,7 +146,7 @@ class NotificationSettingServiceTest {
             notificationSettingService.optOut(memberId);
 
             // then
-            assertThat(setting.getIsOptedIn()).isFalse();
+            assertThat(setting.isOptedIn()).isFalse();
         }
 
         @Test
