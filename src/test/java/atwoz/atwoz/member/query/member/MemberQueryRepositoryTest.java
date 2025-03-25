@@ -28,6 +28,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -71,7 +72,7 @@ public class MemberQueryRepositoryTest {
 
             Member member = Member.fromPhoneNumber("01012345678");
             MemberProfile updateProfile = MemberProfile.builder()
-                    .yearOfBirth(10)
+                    .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
                     .height(20)
                     .highestEducation(HighestEducation.ASSOCIATE)
                     .nickname(Nickname.from("nickname"))
@@ -177,7 +178,7 @@ public class MemberQueryRepositoryTest {
             otherMember = Member.fromPhoneNumber("01012345678");
 
             MemberProfile updateProfile = MemberProfile.builder()
-                    .yearOfBirth(10)
+                    .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
                     .height(20)
                     .highestEducation(HighestEducation.ASSOCIATE)
                     .nickname(Nickname.from("nickname"))

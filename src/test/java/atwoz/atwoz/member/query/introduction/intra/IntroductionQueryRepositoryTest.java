@@ -173,7 +173,7 @@ class IntroductionQueryRepositoryTest {
 
             Member me = Member.fromPhoneNumber("01011111111");
             MemberProfile profile1 = MemberProfile.builder()
-                    .yearOfBirth(20)
+                    .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
                     .hobbyIds(Set.of(hobby1.getId(), hobby2.getId()))
                     .religion(Religion.BUDDHIST)
                     .region(Region.DAEJEON)
@@ -187,7 +187,7 @@ class IntroductionQueryRepositoryTest {
 
             Member introductionTargetMember = Member.fromPhoneNumber("01022222222");
             MemberProfile introductionTargetMemberProfile = MemberProfile.builder()
-                    .yearOfBirth(40)
+                    .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
                     .hobbyIds(Set.of(hobby3.getId(), hobby4.getId()))
                     .religion(Religion.NONE)
                     .region(Region.SEOUL)
