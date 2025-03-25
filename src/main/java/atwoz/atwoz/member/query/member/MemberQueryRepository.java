@@ -38,7 +38,7 @@ public class MemberQueryRepository {
                         groupBy(member.id).as(
                                 new QMemberProfileView(
                                         member.profile.nickname.value,
-                                        member.profile.yearOfBirth,
+                                        member.profile.yearOfBirth.value,
                                         member.profile.gender.stringValue(),
                                         member.profile.height,
                                         job.name,
@@ -86,7 +86,7 @@ public class MemberQueryRepository {
                                         member.id,
                                         member.profile.nickname.value,
                                         profileImage.imageUrl.value,
-                                        member.profile.yearOfBirth,
+                                        member.profile.yearOfBirth.value,
                                         member.profile.gender.stringValue(),
                                         member.profile.height,
                                         job.name,

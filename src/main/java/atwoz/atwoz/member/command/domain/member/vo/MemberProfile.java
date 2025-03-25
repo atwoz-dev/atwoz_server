@@ -15,7 +15,8 @@ public class MemberProfile {
     @Embedded
     private Nickname nickname;
 
-    private Integer yearOfBirth;
+    @Embedded
+    private YearOfBirth yearOfBirth;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
@@ -61,7 +62,7 @@ public class MemberProfile {
             SmokingStatus smokingStatus, DrinkingStatus drinkingStatus, HighestEducation highestEducation
     ) {
         this.nickname = nickname;
-        this.yearOfBirth = yearOfBirth;
+        this.yearOfBirth = YearOfBirth.from(yearOfBirth);
         this.gender = gender;
         this.height = height;
         this.jobId = jobId;
