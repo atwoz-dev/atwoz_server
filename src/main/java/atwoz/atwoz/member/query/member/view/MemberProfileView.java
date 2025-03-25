@@ -7,7 +7,7 @@ import java.util.List;
 
 public record MemberProfileView(
         String nickname,
-        Integer age,
+        Integer yearOfBirth,
         String gender,
         Integer height,
         String job,

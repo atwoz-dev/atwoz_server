@@ -6,7 +6,7 @@ public record BasicMemberInfo(
         Long id,
         String nickname,
         String profileImageUrl,
-        Integer yearOfBirth,
+        Integer age,
         String gender,
         Integer height,
         String job,
