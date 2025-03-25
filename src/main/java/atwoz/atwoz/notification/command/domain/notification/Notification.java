@@ -59,11 +59,6 @@ public class Notification extends SoftDeleteBaseEntity {
         setContent(generator.createContent(template));
     }
 
-    public void setMessage2(MessageTemplate template, MessageGenerator generator) {
-        setTitle(generator.createTitle(template));
-        setContent(generator.createContent(template));
-    }
-
     private void setSenderId(long senderId) {
         this.senderId = senderId;
     }
