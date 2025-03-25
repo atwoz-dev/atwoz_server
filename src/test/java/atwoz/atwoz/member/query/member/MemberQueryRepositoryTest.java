@@ -28,7 +28,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
-import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -72,7 +71,7 @@ public class MemberQueryRepositoryTest {
 
             Member member = Member.fromPhoneNumber("01012345678");
             MemberProfile updateProfile = MemberProfile.builder()
-                    .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25)
+                    .yearOfBirth(10)
                     .height(20)
                     .highestEducation(HighestEducation.ASSOCIATE)
                     .nickname(Nickname.from("nickname"))
@@ -96,7 +95,7 @@ public class MemberQueryRepositoryTest {
             // Then
             MemberProfile savedMemberProfile = member.getProfile();
             Assertions.assertThat(memberProfileView).isNotNull();
-            Assertions.assertThat(memberProfileView.age()).isEqualTo(savedMemberProfile.getYearOfBirth().getValue());
+            Assertions.assertThat(memberProfileView.age()).isEqualTo(savedMemberProfile.getYearOfBirth());
             Assertions.assertThat(memberProfileView.height()).isEqualTo(savedMemberProfile.getHeight());
             Assertions.assertThat(memberProfileView.drinkingStatus()).isEqualTo(savedMemberProfile.getDrinkingStatus().toString());
             Assertions.assertThat(memberProfileView.job()).isEqualTo(job.getName());
@@ -178,7 +177,7 @@ public class MemberQueryRepositoryTest {
             otherMember = Member.fromPhoneNumber("01012345678");
 
             MemberProfile updateProfile = MemberProfile.builder()
-                    .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25)
+                    .yearOfBirth(10)
                     .height(20)
                     .highestEducation(HighestEducation.ASSOCIATE)
                     .nickname(Nickname.from("nickname"))
@@ -410,7 +409,7 @@ public class MemberQueryRepositoryTest {
         private void assertionsBasicInfo(BasicMemberInfo basicMemberInfo, MemberProfile otherMemberProfile) {
             Assertions.assertThat(basicMemberInfo.nickname()).isEqualTo(otherMemberProfile.getNickname().getValue());
             Assertions.assertThat(basicMemberInfo.profileImageUrl()).isEqualTo(profileImageUrl);
-            Assertions.assertThat(basicMemberInfo.yearOfBirth()).isEqualTo(otherMemberProfile.getYearOfBirth().getValue());
+            Assertions.assertThat(basicMemberInfo.yearOfBirth()).isEqualTo(otherMemberProfile.getYearOfBirth());
             Assertions.assertThat(basicMemberInfo.gender()).isEqualTo(otherMemberProfile.getGender().toString());
             Assertions.assertThat(basicMemberInfo.height()).isEqualTo(otherMemberProfile.getHeight());
             Assertions.assertThat(basicMemberInfo.job()).isEqualTo(jobName);

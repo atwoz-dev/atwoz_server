@@ -7,7 +7,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Calendar;
 import java.util.Set;
 
 class MemberProfileTest {
@@ -16,7 +15,7 @@ class MemberProfileTest {
     void isNeededProfileSettingWhenNullValueExists() {
         // Given
         MemberProfile memberProfile = MemberProfile.builder()
-                .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25)
+                .yearOfBirth(20)
                 .height(180)
                 .jobId(1L)
                 .mbti(Mbti.ENFJ)
@@ -39,7 +38,7 @@ class MemberProfileTest {
     void isNeededProfileSettingWhenHobbyListIsEmpty() {
         // Given
         MemberProfile memberProfile = MemberProfile.builder()
-                .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25)
+                .yearOfBirth(20)
                 .height(180)
                 .jobId(1L)
                 .mbti(Mbti.ENFJ)
@@ -62,7 +61,7 @@ class MemberProfileTest {
     void isNeededProfileSettingWhenHobbyListIsNotEmptyAndNullValueDoesntNotExist() {
         // Given
         MemberProfile memberProfile = MemberProfile.builder()
-                .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25)
+                .yearOfBirth(20)
                 .height(180)
                 .jobId(1L)
                 .mbti(Mbti.ENFJ)

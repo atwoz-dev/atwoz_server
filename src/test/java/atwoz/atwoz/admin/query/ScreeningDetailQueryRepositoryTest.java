@@ -19,8 +19,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
-import java.util.Calendar;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -92,7 +90,7 @@ class ScreeningDetailQueryRepositoryTest {
                 .profile(
                         MemberProfile.builder()
                                 .nickname(Nickname.from("member"))
-                                .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25)
+                                .yearOfBirth(20)
                                 .gender(Gender.MALE)
                                 .build()
                 )

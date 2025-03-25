@@ -17,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -138,7 +137,7 @@ class MemberProfileServiceTest {
         List<Hobby> hobbies = List.of(Hobby.from("취미1"), Hobby.from("취미2"));
 
         MemberProfileUpdateRequest request = new MemberProfileUpdateRequest(
-                "nickname", "MALE", Calendar.getInstance().get(Calendar.YEAR) - 25, 180,
+                "nickname", "MALE", 20, 180,
                 jobId, "Daejeon", "OTHER", "ENFJ",
                 "DAILY", "QUIT", "BUDDHIST", hobbyIds
         );
@@ -170,7 +169,7 @@ class MemberProfileServiceTest {
         Job job = Job.from("직업");
 
         MemberProfileUpdateRequest request = new MemberProfileUpdateRequest(
-                "nickname", "MALE", Calendar.getInstance().get(Calendar.YEAR) - 25, 180,
+                "nickname", "MALE", 20, 180,
                 jobId, null, "OTHER", "ENFJ",
                 "DAILY", "QUIT", "BUDDHIST", null
         );
