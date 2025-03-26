@@ -79,7 +79,7 @@ public class MemberProfile {
     }
 
     public boolean isProfileSettingNeeded() {
-        return nickname == null || yearOfBirth == null || gender == null || height == null || jobId == null ||
+        return nickname == null || yearOfBirth == null || yearOfBirth.getValue() == null || gender == null || height == null || jobId == null ||
                 hobbyIds == null || hobbyIds.isEmpty() || mbti == null || region == null || religion == null ||
                 smokingStatus == null || drinkingStatus == null || highestEducation == null;
     }
