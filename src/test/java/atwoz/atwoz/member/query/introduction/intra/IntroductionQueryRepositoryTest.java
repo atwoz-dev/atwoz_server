@@ -95,8 +95,8 @@ class IntroductionQueryRepositoryTest {
             when(condition.getExcludedMemberIds()).thenReturn(fieldName.equals("excludedIds") ? Set.of(member2.getId()) : Set.of());
 
             // 수정 by 공태현 (출생연도에 따른 계산으로.)
-            when(condition.getMaxAge()).thenReturn(fieldName.equals("maxAge") ? currentYear - member1.getProfile().getYearOfBirth() + 1 : null); // 나이 최대 20살
-            when(condition.getMinAge()).thenReturn(fieldName.equals("minAge") ? currentYear - member2.getProfile().getYearOfBirth() + 1 : null); // 나이 최소 40살
+            when(condition.getMaxAge()).thenReturn(fieldName.equals("maxAge") ? currentYear - member1.getProfile().getYearOfBirth().getValue() + 1 : null); // 나이 최대 20살
+            when(condition.getMinAge()).thenReturn(fieldName.equals("minAge") ? currentYear - member2.getProfile().getYearOfBirth().getValue() + 1 : null); // 나이 최소 40살
 
             when(condition.getHobbyIds()).thenReturn(fieldName.equals("hobbyIds") ? member1.getProfile().getHobbyIds() : Set.of());
             when(condition.getReligion()).thenReturn(fieldName.equals("religion") ? member1.getProfile().getReligion().name() : null);

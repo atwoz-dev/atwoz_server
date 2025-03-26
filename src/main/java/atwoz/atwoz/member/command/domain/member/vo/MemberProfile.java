@@ -2,7 +2,10 @@ package atwoz.atwoz.member.command.domain.member.vo;
 
 import atwoz.atwoz.member.command.domain.member.*;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +18,8 @@ public class MemberProfile {
     @Embedded
     private Nickname nickname;
 
-    private Integer yearOfBirth;
+    @Embedded
+    private YearOfBirth yearOfBirth;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
@@ -61,7 +65,7 @@ public class MemberProfile {
             SmokingStatus smokingStatus, DrinkingStatus drinkingStatus, HighestEducation highestEducation
     ) {
         this.nickname = nickname;
-        this.yearOfBirth = yearOfBirth;
+        this.yearOfBirth = YearOfBirth.from(yearOfBirth);
         this.gender = gender;
         this.height = height;
         this.jobId = jobId;
