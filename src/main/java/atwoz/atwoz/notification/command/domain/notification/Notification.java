@@ -25,6 +25,7 @@ public class Notification extends SoftDeleteBaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private SenderType senderType;
 
+    @Getter
     private Long receiverId;
 
     @Enumerated(STRING)
@@ -57,6 +58,10 @@ public class Notification extends SoftDeleteBaseEntity {
         MessageTemplate template = factory.create(MessageTemplateParameters.of(type, receiverName));
         setTitle(generator.createTitle(template));
         setContent(generator.createContent(template));
+    }
+
+    public void markAsRead() {
+        isRead = true;
     }
 
     private void setSenderId(long senderId) {

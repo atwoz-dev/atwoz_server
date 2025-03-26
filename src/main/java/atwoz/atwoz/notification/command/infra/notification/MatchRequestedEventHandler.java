@@ -1,7 +1,7 @@
 package atwoz.atwoz.notification.command.infra.notification;
 
 import atwoz.atwoz.match.command.domain.match.event.MatchRequestedEvent;
-import atwoz.atwoz.notification.command.application.notification.NotificationService;
+import atwoz.atwoz.notification.command.application.notification.NotificationSendService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class MatchRequestedEventHandler {
 
-    private final NotificationService notificationService;
+    private final NotificationSendService notificationSendService;
 
     @Async
     @TransactionalEventListener(value = MatchRequestedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
@@ -23,6 +23,6 @@ public class MatchRequestedEventHandler {
                 event.getResponderId(),
                 "MATCH_REQUESTED"
         );
-        notificationService.send(request);
+        notificationSendService.send(request);
     }
 }
