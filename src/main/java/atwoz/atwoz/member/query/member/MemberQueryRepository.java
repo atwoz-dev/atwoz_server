@@ -15,6 +15,7 @@ import static atwoz.atwoz.admin.command.domain.hobby.QHobby.hobby;
 import static atwoz.atwoz.admin.command.domain.job.QJob.job;
 import static atwoz.atwoz.interview.command.domain.answer.QInterviewAnswer.interviewAnswer;
 import static atwoz.atwoz.interview.command.domain.question.QInterviewQuestion.interviewQuestion;
+import static atwoz.atwoz.like.command.domain.like.QLike.like;
 import static atwoz.atwoz.match.command.domain.match.QMatch.match;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
 import static atwoz.atwoz.member.command.domain.profileImage.QProfileImage.profileImage;
@@ -37,7 +38,7 @@ public class MemberQueryRepository {
                         groupBy(member.id).as(
                                 new QMemberProfileView(
                                         member.profile.nickname.value,
-                                        member.profile.age,
+                                        member.profile.yearOfBirth.value,
                                         member.profile.gender.stringValue(),
                                         member.profile.height,
                                         job.name,
@@ -77,6 +78,7 @@ public class MemberQueryRepository {
                 .leftJoin(job).on(job.id.eq(member.profile.jobId))
                 .leftJoin(profileImage).on(profileImage.memberId.eq(otherMemberId).and(profileImage.isPrimary.eq(true)))
                 .leftJoin(match).on(getMatchJoinCondition(memberId, otherMemberId))
+                .leftJoin(like).on(like.senderId.eq(memberId).and(like.receiverId.eq(otherMemberId)))
                 .where(member.id.eq(otherMemberId))
                 .transform(
                         groupBy(member.id).as(
@@ -84,7 +86,7 @@ public class MemberQueryRepository {
                                         member.id,
                                         member.profile.nickname.value,
                                         profileImage.imageUrl.value,
-                                        member.profile.age,
+                                        member.profile.yearOfBirth.value,
                                         member.profile.gender.stringValue(),
                                         member.profile.height,
                                         job.name,
@@ -95,6 +97,7 @@ public class MemberQueryRepository {
                                         member.profile.drinkingStatus.stringValue(),
                                         member.profile.highestEducation.stringValue(),
                                         member.profile.religion.stringValue(),
+                                        like.likeLevel.stringValue(),
                                         match.id,
                                         match.requesterId,
                                         match.responderId,

@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.query.member.view;
 
+import atwoz.atwoz.member.query.member.AgeConverter;
 import com.querydsl.core.annotations.QueryProjection;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public record OtherMemberProfileView(
     @QueryProjection
     public OtherMemberProfileView(
             Long id, String nickname, String profileImageUrl,
-            Integer age,
+            Integer yearOfBirth,
             String gender,
             Integer height,
             String job,
@@ -22,6 +23,7 @@ public record OtherMemberProfileView(
             String drinkingStatus,
             String highestEducation,
             String religion,
+            String like,
             Long matchId,
             Long requesterId,
             Long responderId,
@@ -31,7 +33,7 @@ public record OtherMemberProfileView(
             String contactType,
             String contact
     ) {
-        this(new BasicMemberInfo(id, nickname, profileImageUrl, age, gender, height, job, hobbies, mbti, region, smokingStatus, drinkingStatus, highestEducation, religion),
+        this(new BasicMemberInfo(id, nickname, profileImageUrl, AgeConverter.toAge(yearOfBirth), gender, height, job, hobbies, mbti, region, smokingStatus, drinkingStatus, highestEducation, religion, like),
                 new MatchInfo(matchId, requesterId, responderId, requestMessage, responseMessage, matchStatus, contactType, contact));
     }
 }

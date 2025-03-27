@@ -53,7 +53,7 @@ public class MemberController {
                     .body(BaseResponse.from(StatusType.NOT_FOUND));
         }
 
-        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, new MemberProfileResponse(profileView, interviewResultViews)));
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, new MemberProfileResponse(MemberMapper.toBasicInfo(profileView.basicMemberInfo()), profileView.matchInfo(), interviewResultViews)));
     }
 
     @PostMapping("/profile/dormant")

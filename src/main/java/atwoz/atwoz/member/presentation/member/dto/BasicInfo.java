@@ -1,12 +1,12 @@
-package atwoz.atwoz.member.query.member.view;
+package atwoz.atwoz.member.presentation.member.dto;
 
 import java.util.List;
 
-public record BasicMemberInfo(
+public record BasicInfo(
         Long id,
         String nickname,
         String profileImageUrl,
-        Integer yearOfBirth,
+        Integer age,
         String gender,
         Integer height,
         String job,

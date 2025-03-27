@@ -1,6 +1,8 @@
 package atwoz.atwoz.like.command.domain.like;
 
 import atwoz.atwoz.common.entity.BaseEntity;
+import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.like.command.domain.like.event.LikeCreatedEvent;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -8,10 +10,11 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity
-@Table(name = "likes", indexes = {
-        @Index(name = "idx_sender_id", columnList = "senderId"),
-        @Index(name = "idx_receiver_id", columnList = "receiverId")
-})
+@Table(name = "likes",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"senderId", "receiverId"}),
+        indexes = {
+                @Index(name = "idx_receiver_id", columnList = "receiverId")
+        })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Like extends BaseEntity {
@@ -23,9 +26,12 @@ public class Like extends BaseEntity {
 
     private Long receiverId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(50)")
     private LikeLevel likeLevel;
 
     public static Like of(Long senderId, Long receiverId, LikeLevel likeLevel) {
+        Events.raise(LikeCreatedEvent.of(senderId, receiverId)); // 좋아요 알림을 위한 이벤트.
         return new Like(senderId, receiverId, likeLevel);
     }
 

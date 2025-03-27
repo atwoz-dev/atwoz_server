@@ -5,7 +5,7 @@ import java.util.Set;
 public record MemberProfileUpdateRequest(
         String nickName,
         String gender,
-        Integer age,
+        Integer yearOfBirth,
         Integer height,
         Long jobId,
         String region,

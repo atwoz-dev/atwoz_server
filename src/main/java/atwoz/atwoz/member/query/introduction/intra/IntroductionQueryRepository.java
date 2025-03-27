@@ -116,13 +116,17 @@ public class IntroductionQueryRepository {
         if (minAge == null && maxAge == null) {
             return null;
         }
+
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
         if (minAge == null) {
-            return member.profile.age.loe(maxAge);
+            return member.profile.yearOfBirth.value.goe(currentYear - maxAge + 1);
         }
         if (maxAge == null) {
-            return member.profile.age.goe(minAge);
+            return member.profile.yearOfBirth.value.loe(currentYear - minAge + 1);
         }
-        return member.profile.age.between(minAge, maxAge);
+
+        return member.profile.yearOfBirth.value.between(currentYear - maxAge + 1, currentYear - minAge + 1);
     }
 
     private BooleanExpression regionEq(String region) {

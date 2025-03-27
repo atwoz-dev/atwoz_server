@@ -34,7 +34,7 @@ public class ScreeningDetailQueryRepository {
                         screening.status.stringValue(),
                         screening.rejectionReason.stringValue(),
                         member.profile.nickname.value,
-                        member.profile.age,
+                        member.profile.yearOfBirth.value,
                         member.profile.gender.stringValue(),
                         member.createdAt.stringValue()
                 ))

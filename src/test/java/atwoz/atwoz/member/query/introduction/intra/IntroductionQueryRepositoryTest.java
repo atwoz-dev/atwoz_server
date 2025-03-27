@@ -20,6 +20,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -46,6 +47,8 @@ class IntroductionQueryRepositoryTest {
         @DisplayName("search condition에 대한 검증")
         void findIntroductionMemberIdsWhenSuccess(String fieldName) {
             // given
+            int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
             Hobby hobby1 = Hobby.from("취미1");
             Hobby hobby2 = Hobby.from("취미2");
             Hobby hobby3 = Hobby.from("취미3");
@@ -58,7 +61,7 @@ class IntroductionQueryRepositoryTest {
 
             Member member1 = Member.fromPhoneNumber("01011111111");
             MemberProfile profile1 = MemberProfile.builder()
-                    .age(20)
+                    .yearOfBirth(currentYear - 19) // 20살
                     .hobbyIds(Set.of(hobby1.getId(), hobby2.getId()))
                     .religion(Religion.BUDDHIST)
                     .region(Region.DAEJEON)
@@ -73,7 +76,7 @@ class IntroductionQueryRepositoryTest {
 
             Member member2 = Member.fromPhoneNumber("01022222222");
             MemberProfile profile2 = MemberProfile.builder()
-                    .age(40)
+                    .yearOfBirth(currentYear - 39) // 40살
                     .hobbyIds(Set.of(hobby3.getId(), hobby4.getId()))
                     .religion(Religion.NONE)
                     .region(Region.SEOUL)
@@ -86,10 +89,15 @@ class IntroductionQueryRepositoryTest {
             entityManager.persist(member2);
             entityManager.flush();
 
+
+
             IntroductionSearchCondition condition = mock(IntroductionSearchCondition.class);
             when(condition.getExcludedMemberIds()).thenReturn(fieldName.equals("excludedIds") ? Set.of(member2.getId()) : Set.of());
-            when(condition.getMinAge()).thenReturn(fieldName.equals("minAge") ? member1.getProfile().getAge() + 1 : null);
-            when(condition.getMaxAge()).thenReturn(fieldName.equals("maxAge") ? member2.getProfile().getAge() - 1 : null);
+
+            // 수정 by 공태현 (출생연도에 따른 계산으로.)
+            when(condition.getMaxAge()).thenReturn(fieldName.equals("maxAge") ? currentYear - member1.getProfile().getYearOfBirth().getValue() + 1 : null); // 나이 최대 20살
+            when(condition.getMinAge()).thenReturn(fieldName.equals("minAge") ? currentYear - member2.getProfile().getYearOfBirth().getValue() + 1 : null); // 나이 최소 40살
+
             when(condition.getHobbyIds()).thenReturn(fieldName.equals("hobbyIds") ? member1.getProfile().getHobbyIds() : Set.of());
             when(condition.getReligion()).thenReturn(fieldName.equals("religion") ? member1.getProfile().getReligion().name() : null);
             when(condition.getRegion()).thenReturn(fieldName.equals("region") ? member1.getProfile().getRegion().name() : null);
@@ -165,7 +173,7 @@ class IntroductionQueryRepositoryTest {
 
             Member me = Member.fromPhoneNumber("01011111111");
             MemberProfile profile1 = MemberProfile.builder()
-                    .age(20)
+                    .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
                     .hobbyIds(Set.of(hobby1.getId(), hobby2.getId()))
                     .religion(Religion.BUDDHIST)
                     .region(Region.DAEJEON)
@@ -179,7 +187,7 @@ class IntroductionQueryRepositoryTest {
 
             Member introductionTargetMember = Member.fromPhoneNumber("01022222222");
             MemberProfile introductionTargetMemberProfile = MemberProfile.builder()
-                    .age(40)
+                    .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
                     .hobbyIds(Set.of(hobby3.getId(), hobby4.getId()))
                     .religion(Religion.NONE)
                     .region(Region.SEOUL)

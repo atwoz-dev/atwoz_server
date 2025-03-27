@@ -1,13 +1,12 @@
 package atwoz.atwoz.member.query.member.view;
 
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.Getter;
 
 import java.util.List;
 
 public record MemberProfileView(
         String nickname,
-        Integer age,
+        Integer yearOfBirth,
         String gender,
         Integer height,
         String job,
