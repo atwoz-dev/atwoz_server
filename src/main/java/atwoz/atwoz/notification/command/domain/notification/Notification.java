@@ -6,7 +6,10 @@ import atwoz.atwoz.notification.command.domain.notification.message.MessageTempl
 import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplateFactory;
 import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplateParameters;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import static jakarta.persistence.EnumType.STRING;
 
@@ -38,15 +41,16 @@ public class Notification extends SoftDeleteBaseEntity {
 
     private Boolean isRead;
 
-    @Builder
-    private Notification(Long senderId, SenderType senderType, Long receiverId, NotificationType type, String title, String content) {
+    private Notification(Long senderId, SenderType senderType, Long receiverId, NotificationType type) {
         setSenderId(senderId);
         setSenderType(senderType);
         setReceiverId(receiverId);
         setType(type);
-        setTitle(title);
-        setContent(content);
-        this.isRead = false;
+        isRead = false;
+    }
+
+    public static Notification of(Long senderId, SenderType senderType, Long receiverId, NotificationType type) {
+        return new Notification(senderId, senderType, receiverId, type);
     }
 
     public boolean isSocialType() {

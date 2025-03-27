@@ -14,23 +14,12 @@ import static lombok.AccessLevel.PRIVATE;
 public class NotificationMapper {
 
     public static Notification toNotification(NotificationRequest request) {
-        return Notification.builder()
-                .senderId(request.senderId())
-                .senderType(toSenderType(request.senderType()))
-                .receiverId(request.receiverId())
-                .type(toNotificationType(request.notificationType()))
-                .build();
-    }
-
-    public static Notification toNotification(NotificationRequest request, String title, String content) {
-        return Notification.builder()
-                .senderId(request.senderId())
-                .senderType(toSenderType(request.senderType()))
-                .receiverId(request.receiverId())
-                .type(toNotificationType(request.notificationType()))
-                .title(title)
-                .content(content)
-                .build();
+        return Notification.of(
+                request.senderId(),
+                toSenderType(request.senderType()),
+                request.receiverId(),
+                toNotificationType(request.notificationType())
+        );
     }
 
     public static NotificationType toNotificationType(String notificationType) {
