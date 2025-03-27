@@ -262,7 +262,7 @@ public class MemberQueryRepositoryTest {
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
 
             // MatchInfo
-            Assertions.assertThat(memberProfileView.matchInfo().matchId()).isNull();
+            Assertions.assertThat(memberProfileView.matchInfo()).isNull();
         }
 
         @Test
@@ -289,7 +289,7 @@ public class MemberQueryRepositoryTest {
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
 
             // MatchInfo
-            Assertions.assertThat(memberProfileView.matchInfo().matchId()).isNull();
+            Assertions.assertThat(memberProfileView.matchInfo()).isNull();
         }
 
         @Test
@@ -318,7 +318,7 @@ public class MemberQueryRepositoryTest {
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
 
             // MatchInfo
-            Assertions.assertThat(memberProfileView.matchInfo().matchId()).isNull();
+            Assertions.assertThat(memberProfileView.matchInfo()).isNull();
         }
 
         @Test
