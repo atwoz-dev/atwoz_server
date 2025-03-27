@@ -1,4 +1,4 @@
-package atwoz.atwoz.notification.command.infra.notification;
+package atwoz.atwoz.notification.infra.notification;
 
 import atwoz.atwoz.notification.command.domain.notification.Notification;
 import atwoz.atwoz.notification.command.domain.notification.NotificationSender;

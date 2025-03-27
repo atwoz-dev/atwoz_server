@@ -3,7 +3,7 @@ package atwoz.atwoz.notification.command.application.notification;
 import atwoz.atwoz.notification.command.domain.notification.Notification;
 import atwoz.atwoz.notification.command.domain.notification.NotificationType;
 import atwoz.atwoz.notification.command.domain.notification.SenderType;
-import atwoz.atwoz.notification.command.infra.notification.NotificationRequest;
+import atwoz.atwoz.notification.infra.notification.NotificationRequest;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

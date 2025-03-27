@@ -1,4 +1,4 @@
-package atwoz.atwoz.notification.command.infra.notification;
+package atwoz.atwoz.notification.infra.notification;
 
 import atwoz.atwoz.match.command.domain.match.event.MatchRequestedEvent;
 import atwoz.atwoz.notification.command.application.notification.NotificationSendService;

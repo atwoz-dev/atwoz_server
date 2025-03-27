@@ -5,7 +5,7 @@ import atwoz.atwoz.notification.command.domain.notification.NotificationCommandR
 import atwoz.atwoz.notification.command.domain.notification.NotificationSendDomainService;
 import atwoz.atwoz.notification.command.domain.notificationsetting.NotificationSetting;
 import atwoz.atwoz.notification.command.domain.notificationsetting.NotificationSettingCommandRepository;
-import atwoz.atwoz.notification.command.infra.notification.NotificationRequest;
+import atwoz.atwoz.notification.infra.notification.NotificationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

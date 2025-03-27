@@ -1,4 +1,4 @@
-package atwoz.atwoz.notification.command.infra.notification;
+package atwoz.atwoz.notification.infra.notification;
 
 public record NotificationRequest(
         long senderId,
