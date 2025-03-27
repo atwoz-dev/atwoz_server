@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.command.infra;
+package atwoz.atwoz.admin.infra;
 
 import atwoz.atwoz.admin.command.domain.admin.PasswordHasher;
 import lombok.RequiredArgsConstructor;

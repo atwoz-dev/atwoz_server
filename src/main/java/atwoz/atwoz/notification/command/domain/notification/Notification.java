@@ -1,9 +1,13 @@
 package atwoz.atwoz.notification.command.domain.notification;
 
 import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
+import atwoz.atwoz.notification.command.domain.notification.message.MessageGenerator;
+import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplate;
+import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplateFactory;
+import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplateParameters;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
@@ -12,6 +16,7 @@ import static jakarta.persistence.EnumType.STRING;
 @Entity
 @Table(name = "notifications")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Notification extends SoftDeleteBaseEntity {
 
     @Id
@@ -36,15 +41,30 @@ public class Notification extends SoftDeleteBaseEntity {
 
     private Boolean isRead;
 
-    @Builder
-    private Notification(Long senderId, SenderType senderType, Long receiverId, NotificationType type, String title, String content) {
+    private Notification(Long senderId, SenderType senderType, Long receiverId, NotificationType type) {
         setSenderId(senderId);
         setSenderType(senderType);
         setReceiverId(receiverId);
         setType(type);
-        setTitle(title);
-        setContent(content);
-        this.isRead = false;
+        isRead = false;
+    }
+
+    public static Notification of(Long senderId, SenderType senderType, Long receiverId, NotificationType type) {
+        return new Notification(senderId, senderType, receiverId, type);
+    }
+
+    public boolean isSocialType() {
+        return type.isSocial();
+    }
+
+    public void setMessage(MessageTemplateFactory factory, MessageGenerator generator, String receiverName) {
+        MessageTemplate template = factory.create(MessageTemplateParameters.of(type, receiverName));
+        setTitle(generator.createTitle(template));
+        setContent(generator.createContent(template));
+    }
+
+    public void markAsRead() {
+        isRead = true;
     }
 
     private void setSenderId(long senderId) {
@@ -67,7 +87,7 @@ public class Notification extends SoftDeleteBaseEntity {
         this.title = title;
     }
 
-    private void setContent(@NonNull String content) {
+    private void setContent(String content) {
         this.content = content;
     }
 }

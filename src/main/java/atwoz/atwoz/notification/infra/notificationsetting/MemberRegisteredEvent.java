@@ -1,4 +1,4 @@
-package atwoz.atwoz.notification.command.infra.notificationsetting;
+package atwoz.atwoz.notification.infra.notificationsetting;
 
 import atwoz.atwoz.common.event.Event;
 import lombok.Getter;
