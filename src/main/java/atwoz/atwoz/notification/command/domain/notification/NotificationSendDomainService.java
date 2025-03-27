@@ -17,9 +17,9 @@ public class NotificationSendDomainService {
     private final MessageGenerator messageGenerator;
     private final NotificationSender notificationSender;
 
-    public void send(Notification notification, NotificationSetting receiverSetting) {
+    public void send(Notification notification, NotificationSetting receiverNotificationSetting) {
         setMessage(notification);
-        sendIfOptedIn(notification, receiverSetting);
+        sendIfOptedIn(notification, receiverNotificationSetting);
     }
 
     private void setMessage(Notification notification) {
@@ -38,9 +38,9 @@ public class NotificationSendDomainService {
                 .getValue();
     }
 
-    private void sendIfOptedIn(Notification notification, NotificationSetting receiverSetting) {
-        if (receiverSetting.isOptedIn()) {
-            notificationSender.send(notification, receiverSetting.getDeviceToken());
+    private void sendIfOptedIn(Notification notification, NotificationSetting receiverNotificationSetting) {
+        if (receiverNotificationSetting.isOptedIn()) {
+            notificationSender.send(notification, receiverNotificationSetting.getDeviceToken());
         }
     }
 }

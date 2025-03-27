@@ -13,6 +13,7 @@ import static jakarta.persistence.EnumType.STRING;
 @Entity
 @Table(name = "notifications")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Notification extends SoftDeleteBaseEntity {
 
     @Id
@@ -25,12 +26,10 @@ public class Notification extends SoftDeleteBaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private SenderType senderType;
 
-    @Getter
     private Long receiverId;
 
     @Enumerated(STRING)
     @Column(columnDefinition = "varchar(50)")
-    @Getter
     private NotificationType type;
 
     private String title;

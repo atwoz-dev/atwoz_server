@@ -23,8 +23,8 @@ public class NotificationSendService {
     @Transactional
     public void send(NotificationRequest request) {
         Notification notification = toNotification(request);
-        NotificationSetting receiverSetting = getNotificationSetting(notification.getReceiverId());
-        notificationSendDomainService.send(notification, receiverSetting);
+        NotificationSetting receiverNotificationSetting = getNotificationSetting(notification.getReceiverId());
+        notificationSendDomainService.send(notification, receiverNotificationSetting);
 
         notificationCommandRepository.save(notification);
     }
