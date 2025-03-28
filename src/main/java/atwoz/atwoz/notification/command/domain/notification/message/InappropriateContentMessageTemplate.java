@@ -1,7 +1,12 @@
 package atwoz.atwoz.notification.command.domain.notification.message;
 
 import atwoz.atwoz.notification.command.domain.notification.NotificationType;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
+@Component
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class InappropriateContentMessageTemplate implements MessageTemplate {
 
     @Override
