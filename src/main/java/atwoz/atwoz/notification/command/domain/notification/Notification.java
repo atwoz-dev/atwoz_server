@@ -1,9 +1,7 @@
 package atwoz.atwoz.notification.command.domain.notification;
 
 import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
-import atwoz.atwoz.notification.command.domain.notification.message.MessageGenerator;
 import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplate;
-import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplateFactory;
 import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplateParameters;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -57,10 +55,9 @@ public class Notification extends SoftDeleteBaseEntity {
         return type.isSocial();
     }
 
-    public void setMessage(MessageTemplateFactory factory, MessageGenerator generator, String receiverName) {
-        MessageTemplate template = factory.create(MessageTemplateParameters.of(type, receiverName));
-        setTitle(generator.createTitle(template));
-        setContent(generator.createContent(template));
+    public void setMessage(MessageTemplate template, MessageTemplateParameters parameters) {
+        setTitle(template.getTitle(parameters));
+        setContent(template.getContent(parameters));
     }
 
     public void markAsRead() {
