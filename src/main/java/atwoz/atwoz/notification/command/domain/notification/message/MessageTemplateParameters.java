@@ -1,6 +1,5 @@
 package atwoz.atwoz.notification.command.domain.notification.message;
 
-import atwoz.atwoz.notification.command.domain.notification.NotificationType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,14 +7,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MessageTemplateParameters {
-    private final NotificationType notificationType;
-    private final String receiverName;
+    private final Long senderId;
+    private final Long receiverId;
 
-    public static MessageTemplateParameters of(NotificationType notificationType, String receiverName) {
-        return new MessageTemplateParameters(notificationType, receiverName);
-    }
-
-    public static MessageTemplateParameters from(NotificationType notificationType) {
-        return new MessageTemplateParameters(notificationType, null);
+    public static MessageTemplateParameters of(Long senderId, Long receiverId) {
+        return new MessageTemplateParameters(senderId, receiverId);
     }
 }

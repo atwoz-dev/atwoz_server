@@ -33,9 +33,6 @@ class NotificationSendDomainServiceTest {
     private MessageTemplateFactory messageTemplateFactory;
 
     @Mock
-    private MessageGenerator messageGenerator;
-
-    @Mock
     private NotificationSender notificationSender;
 
     @InjectMocks
@@ -54,7 +51,6 @@ class NotificationSendDomainServiceTest {
 
         MessageTemplate template = MatchRequestedMessageTemplate.from(receiverName);
         when(messageTemplateFactory.create(any())).thenReturn(template);
-        when(messageGenerator.createTitle(any())).thenReturn("title");
 
         Member member = mock(Member.class);
         when(memberCommandRepository.findById(notification.getReceiverId())).thenReturn(Optional.of(member));
@@ -86,7 +82,6 @@ class NotificationSendDomainServiceTest {
 
         MessageTemplate template = MatchRequestedMessageTemplate.from(receiverName);
         when(messageTemplateFactory.create(any())).thenReturn(template);
-        when(messageGenerator.createTitle(any())).thenReturn("notification title");
 
         Member member = mock(Member.class);
         when(memberCommandRepository.findById(notification.getReceiverId())).thenReturn(Optional.of(member));
@@ -129,9 +124,8 @@ class NotificationSendDomainServiceTest {
         String receiverDeviceToken = "test_token_123";
         NotificationSetting setting = createNotificationSetting(receiverId, true, receiverDeviceToken);
 
-        MessageTemplate template = new DefaultMessageTemplate();
+        MessageTemplate template = new InappropriateContentMessageTemplate();
         when(messageTemplateFactory.create(any())).thenReturn(template);
-        when(messageGenerator.createTitle(any())).thenReturn("notification title");
 
         // when
         notificationSendDomainService.send(notification, setting);
@@ -149,9 +143,8 @@ class NotificationSendDomainServiceTest {
         Notification notification = createNotification(INAPPROPRIATE_CONTENT, receiverId);
         NotificationSetting setting = createNotificationSetting(receiverId, false, "test_token_123");
 
-        MessageTemplate template = new DefaultMessageTemplate();
+        MessageTemplate template = new InappropriateContentMessageTemplate();
         when(messageTemplateFactory.create(any())).thenReturn(template);
-        when(messageGenerator.createTitle(any())).thenReturn("notification title");
 
         // when
         notificationSendDomainService.send(notification, setting);
