@@ -11,7 +11,9 @@ public enum NotificationType {
 
     PROFILE_IMAGE(ACTION, "PROFILE_IMAGE", "프로필 이미지 변경 요청"),
 
-    INAPPROPRIATE_CONTENT(ADMIN, "INAPPROPRIATE_CONTENT", "부적절한 내용 포함");
+    INAPPROPRIATE_CONTENT(ADMIN, "INAPPROPRIATE_CONTENT", "부적절한 내용 포함"),
+
+    NONE(ETC, "NONE", "NONE");
 
     private final NotificationCategory category;
     private final String code;

@@ -10,14 +10,14 @@ import java.util.stream.Collectors;
 @Component
 public class MessageTemplateFactory {
 
-    private final Map<NotificationType, MessageTemplate> notificationTypeMessageTemplateMap;
+    private final Map<NotificationType, MessageTemplate> messageTemplateMap;
 
-    public MessageTemplateFactory(List<MessageTemplate> templates) {
-        this.notificationTypeMessageTemplateMap = templates.stream()
+    public MessageTemplateFactory(List<MessageTemplate> messageTemplates) {
+        messageTemplateMap = messageTemplates.stream()
                 .collect(Collectors.toMap(MessageTemplate::getNotificationType, s -> s));
     }
 
-    public MessageTemplate getTemplateByNotificationType(NotificationType notificationType) {
-        return notificationTypeMessageTemplateMap.get(notificationType);
+    public MessageTemplate getByNotificationType(NotificationType notificationType) {
+        return messageTemplateMap.getOrDefault(notificationType, new DefaultMessageTemplate());
     }
 }

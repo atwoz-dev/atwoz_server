@@ -15,14 +15,14 @@ public class NotificationSendDomainService {
     private final NotificationSender notificationSender;
 
     public void send(Notification notification, NotificationSetting receiverNotificationSetting) {
-        setMessage(notification);
+        createMessage(notification);
         sendIfOptedIn(notification, receiverNotificationSetting);
     }
 
-    private void setMessage(Notification notification) {
-        MessageTemplate messageTemplate = messageTemplateFactory.getTemplateByNotificationType(notification.getType());
+    private void createMessage(Notification notification) {
+        MessageTemplate template = messageTemplateFactory.getByNotificationType(notification.getType());
         MessageTemplateParameters parameters = MessageTemplateParameters.of(notification.getSenderId(), notification.getReceiverId());
-        notification.setMessage(messageTemplate, parameters);
+        notification.setMessage(template, parameters);
     }
 
     private void sendIfOptedIn(Notification notification, NotificationSetting receiverNotificationSetting) {

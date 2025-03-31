@@ -1,16 +1,14 @@
 package atwoz.atwoz.notification.command.domain.notification;
 
-import atwoz.atwoz.notification.command.domain.notification.message.*;
+import atwoz.atwoz.notification.command.domain.notification.message.DefaultMessageTemplate;
+import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplate;
+import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplateParameters;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import static atwoz.atwoz.notification.command.domain.notification.NotificationType.INAPPROPRIATE_CONTENT;
-import static atwoz.atwoz.notification.command.domain.notification.NotificationType.MATCH_REQUESTED;
+import static atwoz.atwoz.notification.command.domain.notification.NotificationType.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @DisplayName("Notification 테스트")
 class NotificationTest {
@@ -55,27 +53,23 @@ class NotificationTest {
     class SetMessageTest {
 
         @Test
-        @DisplayName("MessageTemplateFactory와 MessageGenerator를 통해 제목과 내용을 설정한다.")
+        @DisplayName("MessageTemplate과 MessageTemplateParameters를 통해 제목과 내용을 설정한다.")
         void setMessageUpdatesTitleAndContent() {
             // given
-            Notification notification = createNotification(MATCH_REQUESTED);
+            Notification notification = createNotification(NONE);
 
-            MessageTemplateFactory factory = Mockito.mock(MessageTemplateFactory.class);
-            MessageGenerator generator = Mockito.mock(MessageGenerator.class);
-
-            String receiverName = "홍길동";
-            MessageTemplate template = MatchRequestedMessageTemplate.from(receiverName);
-
-            when(factory.create(any(MessageTemplateParameters.class))).thenReturn(template);
-            when(generator.createTitle(template)).thenReturn(receiverName + "님께 매치가 요청되었습니다.");
-            when(generator.createContent(template)).thenReturn(null);
+            MessageTemplate template = new DefaultMessageTemplate();
+            MessageTemplateParameters parameters = MessageTemplateParameters.of(
+                    notification.getSenderId(),
+                    notification.getReceiverId()
+            );
 
             // when
-            notification.setMessage(factory, generator, receiverName);
+            notification.setMessage(template, parameters);
 
             // then
-            assertThat(notification.getTitle()).isEqualTo(receiverName + "님께 매치가 요청되었습니다.");
-            assertThat(notification.getContent()).isNull();
+            assertThat(notification.getTitle()).isEqualTo("제목");
+            assertThat(notification.getContent()).isEqualTo("내용");
         }
     }
 

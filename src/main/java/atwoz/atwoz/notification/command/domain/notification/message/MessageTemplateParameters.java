@@ -7,10 +7,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MessageTemplateParameters {
-    private final Long senderId;
-    private final Long receiverId;
+    private final long senderId;
+    private final long receiverId;
 
-    public static MessageTemplateParameters of(Long senderId, Long receiverId) {
+    public static MessageTemplateParameters of(long senderId, long receiverId) {
         return new MessageTemplateParameters(senderId, receiverId);
     }
 }

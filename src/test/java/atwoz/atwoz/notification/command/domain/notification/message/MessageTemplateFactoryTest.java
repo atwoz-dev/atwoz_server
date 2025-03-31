@@ -2,45 +2,66 @@ package atwoz.atwoz.notification.command.domain.notification.message;
 
 import atwoz.atwoz.notification.command.domain.notification.NotificationType;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("MessageTemplateFactory 테스트")
 class MessageTemplateFactoryTest {
 
-    private final MessageTemplateFactory factory = new MessageTemplateFactory();
+    @Nested
+    @DisplayName("getByNotificationType() 메서드 테스트")
+    class GetByNotificationTypeTest {
 
-    @Test
-    @DisplayName("MATCH_REQUESTED 타입은 MatchRequestedMessageTemplate를 반환한다.")
-    void createMatchRequestedTemplate() {
-        // given
-        NotificationType type = NotificationType.MATCH_REQUESTED;
-        String receiverName = "홍길동";
-        MessageTemplateParameters params = MessageTemplateParameters.of(type, receiverName);
+        @Test
+        @DisplayName("MATCH_REQUESTED 타입 요청 시 MatchRequestedMessageTemplate을 반환한다.")
+        void getByNotificationType_Returns_MatchRequestedTemplate() {
+            // given
+            MessageTemplate matchRequestedTemplate = Mockito.mock(MatchRequestedMessageTemplate.class);
+            when(matchRequestedTemplate.getNotificationType()).thenReturn(NotificationType.MATCH_REQUESTED);
+            MessageTemplateFactory factory = new MessageTemplateFactory(List.of(matchRequestedTemplate));
 
-        // when
-        MessageTemplate template = factory.create(params);
+            // when
+            MessageTemplate result = factory.getByNotificationType(NotificationType.MATCH_REQUESTED);
 
-        // then
-        assertThat(template).isInstanceOf(MatchRequestedMessageTemplate.class);
-        assertThat(template.getTitle()).isEqualTo(receiverName + "님께 매치가 요청되었습니다.");
-        assertThat(template.getContent()).isNull();
-    }
+            // then
+            assertThat(result).isEqualTo(matchRequestedTemplate);
+        }
 
-    @Test
-    @DisplayName("INAPPROPRIATE_CONTENT 타입은 InappropriateContentMessageTemplate를 반환한다.")
-    void createInappropriateContentTemplate() {
-        // given
-        NotificationType type = NotificationType.INAPPROPRIATE_CONTENT;
-        MessageTemplateParameters params = MessageTemplateParameters.from(type);
+        @Test
+        @DisplayName("INAPPROPRIATE_CONTENT 타입 요청 시 InappropriateContentMessageTemplate을 반환한다.")
+        void getByNotificationType_Returns_InappropriateContentTemplate() {
+            // given
+            MessageTemplate inappropriateContentTemplate = Mockito.mock(InappropriateContentMessageTemplate.class);
+            when(inappropriateContentTemplate.getNotificationType()).thenReturn(NotificationType.INAPPROPRIATE_CONTENT);
+            MessageTemplateFactory factory = new MessageTemplateFactory(List.of(inappropriateContentTemplate));
 
-        // when
-        MessageTemplate template = factory.create(params);
+            // when
+            MessageTemplate result = factory.getByNotificationType(NotificationType.INAPPROPRIATE_CONTENT);
 
-        // then
-        assertThat(template).isInstanceOf(InappropriateContentMessageTemplate.class);
-        assertThat(template.getTitle()).isEqualTo("작성하신 게시글에 부적절한 내용이 포함되어 있습니다. 다른 사용자들에게 불쾌감을 줄 수 있는 게시글은 삭제될 수 있습니다.");
-        assertThat(template.getContent()).isNull();
+            // then
+            assertThat(result).isEqualTo(inappropriateContentTemplate);
+        }
+
+        @Test
+        @DisplayName("등록되지 않은 NotificationType 요청 시 DefaultMessageTemplate을 반환한다.")
+        void getByNotificationType_Returns_DefaultTemplate_When_Not_Found() {
+            // given
+            MessageTemplateFactory factory = new MessageTemplateFactory(List.of());
+
+            // when
+            MessageTemplate result = factory.getByNotificationType(NotificationType.MATCH_REQUESTED);
+
+            // then
+            assertThat(result).isInstanceOf(DefaultMessageTemplate.class);
+        }
     }
 }
