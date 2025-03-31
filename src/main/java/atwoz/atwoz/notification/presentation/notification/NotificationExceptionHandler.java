@@ -1,4 +1,4 @@
-package atwoz.atwoz.notification.presentation;
+package atwoz.atwoz.notification.presentation.notification;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
