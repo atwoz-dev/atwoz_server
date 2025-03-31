@@ -22,7 +22,7 @@ public class NotificationMapper {
         );
     }
 
-    public static NotificationType toNotificationType(String notificationType) {
+    private static NotificationType toNotificationType(String notificationType) {
         return NotificationType.valueOf(notificationType.toUpperCase());
     }
 

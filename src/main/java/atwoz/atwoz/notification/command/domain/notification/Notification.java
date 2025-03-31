@@ -12,7 +12,12 @@ import lombok.NonNull;
 import static jakarta.persistence.EnumType.STRING;
 
 @Entity
-@Table(name = "notifications")
+@Table(
+        name = "notifications",
+        indexes = {
+                @Index(name = "idx_receiver_is_read", columnList = "receiverId, isRead")
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Notification extends SoftDeleteBaseEntity {
