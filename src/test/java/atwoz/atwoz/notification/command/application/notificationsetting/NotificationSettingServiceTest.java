@@ -1,4 +1,4 @@
-package atwoz.atwoz.notification.command.application.notifiactionsetting;
+package atwoz.atwoz.notification.command.application.notificationsetting;
 
 import atwoz.atwoz.notification.command.domain.notificationsetting.NotificationSetting;
 import atwoz.atwoz.notification.command.domain.notificationsetting.NotificationSettingCommandRepository;
@@ -112,7 +112,7 @@ class NotificationSettingServiceTest {
             notificationSettingService.optIn(memberId);
 
             // then
-            assertThat(setting.getIsOptedIn()).isTrue();
+            assertThat(setting.isOptedIn()).isTrue();
         }
 
         @Test
@@ -146,7 +146,7 @@ class NotificationSettingServiceTest {
             notificationSettingService.optOut(memberId);
 
             // then
-            assertThat(setting.getIsOptedIn()).isFalse();
+            assertThat(setting.isOptedIn()).isFalse();
         }
 
         @Test

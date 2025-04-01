@@ -1,4 +1,4 @@
-package atwoz.atwoz.notification.command.application.notifiactionsetting;
+package atwoz.atwoz.notification.command.application.notificationsetting;
 
 public class NotificationSettingNotFoundException extends RuntimeException {
     public NotificationSettingNotFoundException(long memberId) {

@@ -1,7 +1,7 @@
-package atwoz.atwoz.notification.command.infra.notificationsetting;
+package atwoz.atwoz.notification.infra.notificationsetting;
 
-import atwoz.atwoz.notification.command.application.notifiactionsetting.DuplicateNotificationSettingException;
-import atwoz.atwoz.notification.command.application.notifiactionsetting.NotificationSettingService;
+import atwoz.atwoz.notification.command.application.notificationsetting.DuplicateNotificationSettingException;
+import atwoz.atwoz.notification.command.application.notificationsetting.NotificationSettingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
