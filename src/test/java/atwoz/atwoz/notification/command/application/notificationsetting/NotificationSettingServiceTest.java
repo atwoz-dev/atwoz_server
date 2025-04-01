@@ -1,4 +1,4 @@
-package atwoz.atwoz.notification.command.application.notifiactionsetting;
+package atwoz.atwoz.notification.command.application.notificationsetting;
 
 import atwoz.atwoz.notification.command.domain.notificationsetting.NotificationSetting;
 import atwoz.atwoz.notification.command.domain.notificationsetting.NotificationSettingCommandRepository;
