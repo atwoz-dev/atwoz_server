@@ -4,6 +4,7 @@ public record SelfIntroductionSummaryResponse(
         Long id,
         String name,
         String profileUrl,
-        Integer age
+        Integer age,
+        String title
 ) {
 }

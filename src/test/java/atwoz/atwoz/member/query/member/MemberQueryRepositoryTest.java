@@ -410,7 +410,7 @@ public class MemberQueryRepositoryTest {
         private void assertionsBasicInfo(BasicMemberInfo basicMemberInfo, MemberProfile otherMemberProfile) {
             Assertions.assertThat(basicMemberInfo.nickname()).isEqualTo(otherMemberProfile.getNickname().getValue());
             Assertions.assertThat(basicMemberInfo.profileImageUrl()).isEqualTo(profileImageUrl);
-            Assertions.assertThat(basicMemberInfo.yearOfBirth()).isEqualTo(AgeConverter.toAge(otherMemberProfile.getYearOfBirth().getValue()));
+            Assertions.assertThat(basicMemberInfo.yearOfBirth()).isEqualTo(otherMemberProfile.getYearOfBirth().getValue());
             Assertions.assertThat(basicMemberInfo.gender()).isEqualTo(otherMemberProfile.getGender().toString());
             Assertions.assertThat(basicMemberInfo.height()).isEqualTo(otherMemberProfile.getHeight());
             Assertions.assertThat(basicMemberInfo.job()).isEqualTo(jobName);
