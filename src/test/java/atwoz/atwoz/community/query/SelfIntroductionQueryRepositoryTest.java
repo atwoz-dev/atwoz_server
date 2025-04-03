@@ -111,7 +111,7 @@ public class SelfIntroductionQueryRepositoryTest {
             }
             entityManager.flush();
 
-            selfIntroductions.sort((s1, s2) -> (int)(s2.getId() - s1.getId()));
+            selfIntroductions.sort((s1, s2) -> (int) (s2.getId() - s1.getId()));
         }
 
         @AfterEach
