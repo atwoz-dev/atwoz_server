@@ -3,6 +3,7 @@ package atwoz.atwoz.notification.presentation.notification;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
+import atwoz.atwoz.notification.command.application.notification.NotificationNotFoundException;
 import atwoz.atwoz.notification.command.application.notification.ReceiverNotificationSettingNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -26,6 +27,14 @@ public class NotificationExceptionHandler {
 
     @ExceptionHandler(MemberNotFoundException.class)
     public ResponseEntity<BaseResponse<Void>> handleMemberNotFoundException(MemberNotFoundException e) {
+        log.warn(e.getMessage());
+
+        return ResponseEntity.status(404)
+                .body(BaseResponse.from(StatusType.NOT_FOUND));
+    }
+
+    @ExceptionHandler(NotificationNotFoundException.class)
+    public ResponseEntity<BaseResponse<Void>> handleNotificationNotFoundException(NotificationNotFoundException e) {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
