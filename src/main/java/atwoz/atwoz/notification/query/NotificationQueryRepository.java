@@ -19,6 +19,7 @@ public class NotificationQueryRepository {
                 .select(new QNotificationView(
                         notification.id,
                         notification.senderId,
+                        notification.type.stringValue(),
                         notification.title,
                         notification.content
                 ))
