@@ -84,7 +84,7 @@ public class SelfIntroductionQueryRepository {
                         )
                 );
 
-        return Optional.ofNullable(view.values().stream().findFirst().orElse(null));
+        return view.values().stream().findFirst();
     }
 
     private BooleanExpression getSearchCondition(SelfIntroductionSearchCondition searchCondition) {

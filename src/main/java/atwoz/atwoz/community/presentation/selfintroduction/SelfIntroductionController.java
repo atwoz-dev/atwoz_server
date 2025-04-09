@@ -17,8 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/self-introduction")
 @RequiredArgsConstructor
@@ -40,7 +38,7 @@ public class SelfIntroductionController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<BaseResponse> delete(@PathVariable Long id, @AuthPrincipal AuthContext authContext) {
+    public ResponseEntity<BaseResponse<Void>> delete(@PathVariable Long id, @AuthPrincipal AuthContext authContext) {
         selfIntroductionService.delete(id, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
