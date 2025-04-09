@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static atwoz.atwoz.admin.command.domain.hobby.QHobby.hobby;
@@ -59,7 +60,7 @@ public class SelfIntroductionQueryRepository {
     }
 
     public Optional<SelfIntroductionView> findSelfIntroductionByIdWithMemberId(Long id, Long memberId) {
-        SelfIntroductionView view = queryFactory
+        Map<Long, SelfIntroductionView> view = queryFactory
                 .from(selfIntroduction)
                 .leftJoin(member).on(member.id.eq(selfIntroduction.memberId))
                 .leftJoin(like).on(like.senderId.eq(memberId).and(like.receiverId.eq(member.id)))
@@ -81,8 +82,9 @@ public class SelfIntroductionQueryRepository {
                                         selfIntroduction.content
                                 )
                         )
-                ).get(member.id);
-        return Optional.ofNullable(view);
+                );
+
+        return Optional.ofNullable(view.values().stream().findFirst().orElse(null));
     }
 
     private BooleanExpression getSearchCondition(SelfIntroductionSearchCondition searchCondition) {

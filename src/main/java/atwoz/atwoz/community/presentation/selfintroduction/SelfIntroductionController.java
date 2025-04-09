@@ -10,11 +10,14 @@ import atwoz.atwoz.community.presentation.selfintroduction.dto.SelfIntroductionW
 import atwoz.atwoz.community.query.selfintroduction.SelfIntroductionQueryRepository;
 import atwoz.atwoz.community.query.selfintroduction.SelfIntroductionSearchCondition;
 import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionSummaryView;
+import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/self-introduction")
@@ -43,8 +46,19 @@ public class SelfIntroductionController {
     }
 
     @GetMapping
-    public ResponseEntity<BaseResponse<Page<SelfIntroductionSummaryView>>> getIntroductions(@AuthPrincipal AuthContext authContext, @ModelAttribute SelfIntroductionSearchRequest searchRequest, Pageable pageable) {
+    public ResponseEntity<BaseResponse<Page<SelfIntroductionSummaryView>>> getIntroductions(@ModelAttribute SelfIntroductionSearchRequest searchRequest, Pageable pageable) {
         SelfIntroductionSearchCondition searchCondition = SelfIntroductionMapper.toSelfIntroductionSearchCondition(searchRequest);
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, selfIntroductionQueryRepository.findSelfIntroductions(searchCondition, pageable)));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BaseResponse<SelfIntroductionView>> getIntroduction(@PathVariable Long id, @AuthPrincipal AuthContext authContext) {
+        SelfIntroductionView view = selfIntroductionQueryRepository.findSelfIntroductionByIdWithMemberId(id, authContext.getId()).orElse(null);
+        if (view == null) {
+            return ResponseEntity.status(404)
+                    .body(BaseResponse.from(StatusType.NOT_FOUND));
+        }
+
+        return ResponseEntity.ok().body(BaseResponse.of(StatusType.OK, view));
     }
 }
