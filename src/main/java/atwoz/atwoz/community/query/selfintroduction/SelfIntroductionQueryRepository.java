@@ -1,7 +1,9 @@
 package atwoz.atwoz.community.query.selfintroduction;
 
 import atwoz.atwoz.community.query.selfintroduction.view.QSelfIntroductionSummaryView;
+import atwoz.atwoz.community.query.selfintroduction.view.QSelfIntroductionView;
 import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionSummaryView;
+import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionView;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -11,11 +13,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import static atwoz.atwoz.admin.command.domain.hobby.QHobby.hobby;
 import static atwoz.atwoz.community.command.domain.selfintroduction.QSelfIntroduction.selfIntroduction;
+import static atwoz.atwoz.like.command.domain.like.QLike.like;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
 import static atwoz.atwoz.member.command.domain.profileImage.QProfileImage.profileImage;
+import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.group.GroupBy.list;
 
 @Repository
 @RequiredArgsConstructor
@@ -50,6 +57,34 @@ public class SelfIntroductionQueryRepository {
         ).orElse(0L);
 
         return new PageImpl<>(content, pageable, totalCount);
+    }
+
+    public Optional<SelfIntroductionView> findSelfIntroductionByIdWithMemberId(Long id, Long memberId) {
+        Map<Long, SelfIntroductionView> view = queryFactory
+                .from(selfIntroduction)
+                .leftJoin(member).on(member.id.eq(selfIntroduction.memberId))
+                .leftJoin(like).on(like.senderId.eq(memberId).and(like.receiverId.eq(member.id)))
+                .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
+                .leftJoin(hobby).on(hobby.id.in(member.profile.hobbyIds))
+                .where(selfIntroduction.id.eq(id))
+                .transform(
+                        groupBy(member.id).as(
+                                new QSelfIntroductionView(
+                                        member.id,
+                                        member.profile.nickname.value,
+                                        member.profile.yearOfBirth.value,
+                                        profileImage.imageUrl.value,
+                                        member.profile.region.stringValue(),
+                                        member.profile.mbti.stringValue(),
+                                        list(hobby.name),
+                                        like.likeLevel.stringValue(),
+                                        selfIntroduction.title,
+                                        selfIntroduction.content
+                                )
+                        )
+                );
+
+        return view.values().stream().findFirst();
     }
 
     private BooleanExpression getSearchCondition(SelfIntroductionSearchCondition searchCondition) {

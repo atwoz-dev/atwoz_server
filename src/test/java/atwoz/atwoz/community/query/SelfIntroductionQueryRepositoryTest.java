@@ -1,15 +1,21 @@
 package atwoz.atwoz.community.query;
 
+import atwoz.atwoz.admin.command.domain.hobby.Hobby;
 import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.community.command.domain.selfintroduction.SelfIntroduction;
 import atwoz.atwoz.community.query.selfintroduction.SelfIntroductionQueryRepository;
 import atwoz.atwoz.community.query.selfintroduction.SelfIntroductionSearchCondition;
 import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionSummaryView;
+import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionView;
+import atwoz.atwoz.like.command.domain.like.Like;
+import atwoz.atwoz.like.command.domain.like.LikeLevel;
 import atwoz.atwoz.member.command.domain.member.Gender;
+import atwoz.atwoz.member.command.domain.member.Mbti;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.Region;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
+import atwoz.atwoz.member.command.domain.member.vo.Nickname;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.query.member.AgeConverter;
@@ -26,6 +32,7 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @DataJpaTest
 @Import({QueryDslConfig.class, SelfIntroductionQueryRepository.class})
@@ -279,6 +286,130 @@ public class SelfIntroductionQueryRepositoryTest {
 
                 Assertions.assertThat(view.id()).isEqualTo(selfIntroduction.getId());
             }
+        }
+    }
+
+    @Nested
+    @DisplayName("셀프 소개 상세 조회 테스트")
+    class selfIntroductionFindTest {
+
+        static MockedStatic<Events> mockedEvents;
+
+        Member member;
+        Member targetMember;
+        ProfileImage profileImage;
+        Like like;
+        List<Hobby> hobbies;
+        SelfIntroduction selfIntroduction;
+
+
+        @BeforeEach
+        void setUp() {
+            mockedEvents = Mockito.mockStatic(Events.class);
+            mockedEvents.when(() -> Events.raise(Mockito.any()))
+                    .thenAnswer(invocation -> null);
+
+            // 취미 데이터 생성.
+            Hobby hobby = Hobby.from("취미1");
+            Hobby hobby2 = Hobby.from("취미2");
+            hobbies = List.of(hobby, hobby2);
+
+            entityManager.persist(hobby);
+            entityManager.persist(hobby2);
+            entityManager.flush();
+
+            // 멤버 데이터 생성.
+            member = Member.fromPhoneNumber("01012345678");
+            targetMember = Member.fromPhoneNumber("01056781234");
+
+            MemberProfile memberProfile = MemberProfile.builder()
+                    .mbti(Mbti.ENFJ)
+                    .region(Region.SEOUL)
+                    .nickname(Nickname.from("닉네임"))
+                    .yearOfBirth(AgeConverter.toYearOfBirth(25))
+                    .hobbyIds(Set.of(hobby.getId(), hobby2.getId()))
+                    .build();
+
+            targetMember.updateProfile(memberProfile);
+
+            entityManager.persist(member);
+            entityManager.persist(targetMember);
+            entityManager.flush();
+
+            // 프로필 이미지 설정.
+            profileImage = ProfileImage.builder()
+                    .imageUrl(ImageUrl.from("imageUrl1"))
+                    .memberId(targetMember.getId())
+                    .isPrimary(true)
+                    .order(1)
+                    .build();
+
+            ProfileImage subImage = ProfileImage.builder()
+                    .imageUrl(ImageUrl.from("imageUrl2"))
+                    .memberId(targetMember.getId())
+                    .isPrimary(false)
+                    .order(2)
+                    .build();
+
+
+            entityManager.persist(profileImage);
+            entityManager.persist(subImage);
+            entityManager.flush();
+
+
+            // 좋아요 데이터 생성
+            like = Like.of(member.getId(), targetMember.getId(), LikeLevel.VERY_INTEREST);
+            entityManager.persist(like);
+
+            // 셀프 소개 데이터 생성.
+            selfIntroduction = SelfIntroduction.write(
+                    targetMember.getId(), "제목", "내용은 50자를 넘어야합니다. 50자를 넘어야 합니다. 50자를 넘어야.."
+            );
+            entityManager.persist(selfIntroduction);
+
+            entityManager.flush();
+        }
+
+        @AfterEach
+        void tearDown() {
+            mockedEvents.close();
+        }
+
+        @Test
+        @DisplayName("셀프 소개를 상세 조회합니다.")
+        void findSelfIntroduction() {
+            // Given
+            Long memberId = member.getId();
+            Long selfIntroductionId = selfIntroduction.getId();
+
+            System.out.println(memberId);
+            System.out.println(selfIntroductionId);
+
+            // When
+            SelfIntroductionView view = selfIntroductionQueryRepository.findSelfIntroductionByIdWithMemberId(selfIntroductionId, memberId).orElse(null);
+
+            // Then
+            Assertions.assertThat(view.title()).isEqualTo(selfIntroduction.getTitle());
+            Assertions.assertThat(view.content()).isEqualTo(selfIntroduction.getContent());
+            Assertions.assertThat(view.like()).isEqualTo(like.getLikeLevel().toString());
+            Assertions.assertThat(view.memberBasicInfo().memberId()).isEqualTo(targetMember.getId());
+            Assertions.assertThat(view.memberBasicInfo().age()).isEqualTo(AgeConverter.toAge(targetMember.getProfile().getYearOfBirth().getValue()));
+            Assertions.assertThat(view.memberBasicInfo().mbti()).isEqualTo(targetMember.getProfile().getMbti().toString());
+            Assertions.assertThat(view.memberBasicInfo().nickname()).isEqualTo(targetMember.getProfile().getNickname().getValue());
+            Assertions.assertThat(view.memberBasicInfo().region()).isEqualTo(targetMember.getProfile().getRegion().toString());
+            Assertions.assertThat(view.memberBasicInfo().hobbies().size()).isEqualTo(targetMember.getProfile().getHobbyIds().size());
+            Assertions.assertThat(view.memberBasicInfo().profileImageUrl()).isEqualTo(profileImage.getUrl());
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 셀프 소개의 경우, 빈 값을 반환합니다.")
+        void getEmptyValueWhenSelfIntroductionIsNotExists() {
+            // Given
+            Long notExistsSelfIntroductionId = 100L;
+            Long memberId = member.getId();
+
+            // When & Then
+            Assertions.assertThat(selfIntroductionQueryRepository.findSelfIntroductionByIdWithMemberId(notExistsSelfIntroductionId, memberId)).isEmpty();
         }
     }
 }

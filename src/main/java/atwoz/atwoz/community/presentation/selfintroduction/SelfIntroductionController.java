@@ -10,6 +10,7 @@ import atwoz.atwoz.community.presentation.selfintroduction.dto.SelfIntroductionW
 import atwoz.atwoz.community.query.selfintroduction.SelfIntroductionQueryRepository;
 import atwoz.atwoz.community.query.selfintroduction.SelfIntroductionSearchCondition;
 import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionSummaryView;
+import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,14 +38,25 @@ public class SelfIntroductionController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<BaseResponse> delete(@PathVariable Long id, @AuthPrincipal AuthContext authContext) {
+    public ResponseEntity<BaseResponse<Void>> delete(@PathVariable Long id, @AuthPrincipal AuthContext authContext) {
         selfIntroductionService.delete(id, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
     @GetMapping
-    public ResponseEntity<BaseResponse<Page<SelfIntroductionSummaryView>>> getIntroductions(@AuthPrincipal AuthContext authContext, @ModelAttribute SelfIntroductionSearchRequest searchRequest, Pageable pageable) {
+    public ResponseEntity<BaseResponse<Page<SelfIntroductionSummaryView>>> getIntroductions(@ModelAttribute SelfIntroductionSearchRequest searchRequest, Pageable pageable) {
         SelfIntroductionSearchCondition searchCondition = SelfIntroductionMapper.toSelfIntroductionSearchCondition(searchRequest);
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, selfIntroductionQueryRepository.findSelfIntroductions(searchCondition, pageable)));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BaseResponse<SelfIntroductionView>> getIntroduction(@PathVariable Long id, @AuthPrincipal AuthContext authContext) {
+        SelfIntroductionView view = selfIntroductionQueryRepository.findSelfIntroductionByIdWithMemberId(id, authContext.getId()).orElse(null);
+        if (view == null) {
+            return ResponseEntity.status(404)
+                    .body(BaseResponse.from(StatusType.NOT_FOUND));
+        }
+
+        return ResponseEntity.ok().body(BaseResponse.of(StatusType.OK, view));
     }
 }
