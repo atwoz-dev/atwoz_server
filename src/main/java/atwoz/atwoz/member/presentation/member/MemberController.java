@@ -9,10 +9,7 @@ import atwoz.atwoz.member.command.application.member.MemberProfileService;
 import atwoz.atwoz.member.presentation.member.dto.MemberProfileResponse;
 import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.query.member.MemberQueryRepository;
-import atwoz.atwoz.member.query.member.view.InterviewResultView;
-import atwoz.atwoz.member.query.member.view.MemberContactView;
-import atwoz.atwoz.member.query.member.view.MemberProfileView;
-import atwoz.atwoz.member.query.member.view.OtherMemberProfileView;
+import atwoz.atwoz.member.query.member.view.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -82,5 +79,15 @@ public class MemberController {
     public ResponseEntity<BaseResponse<Void>> updatePhoneNumber(@AuthPrincipal AuthContext authContext, @RequestBody String phone) {
         memberContactService.updatePhoneNumber(authContext.getId(), phone);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
+
+    @GetMapping("/heartbalance")
+    public ResponseEntity<BaseResponse<HeartBalanceView>> getHeartBalance(@AuthPrincipal AuthContext authContext) {
+        HeartBalanceView view = memberQueryRepository.findHeartBalanceByMemberId(authContext.getId());
+        if (view == null) {
+            return ResponseEntity.status(404)
+                    .body(BaseResponse.from(StatusType.NOT_FOUND));
+        }
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, view));
     }
 }

@@ -4,6 +4,7 @@ import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.admin.command.domain.hobby.Hobby;
 import atwoz.atwoz.admin.command.domain.job.Job;
 import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.interview.command.domain.answer.InterviewAnswer;
 import atwoz.atwoz.interview.command.domain.question.InterviewCategory;
 import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;
@@ -530,6 +531,44 @@ public class MemberQueryRepositoryTest {
 
             Assertions.assertThat(interviewResultView1.answer()).isEqualTo(answers.get(0).getContent());
             Assertions.assertThat(interviewResultView2.answer()).isEqualTo(answers.get(1).getContent());
+        }
+    }
+
+    @Nested
+    @DisplayName("멤버 하트 잔액 조회")
+    class findHeartBalanceByMemberId {
+        @Test
+        @DisplayName("존재하지 않는 멤버의 경우, null을 반환한다.")
+        void returnNullWhenMemberIsNotExists() {
+            // given
+            Long notExistsMemberId = 100L;
+
+            // when
+            HeartBalanceView heartBalanceView = memberQueryRepository.findHeartBalanceByMemberId(notExistsMemberId);
+
+            // then
+            Assertions.assertThat(heartBalanceView).isNull();
+        }
+
+        @Test
+        @DisplayName("존재하는 멤버의 경우, 하트 잔액 view를 반환한다.")
+        void returnHeartBalanceViewWhenMemberIsExists() {
+            // given
+            Member member = Member.fromPhoneNumber("01012345678");
+            HeartAmount purchaseHeartAmount = HeartAmount.from(10L);
+            member.gainPurchaseHeart(purchaseHeartAmount);
+            HeartAmount missionHeartAmount = HeartAmount.from(5L);
+            member.gainMissionHeart(missionHeartAmount);
+            entityManager.persist(member);
+            entityManager.flush();
+
+            // when
+            HeartBalanceView heartBalanceView = memberQueryRepository.findHeartBalanceByMemberId(member.getId());
+
+            // then
+            Assertions.assertThat(heartBalanceView.purchaseHeartBalance()).isEqualTo(purchaseHeartAmount.getAmount());
+            Assertions.assertThat(heartBalanceView.missionHeartBalance()).isEqualTo(missionHeartAmount.getAmount());
+            Assertions.assertThat(heartBalanceView.totalHeartBalance()).isEqualTo(purchaseHeartAmount.getAmount() + missionHeartAmount.getAmount());
         }
     }
 }
