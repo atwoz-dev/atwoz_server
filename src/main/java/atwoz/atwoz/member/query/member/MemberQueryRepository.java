@@ -138,4 +138,16 @@ public class MemberQueryRepository {
     private BooleanExpression getInterviewAnswerJoinCondition(Long memberId) {
         return interviewQuestion.id.eq(interviewAnswer.id).and(interviewAnswer.memberId.eq(memberId));
     }
+
+    public HeartBalanceView findHeartBalanceByMemberId(long memberId) {
+        return queryFactory
+                .select(new QHeartBalanceView(
+                        member.heartBalance.purchaseHeartBalance,
+                        member.heartBalance.missionHeartBalance,
+                        member.heartBalance.purchaseHeartBalance.add(member.heartBalance.missionHeartBalance)
+                ))
+                .from(member)
+                .where(member.id.eq(memberId))
+                .fetchOne();
+    }
 }
