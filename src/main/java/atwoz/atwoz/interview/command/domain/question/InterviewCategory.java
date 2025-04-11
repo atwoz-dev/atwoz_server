@@ -1,5 +1,7 @@
 package atwoz.atwoz.interview.command.domain.question;
 
+import atwoz.atwoz.interview.command.domain.question.exception.InvalidInterviewCategoryException;
+
 public enum InterviewCategory {
     PERSONAL("나"),
     SOCIAL("관계"),
@@ -9,5 +11,15 @@ public enum InterviewCategory {
 
     InterviewCategory(String description) {
         this.description = description;
+    }
+
+    public static InterviewCategory from(String value) {
+        if (value == null) return null;
+
+        try {
+            return InterviewCategory.valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidInterviewCategoryException(value);
+        }
     }
 }
