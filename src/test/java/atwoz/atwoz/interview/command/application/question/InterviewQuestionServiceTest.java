@@ -2,10 +2,10 @@ package atwoz.atwoz.interview.command.application.question;
 
 import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionNotFoundException;
 import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionAlreadyExistsException;
-import atwoz.atwoz.interview.command.application.question.exception.InvalidInterviewCategoryException;
 import atwoz.atwoz.interview.command.domain.question.InterviewCategory;
 import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;
 import atwoz.atwoz.interview.command.domain.question.InterviewQuestionCommandRepository;
+import atwoz.atwoz.interview.command.domain.question.exception.InvalidInterviewCategoryException;
 import atwoz.atwoz.interview.presentation.question.dto.InterviewQuestionSaveRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
