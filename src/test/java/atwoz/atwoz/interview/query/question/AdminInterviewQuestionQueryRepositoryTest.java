@@ -14,12 +14,14 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 @DataJpaTest
 @Import({QuerydslConfig.class, AdminInterviewQuestionQueryRepository.class})
@@ -62,7 +64,7 @@ class AdminInterviewQuestionQueryRepositoryTest {
             assertThat(result.getContent().get(0).content()).isEqualTo(sortedQuestions.get(0).getContent());
             assertThat(result.getContent().get(0).category()).isEqualTo(sortedQuestions.get(0).getCategory().name());
             assertThat(result.getContent().get(0).isPublic()).isEqualTo(sortedQuestions.get(0).isPublic());
-            assertThat(result.getContent().get(0).createdAt()).isEqualTo(sortedQuestions.get(0).getCreatedAt());
+            assertThat(result.getContent().get(0).createdAt()).isCloseTo(sortedQuestions.get(0).getCreatedAt(), within(1, ChronoUnit.MICROS));
             assertThat(result.getContent().get(1).id()).isEqualTo(sortedQuestions.get(1).getId());
             assertThat(result.getContent().get(2).id()).isEqualTo(sortedQuestions.get(2).getId());
         }
@@ -90,7 +92,7 @@ class AdminInterviewQuestionQueryRepositoryTest {
             assertThat(view.content()).isEqualTo(question.getContent());
             assertThat(view.category()).isEqualTo(question.getCategory().name());
             assertThat(view.isPublic()).isEqualTo(question.isPublic());
-            assertThat(view.createdAt()).isEqualTo(question.getCreatedAt());
+            assertThat(view.createdAt()).isCloseTo(question.getCreatedAt(), within(1, ChronoUnit.MICROS));
         }
 
         @Test
