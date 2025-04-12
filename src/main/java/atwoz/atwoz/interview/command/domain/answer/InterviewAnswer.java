@@ -16,6 +16,7 @@ import lombok.NonNull;
 public class InterviewAnswer extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long id;
 
     private Long questionId;

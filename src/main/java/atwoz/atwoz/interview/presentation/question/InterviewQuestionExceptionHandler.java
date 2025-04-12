@@ -4,7 +4,7 @@ import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionNotFoundException;
 import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionAlreadyExistsException;
-import atwoz.atwoz.interview.command.application.question.exception.InvalidInterviewCategoryException;
+import atwoz.atwoz.interview.command.domain.question.exception.InvalidInterviewCategoryException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
