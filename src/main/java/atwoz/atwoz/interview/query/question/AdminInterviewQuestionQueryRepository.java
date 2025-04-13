@@ -31,6 +31,7 @@ public class AdminInterviewQuestionQueryRepository {
                 .from(interviewQuestion)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .orderBy(interviewQuestion.id.desc())
                 .fetch();
 
         long totalCount = Optional.ofNullable(queryFactory

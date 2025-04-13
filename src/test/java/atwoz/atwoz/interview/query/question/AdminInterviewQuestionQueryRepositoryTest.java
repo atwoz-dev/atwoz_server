@@ -50,7 +50,7 @@ class AdminInterviewQuestionQueryRepositoryTest {
             entityManager.flush();
             List<InterviewQuestion> sortedQuestions = List.of(question1, question2, question3)
                     .stream()
-                    .sorted(Comparator.comparing(InterviewQuestion::getId))
+                    .sorted(Comparator.comparing(InterviewQuestion::getId).reversed())
                     .collect(Collectors.toList());
             PageRequest pageRequest = PageRequest.of(0, 10);
 
