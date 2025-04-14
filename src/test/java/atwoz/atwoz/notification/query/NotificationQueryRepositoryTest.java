@@ -34,7 +34,7 @@ class NotificationQueryRepositoryTest {
         long senderId = 123L;
         long receiverId = 100L;
         Notification notification1 = createNotification(senderId, receiverId, MATCH_REQUESTED, "Title 1", "Content 1", true);
-        Notification notification2 = createNotification(senderId, receiverId, MATCH_COMPLETED, "Title 2", "Content 2", false);
+        Notification notification2 = createNotification(senderId, receiverId, MATCH_REJECTED, "Title 2", "Content 2", false);
         Notification notification3 = createNotification(200L, receiverId, INAPPROPRIATE_CONTENT, "Title 3", "Content 3", false);
 
         em.persist(notification1);
@@ -61,7 +61,7 @@ class NotificationQueryRepositoryTest {
         long senderId = 123L;
         long receiverId = 100L;
         Notification notification1 = createNotification(senderId, receiverId, MATCH_REQUESTED, "Title 1", "Content 1", false);
-        Notification notification2 = createNotification(senderId, receiverId, MATCH_COMPLETED, "Title 2", "Content 2", false);
+        Notification notification2 = createNotification(senderId, receiverId, MATCH_REJECTED, "Title 2", "Content 2", false);
         Notification notification3 = createNotification(senderId, 200L, INAPPROPRIATE_CONTENT, "Title 3", "Content 3", false);
 
         em.persist(notification1);

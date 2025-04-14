@@ -1,22 +1,24 @@
-package atwoz.atwoz.notification.command.domain.notification.message;
+package atwoz.atwoz.notification.command.domain.notification.message.action;
 
 import atwoz.atwoz.notification.command.domain.notification.NotificationType;
+import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplate;
+import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplateParameters;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class InappropriateContentMessageTemplate implements MessageTemplate {
+public class LoginRequestedMessageTemplate implements MessageTemplate {
 
     @Override
     public NotificationType getNotificationType() {
-        return NotificationType.INAPPROPRIATE_CONTENT;
+        return NotificationType.LOGIN_REQUESTED;
     }
 
     @Override
     public String getTitle(MessageTemplateParameters parameters) {
-        return "작성하신 게시글에 부적절한 내용이 포함되어 있습니다. 다른 사용자들에게 불쾌감을 줄 수 있는 게시글은 삭제될 수 있습니다.";
+        return "당신을 기다리고 있는 이성들을 확인하러 가볼까요? 장기간 접속이 없으면 휴면계정으로 전환돼요.";
     }
 
     @Override

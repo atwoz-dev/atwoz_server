@@ -1,6 +1,8 @@
 package atwoz.atwoz.notification.command.domain.notification.message;
 
 import atwoz.atwoz.notification.command.domain.notification.NotificationType;
+import atwoz.atwoz.notification.command.domain.notification.message.admin.InappropriateContentMessageTemplate;
+import atwoz.atwoz.notification.command.domain.notification.message.social.MatchRequestedMessageTemplate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
