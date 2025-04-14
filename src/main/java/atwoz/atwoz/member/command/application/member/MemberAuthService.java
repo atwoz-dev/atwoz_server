@@ -3,11 +3,13 @@ package atwoz.atwoz.member.command.application.member;
 import atwoz.atwoz.auth.domain.TokenProvider;
 import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.common.enums.Role;
+import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.command.application.member.exception.BannedMemberException;
 import atwoz.atwoz.member.command.application.member.exception.MemberLoginConflictException;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
+import atwoz.atwoz.notification.infra.notificationsetting.MemberRegisteredEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,7 @@ public class MemberAuthService {
         String refreshToken = tokenProvider.createRefreshToken(member.getId(), Role.MEMBER, Instant.now());
         tokenRepository.save(refreshToken);
 
+        Events.raise(new MemberRegisteredEvent(member.getId())); // Event 발행.
         return new MemberLoginServiceDto(accessToken, refreshToken, member.isProfileSettingNeeded());
     }
 
