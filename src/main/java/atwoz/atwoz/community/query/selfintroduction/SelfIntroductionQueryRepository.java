@@ -28,12 +28,13 @@ import static com.querydsl.core.group.GroupBy.list;
 @RequiredArgsConstructor
 public class SelfIntroductionQueryRepository {
     private final JPAQueryFactory queryFactory;
+    private final static int PAGE_SIZE = 10;
 
-    public Page<SelfIntroductionSummaryView> findSelfIntroductions(SelfIntroductionSearchCondition searchCondition, Pageable pageable) {
+    public List<SelfIntroductionSummaryView> findSelfIntroductions(SelfIntroductionSearchCondition searchCondition, Long lastId) {
 
-        BooleanExpression condition = getSearchCondition(searchCondition);
+        BooleanExpression condition = getSearchCondition(searchCondition, lastId);
 
-        List<SelfIntroductionSummaryView> content = queryFactory
+        List<SelfIntroductionSummaryView> view = queryFactory
                 .select(
                         new QSelfIntroductionSummaryView(selfIntroduction.id, member.profile.nickname.value, profileImage.imageUrl.value, member.profile.yearOfBirth.value, selfIntroduction.title)
                 )
@@ -41,22 +42,11 @@ public class SelfIntroductionQueryRepository {
                 .join(member).on(member.id.eq(selfIntroduction.memberId))
                 .join(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
                 .where(condition)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                .limit(PAGE_SIZE)
                 .orderBy(selfIntroduction.id.desc())
                 .fetch();
 
-        long totalCount = Optional.ofNullable(
-                queryFactory
-                        .select(selfIntroduction.count())
-                        .from(selfIntroduction)
-                        .join(member).on(member.id.eq(selfIntroduction.memberId))
-                        .join(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
-                        .where(condition)
-                        .fetchOne()
-        ).orElse(0L);
-
-        return new PageImpl<>(content, pageable, totalCount);
+        return view;
     }
 
     public Optional<SelfIntroductionView> findSelfIntroductionByIdWithMemberId(Long id, Long memberId) {
@@ -87,8 +77,12 @@ public class SelfIntroductionQueryRepository {
         return view.values().stream().findFirst();
     }
 
-    private BooleanExpression getSearchCondition(SelfIntroductionSearchCondition searchCondition) {
-        BooleanExpression condition = addYearOfBirthCondition(null, searchCondition);
+    private BooleanExpression getSearchCondition(SelfIntroductionSearchCondition searchCondition, Long lastId) {
+        BooleanExpression condition = null;
+        if (lastId != null) {
+            condition = selfIntroduction.id.lt(lastId);
+        }
+        condition = addYearOfBirthCondition(condition, searchCondition);
         condition = addGenderCondition(condition, searchCondition);
         condition = addPreferredRegionCondition(condition, searchCondition);
         return condition == null ? member.isNotNull() : condition;

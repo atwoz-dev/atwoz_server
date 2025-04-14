@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/self-introduction")
 @RequiredArgsConstructor
@@ -44,9 +46,9 @@ public class SelfIntroductionController {
     }
 
     @GetMapping
-    public ResponseEntity<BaseResponse<Page<SelfIntroductionSummaryView>>> getIntroductions(@ModelAttribute SelfIntroductionSearchRequest searchRequest, Pageable pageable) {
+    public ResponseEntity<BaseResponse<List<SelfIntroductionSummaryView>>> getIntroductions(@ModelAttribute SelfIntroductionSearchRequest searchRequest, Long lastId) {
         SelfIntroductionSearchCondition searchCondition = SelfIntroductionMapper.toSelfIntroductionSearchCondition(searchRequest);
-        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, selfIntroductionQueryRepository.findSelfIntroductions(searchCondition, pageable)));
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, selfIntroductionQueryRepository.findSelfIntroductions(searchCondition, lastId)));
     }
 
     @GetMapping("/{id}")

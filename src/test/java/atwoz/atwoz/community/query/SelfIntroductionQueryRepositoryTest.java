@@ -135,12 +135,15 @@ public class SelfIntroductionQueryRepositoryTest {
             );
 
             // When
-            Page<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                    .findSelfIntroductions(searchCondition, PageRequest.of(0, 20));
+            List<SelfIntroductionSummaryView> selfIntroductionPage1 = selfIntroductionQueryRepository
+                    .findSelfIntroductions(searchCondition, null);
+            List<SelfIntroductionSummaryView> selfIntroductionPage2 = selfIntroductionQueryRepository
+                    .findSelfIntroductions(searchCondition, selfIntroductionPage1.getLast().id());
 
             // Then
-            Assertions.assertThat(selfIntroductionPage).isNotNull();
-            Assertions.assertThat(selfIntroductionPage.getTotalElements()).isEqualTo(selfIntroductions.size());
+            Assertions.assertThat(selfIntroductionPage1).isNotNull();
+            Assertions.assertThat(selfIntroductionPage2).isNotNull();
+            Assertions.assertThat(selfIntroductionPage1.size() + selfIntroductionPage2.size()).isEqualTo(selfIntroductions.size());
         }
 
         @Test
@@ -154,16 +157,16 @@ public class SelfIntroductionQueryRepositoryTest {
 
 
             // When
-            Page<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                    .findSelfIntroductions(searchCondition, PageRequest.of(0, 20));
+            List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
+                    .findSelfIntroductions(searchCondition, null);
 
 
             // Then
             Assertions.assertThat(selfIntroductionPage).isNotNull();
-            Assertions.assertThat(selfIntroductionPage.getTotalElements()).isEqualTo(maleSelfIntroduction.size());
+            Assertions.assertThat(selfIntroductionPage.size()).isEqualTo(maleSelfIntroduction.size());
 
-            for (int i = 0; i < selfIntroductionPage.getTotalElements(); i++) {
-                SelfIntroductionSummaryView view = selfIntroductionPage.getContent().get(i);
+            for (int i = 0; i < selfIntroductionPage.size(); i++) {
+                SelfIntroductionSummaryView view = selfIntroductionPage.get(i);
                 SelfIntroduction selfIntroduction = maleSelfIntroduction.get(i);
 
                 Assertions.assertThat(view.id()).isEqualTo(selfIntroduction.getId());
@@ -184,13 +187,13 @@ public class SelfIntroductionQueryRepositoryTest {
             );
 
             // When
-            Page<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                    .findSelfIntroductions(searchCondition, PageRequest.of(0, 20));
+            List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
+                    .findSelfIntroductions(searchCondition, null);
 
             // Then
             Assertions.assertThat(selfIntroductionPage).isNotNull();
-            for (int i = 0; i < selfIntroductionPage.getTotalElements(); i++) {
-                SelfIntroductionSummaryView view = selfIntroductionPage.getContent().get(i);
+            for (int i = 0; i < selfIntroductionPage.size(); i++) {
+                SelfIntroductionSummaryView view = selfIntroductionPage.get(i);
                 Assertions.assertThat(view.yearOfBirth()).isLessThanOrEqualTo(toYearOfBirth);
             }
         }
@@ -206,13 +209,13 @@ public class SelfIntroductionQueryRepositoryTest {
 
 
             // When
-            Page<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                    .findSelfIntroductions(searchCondition, PageRequest.of(0, 20));
+            List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
+                    .findSelfIntroductions(searchCondition, null);
 
             // Then
             Assertions.assertThat(selfIntroductionPage).isNotNull();
-            for (int i = 0; i < selfIntroductionPage.getTotalElements(); i++) {
-                SelfIntroductionSummaryView view = selfIntroductionPage.getContent().get(i);
+            for (int i = 0; i < selfIntroductionPage.size(); i++) {
+                SelfIntroductionSummaryView view = selfIntroductionPage.get(i);
                 Assertions.assertThat(view.yearOfBirth()).isGreaterThanOrEqualTo(fromYearOfBirth);
             }
         }
@@ -229,13 +232,13 @@ public class SelfIntroductionQueryRepositoryTest {
             );
 
             // When
-            Page<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                    .findSelfIntroductions(searchCondition, PageRequest.of(0, 20));
+            List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
+                    .findSelfIntroductions(searchCondition, null);
 
             // Then
             Assertions.assertThat(selfIntroductionPage).isNotNull();
-            for (int i = 0; i < selfIntroductionPage.getTotalElements(); i++) {
-                SelfIntroductionSummaryView view = selfIntroductionPage.getContent().get(i);
+            for (int i = 0; i < selfIntroductionPage.size(); i++) {
+                SelfIntroductionSummaryView view = selfIntroductionPage.get(i);
                 Assertions.assertThat(view.yearOfBirth()).isBetween(fromYearOfBirth, toYearOfBirth);
             }
         }
@@ -252,13 +255,13 @@ public class SelfIntroductionQueryRepositoryTest {
             List<SelfIntroduction> maleSelfIntroduction = selfIntroductions.stream().filter(s -> s.getMemberId() == maleMember.getId()).toList();
 
             // When
-            Page<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                    .findSelfIntroductions(searchCondition, PageRequest.of(0, 20));
+            List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
+                    .findSelfIntroductions(searchCondition, null);
 
             // Then
             Assertions.assertThat(selfIntroductionPage).isNotNull();
-            for (int i = 0; i < selfIntroductionPage.getTotalElements(); i++) {
-                SelfIntroductionSummaryView view = selfIntroductionPage.getContent().get(i);
+            for (int i = 0; i < selfIntroductionPage.size(); i++) {
+                SelfIntroductionSummaryView view = selfIntroductionPage.get(i);
                 SelfIntroduction selfIntroduction = maleSelfIntroduction.get(i);
 
                 Assertions.assertThat(view.id()).isEqualTo(selfIntroduction.getId());
@@ -275,13 +278,13 @@ public class SelfIntroductionQueryRepositoryTest {
             List<SelfIntroduction> maleSelfIntroduction = selfIntroductions.stream().filter(s -> s.getMemberId() == maleMember.getId()).toList();
 
             // When
-            Page<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                    .findSelfIntroductions(searchCondition, PageRequest.of(0, 20));
+            List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
+                    .findSelfIntroductions(searchCondition, null);
 
             // Then
             Assertions.assertThat(selfIntroductionPage).isNotNull();
-            for (int i = 0; i < selfIntroductionPage.getTotalElements(); i++) {
-                SelfIntroductionSummaryView view = selfIntroductionPage.getContent().get(i);
+            for (int i = 0; i < selfIntroductionPage.size(); i++) {
+                SelfIntroductionSummaryView view = selfIntroductionPage.get(i);
                 SelfIntroduction selfIntroduction = maleSelfIntroduction.get(i);
 
                 Assertions.assertThat(view.id()).isEqualTo(selfIntroduction.getId());
