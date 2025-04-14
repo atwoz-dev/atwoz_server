@@ -75,7 +75,7 @@ class NotificationQueryRepositoryTest {
 
         // then
         assertThat(result).hasSize(2);
-        assertThat(result).extracting("notificationType").containsExactlyInAnyOrder("MATCH_REQUESTED", "MATCH_COMPLETED");
+        assertThat(result).extracting("notificationType").containsExactlyInAnyOrder("MATCH_REQUESTED", "MATCH_REJECTED");
         assertThat(result).extracting("title").containsExactlyInAnyOrder("Title 1", "Title 2");
         assertThat(result).extracting("content").containsExactlyInAnyOrder("Content 1", "Content 2");
     }
