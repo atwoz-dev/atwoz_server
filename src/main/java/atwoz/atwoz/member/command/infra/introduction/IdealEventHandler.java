@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.command.infra.introduction;
 
 import atwoz.atwoz.member.command.application.introduction.MemberIdealService;
-import atwoz.atwoz.notification.infra.notificationsetting.MemberRegisteredEvent;
+import atwoz.atwoz.member.command.domain.member.event.MemberRegisteredEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;

@@ -9,7 +9,7 @@ import atwoz.atwoz.member.command.application.member.exception.BannedMemberExcep
 import atwoz.atwoz.member.command.application.member.exception.MemberLoginConflictException;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
-import atwoz.atwoz.notification.infra.notificationsetting.MemberRegisteredEvent;
+import atwoz.atwoz.member.command.domain.member.event.MemberRegisteredEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,6 @@ public class MemberAuthService {
         String refreshToken = tokenProvider.createRefreshToken(member.getId(), Role.MEMBER, Instant.now());
         tokenRepository.save(refreshToken);
 
-        Events.raise(new MemberRegisteredEvent(member.getId())); // Event 발행.
         return new MemberLoginServiceDto(accessToken, refreshToken, member.isProfileSettingNeeded());
     }
 
@@ -50,7 +49,9 @@ public class MemberAuthService {
 
     private Member create(String phoneNumber) {
         try {
-            return memberCommandRepository.save(Member.fromPhoneNumber(phoneNumber));
+            Member member = memberCommandRepository.save(Member.fromPhoneNumber(phoneNumber));
+            Events.raise(new MemberRegisteredEvent(member.getId())); // Event 발행.
+            return member;
         } catch (DataIntegrityViolationException e) {
             throw new MemberLoginConflictException(phoneNumber);
         }
