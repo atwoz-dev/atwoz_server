@@ -19,14 +19,14 @@ public class InterviewQuestionService {
     @Transactional
     public void createQuestion(InterviewQuestionSaveRequest request) {
         validateQuestionCreation(request.questionContent());
-        InterviewCategory interviewCategory = InterviewQuestionMapper.toInterviewCategory(request.category());
+        InterviewCategory interviewCategory = InterviewCategory.from(request.category());
         createQuestion(request.questionContent(), interviewCategory, request.isPublic());
     }
 
     @Transactional
     public void updateQuestion(Long questionId, InterviewQuestionSaveRequest request) {
         InterviewQuestion interviewQuestion = getInterviewQuestion(questionId);
-        InterviewCategory interviewCategory = InterviewQuestionMapper.toInterviewCategory(request.category());
+        InterviewCategory interviewCategory = InterviewCategory.from(request.category());
         validateQuestionUpdate(interviewQuestion, request.questionContent());
         interviewQuestion.update(request.questionContent(), interviewCategory, request.isPublic());
     }
