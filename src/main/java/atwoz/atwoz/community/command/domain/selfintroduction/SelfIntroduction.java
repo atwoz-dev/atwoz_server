@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity
-@Table(name = "self_introductions")
+@Table(name = "self_introductions",
+        indexes = @Index(name = "idx_member_id", columnList = "memberId")
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SelfIntroduction extends BaseEntity {
 
