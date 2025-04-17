@@ -11,7 +11,6 @@ import lombok.*;
 
 @Entity
 @Table(name = "matches", indexes = {
-        @Index(name = "idx_requester_id", columnList = "requesterId"),
         @Index(name = "idx_responder_id", columnList = "responderId"),
         @Index(name = "idx_requester_id_responder_id", columnList = "requesterId, responderId")
 })
