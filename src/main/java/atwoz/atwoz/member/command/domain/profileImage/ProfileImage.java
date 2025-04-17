@@ -7,7 +7,10 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "profile_images")
+@Table(name = "profile_images",
+        indexes = {
+                @Index(name = "idx_member_id_is_primary", columnList = "memberId, isPrimary")
+        })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProfileImage extends BaseEntity {
