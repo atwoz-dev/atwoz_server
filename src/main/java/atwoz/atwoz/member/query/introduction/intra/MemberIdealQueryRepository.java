@@ -13,7 +13,7 @@ import java.util.Optional;
 import static atwoz.atwoz.admin.command.domain.hobby.QHobby.hobby;
 import static atwoz.atwoz.member.command.domain.introduction.QMemberIdeal.memberIdeal;
 import static com.querydsl.core.group.GroupBy.groupBy;
-import static com.querydsl.core.group.GroupBy.list;
+import static com.querydsl.core.group.GroupBy.set;
 import static com.querydsl.core.types.dsl.Expressions.enumPath;
 
 @Repository
@@ -34,8 +34,8 @@ public class MemberIdealQueryRepository {
                                 new QMemberIdealView(
                                         memberIdeal.ageRange.minAge,
                                         memberIdeal.ageRange.maxAge,
-                                        list(hobby.name),
-                                        list(region.stringValue()),
+                                        set(hobby.name),
+                                        set(region.stringValue()),
                                         memberIdeal.religion.stringValue(),
                                         memberIdeal.smokingStatus.stringValue(),
                                         memberIdeal.drinkingStatus.stringValue()
