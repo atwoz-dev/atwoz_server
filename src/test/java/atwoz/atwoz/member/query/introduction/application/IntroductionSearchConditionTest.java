@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,7 +20,7 @@ class IntroductionSearchConditionTest {
     private final Set<Long> excludedIds = Set.of(1L, 2L);
     private final AgeRange ageRange = AgeRange.of(20, 30);
     private final Set<Long> hobbyIds = Set.of(10L, 20L);
-    private final Region region = Region.SEOUL;
+    private final Set<Region> regions = Set.of(Region.SEOUL);
     private final Religion religion = Religion.CHRISTIAN;
     private final SmokingStatus smokingStatus = SmokingStatus.NONE;
     private final DrinkingStatus drinkingStatus = DrinkingStatus.NONE;
@@ -29,7 +30,7 @@ class IntroductionSearchConditionTest {
         MemberIdeal ideal = mock(MemberIdeal.class);
         when(ideal.getAgeRange()).thenReturn(ageRange);
         when(ideal.getHobbyIds()).thenReturn(hobbyIds);
-        when(ideal.getRegion()).thenReturn(region);
+        when(ideal.getRegions()).thenReturn(regions);
         when(ideal.getReligion()).thenReturn(religion);
         when(ideal.getSmokingStatus()).thenReturn(smokingStatus);
         when(ideal.getDrinkingStatus()).thenReturn(drinkingStatus);
@@ -58,7 +59,7 @@ class IntroductionSearchConditionTest {
         // then
         assertCommonFields(condition);
         assertThat(condition.getHobbyIds()).isEqualTo(hobbyIds);
-        assertThat(condition.getRegion()).isEqualTo(region.name());
+        assertThat(condition.getRegions()).isEqualTo(regions.stream().map(Region::name).collect(Collectors.toSet()));
         assertThat(condition.getReligion()).isEqualTo(religion.name());
         assertThat(condition.getMemberGrade()).isEqualTo(grade.name());
         assertThat(condition.getJoinedAfter()).isNull();
@@ -77,7 +78,7 @@ class IntroductionSearchConditionTest {
         // then
         assertCommonFields(condition);
         assertThat(condition.getHobbyIds()).isEqualTo(memberHobbyIds);
-        assertThat(condition.getRegion()).isEqualTo(region.name());
+        assertThat(condition.getRegions()).isEqualTo(regions.stream().map(Region::name).collect(Collectors.toSet()));
         assertThat(condition.getReligion()).isEqualTo(religion.name());
         assertThat(condition.getMemberGrade()).isNull();
         assertThat(condition.getJoinedAfter()).isNull();
@@ -96,7 +97,7 @@ class IntroductionSearchConditionTest {
         // then
         assertCommonFields(condition);
         assertThat(condition.getHobbyIds()).isEqualTo(hobbyIds);
-        assertThat(condition.getRegion()).isEqualTo(region.name());
+        assertThat(condition.getRegions()).isEqualTo(regions.stream().map(Region::name).collect(Collectors.toSet()));
         assertThat(condition.getReligion()).isEqualTo(memberReligion.name());
         assertThat(condition.getMemberGrade()).isNull();
         assertThat(condition.getJoinedAfter()).isNull();
@@ -115,7 +116,7 @@ class IntroductionSearchConditionTest {
         // then
         assertCommonFields(condition);
         assertThat(condition.getHobbyIds()).isEqualTo(hobbyIds);
-        assertThat(condition.getRegion()).isEqualTo(memberRegion.name());
+        assertThat(condition.getRegions()).isEqualTo(Set.of(memberRegion.name()));
         assertThat(condition.getReligion()).isEqualTo(religion.name());
         assertThat(condition.getMemberGrade()).isNull();
         assertThat(condition.getJoinedAfter()).isNull();
@@ -134,7 +135,7 @@ class IntroductionSearchConditionTest {
         // then
         assertCommonFields(condition);
         assertThat(condition.getHobbyIds()).isEqualTo(hobbyIds);
-        assertThat(condition.getRegion()).isEqualTo(region.name());
+        assertThat(condition.getRegions()).isEqualTo(regions.stream().map(Region::name).collect(Collectors.toSet()));
         assertThat(condition.getReligion()).isEqualTo(religion.name());
         assertThat(condition.getMemberGrade()).isNull();
         assertThat(condition.getJoinedAfter()).isEqualTo(joinedAfter);

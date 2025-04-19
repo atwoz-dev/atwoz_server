@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,11 +39,11 @@ public class MemberIdealService {
         validateHobbyIds(request.hobbyIds());
         MemberIdeal memberIdeal = getMemberIdealByMemberId(memberId);
         AgeRange ageRange = AgeRange.of(request.minAge(), request.maxAge());
-        Region region = Region.from(request.region());
+        Set<Region> regions = request.regions().stream().map(Region::from).collect(Collectors.toSet());
         Religion religion = Religion.from(request.religion());
         SmokingStatus smokingStatus = SmokingStatus.from(request.smokingStatus());
         DrinkingStatus drinkingStatus = DrinkingStatus.from(request.drinkingStatus());
-        memberIdeal.update(ageRange, request.hobbyIds(), region, religion, smokingStatus, drinkingStatus);
+        memberIdeal.update(ageRange, request.hobbyIds(), regions, religion, smokingStatus, drinkingStatus);
     }
 
     private MemberIdeal getMemberIdealByMemberId(long memberId) {

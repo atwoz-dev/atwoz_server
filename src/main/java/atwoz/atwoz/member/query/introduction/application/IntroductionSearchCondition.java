@@ -8,6 +8,7 @@ import lombok.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 public class IntroductionSearchCondition {
@@ -15,7 +16,7 @@ public class IntroductionSearchCondition {
     private final Integer minAge;
     private final Integer maxAge;
     private final Set<Long> hobbyIds;
-    private final String region;
+    private final Set<String> regions;
     private final String religion;
     private final String smokingStatus;
     private final String drinkingStatus;
@@ -33,7 +34,7 @@ public class IntroductionSearchCondition {
                 excludedMemberIds,
                 memberIdeal.getAgeRange(),
                 memberIdeal.getHobbyIds(),
-                memberIdeal.getRegion(),
+                memberIdeal.getRegions(),
                 memberIdeal.getReligion(),
                 memberIdeal.getSmokingStatus(),
                 memberIdeal.getDrinkingStatus(),
@@ -53,7 +54,7 @@ public class IntroductionSearchCondition {
                 excludedMemberIds,
                 memberIdeal.getAgeRange(),
                 hobbyIds,
-                memberIdeal.getRegion(),
+                memberIdeal.getRegions(),
                 memberIdeal.getReligion(),
                 memberIdeal.getSmokingStatus(),
                 memberIdeal.getDrinkingStatus(),
@@ -73,7 +74,7 @@ public class IntroductionSearchCondition {
                 excludedMemberIds,
                 memberIdeal.getAgeRange(),
                 memberIdeal.getHobbyIds(),
-                memberIdeal.getRegion(),
+                memberIdeal.getRegions(),
                 religion,
                 memberIdeal.getSmokingStatus(),
                 memberIdeal.getDrinkingStatus(),
@@ -93,7 +94,7 @@ public class IntroductionSearchCondition {
                 excludedMemberIds,
                 memberIdeal.getAgeRange(),
                 memberIdeal.getHobbyIds(),
-                region,
+                Set.of(region),
                 memberIdeal.getReligion(),
                 memberIdeal.getSmokingStatus(),
                 memberIdeal.getDrinkingStatus(),
@@ -113,7 +114,7 @@ public class IntroductionSearchCondition {
                 excludedMemberIds,
                 memberIdeal.getAgeRange(),
                 memberIdeal.getHobbyIds(),
-                memberIdeal.getRegion(),
+                memberIdeal.getRegions(),
                 memberIdeal.getReligion(),
                 memberIdeal.getSmokingStatus(),
                 memberIdeal.getDrinkingStatus(),
@@ -127,7 +128,7 @@ public class IntroductionSearchCondition {
             Set<Long> excludedMemberIds,
             AgeRange ageRange,
             Set<Long> hobbyIds,
-            Region region,
+            Set<Region> regions,
             Religion religion,
             SmokingStatus smokingStatus,
             DrinkingStatus drinkingStatus,
@@ -139,7 +140,7 @@ public class IntroductionSearchCondition {
         this.minAge = (ageRange != null) ? ageRange.getMinAge() : null;
         this.maxAge = (ageRange != null) ? ageRange.getMaxAge() : null;
         this.hobbyIds = hobbyIds;
-        this.region = (region != null) ? region.name() : null;
+        this.regions = regions.stream().map(Region::name).collect(Collectors.toSet());
         this.religion = (religion != null) ? religion.name() : null;
         this.smokingStatus = (smokingStatus != null) ? smokingStatus.name() : null;
         this.drinkingStatus = (drinkingStatus != null) ? drinkingStatus.name() : null;

@@ -43,7 +43,7 @@ class IntroductionQueryRepositoryTest {
     @DisplayName("findAllIntroductionMemberId 메서드 테스트")
     class FindAllIntroductionMemberIdTest {
         @ParameterizedTest
-        @ValueSource(strings = {"excludedIds", "minAge", "maxAge", "hobbyIds", "religion", "region", "smokingStatus", "drinkingStatus", "memberGrade", "gender", "joinedAfter", "null"})
+        @ValueSource(strings = {"excludedIds", "minAge", "maxAge", "hobbyIds", "religion", "regions", "smokingStatus", "drinkingStatus", "memberGrade", "gender", "joinedAfter", "null"})
         @DisplayName("search condition에 대한 검증")
         void findIntroductionMemberIdsWhenSuccess(String fieldName) {
             // given
@@ -100,7 +100,7 @@ class IntroductionQueryRepositoryTest {
 
             when(condition.getHobbyIds()).thenReturn(fieldName.equals("hobbyIds") ? member1.getProfile().getHobbyIds() : Set.of());
             when(condition.getReligion()).thenReturn(fieldName.equals("religion") ? member1.getProfile().getReligion().name() : null);
-            when(condition.getRegion()).thenReturn(fieldName.equals("region") ? member1.getProfile().getRegion().name() : null);
+            when(condition.getRegions()).thenReturn(fieldName.equals("regions") ? Set.of(member1.getProfile().getRegion().name()) : Set.of());
             when(condition.getSmokingStatus()).thenReturn(fieldName.equals("smokingStatus") ? member1.getProfile().getSmokingStatus().name() : null);
             when(condition.getDrinkingStatus()).thenReturn(fieldName.equals("drinkingStatus") ? member1.getProfile().getDrinkingStatus().name() : null);
             when(condition.getMemberGrade()).thenReturn(fieldName.equals("memberGrade") ? Grade.DIAMOND.name() : null);
@@ -121,7 +121,7 @@ class IntroductionQueryRepositoryTest {
                 assertThat(result).containsExactly(member1.getId());
             } else if (fieldName.equals("religion")) {
                 assertThat(result).containsExactly(member1.getId());
-            } else if (fieldName.equals("region")) {
+            } else if (fieldName.equals("regions")) {
                 assertThat(result).containsExactly(member1.getId());
             } else if (fieldName.equals("smokingStatus")) {
                 assertThat(result).containsExactly(member1.getId());

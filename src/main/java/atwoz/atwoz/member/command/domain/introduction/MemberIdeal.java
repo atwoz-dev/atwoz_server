@@ -1,6 +1,7 @@
 package atwoz.atwoz.member.command.domain.introduction;
 
 import atwoz.atwoz.common.entity.BaseEntity;
+import atwoz.atwoz.member.command.domain.introduction.exception.InvalidMemberIdealException;
 import atwoz.atwoz.member.command.domain.introduction.vo.AgeRange;
 import atwoz.atwoz.member.command.domain.member.DrinkingStatus;
 import atwoz.atwoz.member.command.domain.member.Region;
@@ -38,9 +39,11 @@ public class MemberIdeal extends BaseEntity {
     private Set<Long> hobbyIds = new HashSet<>();
 
     @Getter
+    @ElementCollection
+    @CollectionTable(name = "member_ideal_regions", joinColumns = @JoinColumn(name = "member_ideal_id"))
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
-    private Region region;
+    private Set<Region> regions = new HashSet<>();
 
     @Getter
     @Enumerated(EnumType.STRING)
@@ -58,20 +61,20 @@ public class MemberIdeal extends BaseEntity {
     private DrinkingStatus drinkingStatus;
 
     public static MemberIdeal init(Long memberId) {
-        return new MemberIdeal(memberId, AgeRange.init(), new HashSet<>(), null, null, null, null);
+        return new MemberIdeal(memberId, AgeRange.init(), new HashSet<>(), new HashSet<>(), null, null, null);
     }
 
     public void update(
             AgeRange ageRange,
             Set<Long> hobbyIds,
-            Region region,
+            Set<Region> regions,
             Religion religion,
             SmokingStatus smokingStatus,
             DrinkingStatus drinkingStatus
     ) {
         setAgeRange(ageRange);
         setHobbyIds(hobbyIds);
-        this.region = region;
+        setRegions(regions);
         this.religion = religion;
         this.smokingStatus = smokingStatus;
         this.drinkingStatus = drinkingStatus;
@@ -81,7 +84,7 @@ public class MemberIdeal extends BaseEntity {
             Long memberId,
             AgeRange ageRange,
             Set<Long> hobbyIds,
-            Region region,
+            Set<Region> regions,
             Religion religion,
             SmokingStatus smokingStatus,
             DrinkingStatus drinkingStatus
@@ -89,7 +92,7 @@ public class MemberIdeal extends BaseEntity {
         setMemberId(memberId);
         setAgeRange(ageRange);
         setHobbyIds(hobbyIds);
-        this.region = region;
+        setRegions(regions);
         this.religion = religion;
         this.smokingStatus = smokingStatus;
         this.drinkingStatus = drinkingStatus;
@@ -105,5 +108,12 @@ public class MemberIdeal extends BaseEntity {
 
     private void setHobbyIds(@NonNull Set<Long> hobbyIds) {
         this.hobbyIds = hobbyIds;
+    }
+
+    private void setRegions(@NonNull Set<Region> regions) {
+        if (regions.size() > 2) {
+            throw new InvalidMemberIdealException("멤버 이상형의 지역은 2개를 초과할 수 없습니다.");
+        }
+        this.regions = regions;
     }
 }

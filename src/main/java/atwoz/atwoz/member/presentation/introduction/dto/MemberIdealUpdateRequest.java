@@ -16,7 +16,7 @@ public record MemberIdealUpdateRequest(
         @Max(value = 46, message = "최대 나이는 46보다 작을 수 없습니다.")
         Integer maxAge,
         @NotNull(message = "지역을 입력해주세요.")
-        String region,
+        Set<String> regions,
         @NotNull(message = "종교를 입력해주세요.")
         String religion,
         @NotNull(message = "흡연 여부를 입력해주세요.")

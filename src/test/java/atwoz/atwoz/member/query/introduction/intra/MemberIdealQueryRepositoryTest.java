@@ -55,11 +55,11 @@ class MemberIdealQueryRepositoryTest {
         entityManager.persist(hobby1);
         entityManager.persist(hobby2);
         Set<Long> hobbyIds = Set.of(hobby1.getId(), hobby2.getId());
-        Region region = Region.SEOUL;
+        Set<Region> regions = Set.of(Region.SEOUL);
         Religion religion = Religion.CHRISTIAN;
         SmokingStatus smokingStatus = SmokingStatus.NONE;
         DrinkingStatus drinkingStatus = DrinkingStatus.NONE;
-        memberIdeal.update(ageRange, hobbyIds, region, religion, smokingStatus, drinkingStatus);
+        memberIdeal.update(ageRange, hobbyIds, regions, religion, smokingStatus, drinkingStatus);
         entityManager.persist(memberIdeal);
         entityManager.flush();
 
@@ -70,7 +70,7 @@ class MemberIdealQueryRepositoryTest {
         assertThat(memberIdealView.minAge()).isEqualTo(ageRange.getMinAge());
         assertThat(memberIdealView.maxAge()).isEqualTo(ageRange.getMaxAge());
         assertThat(memberIdealView.hobbies()).containsExactlyInAnyOrder(hobby1.getName(), hobby2.getName());
-        assertThat(memberIdealView.region()).isEqualTo(region.name());
+        assertThat(memberIdealView.regions()).containsExactlyInAnyOrder(regions.stream().map(Region::name).toArray(String[]::new));
         assertThat(memberIdealView.religion()).isEqualTo(religion.name());
         assertThat(memberIdealView.smokingStatus()).isEqualTo(smokingStatus.name());
         assertThat(memberIdealView.drinkingStatus()).isEqualTo(drinkingStatus.name());
