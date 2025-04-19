@@ -24,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -45,7 +46,7 @@ class MemberIdealServiceTest {
     class UpdateTest {
         private Set<Long> hobbyIds;
         private AgeRange ageRange;
-        private Region region;
+        private Set<Region> regions;
         private Religion religion;
         private SmokingStatus smokingStatus;
         private DrinkingStatus drinkingStatus;
@@ -54,7 +55,7 @@ class MemberIdealServiceTest {
         @BeforeEach
         void setUp() {
             ageRange = AgeRange.of(20, 30);
-            region = Region.SEOUL;
+            regions = Set.of(Region.SEOUL);
             religion = Religion.CHRISTIAN;
             smokingStatus = SmokingStatus.VAPE;
             drinkingStatus = DrinkingStatus.SOCIAL;
@@ -62,7 +63,7 @@ class MemberIdealServiceTest {
             request = new MemberIdealUpdateRequest(
                     ageRange.getMinAge(),
                     ageRange.getMaxAge(),
-                    region.name(),
+                    regions.stream().map(Region::name).collect(Collectors.toSet()),
                     religion.name(),
                     smokingStatus.name(),
                     drinkingStatus.name(),
@@ -107,7 +108,7 @@ class MemberIdealServiceTest {
             memberIdealService.update(request, memberId);
 
             // then
-            verify(memberIdeal).update(ageRange, hobbyIds, region, religion, smokingStatus, drinkingStatus);
+            verify(memberIdeal).update(ageRange, hobbyIds, regions, religion, smokingStatus, drinkingStatus);
         }
     }
 
