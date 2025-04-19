@@ -14,6 +14,7 @@ import static atwoz.atwoz.admin.command.domain.hobby.QHobby.hobby;
 import static atwoz.atwoz.member.command.domain.introduction.QMemberIdeal.memberIdeal;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
+import static com.querydsl.core.types.dsl.Expressions.enumPath;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,7 +22,7 @@ public class MemberIdealQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     public Optional<MemberIdealView> findMemberIdealByMemberId(long memberId) {
-        EnumPath<Region> region = memberIdeal.regions.any();
+        EnumPath<Region> region = enumPath(Region.class, "regionAlias");
 
         MemberIdealView memberIdealView = queryFactory
                 .from(memberIdeal)
