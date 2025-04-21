@@ -47,7 +47,7 @@ class MemberIdealTest {
             assertThat(memberIdeal.getMemberId()).isEqualTo(memberId);
             assertThat(memberIdeal.getAgeRange()).isEqualTo(AgeRange.init());
             assertThat(memberIdeal.getHobbyIds()).isEmpty();
-            assertThat(memberIdeal.getRegion()).isNull();
+            assertThat(memberIdeal.getRegions()).isEmpty();
             assertThat(memberIdeal.getReligion()).isNull();
             assertThat(memberIdeal.getSmokingStatus()).isNull();
             assertThat(memberIdeal.getDrinkingStatus()).isNull();
@@ -60,7 +60,7 @@ class MemberIdealTest {
 
         private Set<Long> hobbyIds;
         private AgeRange ageRange;
-        private Region region;
+        private Set<Region> regions;
         private Religion religion;
         private SmokingStatus smokingStatus;
         private DrinkingStatus drinkingStatus;
@@ -68,7 +68,7 @@ class MemberIdealTest {
         @BeforeEach
         void setUp() {
             ageRange = AgeRange.of(20, 30);
-            region = Region.SEOUL;
+            regions = Set.of(Region.SEOUL);
             religion = Religion.CHRISTIAN;
             smokingStatus = SmokingStatus.VAPE;
             drinkingStatus = DrinkingStatus.SOCIAL;
@@ -83,7 +83,7 @@ class MemberIdealTest {
             ageRange = null;
 
             // when, then
-            assertThatThrownBy(() -> memberIdeal.update(ageRange, hobbyIds, region, religion, smokingStatus, drinkingStatus))
+            assertThatThrownBy(() -> memberIdeal.update(ageRange, hobbyIds, regions, religion, smokingStatus, drinkingStatus))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -95,19 +95,29 @@ class MemberIdealTest {
             hobbyIds = null;
 
             // when, then
-            assertThatThrownBy(() -> memberIdeal.update(ageRange, hobbyIds, region, religion, smokingStatus, drinkingStatus))
+            assertThatThrownBy(() -> memberIdeal.update(ageRange, hobbyIds, regions, religion, smokingStatus, drinkingStatus))
+                .isInstanceOf(NullPointerException.class);
+        }
+
+        @Test
+        @DisplayName("regions가 null이면 예외를 던진다.")
+        void throwsExceptionWhenRegionsIsNull() {
+            // given
+            MemberIdeal memberIdeal = MemberIdeal.init(1L);
+            regions = null;
+
+            // when, then
+            assertThatThrownBy(() -> memberIdeal.update(ageRange, hobbyIds, regions, religion, smokingStatus, drinkingStatus))
                 .isInstanceOf(NullPointerException.class);
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {"region", "religion", "smokingStatus", "drinkingStatus", "none"})
-        @DisplayName("ageRange, hobbyIds외의 다른 파라미터가 null이면 update한다.")
+        @ValueSource(strings = {"religion", "smokingStatus", "drinkingStatus", "none"})
+        @DisplayName("ageRange, hobbyIds, regions 외의 다른 파라미터가 null이면 update한다.")
         void updatesMemberIdeal(String nullParameter) {
             // given
             MemberIdeal memberIdeal = MemberIdeal.init(1L);
-            if (nullParameter.equals("region")) {
-                region = null;
-            } else if (nullParameter.equals("religion")) {
+            if (nullParameter.equals("religion")) {
                 religion = null;
             } else if (nullParameter.equals("smokingStatus")) {
                 smokingStatus = null;
@@ -118,12 +128,12 @@ class MemberIdealTest {
             }
 
             // when
-            memberIdeal.update(ageRange, hobbyIds, region, religion, smokingStatus, drinkingStatus);
+            memberIdeal.update(ageRange, hobbyIds, regions, religion, smokingStatus, drinkingStatus);
 
             // then
             assertThat(memberIdeal.getAgeRange()).isEqualTo(ageRange);
             assertThat(memberIdeal.getHobbyIds()).isEqualTo(hobbyIds);
-            assertThat(memberIdeal.getRegion()).isEqualTo(region);
+            assertThat(memberIdeal.getRegions()).isEqualTo(regions);
             assertThat(memberIdeal.getReligion()).isEqualTo(religion);
             assertThat(memberIdeal.getSmokingStatus()).isEqualTo(smokingStatus);
             assertThat(memberIdeal.getDrinkingStatus()).isEqualTo(drinkingStatus);
