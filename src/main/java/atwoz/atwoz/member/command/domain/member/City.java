@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.command.domain.member;
 
+import atwoz.atwoz.member.command.domain.member.exception.InvalidMemberEnumValueException;
 import lombok.Getter;
 
 @Getter
@@ -14,6 +15,15 @@ public enum City {
 
     City(String description) {
         this.description = description;
+    }
+
+    public static City from(String value) {
+        if (value == null || value.isEmpty()) return null;
+        try {
+            return City.valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidMemberEnumValueException(value);
+        }
     }
 }
 
