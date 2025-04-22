@@ -1,7 +1,6 @@
 package atwoz.atwoz.member.query.introduction.intra;
 
 import atwoz.atwoz.member.command.domain.member.City;
-import atwoz.atwoz.member.command.domain.member.Region;
 import atwoz.atwoz.member.query.introduction.application.MemberIdealView;
 import atwoz.atwoz.member.query.introduction.application.QMemberIdealView;
 import com.querydsl.core.types.dsl.EnumPath;
