@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.command.domain.member;
 
+import atwoz.atwoz.member.command.domain.member.exception.InvalidMemberEnumValueException;
 import lombok.Getter;
 
 @Getter
@@ -150,7 +151,7 @@ public enum District {
     // 경상남도
     GEOJE_SI(City.GYEONGSANGNAM, "거제시"),
     GEOCHANG_GUN(City.GYEONGSANGNAM, "거창군"),
-    GOSEONG2_GUN(City.GYEONGSANGNAM, "고성군"),
+    GOSEONG_GUN_GYEONGSANGNAM(City.GYEONGSANGNAM, "고성군"),
     GIMHAE_SI(City.GYEONGSANGNAM, "김해시"),
     NAMHAE_GUN(City.GYEONGSANGNAM, "남해군"),
     MILYANG_SI(City.GYEONGSANGNAM, "밀양시"),
@@ -268,6 +269,15 @@ public enum District {
     District(City city, String description) {
         this.city = city;
         this.description = description;
+    }
+
+    public static District from(String value) {
+        if (value == null || value.isEmpty()) return null;
+        try {
+            return District.valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidMemberEnumValueException(value);
+        }
     }
 }
 

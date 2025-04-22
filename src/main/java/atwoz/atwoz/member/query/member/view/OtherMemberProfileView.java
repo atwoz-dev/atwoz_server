@@ -18,7 +18,7 @@ public record OtherMemberProfileView(
             String job,
             List<String> hobbies,
             String mbti,
-            String region,
+            String city,
             String smokingStatus,
             String drinkingStatus,
             String highestEducation,
@@ -33,7 +33,7 @@ public record OtherMemberProfileView(
             String contactType,
             String contact
     ) {
-        this(new BasicMemberInfo(id, nickname, profileImageUrl, yearOfBirth, gender, height, job, hobbies, mbti, region, smokingStatus, drinkingStatus, highestEducation, religion, like),
+        this(new BasicMemberInfo(id, nickname, profileImageUrl, yearOfBirth, gender, height, job, hobbies, mbti, city, smokingStatus, drinkingStatus, highestEducation, religion, like),
                 matchId == null ? null : new MatchInfo(matchId, requesterId, responderId, requestMessage, responseMessage, matchStatus, contactType, contact));
     }
 }

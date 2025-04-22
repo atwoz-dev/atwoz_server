@@ -64,7 +64,8 @@ public class SelfIntroductionQueryRepository {
                                         member.profile.nickname.value,
                                         member.profile.yearOfBirth.value,
                                         profileImage.imageUrl.value,
-                                        member.profile.region.stringValue(),
+                                        member.profile.region.city.stringValue(),
+                                        member.profile.region.district.stringValue(),
                                         member.profile.mbti.stringValue(),
                                         list(hobby.name),
                                         like.likeLevel.stringValue(),
@@ -84,7 +85,7 @@ public class SelfIntroductionQueryRepository {
         }
         condition = addYearOfBirthCondition(condition, searchCondition);
         condition = addGenderCondition(condition, searchCondition);
-        condition = addPreferredRegionCondition(condition, searchCondition);
+        condition = addPreferredCityCondition(condition, searchCondition);
         return condition == null ? member.isNotNull() : condition;
     }
 
@@ -110,10 +111,10 @@ public class SelfIntroductionQueryRepository {
         return condition;
     }
 
-    private BooleanExpression addPreferredRegionCondition(BooleanExpression condition, SelfIntroductionSearchCondition searchCondition) {
-        if (searchCondition.preferredRegions() != null && !searchCondition.preferredRegions().isEmpty()) {
-            condition = (condition == null) ? member.profile.region.in(searchCondition.preferredRegions())
-                    : condition.and(member.profile.region.in(searchCondition.preferredRegions()));
+    private BooleanExpression addPreferredCityCondition(BooleanExpression condition, SelfIntroductionSearchCondition searchCondition) {
+        if (searchCondition.preferredCities() != null && !searchCondition.preferredCities().isEmpty()) {
+            condition = (condition == null) ? member.profile.region.city.in(searchCondition.preferredCities())
+                    : condition.and(member.profile.region.city.in(searchCondition.preferredCities()));
         }
         return condition;
     }

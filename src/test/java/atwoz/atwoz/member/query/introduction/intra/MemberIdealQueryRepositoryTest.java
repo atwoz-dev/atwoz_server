@@ -5,10 +5,7 @@ import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.admin.command.domain.hobby.Hobby;
 import atwoz.atwoz.member.command.domain.introduction.MemberIdeal;
 import atwoz.atwoz.member.command.domain.introduction.vo.AgeRange;
-import atwoz.atwoz.member.command.domain.member.DrinkingStatus;
-import atwoz.atwoz.member.command.domain.member.Region;
-import atwoz.atwoz.member.command.domain.member.Religion;
-import atwoz.atwoz.member.command.domain.member.SmokingStatus;
+import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.query.introduction.application.MemberIdealView;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,11 +52,11 @@ class MemberIdealQueryRepositoryTest {
         entityManager.persist(hobby1);
         entityManager.persist(hobby2);
         Set<Long> hobbyIds = Set.of(hobby1.getId(), hobby2.getId());
-        Set<Region> regions = Set.of(Region.SEOUL);
+        Set<City> cities = Set.of(City.SEOUL);
         Religion religion = Religion.CHRISTIAN;
         SmokingStatus smokingStatus = SmokingStatus.NONE;
         DrinkingStatus drinkingStatus = DrinkingStatus.NONE;
-        memberIdeal.update(ageRange, hobbyIds, regions, religion, smokingStatus, drinkingStatus);
+        memberIdeal.update(ageRange, hobbyIds, cities, religion, smokingStatus, drinkingStatus);
         entityManager.persist(memberIdeal);
         entityManager.flush();
 
@@ -70,7 +67,7 @@ class MemberIdealQueryRepositoryTest {
         assertThat(memberIdealView.minAge()).isEqualTo(ageRange.getMinAge());
         assertThat(memberIdealView.maxAge()).isEqualTo(ageRange.getMaxAge());
         assertThat(memberIdealView.hobbies()).containsExactlyInAnyOrder(hobby1.getName(), hobby2.getName());
-        assertThat(memberIdealView.regions()).containsExactlyInAnyOrder(regions.stream().map(Region::name).toArray(String[]::new));
+        assertThat(memberIdealView.regions()).containsExactlyInAnyOrder(cities.stream().map(City::name).toArray(String[]::new));
         assertThat(memberIdealView.religion()).isEqualTo(religion.name());
         assertThat(memberIdealView.smokingStatus()).isEqualTo(smokingStatus.name());
         assertThat(memberIdealView.drinkingStatus()).isEqualTo(drinkingStatus.name());

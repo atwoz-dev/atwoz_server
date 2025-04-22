@@ -9,7 +9,8 @@ public record MemberBasicInfo(
         String nickname,
         Integer age,
         String profileImageUrl,
-        String region,
+        String city,
+        String district,
         String mbti,
         List<String> hobbies
 ){

@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.query.introduction.application;
 
+import atwoz.atwoz.member.command.domain.member.City;
 import atwoz.atwoz.member.command.domain.member.Grade;
-import atwoz.atwoz.member.command.domain.member.Region;
 import atwoz.atwoz.member.command.domain.member.Religion;
 import atwoz.atwoz.member.query.introduction.intra.InterviewAnswerQueryResult;
 import atwoz.atwoz.member.query.introduction.intra.IntroductionQueryRepository;
@@ -134,7 +134,7 @@ class IntroductionQueryServiceTest {
                 eq(memberId),
                 eq(IntroductionCacheKeyPrefix.SAME_REGION),
                 isNull(),
-                ArgumentMatchers.<IntroductionMemberIdFetcher.IntroductionConditionSupplier<Region>>any()
+                ArgumentMatchers.<IntroductionMemberIdFetcher.IntroductionConditionSupplier<City>>any()
         )).thenReturn(introductionMemberIds);
         List<MemberIntroductionProfileQueryResult> memberIntroductionProfileQueryResults = List.of();
         when(introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId, introductionMemberIds))

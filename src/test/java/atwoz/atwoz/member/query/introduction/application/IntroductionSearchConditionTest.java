@@ -20,7 +20,7 @@ class IntroductionSearchConditionTest {
     private final Set<Long> excludedIds = Set.of(1L, 2L);
     private final AgeRange ageRange = AgeRange.of(20, 30);
     private final Set<Long> hobbyIds = Set.of(10L, 20L);
-    private final Set<Region> regions = Set.of(Region.SEOUL);
+    private final Set<City> cities = Set.of(City.SEOUL);
     private final Religion religion = Religion.CHRISTIAN;
     private final SmokingStatus smokingStatus = SmokingStatus.NONE;
     private final DrinkingStatus drinkingStatus = DrinkingStatus.NONE;
@@ -30,7 +30,7 @@ class IntroductionSearchConditionTest {
         MemberIdeal ideal = mock(MemberIdeal.class);
         when(ideal.getAgeRange()).thenReturn(ageRange);
         when(ideal.getHobbyIds()).thenReturn(hobbyIds);
-        when(ideal.getRegions()).thenReturn(regions);
+        when(ideal.getCities()).thenReturn(cities);
         when(ideal.getReligion()).thenReturn(religion);
         when(ideal.getSmokingStatus()).thenReturn(smokingStatus);
         when(ideal.getDrinkingStatus()).thenReturn(drinkingStatus);
@@ -59,7 +59,7 @@ class IntroductionSearchConditionTest {
         // then
         assertCommonFields(condition);
         assertThat(condition.getHobbyIds()).isEqualTo(hobbyIds);
-        assertThat(condition.getRegions()).isEqualTo(regions.stream().map(Region::name).collect(Collectors.toSet()));
+        assertThat(condition.getCities()).isEqualTo(cities.stream().map(City::name).collect(Collectors.toSet()));
         assertThat(condition.getReligion()).isEqualTo(religion.name());
         assertThat(condition.getMemberGrade()).isEqualTo(grade.name());
         assertThat(condition.getJoinedAfter()).isNull();
@@ -78,7 +78,7 @@ class IntroductionSearchConditionTest {
         // then
         assertCommonFields(condition);
         assertThat(condition.getHobbyIds()).isEqualTo(memberHobbyIds);
-        assertThat(condition.getRegions()).isEqualTo(regions.stream().map(Region::name).collect(Collectors.toSet()));
+        assertThat(condition.getCities()).isEqualTo(cities.stream().map(City::name).collect(Collectors.toSet()));
         assertThat(condition.getReligion()).isEqualTo(religion.name());
         assertThat(condition.getMemberGrade()).isNull();
         assertThat(condition.getJoinedAfter()).isNull();
@@ -97,7 +97,7 @@ class IntroductionSearchConditionTest {
         // then
         assertCommonFields(condition);
         assertThat(condition.getHobbyIds()).isEqualTo(hobbyIds);
-        assertThat(condition.getRegions()).isEqualTo(regions.stream().map(Region::name).collect(Collectors.toSet()));
+        assertThat(condition.getCities()).isEqualTo(cities.stream().map(City::name).collect(Collectors.toSet()));
         assertThat(condition.getReligion()).isEqualTo(memberReligion.name());
         assertThat(condition.getMemberGrade()).isNull();
         assertThat(condition.getJoinedAfter()).isNull();
@@ -108,15 +108,15 @@ class IntroductionSearchConditionTest {
     void ofRegionTest() {
         // given
         MemberIdeal ideal = getMockedMemberIdeal();
-        Region memberRegion = Region.DAEJEON;
+        City memberRegion = City.DAEJEON;
 
         // when
-        IntroductionSearchCondition condition = IntroductionSearchCondition.ofRegion(excludedIds, ideal, gender, memberRegion);
+        IntroductionSearchCondition condition = IntroductionSearchCondition.ofCity(excludedIds, ideal, gender, memberRegion);
 
         // then
         assertCommonFields(condition);
         assertThat(condition.getHobbyIds()).isEqualTo(hobbyIds);
-        assertThat(condition.getRegions()).isEqualTo(Set.of(memberRegion.name()));
+        assertThat(condition.getCities()).isEqualTo(Set.of(memberRegion.name()));
         assertThat(condition.getReligion()).isEqualTo(religion.name());
         assertThat(condition.getMemberGrade()).isNull();
         assertThat(condition.getJoinedAfter()).isNull();
@@ -135,7 +135,7 @@ class IntroductionSearchConditionTest {
         // then
         assertCommonFields(condition);
         assertThat(condition.getHobbyIds()).isEqualTo(hobbyIds);
-        assertThat(condition.getRegions()).isEqualTo(regions.stream().map(Region::name).collect(Collectors.toSet()));
+        assertThat(condition.getCities()).isEqualTo(cities.stream().map(City::name).collect(Collectors.toSet()));
         assertThat(condition.getReligion()).isEqualTo(religion.name());
         assertThat(condition.getMemberGrade()).isNull();
         assertThat(condition.getJoinedAfter()).isEqualTo(joinedAfter);

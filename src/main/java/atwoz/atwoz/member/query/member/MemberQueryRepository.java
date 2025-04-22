@@ -45,6 +45,7 @@ public class MemberQueryRepository {
                                         list(hobby.name),
                                         member.profile.mbti.stringValue(),
                                         member.profile.region.city.stringValue(),
+                                        member.profile.region.district.stringValue(),
                                         member.profile.smokingStatus.stringValue(),
                                         member.profile.drinkingStatus.stringValue(),
                                         member.profile.highestEducation.stringValue(),
