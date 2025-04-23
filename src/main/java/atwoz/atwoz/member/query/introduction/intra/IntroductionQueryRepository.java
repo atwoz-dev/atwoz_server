@@ -80,7 +80,7 @@ public class IntroductionQueryRepository {
                 .leftJoin(hobby).on(hobby.id.in(member.profile.hobbyIds))
                 .leftJoin(memberIntroduction).on(memberIntroduction.memberId.eq(memberId))
                 .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.isTrue()))
-                .leftJoin(like).on(like.senderId.eq(memberId))
+                .leftJoin(like).on(like.senderId.eq(memberId).and(like.receiverId.eq(member.id)))
                 .where(member.id.in(memberIds))
                 .orderBy(member.id.desc())
                 .transform(GroupBy.groupBy(member.id).as(
