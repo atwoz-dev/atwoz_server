@@ -10,6 +10,7 @@ public record MemberIntroductionProfileQueryResult(
         List<String> hobbies,
         String religion,
         String mbti,
+        String likeLevel,
         boolean isIntroduced
 ) {
     @QueryProjection
