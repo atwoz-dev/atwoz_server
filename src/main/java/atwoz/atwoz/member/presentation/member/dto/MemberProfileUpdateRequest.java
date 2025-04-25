@@ -8,7 +8,7 @@ public record MemberProfileUpdateRequest(
         Integer yearOfBirth,
         Integer height,
         Long jobId,
-        String region,
+        String district,
         String highestEducation,
         String mbti,
         String smokingStatus,

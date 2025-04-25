@@ -6,10 +6,7 @@ import atwoz.atwoz.member.command.application.introduction.exception.MemberIdeal
 import atwoz.atwoz.member.command.domain.introduction.MemberIdeal;
 import atwoz.atwoz.member.command.domain.introduction.MemberIdealCommandRepository;
 import atwoz.atwoz.member.command.domain.introduction.vo.AgeRange;
-import atwoz.atwoz.member.command.domain.member.DrinkingStatus;
-import atwoz.atwoz.member.command.domain.member.Region;
-import atwoz.atwoz.member.command.domain.member.Religion;
-import atwoz.atwoz.member.command.domain.member.SmokingStatus;
+import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.exception.InvalidHobbyIdException;
 import atwoz.atwoz.member.presentation.introduction.dto.MemberIdealUpdateRequest;
 import lombok.RequiredArgsConstructor;
@@ -39,11 +36,11 @@ public class MemberIdealService {
         validateHobbyIds(request.hobbyIds());
         MemberIdeal memberIdeal = getMemberIdealByMemberId(memberId);
         AgeRange ageRange = AgeRange.of(request.minAge(), request.maxAge());
-        Set<Region> regions = request.regions().stream().map(Region::from).collect(Collectors.toSet());
+        Set<City> cities = request.cities().stream().map(City::from).collect(Collectors.toSet());
         Religion religion = Religion.from(request.religion());
         SmokingStatus smokingStatus = SmokingStatus.from(request.smokingStatus());
         DrinkingStatus drinkingStatus = DrinkingStatus.from(request.drinkingStatus());
-        memberIdeal.update(ageRange, request.hobbyIds(), regions, religion, smokingStatus, drinkingStatus);
+        memberIdeal.update(ageRange, request.hobbyIds(), cities, religion, smokingStatus, drinkingStatus);
     }
 
     private MemberIdeal getMemberIdealByMemberId(long memberId) {

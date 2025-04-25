@@ -139,7 +139,7 @@ class MemberProfileServiceTest {
 
         MemberProfileUpdateRequest request = new MemberProfileUpdateRequest(
                 "nickname", "MALE", Calendar.getInstance().get(Calendar.YEAR) - 19, 180,
-                jobId, "Daejeon", "OTHER", "ENFJ",
+                jobId, "DONG_GU_DAEJEON", "OTHER", "ENFJ",
                 "DAILY", "QUIT", "BUDDHIST", hobbyIds
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
@@ -157,7 +157,7 @@ class MemberProfileServiceTest {
         assertThat(existingMember.getProfile().getJobId()).isEqualTo(jobId);
         assertThat(existingMember.getProfile().getHobbyIds().size()).isEqualTo(hobbies.size());
         assertThat(existingMember.getProfile().getHeight()).isEqualTo(180);
-        assertThat(existingMember.getProfile().getRegion()).isEqualTo(Region.DAEJEON);
+        assertThat(existingMember.getProfile().getRegion().getCity()).isEqualTo(City.DAEJEON);
         assertThat(existingMember.getProfile().getReligion()).isEqualTo(Religion.BUDDHIST);
     }
 

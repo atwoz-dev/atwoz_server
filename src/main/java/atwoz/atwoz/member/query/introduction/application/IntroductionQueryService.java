@@ -102,7 +102,7 @@ public class IntroductionQueryService {
                 IntroductionCacheKeyPrefix.SAME_REGION,
                 null,
                 (excluded, ideal, member, unused) ->
-                        IntroductionSearchCondition.ofRegion(excluded, ideal, member.getGender().getOpposite(), member.getProfile().getRegion())
+                        IntroductionSearchCondition.ofCity(excluded, ideal, member.getGender().getOpposite(), member.getProfile().getRegion().getCity())
         );
     }
 
