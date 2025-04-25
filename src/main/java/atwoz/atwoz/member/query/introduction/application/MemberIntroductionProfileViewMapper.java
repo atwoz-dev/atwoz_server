@@ -44,6 +44,7 @@ public class MemberIntroductionProfileViewMapper {
                         result.profileImageUrl(),
                         tagExtractor.apply(result),
                         interviewAnswerMap.get(result.memberId()),
+                        result.likeLevel(),
                         result.isIntroduced()
                 ))
                 .collect(Collectors.toList());

@@ -17,11 +17,8 @@ public record MemberIdealUpdateRequest(
         Integer maxAge,
         @NotNull(message = "지역을 입력해주세요.")
         Set<String> cities,
-        @NotNull(message = "종교를 입력해주세요.")
         String religion,
-        @NotNull(message = "흡연 여부를 입력해주세요.")
         String smokingStatus,
-        @NotNull(message = "음주 여부를 입력해주세요.")
         String drinkingStatus,
         @NotNull(message = "취미를 입력해주세요.")
         Set<Long> hobbyIds

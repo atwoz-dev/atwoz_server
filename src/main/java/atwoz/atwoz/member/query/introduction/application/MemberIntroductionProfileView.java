@@ -7,6 +7,7 @@ public record MemberIntroductionProfileView(
         String profileImageUrl,
         List<String> tags,
         String interviewAnswerContent,
+        String likeLevel,
         boolean isIntroduced
 ) {
 }

@@ -3,6 +3,8 @@ package atwoz.atwoz.member.query.introduction.intra;
 import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.admin.command.domain.hobby.Hobby;
 import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.like.command.domain.like.Like;
+import atwoz.atwoz.like.command.domain.like.LikeLevel;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
 import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
@@ -219,6 +221,10 @@ class IntroductionQueryRepositoryTest {
             entityManager.persist(primaryProfileImage);
             entityManager.persist(nonPrimaryProfileImage);
 
+            Like like = Like.of(me.getId(), introductionTargetMember.getId(), LikeLevel.INTEREST);
+            entityManager.persist(like);
+            entityManager.flush();
+
             if (fieldName.equals("introduced")) {
                 MemberIntroduction memberIntroduction = MemberIntroduction.of(me.getId(), introductionTargetMember.getId());
                 entityManager.persist(memberIntroduction);
@@ -247,6 +253,7 @@ class IntroductionQueryRepositoryTest {
             assertThat(memberIntroductionProfileQueryResult.hobbies()).containsExactlyInAnyOrder(hobby3.getName(), hobby4.getName());
             assertThat(memberIntroductionProfileQueryResult.religion()).isEqualTo(introductionTargetMember.getProfile().getReligion().name());
             assertThat(memberIntroductionProfileQueryResult.mbti()).isEqualTo(introductionTargetMember.getProfile().getMbti().name());
+            assertThat(memberIntroductionProfileQueryResult.likeLevel()).isEqualTo(like.getLikeLevel().name());
             if (fieldName.equals("introduced")) {
                 assertThat(memberIntroductionProfileQueryResult.isIntroduced()).isTrue();
             } else {

@@ -16,6 +16,7 @@ class MemberIntroductionProfileViewMapperTest {
     private final List<String> expectedHobbies = List.of("drawing", "cycling");
     private final String expectedReligion = "Buddhist";
     private final String expectedMbti = "INFJ";
+    private final String expectedLikeLevel = "INTEREST";
     private final String expectedInterviewAnswer = "Third Answer";
     private final boolean expectedIsIntroduced = false;
 
@@ -84,6 +85,7 @@ class MemberIntroductionProfileViewMapperTest {
                 expectedHobbies,
                 expectedReligion,
                 expectedMbti,
+                expectedLikeLevel,
                 expectedIsIntroduced
         );
 
@@ -107,6 +109,7 @@ class MemberIntroductionProfileViewMapperTest {
         List<String> tags = view.tags();
         assertThat(tags).containsExactlyElementsOf(expectedTags);
         assertThat(view.interviewAnswerContent()).isEqualTo(expectedInterviewAnswer);
+        assertThat(view.likeLevel()).isEqualTo(expectedLikeLevel);
         assertThat(view.isIntroduced()).isEqualTo(expectedIsIntroduced);
     }
 }
