@@ -38,8 +38,7 @@ public class MemberProfile {
     @Column(columnDefinition = "varchar(50)")
     private Mbti mbti;
 
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(50)")
+    @Embedded
     private Region region;
 
     @Enumerated(EnumType.STRING)

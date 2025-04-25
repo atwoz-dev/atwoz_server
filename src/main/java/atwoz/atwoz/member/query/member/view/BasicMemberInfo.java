@@ -12,7 +12,7 @@ public record BasicMemberInfo(
         String job,
         List<String> hobbies,
         String mbti,
-        String region,
+        String city,
         String smokingStatus,
         String drinkingStatus,
         String highestEducation,

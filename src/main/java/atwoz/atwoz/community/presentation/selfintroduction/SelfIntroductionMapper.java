@@ -8,7 +8,7 @@ import atwoz.atwoz.member.query.member.AgeConverter;
 public class SelfIntroductionMapper {
     static SelfIntroductionSearchCondition toSelfIntroductionSearchCondition(SelfIntroductionSearchRequest selfIntroductionSearchRequest) {
         return new SelfIntroductionSearchCondition(
-                selfIntroductionSearchRequest.preferredRegions(),
+                selfIntroductionSearchRequest.preferredCities(),
                 AgeConverter.toYearOfBirth(selfIntroductionSearchRequest.toAge()),
                 AgeConverter.toYearOfBirth(selfIntroductionSearchRequest.fromAge()),
                 Gender.from(selfIntroductionSearchRequest.gender())

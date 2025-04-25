@@ -15,9 +15,10 @@ public record SelfIntroductionView(
                                 String nickname,
                                 Integer yearOfBirth,
                                 String profileImageUrl,
-                                String region,
+                                String city,
+                                String district,
                                 String mbti,
                                 List<String> hobbies, String like, String title, String content) {
-        this(new MemberBasicInfo(memberId, nickname, yearOfBirth, profileImageUrl, region, mbti, hobbies), like, title, content);
+        this(new MemberBasicInfo(memberId, nickname, yearOfBirth, profileImageUrl, city, district, mbti, hobbies), like, title, content);
     }
 }

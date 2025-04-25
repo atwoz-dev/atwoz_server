@@ -1,10 +1,7 @@
 package atwoz.atwoz.member.command.domain.introduction;
 
 import atwoz.atwoz.member.command.domain.introduction.vo.AgeRange;
-import atwoz.atwoz.member.command.domain.member.DrinkingStatus;
-import atwoz.atwoz.member.command.domain.member.Region;
-import atwoz.atwoz.member.command.domain.member.Religion;
-import atwoz.atwoz.member.command.domain.member.SmokingStatus;
+import atwoz.atwoz.member.command.domain.member.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -47,7 +44,7 @@ class MemberIdealTest {
             assertThat(memberIdeal.getMemberId()).isEqualTo(memberId);
             assertThat(memberIdeal.getAgeRange()).isEqualTo(AgeRange.init());
             assertThat(memberIdeal.getHobbyIds()).isEmpty();
-            assertThat(memberIdeal.getRegions()).isEmpty();
+            assertThat(memberIdeal.getCities()).isEmpty();
             assertThat(memberIdeal.getReligion()).isNull();
             assertThat(memberIdeal.getSmokingStatus()).isNull();
             assertThat(memberIdeal.getDrinkingStatus()).isNull();
@@ -60,7 +57,7 @@ class MemberIdealTest {
 
         private Set<Long> hobbyIds;
         private AgeRange ageRange;
-        private Set<Region> regions;
+        private Set<City> cities;
         private Religion religion;
         private SmokingStatus smokingStatus;
         private DrinkingStatus drinkingStatus;
@@ -68,7 +65,7 @@ class MemberIdealTest {
         @BeforeEach
         void setUp() {
             ageRange = AgeRange.of(20, 30);
-            regions = Set.of(Region.SEOUL);
+            cities = Set.of(City.SEOUL);
             religion = Religion.CHRISTIAN;
             smokingStatus = SmokingStatus.VAPE;
             drinkingStatus = DrinkingStatus.SOCIAL;
@@ -83,7 +80,7 @@ class MemberIdealTest {
             ageRange = null;
 
             // when, then
-            assertThatThrownBy(() -> memberIdeal.update(ageRange, hobbyIds, regions, religion, smokingStatus, drinkingStatus))
+            assertThatThrownBy(() -> memberIdeal.update(ageRange, hobbyIds, cities, religion, smokingStatus, drinkingStatus))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -95,7 +92,7 @@ class MemberIdealTest {
             hobbyIds = null;
 
             // when, then
-            assertThatThrownBy(() -> memberIdeal.update(ageRange, hobbyIds, regions, religion, smokingStatus, drinkingStatus))
+            assertThatThrownBy(() -> memberIdeal.update(ageRange, hobbyIds, cities, religion, smokingStatus, drinkingStatus))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -104,10 +101,10 @@ class MemberIdealTest {
         void throwsExceptionWhenRegionsIsNull() {
             // given
             MemberIdeal memberIdeal = MemberIdeal.init(1L);
-            regions = null;
+            cities = null;
 
             // when, then
-            assertThatThrownBy(() -> memberIdeal.update(ageRange, hobbyIds, regions, religion, smokingStatus, drinkingStatus))
+            assertThatThrownBy(() -> memberIdeal.update(ageRange, hobbyIds, cities, religion, smokingStatus, drinkingStatus))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -128,12 +125,12 @@ class MemberIdealTest {
             }
 
             // when
-            memberIdeal.update(ageRange, hobbyIds, regions, religion, smokingStatus, drinkingStatus);
+            memberIdeal.update(ageRange, hobbyIds, cities, religion, smokingStatus, drinkingStatus);
 
             // then
             assertThat(memberIdeal.getAgeRange()).isEqualTo(ageRange);
             assertThat(memberIdeal.getHobbyIds()).isEqualTo(hobbyIds);
-            assertThat(memberIdeal.getRegions()).isEqualTo(regions);
+            assertThat(memberIdeal.getCities()).isEqualTo(cities);
             assertThat(memberIdeal.getReligion()).isEqualTo(religion);
             assertThat(memberIdeal.getSmokingStatus()).isEqualTo(smokingStatus);
             assertThat(memberIdeal.getDrinkingStatus()).isEqualTo(drinkingStatus);

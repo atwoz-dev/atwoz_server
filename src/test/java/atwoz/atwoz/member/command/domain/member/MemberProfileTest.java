@@ -1,8 +1,8 @@
 package atwoz.atwoz.member.command.domain.member;
 
-import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;
+import atwoz.atwoz.member.command.domain.member.vo.Region;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ class MemberProfileTest {
                 .gender(Gender.MALE)
                 .nickname(Nickname.from("Hello"))
                 .hobbyIds(Set.of())
-                .region(Region.SEOUL)
+                .region(Region.of(District.GANGBUK_GU))
                 .build();
 
         // When & Then
@@ -73,7 +73,7 @@ class MemberProfileTest {
                 .gender(Gender.MALE)
                 .nickname(Nickname.from("Hello"))
                 .hobbyIds(Set.of(2L))
-                .region(Region.SEOUL)
+                .region(Region.of(District.GANGBUK_GU))
                 .build();
 
         // When & Then

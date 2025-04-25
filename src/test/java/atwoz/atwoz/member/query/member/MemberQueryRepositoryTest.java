@@ -17,6 +17,7 @@ import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;
+import atwoz.atwoz.member.command.domain.member.vo.Region;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.query.member.view.*;
@@ -77,7 +78,7 @@ public class MemberQueryRepositoryTest {
                     .height(20)
                     .highestEducation(HighestEducation.ASSOCIATE)
                     .nickname(Nickname.from("nickname"))
-                    .region(Region.DAEJEON)
+                    .region(Region.of(District.DONG_GU_DAEJEON))
                     .gender(Gender.MALE)
                     .smokingStatus(SmokingStatus.DAILY)
                     .mbti(Mbti.ENFJ)
@@ -103,7 +104,8 @@ public class MemberQueryRepositoryTest {
             Assertions.assertThat(memberProfileView.job()).isEqualTo(job.getName());
             Assertions.assertThat(memberProfileView.hobbies().size()).isEqualTo(savedMemberProfile.getHobbyIds().size());
             Assertions.assertThat(memberProfileView.nickname()).isEqualTo(savedMemberProfile.getNickname().getValue());
-            Assertions.assertThat(memberProfileView.region()).isEqualTo(savedMemberProfile.getRegion().toString());
+            Assertions.assertThat(memberProfileView.city()).isEqualTo(savedMemberProfile.getRegion().getCity().toString());
+            Assertions.assertThat(memberProfileView.district()).isEqualTo(savedMemberProfile.getRegion().getDistrict().toString());
             Assertions.assertThat(memberProfileView.gender()).isEqualTo(savedMemberProfile.getGender().toString());
             Assertions.assertThat(memberProfileView.smokingStatus()).isEqualTo(savedMemberProfile.getSmokingStatus().toString());
             Assertions.assertThat(memberProfileView.mbti()).isEqualTo(savedMemberProfile.getMbti().toString());
@@ -183,7 +185,7 @@ public class MemberQueryRepositoryTest {
                     .height(20)
                     .highestEducation(HighestEducation.ASSOCIATE)
                     .nickname(Nickname.from("nickname"))
-                    .region(Region.DAEJEON)
+                    .region(Region.of(District.DONG_GU_DAEJEON))
                     .gender(Gender.MALE)
                     .smokingStatus(SmokingStatus.DAILY)
                     .mbti(Mbti.ENFJ)
@@ -417,7 +419,7 @@ public class MemberQueryRepositoryTest {
             Assertions.assertThat(basicMemberInfo.job()).isEqualTo(jobName);
             Assertions.assertThat(basicMemberInfo.hobbies().size()).isEqualTo(2);
             Assertions.assertThat(basicMemberInfo.mbti()).isEqualTo(otherMemberProfile.getMbti().toString());
-            Assertions.assertThat(basicMemberInfo.region()).isEqualTo(otherMemberProfile.getRegion().toString());
+            Assertions.assertThat(basicMemberInfo.city()).isEqualTo(otherMemberProfile.getRegion().getCity().toString());
             Assertions.assertThat(basicMemberInfo.smokingStatus()).isEqualTo(otherMemberProfile.getSmokingStatus().toString());
             Assertions.assertThat(basicMemberInfo.drinkingStatus()).isEqualTo(otherMemberProfile.getDrinkingStatus().toString());
             Assertions.assertThat(basicMemberInfo.highestEducation()).isEqualTo(otherMemberProfile.getHighestEducation().toString());

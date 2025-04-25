@@ -10,12 +10,10 @@ import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionSummary
 import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionView;
 import atwoz.atwoz.like.command.domain.like.Like;
 import atwoz.atwoz.like.command.domain.like.LikeLevel;
-import atwoz.atwoz.member.command.domain.member.Gender;
-import atwoz.atwoz.member.command.domain.member.Mbti;
-import atwoz.atwoz.member.command.domain.member.Member;
-import atwoz.atwoz.member.command.domain.member.Region;
+import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;
+import atwoz.atwoz.member.command.domain.member.vo.Region;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.query.member.AgeConverter;
@@ -27,8 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,13 +65,13 @@ public class SelfIntroductionQueryRepositoryTest {
 
             MemberProfile maleMemberProfile = MemberProfile.builder()
                     .gender(Gender.MALE)
-                    .region(Region.SEOUL)
+                    .region(Region.of(District.GANGBUK_GU))
                     .yearOfBirth(AgeConverter.toYearOfBirth(25))
                     .build();
 
             MemberProfile femaleMemberProfile = MemberProfile.builder()
                     .gender(Gender.FEMALE)
-                    .region(Region.DAEJEON)
+                    .region(Region.of(District.DONG_GU_DAEJEON))
                     .yearOfBirth(AgeConverter.toYearOfBirth(35))
                     .build();
 
@@ -247,9 +243,9 @@ public class SelfIntroductionQueryRepositoryTest {
         @DisplayName("검색 조건 중 지역을 명시한 경우, 해당 지역 출신의 멤벅 작성한 글을 불러온다.")
         void getSelfIntroductionByRegionCondition() {
             // Given
-            Region region = maleMember.getProfile().getRegion();
+            City city = maleMember.getProfile().getRegion().getCity();
             SelfIntroductionSearchCondition searchCondition = new SelfIntroductionSearchCondition(
-                    List.of(region), null, null, null
+                    List.of(city), null, null, null
             );
 
             List<SelfIntroduction> maleSelfIntroduction = selfIntroductions.stream().filter(s -> s.getMemberId() == maleMember.getId()).toList();
@@ -273,7 +269,7 @@ public class SelfIntroductionQueryRepositoryTest {
         void findSelfIntroductions() {
             // Given
             SelfIntroductionSearchCondition searchCondition = new SelfIntroductionSearchCondition(
-                    List.of(Region.DAEJEON, Region.SEOUL), femaleMember.getProfile().getYearOfBirth().getValue(), maleMember.getProfile().getYearOfBirth().getValue(), maleMember.getProfile().getGender()
+                    List.of(City.DAEJEON, City.SEOUL), femaleMember.getProfile().getYearOfBirth().getValue(), maleMember.getProfile().getYearOfBirth().getValue(), maleMember.getProfile().getGender()
             );
             List<SelfIntroduction> maleSelfIntroduction = selfIntroductions.stream().filter(s -> s.getMemberId() == maleMember.getId()).toList();
 
@@ -327,7 +323,7 @@ public class SelfIntroductionQueryRepositoryTest {
 
             MemberProfile memberProfile = MemberProfile.builder()
                     .mbti(Mbti.ENFJ)
-                    .region(Region.SEOUL)
+                    .region(Region.of(District.GANGBUK_GU))
                     .nickname(Nickname.from("닉네임"))
                     .yearOfBirth(AgeConverter.toYearOfBirth(25))
                     .hobbyIds(Set.of(hobby.getId(), hobby2.getId()))
@@ -399,7 +395,8 @@ public class SelfIntroductionQueryRepositoryTest {
             Assertions.assertThat(view.memberBasicInfo().age()).isEqualTo(AgeConverter.toAge(targetMember.getProfile().getYearOfBirth().getValue()));
             Assertions.assertThat(view.memberBasicInfo().mbti()).isEqualTo(targetMember.getProfile().getMbti().toString());
             Assertions.assertThat(view.memberBasicInfo().nickname()).isEqualTo(targetMember.getProfile().getNickname().getValue());
-            Assertions.assertThat(view.memberBasicInfo().region()).isEqualTo(targetMember.getProfile().getRegion().toString());
+            Assertions.assertThat(view.memberBasicInfo().city()).isEqualTo(targetMember.getProfile().getRegion().getCity().toString());
+            Assertions.assertThat(view.memberBasicInfo().district()).isEqualTo(targetMember.getProfile().getRegion().getDistrict().toString());
             Assertions.assertThat(view.memberBasicInfo().hobbies().size()).isEqualTo(targetMember.getProfile().getHobbyIds().size());
             Assertions.assertThat(view.memberBasicInfo().profileImageUrl()).isEqualTo(profileImage.getUrl());
         }

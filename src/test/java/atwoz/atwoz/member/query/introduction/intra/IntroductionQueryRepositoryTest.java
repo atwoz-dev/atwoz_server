@@ -6,10 +6,14 @@ import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
 import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
+import atwoz.atwoz.member.command.domain.member.vo.Region;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.query.introduction.application.IntroductionSearchCondition;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedStatic;
@@ -25,7 +29,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,7 +46,7 @@ class IntroductionQueryRepositoryTest {
     @DisplayName("findAllIntroductionMemberId 메서드 테스트")
     class FindAllIntroductionMemberIdTest {
         @ParameterizedTest
-        @ValueSource(strings = {"excludedIds", "minAge", "maxAge", "hobbyIds", "religion", "regions", "smokingStatus", "drinkingStatus", "memberGrade", "gender", "joinedAfter", "null"})
+        @ValueSource(strings = {"excludedIds", "minAge", "maxAge", "hobbyIds", "religion", "cities", "smokingStatus", "drinkingStatus", "memberGrade", "gender", "joinedAfter", "null"})
         @DisplayName("search condition에 대한 검증")
         void findIntroductionMemberIdsWhenSuccess(String fieldName) {
             // given
@@ -64,7 +67,7 @@ class IntroductionQueryRepositoryTest {
                     .yearOfBirth(currentYear - 19) // 20살
                     .hobbyIds(Set.of(hobby1.getId(), hobby2.getId()))
                     .religion(Religion.BUDDHIST)
-                    .region(Region.DAEJEON)
+                    .region(Region.of(District.DONG_GU_DAEJEON))
                     .smokingStatus(SmokingStatus.DAILY)
                     .drinkingStatus(DrinkingStatus.SOCIAL)
                     .gender(Gender.MALE)
@@ -79,7 +82,7 @@ class IntroductionQueryRepositoryTest {
                     .yearOfBirth(currentYear - 39) // 40살
                     .hobbyIds(Set.of(hobby3.getId(), hobby4.getId()))
                     .religion(Religion.NONE)
-                    .region(Region.SEOUL)
+                    .region(atwoz.atwoz.member.command.domain.member.vo.Region.of(District.GANGNAM_GU))
                     .smokingStatus(SmokingStatus.NONE)
                     .drinkingStatus(DrinkingStatus.NONE)
                     .gender(Gender.FEMALE)
@@ -88,7 +91,6 @@ class IntroductionQueryRepositoryTest {
 
             entityManager.persist(member2);
             entityManager.flush();
-
 
 
             IntroductionSearchCondition condition = mock(IntroductionSearchCondition.class);
@@ -100,11 +102,11 @@ class IntroductionQueryRepositoryTest {
 
             when(condition.getHobbyIds()).thenReturn(fieldName.equals("hobbyIds") ? member1.getProfile().getHobbyIds() : Set.of());
             when(condition.getReligion()).thenReturn(fieldName.equals("religion") ? member1.getProfile().getReligion().name() : null);
-            when(condition.getRegions()).thenReturn(fieldName.equals("regions") ? Set.of(member1.getProfile().getRegion().name()) : Set.of());
+            when(condition.getCities()).thenReturn(fieldName.equals("cities") ? Set.of(member1.getProfile().getRegion().getCity().name()) : Set.of());
             when(condition.getSmokingStatus()).thenReturn(fieldName.equals("smokingStatus") ? member1.getProfile().getSmokingStatus().name() : null);
             when(condition.getDrinkingStatus()).thenReturn(fieldName.equals("drinkingStatus") ? member1.getProfile().getDrinkingStatus().name() : null);
             when(condition.getMemberGrade()).thenReturn(fieldName.equals("memberGrade") ? Grade.DIAMOND.name() : null);
-            when(condition.getGender()).thenReturn(fieldName.equals("gender")? member1.getProfile().getGender().name() : null);
+            when(condition.getGender()).thenReturn(fieldName.equals("gender") ? member1.getProfile().getGender().name() : null);
             when(condition.getJoinedAfter()).thenReturn(fieldName.equals("joinedAfter") ? LocalDateTime.now().plusDays(1) : null);
 
             // when
@@ -121,7 +123,7 @@ class IntroductionQueryRepositoryTest {
                 assertThat(result).containsExactly(member1.getId());
             } else if (fieldName.equals("religion")) {
                 assertThat(result).containsExactly(member1.getId());
-            } else if (fieldName.equals("regions")) {
+            } else if (fieldName.equals("cities")) {
                 assertThat(result).containsExactly(member1.getId());
             } else if (fieldName.equals("smokingStatus")) {
                 assertThat(result).containsExactly(member1.getId());
@@ -176,7 +178,7 @@ class IntroductionQueryRepositoryTest {
                     .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
                     .hobbyIds(Set.of(hobby1.getId(), hobby2.getId()))
                     .religion(Religion.BUDDHIST)
-                    .region(Region.DAEJEON)
+                    .region(Region.of(District.DONG_GU_DAEJEON))
                     .smokingStatus(SmokingStatus.DAILY)
                     .drinkingStatus(DrinkingStatus.SOCIAL)
                     .build();
@@ -190,7 +192,7 @@ class IntroductionQueryRepositoryTest {
                     .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
                     .hobbyIds(Set.of(hobby3.getId(), hobby4.getId()))
                     .religion(Religion.NONE)
-                    .region(Region.SEOUL)
+                    .region(Region.of(District.GANGBUK_GU))
                     .smokingStatus(SmokingStatus.NONE)
                     .drinkingStatus(DrinkingStatus.NONE)
                     .mbti(Mbti.ISTP)

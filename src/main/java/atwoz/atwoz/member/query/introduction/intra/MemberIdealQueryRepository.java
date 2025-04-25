@@ -1,6 +1,6 @@
 package atwoz.atwoz.member.query.introduction.intra;
 
-import atwoz.atwoz.member.command.domain.member.Region;
+import atwoz.atwoz.member.command.domain.member.City;
 import atwoz.atwoz.member.query.introduction.application.MemberIdealView;
 import atwoz.atwoz.member.query.introduction.application.QMemberIdealView;
 import com.querydsl.core.types.dsl.EnumPath;
@@ -22,20 +22,20 @@ public class MemberIdealQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     public Optional<MemberIdealView> findMemberIdealByMemberId(long memberId) {
-        EnumPath<Region> region = enumPath(Region.class, "regionAlias");
+        EnumPath<City> city = enumPath(City.class, "cityAlias");
 
         MemberIdealView memberIdealView = queryFactory
                 .from(memberIdeal)
                 .where(memberIdeal.memberId.eq(memberId))
                 .leftJoin(hobby).on(hobby.id.in(memberIdeal.hobbyIds))
-                .leftJoin(memberIdeal.regions, region)
+                .leftJoin(memberIdeal.cities, city)
                 .transform(
                         groupBy(memberIdeal.memberId).as(
                                 new QMemberIdealView(
                                         memberIdeal.ageRange.minAge,
                                         memberIdeal.ageRange.maxAge,
                                         set(hobby.name),
-                                        set(region.stringValue()),
+                                        set(city.stringValue()),
                                         memberIdeal.religion.stringValue(),
                                         memberIdeal.smokingStatus.stringValue(),
                                         memberIdeal.drinkingStatus.stringValue()

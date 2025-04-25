@@ -58,7 +58,7 @@ public class IntroductionQueryRepository {
                 .where(
                         idsNotIn(condition.getExcludedMemberIds()),
                         ageBetween(condition.getMinAge(), condition.getMaxAge()),
-                        regionIn(condition.getRegions()),
+                        cityIn(condition.getCities()),
                         religionEq(condition.getReligion()),
                         smokingStatusEq(condition.getSmokingStatus()),
                         drinkingStatusEq(condition.getDrinkingStatus()),
@@ -129,11 +129,11 @@ public class IntroductionQueryRepository {
         return member.profile.yearOfBirth.value.between(currentYear - maxAge + 1, currentYear - minAge + 1);
     }
 
-    private BooleanExpression regionIn(Set<String> regions) {
-        if (regions == null || regions.isEmpty()) {
+    private BooleanExpression cityIn(Set<String> cities) {
+        if (cities == null || cities.isEmpty()) {
             return null;
         }
-        return member.profile.region.stringValue().in(regions);
+        return member.profile.region.city.stringValue().in(cities);
     }
 
     private BooleanExpression religionEq(String religion) {

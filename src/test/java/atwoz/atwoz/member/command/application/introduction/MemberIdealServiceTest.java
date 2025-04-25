@@ -6,10 +6,7 @@ import atwoz.atwoz.member.command.application.introduction.exception.MemberIdeal
 import atwoz.atwoz.member.command.domain.introduction.MemberIdeal;
 import atwoz.atwoz.member.command.domain.introduction.MemberIdealCommandRepository;
 import atwoz.atwoz.member.command.domain.introduction.vo.AgeRange;
-import atwoz.atwoz.member.command.domain.member.DrinkingStatus;
-import atwoz.atwoz.member.command.domain.member.Region;
-import atwoz.atwoz.member.command.domain.member.Religion;
-import atwoz.atwoz.member.command.domain.member.SmokingStatus;
+import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.exception.InvalidHobbyIdException;
 import atwoz.atwoz.member.presentation.introduction.dto.MemberIdealUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +43,7 @@ class MemberIdealServiceTest {
     class UpdateTest {
         private Set<Long> hobbyIds;
         private AgeRange ageRange;
-        private Set<Region> regions;
+        private Set<City> cities;
         private Religion religion;
         private SmokingStatus smokingStatus;
         private DrinkingStatus drinkingStatus;
@@ -55,7 +52,7 @@ class MemberIdealServiceTest {
         @BeforeEach
         void setUp() {
             ageRange = AgeRange.of(20, 30);
-            regions = Set.of(Region.SEOUL);
+            cities = Set.of(City.SEOUL);
             religion = Religion.CHRISTIAN;
             smokingStatus = SmokingStatus.VAPE;
             drinkingStatus = DrinkingStatus.SOCIAL;
@@ -63,7 +60,7 @@ class MemberIdealServiceTest {
             request = new MemberIdealUpdateRequest(
                     ageRange.getMinAge(),
                     ageRange.getMaxAge(),
-                    regions.stream().map(Region::name).collect(Collectors.toSet()),
+                    cities.stream().map(City::name).collect(Collectors.toSet()),
                     religion.name(),
                     smokingStatus.name(),
                     drinkingStatus.name(),
@@ -108,7 +105,7 @@ class MemberIdealServiceTest {
             memberIdealService.update(request, memberId);
 
             // then
-            verify(memberIdeal).update(ageRange, hobbyIds, regions, religion, smokingStatus, drinkingStatus);
+            verify(memberIdeal).update(ageRange, hobbyIds, cities, religion, smokingStatus, drinkingStatus);
         }
     }
 
