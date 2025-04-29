@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-import static atwoz.atwoz.admin.command.domain.hobby.QHobby.hobby;
 import static atwoz.atwoz.member.command.domain.introduction.QMemberIdeal.memberIdeal;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.set;
