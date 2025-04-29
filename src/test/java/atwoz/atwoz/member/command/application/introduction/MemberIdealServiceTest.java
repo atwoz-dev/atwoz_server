@@ -1,6 +1,5 @@
 package atwoz.atwoz.member.command.application.introduction;
 
-import atwoz.atwoz.admin.command.domain.hobby.HobbyCommandRepository;
 import atwoz.atwoz.member.command.application.introduction.exception.MemberIdealAlreadyExistsException;
 import atwoz.atwoz.member.command.application.introduction.exception.MemberIdealNotFoundException;
 import atwoz.atwoz.member.command.domain.introduction.MemberIdeal;
@@ -35,13 +34,11 @@ class MemberIdealServiceTest {
     @Mock
     private MemberIdealCommandRepository memberIdealCommandRepository;
 
-    @Mock
-    private HobbyCommandRepository hobbyCommandRepository;
 
     @Nested
     @DisplayName("update 메서드 테스트")
     class UpdateTest {
-        private Set<Long> hobbyIds;
+        private Set<Hobby> hobbies;
         private AgeRange ageRange;
         private Set<City> cities;
         private Religion religion;
@@ -56,7 +53,7 @@ class MemberIdealServiceTest {
             religion = Religion.CHRISTIAN;
             smokingStatus = SmokingStatus.VAPE;
             drinkingStatus = DrinkingStatus.SOCIAL;
-            hobbyIds = Set.of(1L, 2L);
+            hobbies = Set.of(Hobby.DANCE, Hobby.WINE);
             request = new MemberIdealUpdateRequest(
                     ageRange.getMinAge(),
                     ageRange.getMaxAge(),
@@ -64,28 +61,16 @@ class MemberIdealServiceTest {
                     religion.name(),
                     smokingStatus.name(),
                     drinkingStatus.name(),
-                    hobbyIds
+                    hobbies.stream().map(Hobby::name).collect(Collectors.toSet())
             );
         }
 
-        @Test
-        @DisplayName("hobbyIds가 db에 존재하지 않는 경우 예외를 던진다.")
-        void throwExceptionWhenHobbyIdsIsNotExists() {
-            // given
-            long memberId = 1L;
-            when(hobbyCommandRepository.countAllByIdIsIn(hobbyIds)).thenReturn(1L);
-
-            // when && then
-            assertThatThrownBy(() -> memberIdealService.update(request, memberId))
-                    .isInstanceOf(InvalidHobbyIdException.class);
-        }
 
         @Test
         @DisplayName("memberIdeal이 존재하지 않는 경우 예외를 던진다.")
         void throwExceptionWhenMemberIdealIsNotExists() {
             // given
             long memberId = 1L;
-            when(hobbyCommandRepository.countAllByIdIsIn(hobbyIds)).thenReturn(((long) hobbyIds.size()));
             when(memberIdealCommandRepository.findByMemberId(memberId)).thenReturn(Optional.empty());
 
             // when && then
@@ -97,7 +82,6 @@ class MemberIdealServiceTest {
         @DisplayName("memberIdeal이 존재하는 경우 memberIdeal을 업데이트한다.")
         void updateMemberIdeal() {
             long memberId = 1L;
-            when(hobbyCommandRepository.countAllByIdIsIn(hobbyIds)).thenReturn(((long) hobbyIds.size()));
             MemberIdeal memberIdeal = mock(MemberIdeal.class);
             when(memberIdealCommandRepository.findByMemberId(memberId)).thenReturn(Optional.of(memberIdeal));
 
@@ -105,7 +89,7 @@ class MemberIdealServiceTest {
             memberIdealService.update(request, memberId);
 
             // then
-            verify(memberIdeal).update(ageRange, hobbyIds, cities, religion, smokingStatus, drinkingStatus);
+            verify(memberIdeal).update(ageRange, hobbies, cities, religion, smokingStatus, drinkingStatus);
         }
     }
 

@@ -15,7 +15,7 @@ public class IntroductionSearchCondition {
     private final Set<Long> excludedMemberIds;
     private final Integer minAge;
     private final Integer maxAge;
-    private final Set<Long> hobbyIds;
+    private final Set<String> hobbies;
     private final Set<String> cities;
     private final String religion;
     private final String smokingStatus;
@@ -33,7 +33,7 @@ public class IntroductionSearchCondition {
         return new IntroductionSearchCondition(
                 excludedMemberIds,
                 memberIdeal.getAgeRange(),
-                memberIdeal.getHobbyIds(),
+                memberIdeal.getHobbies(),
                 memberIdeal.getCities(),
                 memberIdeal.getReligion(),
                 memberIdeal.getSmokingStatus(),
@@ -48,12 +48,12 @@ public class IntroductionSearchCondition {
             Set<Long> excludedMemberIds,
             MemberIdeal memberIdeal,
             Gender gender,
-            Set<Long> hobbyIds
+            Set<Hobby> hobbies
     ) {
         return new IntroductionSearchCondition(
                 excludedMemberIds,
                 memberIdeal.getAgeRange(),
-                hobbyIds,
+                hobbies,
                 memberIdeal.getCities(),
                 memberIdeal.getReligion(),
                 memberIdeal.getSmokingStatus(),
@@ -73,7 +73,7 @@ public class IntroductionSearchCondition {
         return new IntroductionSearchCondition(
                 excludedMemberIds,
                 memberIdeal.getAgeRange(),
-                memberIdeal.getHobbyIds(),
+                memberIdeal.getHobbies(),
                 memberIdeal.getCities(),
                 religion,
                 memberIdeal.getSmokingStatus(),
@@ -93,7 +93,7 @@ public class IntroductionSearchCondition {
         return new IntroductionSearchCondition(
                 excludedMemberIds,
                 memberIdeal.getAgeRange(),
-                memberIdeal.getHobbyIds(),
+                memberIdeal.getHobbies(),
                 Set.of(city),
                 memberIdeal.getReligion(),
                 memberIdeal.getSmokingStatus(),
@@ -113,7 +113,7 @@ public class IntroductionSearchCondition {
         return new IntroductionSearchCondition(
                 excludedMemberIds,
                 memberIdeal.getAgeRange(),
-                memberIdeal.getHobbyIds(),
+                memberIdeal.getHobbies(),
                 memberIdeal.getCities(),
                 memberIdeal.getReligion(),
                 memberIdeal.getSmokingStatus(),
@@ -127,7 +127,7 @@ public class IntroductionSearchCondition {
     private IntroductionSearchCondition(
             Set<Long> excludedMemberIds,
             AgeRange ageRange,
-            Set<Long> hobbyIds,
+            Set<Hobby> hobbies,
             Set<City> cities,
             Religion religion,
             SmokingStatus smokingStatus,
@@ -139,7 +139,7 @@ public class IntroductionSearchCondition {
         this.excludedMemberIds = excludedMemberIds;
         this.minAge = (ageRange != null) ? ageRange.getMinAge() : null;
         this.maxAge = (ageRange != null) ? ageRange.getMaxAge() : null;
-        this.hobbyIds = hobbyIds;
+        this.hobbies = hobbies.stream().map(Hobby::name).collect(Collectors.toSet());
         this.cities = cities.stream().map(City::name).collect(Collectors.toSet());
         this.religion = (religion != null) ? religion.name() : null;
         this.smokingStatus = (smokingStatus != null) ? smokingStatus.name() : null;

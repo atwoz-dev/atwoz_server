@@ -3,6 +3,7 @@ package atwoz.atwoz.member.query.member.view;
 import com.querydsl.core.annotations.QueryProjection;
 
 import java.util.List;
+import java.util.Set;
 
 public record MemberProfileView(
         String nickname,
@@ -10,7 +11,7 @@ public record MemberProfileView(
         String gender,
         Integer height,
         String job,
-        List<String> hobbies,
+        Set<String> hobbies,
         String mbti,
         String city,
         String district,

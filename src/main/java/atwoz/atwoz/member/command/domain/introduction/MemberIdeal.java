@@ -32,8 +32,9 @@ public class MemberIdeal extends BaseEntity {
     @Getter
     @ElementCollection
     @CollectionTable(name = "member_ideal_hobbies", joinColumns = @JoinColumn(name = "member_ideal_id"))
-    @Column(name = "hobby_id")
-    private Set<Long> hobbyIds = new HashSet<>();
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(50)")
+    private Set<Hobby> hobbies = new HashSet<>();
 
     @Getter
     @ElementCollection
@@ -63,14 +64,14 @@ public class MemberIdeal extends BaseEntity {
 
     public void update(
             AgeRange ageRange,
-            Set<Long> hobbyIds,
+            Set<Hobby> hobbies,
             Set<City> cities,
             Religion religion,
             SmokingStatus smokingStatus,
             DrinkingStatus drinkingStatus
     ) {
         setAgeRange(ageRange);
-        setHobbyIds(hobbyIds);
+        setHobbies(hobbies);
         setCities(cities);
         this.religion = religion;
         this.smokingStatus = smokingStatus;
@@ -80,7 +81,7 @@ public class MemberIdeal extends BaseEntity {
     private MemberIdeal(
             Long memberId,
             AgeRange ageRange,
-            Set<Long> hobbyIds,
+            Set<Hobby> hobbies,
             Set<City> cities,
             Religion religion,
             SmokingStatus smokingStatus,
@@ -88,7 +89,7 @@ public class MemberIdeal extends BaseEntity {
     ) {
         setMemberId(memberId);
         setAgeRange(ageRange);
-        setHobbyIds(hobbyIds);
+        setHobbies(hobbies);
         setCities(cities);
         this.religion = religion;
         this.smokingStatus = smokingStatus;
@@ -103,8 +104,8 @@ public class MemberIdeal extends BaseEntity {
         this.ageRange = ageRange;
     }
 
-    private void setHobbyIds(@NonNull Set<Long> hobbyIds) {
-        this.hobbyIds = hobbyIds;
+    private void setHobbies(@NonNull Set<Hobby> hobbies) {
+        this.hobbies = hobbies;
     }
 
     private void setCities(@NonNull Set<City> cities) {

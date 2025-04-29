@@ -1,14 +1,8 @@
 package atwoz.atwoz.member.command.application.member;
 
-import atwoz.atwoz.admin.command.domain.hobby.Hobby;
-import atwoz.atwoz.admin.command.domain.hobby.HobbyCommandRepository;
-import atwoz.atwoz.admin.command.domain.job.Job;
-import atwoz.atwoz.admin.command.domain.job.JobCommandRepository;
-import atwoz.atwoz.admin.command.domain.job.JobNotFoundException;
 import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.domain.member.*;
-import atwoz.atwoz.member.command.domain.member.exception.InvalidHobbyIdException;
 import atwoz.atwoz.member.command.domain.member.exception.InvalidMemberEnumValueException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,9 +12,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Calendar;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -30,12 +24,6 @@ import static org.mockito.Mockito.when;
 class MemberProfileServiceTest {
     @Mock
     private MemberCommandRepository memberCommandRepository;
-
-    @Mock
-    private HobbyCommandRepository hobbyCommandRepository;
-
-    @Mock
-    private JobCommandRepository jobCommandRepository;
 
     @InjectMocks
     private MemberProfileService memberProfileService;
@@ -58,71 +46,23 @@ class MemberProfileServiceTest {
     void throwExceptionWhenEnumValueIsInvalid() {
         // Given
         Long memberId = 1L;
-        Long jobId = 2L;
-        Set<Long> hobbyIds = Set.of(1L, 2L);
+        Job job = Job.JOB_SEARCHING;
+        Set<Hobby> hobbies = Set.of(Hobby.ANIMATION, Hobby.DANCE);
 
         MemberProfileUpdateRequest invalidRequest = new MemberProfileUpdateRequest(
                 "nickname", "INVALID_ENUM", 20, 180, // 잘못된 gender 값
-                jobId, "Daejeon", "OTHER", "ENFJ",
-                "DAILY", "QUIT", "BUDDHIST", hobbyIds
+                 "Daejeon", "OTHER", "ENFJ",
+                "DAILY", "QUIT", "BUDDHIST", hobbies.stream().map(Enum::name).collect(Collectors.toSet()), job.name()
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
         when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
-        when(jobCommandRepository.existsById(jobId)).thenReturn(true);
-        when(hobbyCommandRepository.countAllByIdIsIn(hobbyIds)).thenReturn(2L);
 
         // When & Then
         assertThatThrownBy(() -> memberProfileService.updateMember(memberId, invalidRequest))
                 .isInstanceOf(InvalidMemberEnumValueException.class);
     }
 
-    @DisplayName("멤버가 존재하지만 유효하지 않은 직업 ID를 가질 경우, 예외 발생")
-    @Test
-    void throwExceptionWhenJobIdIsInvalid() {
-        // Given
-        Long memberId = 1L;
-        Long jobId = 2L;
-        Set<Long> hobbyIds = Set.of(1L, 2L);
-
-        MemberProfileUpdateRequest invalidRequest = new MemberProfileUpdateRequest(
-                "nickname", "INVALID_ENUM", 20, 180, // 잘못된 gender 값
-                jobId, "Daejeon", "OTHER", "ENFJ",
-                "DAILY", "QUIT", "BUDDHIST", hobbyIds
-        );
-        Member existingMember = Member.fromPhoneNumber("01012345678");
-
-        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
-        when(jobCommandRepository.existsById(jobId)).thenReturn(false);
-
-        // When & Then
-        assertThatThrownBy(() -> memberProfileService.updateMember(memberId, invalidRequest))
-                .isInstanceOf(JobNotFoundException.class);
-    }
-
-    @DisplayName("멤버가 존재하지만 유효하지 않은 취미 ID를 가질 경우, 예외 발생")
-    @Test
-    void throwExceptionWhenHobbyIdIsInvalid() {
-        // Given
-        Long memberId = 1L;
-        Long jobId = 2L;
-        Set<Long> hobbyIds = Set.of(1L, 2L);
-
-        MemberProfileUpdateRequest invalidRequest = new MemberProfileUpdateRequest(
-                "nickname", "INVALID_ENUM", 20, 180, // 잘못된 gender 값
-                jobId, "Daejeon", "OTHER", "ENFJ",
-                "DAILY", "QUIT", "BUDDHIST", hobbyIds
-        );
-        Member existingMember = Member.fromPhoneNumber("01012345678");
-
-        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
-        when(jobCommandRepository.existsById(jobId)).thenReturn(true);
-        when(hobbyCommandRepository.countAllByIdIsIn(hobbyIds)).thenReturn(1L);
-
-        // When & Then
-        assertThatThrownBy(() -> memberProfileService.updateMember(memberId, invalidRequest))
-                .isInstanceOf(InvalidHobbyIdException.class);
-    }
 
     @DisplayName("멤버가 존재하는 경우, 성공")
     @Test
@@ -132,21 +72,18 @@ class MemberProfileServiceTest {
          */
         // Given
         Long memberId = 1L;
-        Long jobId = 2L;
-        Job job = Job.from("직업");
-        Set<Long> hobbyIds = Set.of(1L, 2L);
-        List<Hobby> hobbies = List.of(Hobby.from("취미1"), Hobby.from("취미2"));
+        Job job = Job.JOB_SEARCHING;
+        Set<Hobby> hobbies = Set.of(Hobby.ANIMATION, Hobby.DANCE);
 
         MemberProfileUpdateRequest request = new MemberProfileUpdateRequest(
                 "nickname", "MALE", Calendar.getInstance().get(Calendar.YEAR) - 19, 180,
-                jobId, "DONG_GU_DAEJEON", "OTHER", "ENFJ",
-                "DAILY", "QUIT", "BUDDHIST", hobbyIds
+                "DONG_GU_DAEJEON", "OTHER", "ENFJ",
+                "DAILY", "QUIT", "BUDDHIST", hobbies.stream().map(Enum::name).collect(Collectors.toSet()), job.name()
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
         when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
-        when(hobbyCommandRepository.countAllByIdIsIn(hobbyIds)).thenReturn(2L);
-        when(jobCommandRepository.existsById(jobId)).thenReturn(true);
+
 
         // When
         memberProfileService.updateMember(memberId, request);
@@ -154,8 +91,8 @@ class MemberProfileServiceTest {
         // Then
         assertThat(existingMember.getProfile().getNickname().getValue()).isEqualTo("nickname");
         assertThat(existingMember.getProfile().getGender()).isEqualTo(Gender.MALE);
-        assertThat(existingMember.getProfile().getJobId()).isEqualTo(jobId);
-        assertThat(existingMember.getProfile().getHobbyIds().size()).isEqualTo(hobbies.size());
+        assertThat(existingMember.getProfile().getJob()).isEqualTo(job);
+        assertThat(existingMember.getProfile().getHobbies().size()).isEqualTo(hobbies.size());
         assertThat(existingMember.getProfile().getHeight()).isEqualTo(180);
         assertThat(existingMember.getProfile().getRegion().getCity()).isEqualTo(City.DAEJEON);
         assertThat(existingMember.getProfile().getReligion()).isEqualTo(Religion.BUDDHIST);
@@ -166,18 +103,17 @@ class MemberProfileServiceTest {
     void succeedsWhenNullValueExists() {
         // Given
         Long memberId = 1L;
-        Long jobId = 2L;
-        Job job = Job.from("직업");
+        Job job = Job.JOB_SEARCHING;
+
 
         MemberProfileUpdateRequest request = new MemberProfileUpdateRequest(
                 "nickname", "MALE", Calendar.getInstance().get(Calendar.YEAR) - 19, 180,
-                jobId, null, "OTHER", "ENFJ",
-                "DAILY", "QUIT", "BUDDHIST", null
+                 null, "OTHER", "ENFJ",
+                "DAILY", "QUIT", "BUDDHIST", null, job.name()
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
         when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
-        when(jobCommandRepository.existsById(2L)).thenReturn(true);
 
         // When
         memberProfileService.updateMember(memberId, request);
@@ -185,8 +121,8 @@ class MemberProfileServiceTest {
         // Then
         assertThat(existingMember.getProfile().getNickname().getValue()).isEqualTo("nickname");
         assertThat(existingMember.getProfile().getGender()).isEqualTo(Gender.MALE);
-        assertThat(existingMember.getProfile().getJobId()).isEqualTo(jobId);
-        assertThat(existingMember.getProfile().getHobbyIds()).isNull();
+        assertThat(existingMember.getProfile().getJob()).isEqualTo(job);
+        assertThat(existingMember.getProfile().getHobbies()).isNull();
         assertThat(existingMember.getProfile().getHeight()).isEqualTo(180);
         assertThat(existingMember.getProfile().getRegion()).isNull();
         assertThat(existingMember.getProfile().getReligion()).isEqualTo(Religion.BUDDHIST);

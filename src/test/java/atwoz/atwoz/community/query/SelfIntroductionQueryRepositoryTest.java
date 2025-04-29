@@ -1,6 +1,5 @@
 package atwoz.atwoz.community.query;
 
-import atwoz.atwoz.admin.command.domain.hobby.Hobby;
 import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.community.command.domain.selfintroduction.SelfIntroduction;
@@ -298,7 +297,7 @@ public class SelfIntroductionQueryRepositoryTest {
         Member targetMember;
         ProfileImage profileImage;
         Like like;
-        List<Hobby> hobbies;
+        Set<Hobby> hobbies;
         SelfIntroduction selfIntroduction;
 
 
@@ -309,13 +308,9 @@ public class SelfIntroductionQueryRepositoryTest {
                     .thenAnswer(invocation -> null);
 
             // 취미 데이터 생성.
-            Hobby hobby = Hobby.from("취미1");
-            Hobby hobby2 = Hobby.from("취미2");
-            hobbies = List.of(hobby, hobby2);
-
-            entityManager.persist(hobby);
-            entityManager.persist(hobby2);
-            entityManager.flush();
+            Hobby hobby = Hobby.ANIMATION;
+            Hobby hobby2 = Hobby.BOARD_GAMES;
+            hobbies = Set.of(hobby, hobby2);
 
             // 멤버 데이터 생성.
             member = Member.fromPhoneNumber("01012345678");
@@ -326,7 +321,7 @@ public class SelfIntroductionQueryRepositoryTest {
                     .region(Region.of(District.GANGBUK_GU))
                     .nickname(Nickname.from("닉네임"))
                     .yearOfBirth(AgeConverter.toYearOfBirth(25))
-                    .hobbyIds(Set.of(hobby.getId(), hobby2.getId()))
+                    .hobbies(Set.of(hobby, hobby2))
                     .build();
 
             targetMember.updateProfile(memberProfile);
@@ -397,7 +392,7 @@ public class SelfIntroductionQueryRepositoryTest {
             Assertions.assertThat(view.memberBasicInfo().nickname()).isEqualTo(targetMember.getProfile().getNickname().getValue());
             Assertions.assertThat(view.memberBasicInfo().city()).isEqualTo(targetMember.getProfile().getRegion().getCity().toString());
             Assertions.assertThat(view.memberBasicInfo().district()).isEqualTo(targetMember.getProfile().getRegion().getDistrict().toString());
-            Assertions.assertThat(view.memberBasicInfo().hobbies().size()).isEqualTo(targetMember.getProfile().getHobbyIds().size());
+            Assertions.assertThat(view.memberBasicInfo().hobbies().size()).isEqualTo(targetMember.getProfile().getHobbies().size());
             Assertions.assertThat(view.memberBasicInfo().profileImageUrl()).isEqualTo(profileImage.getUrl());
         }
 

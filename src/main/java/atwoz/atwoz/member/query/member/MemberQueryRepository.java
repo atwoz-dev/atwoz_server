@@ -1,9 +1,11 @@
 package atwoz.atwoz.member.query.member;
 
 import atwoz.atwoz.match.command.domain.match.MatchStatus;
+import atwoz.atwoz.member.command.domain.member.Hobby;
 import atwoz.atwoz.member.command.domain.member.PrimaryContactType;
 import atwoz.atwoz.member.query.member.view.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.EnumPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -11,17 +13,15 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-import static atwoz.atwoz.admin.command.domain.hobby.QHobby.hobby;
-import static atwoz.atwoz.admin.command.domain.job.QJob.job;
 import static atwoz.atwoz.interview.command.domain.answer.QInterviewAnswer.interviewAnswer;
 import static atwoz.atwoz.interview.command.domain.question.QInterviewQuestion.interviewQuestion;
 import static atwoz.atwoz.like.command.domain.like.QLike.like;
 import static atwoz.atwoz.match.command.domain.match.QMatch.match;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
 import static atwoz.atwoz.member.command.domain.profileImage.QProfileImage.profileImage;
-import static com.querydsl.core.group.GroupBy.groupBy;
-import static com.querydsl.core.group.GroupBy.list;
+import static com.querydsl.core.group.GroupBy.*;
 import static com.querydsl.core.types.dsl.Expressions.cases;
+import static com.querydsl.core.types.dsl.Expressions.enumPath;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,10 +29,11 @@ public class MemberQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     public Optional<MemberProfileView> findProfileByMemberId(Long memberId) {
+        EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
+
         MemberProfileView memberProfileView = queryFactory
                 .from(member)
-                .leftJoin(hobby).on(hobby.id.in(member.profile.hobbyIds))
-                .leftJoin(job).on(job.id.eq(member.profile.jobId))
+                .leftJoin(member.profile.hobbies, hobby)
                 .where(member.id.eq(memberId))
                 .transform(
                         groupBy(member.id).as(
@@ -41,8 +42,8 @@ public class MemberQueryRepository {
                                         member.profile.yearOfBirth.value,
                                         member.profile.gender.stringValue(),
                                         member.profile.height,
-                                        job.name,
-                                        list(hobby.name),
+                                        member.profile.job.stringValue(),
+                                        set(hobby.stringValue()),
                                         member.profile.mbti.stringValue(),
                                         member.profile.region.city.stringValue(),
                                         member.profile.region.district.stringValue(),
@@ -73,10 +74,11 @@ public class MemberQueryRepository {
     }
 
     public Optional<OtherMemberProfileView> findOtherProfileByMemberId(Long memberId, Long otherMemberId) {
+        EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
+
         OtherMemberProfileView otherMemberProfileView = queryFactory
                 .from(member)
-                .leftJoin(hobby).on(hobby.id.in(member.profile.hobbyIds))
-                .leftJoin(job).on(job.id.eq(member.profile.jobId))
+                .leftJoin(member.profile.hobbies, hobby)
                 .leftJoin(profileImage).on(profileImage.memberId.eq(otherMemberId).and(profileImage.isPrimary.eq(true)))
                 .leftJoin(match).on(getMatchJoinCondition(memberId, otherMemberId))
                 .leftJoin(like).on(like.senderId.eq(memberId).and(like.receiverId.eq(otherMemberId)))
@@ -90,8 +92,8 @@ public class MemberQueryRepository {
                                         member.profile.yearOfBirth.value,
                                         member.profile.gender.stringValue(),
                                         member.profile.height,
-                                        job.name,
-                                        list(hobby.name),
+                                        member.profile.job.stringValue(),
+                                        set(hobby.stringValue()),
                                         member.profile.mbti.stringValue(),
                                         member.profile.region.city.stringValue(),
                                         member.profile.smokingStatus.stringValue(),

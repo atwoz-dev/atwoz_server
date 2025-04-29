@@ -18,7 +18,7 @@ class MemberProfileTest {
         MemberProfile memberProfile = MemberProfile.builder()
                 .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
                 .height(180)
-                .jobId(1L)
+                .job(Job.JOB_SEARCHING)
                 .mbti(Mbti.ENFJ)
                 .drinkingStatus(DrinkingStatus.NONE)
                 .smokingStatus(SmokingStatus.VAPE)
@@ -26,7 +26,7 @@ class MemberProfileTest {
                 .highestEducation(HighestEducation.DOCTORATE)
                 .gender(Gender.MALE)
                 .nickname(Nickname.from("Hello"))
-                .hobbyIds(Set.of(2L))
+                .hobbies(Set.of(Hobby.ANIMATION))
                 .region(null)
                 .build();
 
@@ -41,7 +41,7 @@ class MemberProfileTest {
         MemberProfile memberProfile = MemberProfile.builder()
                 .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
                 .height(180)
-                .jobId(1L)
+                .job(Job.JOB_SEARCHING)
                 .mbti(Mbti.ENFJ)
                 .drinkingStatus(DrinkingStatus.NONE)
                 .smokingStatus(SmokingStatus.VAPE)
@@ -49,7 +49,7 @@ class MemberProfileTest {
                 .highestEducation(HighestEducation.DOCTORATE)
                 .gender(Gender.MALE)
                 .nickname(Nickname.from("Hello"))
-                .hobbyIds(Set.of())
+                .hobbies(Set.of())
                 .region(Region.of(District.GANGBUK_GU))
                 .build();
 
@@ -64,7 +64,7 @@ class MemberProfileTest {
         MemberProfile memberProfile = MemberProfile.builder()
                 .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
                 .height(180)
-                .jobId(1L)
+                .job(Job.JOB_SEARCHING)
                 .mbti(Mbti.ENFJ)
                 .drinkingStatus(DrinkingStatus.NONE)
                 .smokingStatus(SmokingStatus.VAPE)
@@ -72,7 +72,7 @@ class MemberProfileTest {
                 .highestEducation(HighestEducation.DOCTORATE)
                 .gender(Gender.MALE)
                 .nickname(Nickname.from("Hello"))
-                .hobbyIds(Set.of(2L))
+                .hobbies(Set.of(Hobby.ANIMATION))
                 .region(Region.of(District.GANGBUK_GU))
                 .build();
 

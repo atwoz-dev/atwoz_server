@@ -9,14 +9,14 @@ import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.query.member.AgeConverter;
 import atwoz.atwoz.member.query.member.view.BasicMemberInfo;
 
+import java.util.stream.Collectors;
+
 public class MemberMapper {
 
     public static MemberProfile toMemberProfile(MemberProfileUpdateRequest memberProfileUpdateRequest) {
         return MemberProfile.builder()
                 .yearOfBirth(memberProfileUpdateRequest.yearOfBirth())
                 .height(memberProfileUpdateRequest.height())
-                .jobId(memberProfileUpdateRequest.jobId())
-                .hobbyIds(memberProfileUpdateRequest.hobbyIds())
                 .nickname(Nickname.from(memberProfileUpdateRequest.nickName()))
                 .gender(Gender.from(memberProfileUpdateRequest.gender()))
                 .mbti(Mbti.from(memberProfileUpdateRequest.mbti()))
@@ -25,6 +25,8 @@ public class MemberMapper {
                 .drinkingStatus(DrinkingStatus.from(memberProfileUpdateRequest.drinkingStatus()))
                 .religion(Religion.from(memberProfileUpdateRequest.religionStatus()))
                 .highestEducation(HighestEducation.from(memberProfileUpdateRequest.highestEducation()))
+                .job(Job.from(memberProfileUpdateRequest.job()))
+                .hobbies(memberProfileUpdateRequest.hobbies() != null ? memberProfileUpdateRequest.hobbies().stream().map(Hobby::from).collect(Collectors.toSet()): null)
                 .build();
     }
 

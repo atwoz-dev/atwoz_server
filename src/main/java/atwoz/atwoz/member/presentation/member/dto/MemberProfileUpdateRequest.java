@@ -7,13 +7,13 @@ public record MemberProfileUpdateRequest(
         String gender,
         Integer yearOfBirth,
         Integer height,
-        Long jobId,
         String district,
         String highestEducation,
         String mbti,
         String smokingStatus,
         String drinkingStatus,
         String religionStatus,
-        Set<Long> hobbyIds
+        Set<String> hobbies,
+        String job
 ) {
 }

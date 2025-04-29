@@ -3,6 +3,7 @@ package atwoz.atwoz.community.query.selfintroduction.view;
 import atwoz.atwoz.member.query.member.AgeConverter;
 
 import java.util.List;
+import java.util.Set;
 
 public record MemberBasicInfo(
         Long memberId,
@@ -12,7 +13,7 @@ public record MemberBasicInfo(
         String city,
         String district,
         String mbti,
-        List<String> hobbies
+        Set<String> hobbies
 ){
     public MemberBasicInfo {
         age = AgeConverter.toAge(age);
