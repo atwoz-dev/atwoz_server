@@ -62,6 +62,18 @@ public class MemberIdeal extends BaseEntity {
         return new MemberIdeal(memberId, AgeRange.init(), new HashSet<>(), new HashSet<>(), null, null, null);
     }
 
+    /**
+     * Updates the member's ideal partner preferences with the provided values.
+     *
+     * @param ageRange the preferred age range
+     * @param hobbies the set of preferred hobbies
+     * @param cities the set of preferred cities (maximum of two)
+     * @param religion the preferred religion
+     * @param smokingStatus the preferred smoking status
+     * @param drinkingStatus the preferred drinking status
+     *
+     * @throws InvalidMemberIdealException if more than two cities are provided
+     */
     public void update(
             AgeRange ageRange,
             Set<Hobby> hobbies,
@@ -78,6 +90,19 @@ public class MemberIdeal extends BaseEntity {
         this.drinkingStatus = drinkingStatus;
     }
 
+    /**
+     * Constructs a MemberIdeal instance with the specified preferences and attributes.
+     *
+     * @param memberId the unique identifier of the member
+     * @param ageRange the preferred age range for an ideal partner
+     * @param hobbies the set of preferred hobbies
+     * @param cities the set of preferred cities (maximum of two)
+     * @param religion the preferred religion
+     * @param smokingStatus the preferred smoking status
+     * @param drinkingStatus the preferred drinking status
+     *
+     * @throws InvalidMemberIdealException if more than two cities are provided
+     */
     private MemberIdeal(
             Long memberId,
             AgeRange ageRange,
@@ -100,14 +125,30 @@ public class MemberIdeal extends BaseEntity {
         this.memberId = memberId;
     }
 
+    /**
+     * Sets the preferred age range for the member's ideal partner.
+     *
+     * @param ageRange the age range preference; must not be null
+     */
     private void setAgeRange(@NonNull AgeRange ageRange) {
         this.ageRange = ageRange;
     }
 
+    /**
+     * Sets the preferred hobbies for the member's ideal partner.
+     *
+     * @param hobbies set of hobbies to assign; must not be null
+     */
     private void setHobbies(@NonNull Set<Hobby> hobbies) {
         this.hobbies = hobbies;
     }
 
+    /**
+     * Sets the preferred cities for the member's ideal partner.
+     *
+     * @param cities set of preferred cities; must not contain more than two elements
+     * @throws InvalidMemberIdealException if more than two cities are provided
+     */
     private void setCities(@NonNull Set<City> cities) {
         if (cities.size() > 2) {
             throw new InvalidMemberIdealException("멤버 이상형의 지역은 2개를 초과할 수 없습니다.");

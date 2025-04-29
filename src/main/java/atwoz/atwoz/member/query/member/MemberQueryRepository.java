@@ -28,6 +28,12 @@ import static com.querydsl.core.types.dsl.Expressions.enumPath;
 public class MemberQueryRepository {
     private final JPAQueryFactory queryFactory;
 
+    /**
+     * Retrieves a member's profile by their ID, including personal details and a set of hobbies.
+     *
+     * @param memberId the unique identifier of the member
+     * @return an Optional containing the member's profile view if found, otherwise empty
+     */
     public Optional<MemberProfileView> findProfileByMemberId(Long memberId) {
         EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
 
@@ -59,6 +65,12 @@ public class MemberQueryRepository {
         return Optional.ofNullable(memberProfileView);
     }
 
+    /**
+     * Retrieves the contact information for a member by their ID.
+     *
+     * @param memberId the ID of the member whose contact information is to be fetched
+     * @return an {@code Optional} containing the member's contact view if found, or empty if not found
+     */
     public Optional<MemberContactView> findContactsByMemberId(Long memberId) {
         MemberContactView memberContactView = queryFactory
                 .select(new QMemberContactView(
@@ -73,6 +85,15 @@ public class MemberQueryRepository {
         return Optional.ofNullable(memberContactView);
     }
 
+    /**
+     * Retrieves the profile of another member as viewed by the querying member, including profile details, like status, match information, and conditionally exposed contact information.
+     *
+     * The returned profile includes personal details, hobbies, profile image, like level, and match details between the two members. If a match exists and is in the MATCHED status, the other member's primary contact information (phone number or Kakao ID) is revealed based on their contact preference.
+     *
+     * @param memberId        the ID of the querying member
+     * @param otherMemberId   the ID of the member whose profile is being viewed
+     * @return an {@code Optional} containing the other member's profile view if found; otherwise, an empty {@code Optional}
+     */
     public Optional<OtherMemberProfileView> findOtherProfileByMemberId(Long memberId, Long otherMemberId) {
         EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
 

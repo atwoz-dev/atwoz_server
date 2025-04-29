@@ -13,6 +13,14 @@ import java.util.stream.Collectors;
 
 public class MemberMapper {
 
+    /**
+     * Converts a {@link MemberProfileUpdateRequest} into a {@link MemberProfile} domain object.
+     *
+     * Maps profile fields such as year of birth, height, nickname, gender, MBTI, region, smoking and drinking status, religion, highest education, job, and hobbies to their corresponding domain representations.
+     *
+     * @param memberProfileUpdateRequest the update request containing member profile data
+     * @return a {@link MemberProfile} populated with the mapped values from the request
+     */
     public static MemberProfile toMemberProfile(MemberProfileUpdateRequest memberProfileUpdateRequest) {
         return MemberProfile.builder()
                 .yearOfBirth(memberProfileUpdateRequest.yearOfBirth())

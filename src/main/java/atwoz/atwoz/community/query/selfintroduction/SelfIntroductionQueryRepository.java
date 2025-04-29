@@ -30,6 +30,13 @@ public class SelfIntroductionQueryRepository {
     private final JPAQueryFactory queryFactory;
     private final static int PAGE_SIZE = 10;
 
+    /**
+     * Retrieves a paginated list of self-introduction summaries matching the specified search conditions.
+     *
+     * @param searchCondition criteria for filtering self-introductions
+     * @param lastId the ID of the last self-introduction from the previous page, used for pagination; may be null
+     * @return a list of self-introduction summary views matching the search criteria, limited to a fixed page size
+     */
     public List<SelfIntroductionSummaryView> findSelfIntroductions(SelfIntroductionSearchCondition searchCondition, Long lastId) {
 
         BooleanExpression condition = getSearchCondition(searchCondition, lastId);
@@ -49,6 +56,13 @@ public class SelfIntroductionQueryRepository {
         return view;
     }
 
+    /**
+     * Retrieves detailed self-introduction information for a given self-introduction ID, including member details, like status from a specific member, and the member's hobbies.
+     *
+     * @param id the ID of the self-introduction to retrieve
+     * @param memberId the ID of the member requesting the information, used to determine like status
+     * @return an {@code Optional} containing the self-introduction view if found, or empty if not found
+     */
     public Optional<SelfIntroductionView> findSelfIntroductionByIdWithMemberId(Long id, Long memberId) {
         EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
 

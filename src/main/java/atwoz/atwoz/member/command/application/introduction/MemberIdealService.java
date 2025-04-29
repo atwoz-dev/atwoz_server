@@ -19,6 +19,12 @@ import java.util.stream.Collectors;
 public class MemberIdealService {
     private final MemberIdealCommandRepository memberIdealCommandRepository;
 
+    /**
+     * Initializes a MemberIdeal entity for the specified member.
+     *
+     * @param memberId the ID of the member for whom to initialize the ideal preferences
+     * @throws MemberIdealAlreadyExistsException if a MemberIdeal already exists for the given member ID
+     */
     @Transactional
     public void init(long memberId) {
         if (memberIdealCommandRepository.existsByMemberId(memberId)) {
@@ -28,6 +34,13 @@ public class MemberIdealService {
         memberIdealCommandRepository.save(memberIdeal);
     }
 
+    /**
+     * Updates the introduction preferences for a member with the provided values.
+     *
+     * @param request the update request containing new preference values
+     * @param memberId the ID of the member whose preferences are being updated
+     * @throws MemberIdealNotFoundException if no introduction preferences exist for the given member
+     */
     @Transactional
     public void update(MemberIdealUpdateRequest request, long memberId) {
         MemberIdeal memberIdeal = getMemberIdealByMemberId(memberId);
@@ -40,6 +53,13 @@ public class MemberIdealService {
         memberIdeal.update(ageRange, hobbies, cities, religion, smokingStatus, drinkingStatus);
     }
 
+    /**
+     * Retrieves the MemberIdeal entity for the specified member ID.
+     *
+     * @param memberId the ID of the member whose ideal preferences are to be fetched
+     * @return the MemberIdeal associated with the given member ID
+     * @throws MemberIdealNotFoundException if no MemberIdeal exists for the specified member
+     */
     private MemberIdeal getMemberIdealByMemberId(long memberId) {
         return memberIdealCommandRepository.findByMemberId(memberId).orElseThrow(MemberIdealNotFoundException::new);
     }

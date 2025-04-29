@@ -10,6 +10,13 @@ public record OtherMemberProfileView(
         BasicMemberInfo basicMemberInfo,
         MatchInfo matchInfo
 ) {
+    /**
+     * Constructs an {@code OtherMemberProfileView} from individual member and match attributes.
+     *
+     * Creates a profile view by aggregating basic member information and, if available, match-related details.
+     *
+     * @param hobbies the set of hobbies associated with the member
+     */
     @QueryProjection
     public OtherMemberProfileView(
             Long id, String nickname, String profileImageUrl,

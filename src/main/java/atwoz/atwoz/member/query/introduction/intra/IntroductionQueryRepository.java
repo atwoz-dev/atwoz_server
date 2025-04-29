@@ -53,6 +53,15 @@ public class IntroductionQueryRepository {
                 .fetch());
     }
 
+    /**
+     * Retrieves a set of member IDs that match the specified introduction search conditions.
+     *
+     * The search can filter by excluded member IDs, age range, cities, religion, smoking and drinking status,
+     * member grade, gender, join date, and optionally hobbies. Results are limited to 10 member IDs.
+     *
+     * @param condition the search criteria for filtering members
+     * @return a set of member IDs matching the given conditions
+     */
     public Set<Long> findAllIntroductionMemberId(IntroductionSearchCondition condition) {
         JPAQuery<Long> query = queryFactory
                 .select(member.id)
@@ -75,6 +84,15 @@ public class IntroductionQueryRepository {
         return new HashSet<>(query.fetch());
     }
 
+    /**
+     * Retrieves detailed introduction profile information for the specified member IDs.
+     *
+     * For each member ID in the provided set, returns a {@link MemberIntroductionProfileQueryResult} containing profile image URL, hobbies, religion, MBTI, like level (from the given member to each target member), and whether the member was introduced by the given member.
+     *
+     * @param memberId the ID of the member requesting the profiles
+     * @param memberIds the set of member IDs whose profiles are to be retrieved
+     * @return a list of introduction profile query results for the specified member IDs, ordered by member ID descending
+     */
     public List<MemberIntroductionProfileQueryResult> findAllMemberIntroductionProfileQueryResultByMemberIds(long memberId, Set<Long> memberIds) {
         EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
 
@@ -177,6 +195,12 @@ public class IntroductionQueryRepository {
         return member.profile.gender.stringValue().eq(gender);
     }
 
+    /**
+     * Returns a condition that filters members created on or after the specified date.
+     *
+     * @param createdAt the minimum creation date to filter by; if null, no condition is applied
+     * @return a BooleanExpression for the creation date filter, or null if createdAt is null
+     */
     private BooleanExpression createdAtGoe(LocalDateTime createdAt) {
         if (createdAt == null) {
             return null;
@@ -184,6 +208,11 @@ public class IntroductionQueryRepository {
         return member.createdAt.goe(createdAt);
     }
 
+    /**
+     * Applies a join to the query for member hobbies if specific hobbies are specified in the search condition.
+     *
+     * If the condition includes a non-empty set of hobbies, the query joins the member's hobbies and ensures distinct results to avoid duplicates.
+     */
     private void applyHobbyIdsCondition(JPAQuery<?> query, IntroductionSearchCondition condition) {
         if (condition.getHobbies() != null && !condition.getHobbies().isEmpty()) {
             EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyId");

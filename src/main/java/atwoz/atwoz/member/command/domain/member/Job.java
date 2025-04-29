@@ -28,10 +28,22 @@ public enum Job {
 
     private final String description;
 
+    /**
+     * Initializes a Job enum constant with the specified Korean description.
+     *
+     * @param description the Korean description for the job category
+     */
     Job(String description) {
         this.description = description;
     }
 
+    /**
+     * Returns the {@code Job} enum constant corresponding to the given string value.
+     *
+     * @param value the name of the job category to convert; case-insensitive
+     * @return the matching {@code Job} enum constant, or {@code null} if the input is {@code null}
+     * @throws InvalidMemberEnumValueException if the input does not match any job category
+     */
     public static Job from(String value) {
         if (value == null) return null;
         try {

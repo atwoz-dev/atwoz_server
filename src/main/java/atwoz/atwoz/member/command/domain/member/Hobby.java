@@ -37,10 +37,22 @@ public enum Hobby {
 
     private final String description;
 
+    /**
+     * Constructs a Hobby enum constant with the specified Korean description.
+     *
+     * @param description the Korean description associated with the hobby
+     */
     Hobby(String description) {
         this.description = description;
     }
 
+    /**
+     * Converts a string to its corresponding {@code Hobby} enum constant.
+     *
+     * @param value the name of the hobby constant to convert; case-insensitive, may be {@code null}
+     * @return the matching {@code Hobby} constant, or {@code null} if the input is {@code null}
+     * @throws InvalidMemberEnumValueException if the input does not match any {@code Hobby} constant
+     */
     public static Hobby from(String value) {
         if (value == null) return null;
         try {

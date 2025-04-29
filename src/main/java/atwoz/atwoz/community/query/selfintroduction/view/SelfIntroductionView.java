@@ -11,6 +11,21 @@ public record SelfIntroductionView(
         String title,
         String content
 ) {
+    /**
+     * Constructs a SelfIntroductionView from detailed member information and self-introduction fields.
+     *
+     * @param memberId the unique identifier of the member
+     * @param nickname the member's nickname
+     * @param yearOfBirth the member's year of birth
+     * @param profileImageUrl the URL of the member's profile image
+     * @param city the member's city
+     * @param district the member's district
+     * @param mbti the member's MBTI type
+     * @param hobbies the set of the member's hobbies
+     * @param like the like field of the self-introduction
+     * @param title the title of the self-introduction
+     * @param content the content of the self-introduction
+     */
     @QueryProjection
     public SelfIntroductionView(Long memberId,
                                 String nickname,

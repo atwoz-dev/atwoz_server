@@ -76,6 +76,12 @@ public class IntroductionQueryService {
         );
     }
 
+    /**
+     * Retrieves the IDs of members of the opposite gender who share the same hobbies as the specified member.
+     *
+     * @param memberId the ID of the member whose hobbies are used for matching
+     * @return a set of member IDs matching the same hobby criteria
+     */
     private Set<Long> getSameHobbyIntroductionMemberIds(long memberId) {
         return introductionMemberIdFetcher.fetch(
                 memberId,

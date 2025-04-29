@@ -21,6 +21,12 @@ import static com.querydsl.core.types.dsl.Expressions.enumPath;
 public class MemberIdealQueryRepository {
     private final JPAQueryFactory queryFactory;
 
+    /**
+     * Retrieves the ideal preference view for a member by their ID.
+     *
+     * @param memberId the unique identifier of the member
+     * @return an {@code Optional} containing the member's ideal preferences if found, or empty if not present
+     */
     public Optional<MemberIdealView> findMemberIdealByMemberId(long memberId) {
         EnumPath<City> city = enumPath(City.class, "cityAlias");
         EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
