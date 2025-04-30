@@ -44,7 +44,7 @@ public class IntroductionSearchCondition {
         );
     }
 
-    public static IntroductionSearchCondition ofHobbyIds(
+    public static IntroductionSearchCondition ofHobbies(
             Set<Long> excludedMemberIds,
             MemberIdeal memberIdeal,
             Gender gender,

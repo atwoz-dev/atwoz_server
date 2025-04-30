@@ -67,13 +67,13 @@ class IntroductionSearchConditionTest {
 
     @Test
     @DisplayName("ofHobbyIds 메서드 테스트")
-    void ofHobbyIdsTest() {
+    void ofHobbiesTest() {
         // given
         MemberIdeal ideal = getMockedMemberIdeal();
         Set<Hobby> memberHobbies = Set.of(Hobby.CAMPING, Hobby.ANIMATION);
 
         // when
-        IntroductionSearchCondition condition = IntroductionSearchCondition.ofHobbyIds(excludedIds, ideal, gender, memberHobbies);
+        IntroductionSearchCondition condition = IntroductionSearchCondition.ofHobbies(excludedIds, ideal, gender, memberHobbies);
 
         // then
         assertCommonFields(condition);

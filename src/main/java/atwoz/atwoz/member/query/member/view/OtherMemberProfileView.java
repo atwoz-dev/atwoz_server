@@ -1,9 +1,7 @@
 package atwoz.atwoz.member.query.member.view;
 
-import atwoz.atwoz.member.query.member.AgeConverter;
 import com.querydsl.core.annotations.QueryProjection;
 
-import java.util.List;
 import java.util.Set;
 
 public record OtherMemberProfileView(
