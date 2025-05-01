@@ -85,8 +85,8 @@ class MemberIdealTest {
         }
 
         @Test
-        @DisplayName("hobbyIds가 null이면 예외를 던진다.")
-        void throwsExceptionWhenHobbyIdsIsNull() {
+        @DisplayName("hobbies가 null이면 예외를 던진다.")
+        void throwsExceptionWhenHobbiesAreNull() {
             // given
             MemberIdeal memberIdeal = MemberIdeal.init(1L);
             hobbies = null;
@@ -110,7 +110,7 @@ class MemberIdealTest {
 
         @ParameterizedTest
         @ValueSource(strings = {"religion", "smokingStatus", "drinkingStatus", "none"})
-        @DisplayName("ageRange, hobbyIds, regions 외의 다른 파라미터가 null이면 update한다.")
+        @DisplayName("ageRange, hobbies, regions 외의 다른 파라미터가 null이면 update한다.")
         void updatesMemberIdeal(String nullParameter) {
             // given
             MemberIdeal memberIdeal = MemberIdeal.init(1L);

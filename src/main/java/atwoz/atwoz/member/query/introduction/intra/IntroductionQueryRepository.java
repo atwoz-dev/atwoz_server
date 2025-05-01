@@ -71,7 +71,7 @@ public class IntroductionQueryRepository {
                 .orderBy(member.id.desc())
                 .limit(LIMIT);
 
-        applyHobbyIdsCondition(query, condition);
+        applyHobbiesCondition(query, condition);
         return new HashSet<>(query.fetch());
     }
 
@@ -184,10 +184,11 @@ public class IntroductionQueryRepository {
         return member.createdAt.goe(createdAt);
     }
 
-    private void applyHobbyIdsCondition(JPAQuery<?> query, IntroductionSearchCondition condition) {
+    private void applyHobbiesCondition(JPAQuery<?> query, IntroductionSearchCondition condition) {
         if (condition.getHobbies() != null && !condition.getHobbies().isEmpty()) {
-            EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyId");
+            EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
             query.join(member.profile.hobbies, hobby)
+                    .where(hobby.stringValue().in(condition.getHobbies()))
                     .distinct();
         }
     }

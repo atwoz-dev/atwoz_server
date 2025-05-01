@@ -6,7 +6,6 @@ import atwoz.atwoz.member.command.domain.introduction.MemberIdeal;
 import atwoz.atwoz.member.command.domain.introduction.MemberIdealCommandRepository;
 import atwoz.atwoz.member.command.domain.introduction.vo.AgeRange;
 import atwoz.atwoz.member.command.domain.member.*;
-import atwoz.atwoz.member.command.domain.member.exception.InvalidHobbyIdException;
 import atwoz.atwoz.member.presentation.introduction.dto.MemberIdealUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

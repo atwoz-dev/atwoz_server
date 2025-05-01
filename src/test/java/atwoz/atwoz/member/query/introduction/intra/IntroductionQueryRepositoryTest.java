@@ -108,6 +108,7 @@ class IntroductionQueryRepositoryTest {
 
             // when
             Set<Long> result = introductionQueryRepository.findAllIntroductionMemberId(condition);
+            System.out.println("hobby Condition : " + condition.getHobbies());
 
             // then
             if (fieldName.equals("excludedIds")) {
@@ -116,7 +117,7 @@ class IntroductionQueryRepositoryTest {
                 assertThat(result).containsExactly(member2.getId());
             } else if (fieldName.equals("maxAge")) {
                 assertThat(result).containsExactly(member1.getId());
-            } else if (fieldName.equals("hobbyIds")) {
+            } else if (fieldName.equals("hobbies")) {
                 assertThat(result).containsExactly(member1.getId());
             } else if (fieldName.equals("religion")) {
                 assertThat(result).containsExactly(member1.getId());

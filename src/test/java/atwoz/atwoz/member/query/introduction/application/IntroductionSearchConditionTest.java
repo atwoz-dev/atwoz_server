@@ -66,7 +66,7 @@ class IntroductionSearchConditionTest {
     }
 
     @Test
-    @DisplayName("ofHobbyIds 메서드 테스트")
+    @DisplayName("ofHobbies 메서드 테스트")
     void ofHobbiesTest() {
         // given
         MemberIdeal ideal = getMockedMemberIdeal();
