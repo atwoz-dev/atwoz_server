@@ -19,7 +19,7 @@ public enum Job {
     DESIGN("디자인"),
     MARKETING_AND_ADVERTISING("마케팅/광고"),
     TRADE_AND_DISTRIBUTION("무역/유통"),
-    MEDIA_AND_ENTERTAINMENT("방송언론/연애"),
+    MEDIA_AND_ENTERTAINMENT("방송언론/연예"),
     LEGAL_AND_PUBLIC("법률/공공"),
     PRODUCTION_AND_MANUFACTURING("생산/제조"),
     CUSTOMER_SERVICE("서비스"),

@@ -90,7 +90,7 @@ public class IntroductionQueryRepository {
                         new QMemberIntroductionProfileQueryResult(
                                 member.id,
                                 profileImage.imageUrl.value,
-                                GroupBy.list(hobby.stringValue()),
+                                GroupBy.set(hobby.stringValue()),
                                 member.profile.religion.stringValue(),
                                 member.profile.mbti.stringValue(),
                                 like.likeLevel.stringValue(),
