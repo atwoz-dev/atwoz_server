@@ -29,7 +29,7 @@ public class MemberProfile {
 
     @ElementCollection
     @CollectionTable(name = "member_hobbies", joinColumns = @JoinColumn(name = "member_id"))
-    @Column(name = "hobby_name")
+    @Column(name = "name", columnDefinition = "varchar(50)")
     @Enumerated(EnumType.STRING)
     private Set<Hobby> hobbies = new HashSet<>();
 

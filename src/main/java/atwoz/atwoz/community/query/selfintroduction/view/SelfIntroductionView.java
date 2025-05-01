@@ -19,7 +19,10 @@ public record SelfIntroductionView(
                                 String city,
                                 String district,
                                 String mbti,
-                                Set<String> hobbies, String like, String title, String content) {
+                                Set<String> hobbies,
+                                String like,
+                                String title,
+                                String content) {
         this(new MemberBasicInfo(memberId, nickname, yearOfBirth, profileImageUrl, city, district, mbti, hobbies), like, title, content);
     }
 }
