@@ -3,6 +3,7 @@ package atwoz.atwoz.community.query.selfintroduction.view;
 import com.querydsl.core.annotations.QueryProjection;
 
 import java.util.List;
+import java.util.Set;
 
 public record SelfIntroductionView(
         MemberBasicInfo memberBasicInfo,
@@ -18,7 +19,10 @@ public record SelfIntroductionView(
                                 String city,
                                 String district,
                                 String mbti,
-                                List<String> hobbies, String like, String title, String content) {
+                                Set<String> hobbies,
+                                String like,
+                                String title,
+                                String content) {
         this(new MemberBasicInfo(memberId, nickname, yearOfBirth, profileImageUrl, city, district, mbti, hobbies), like, title, content);
     }
 }

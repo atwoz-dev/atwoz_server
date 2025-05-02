@@ -1,6 +1,7 @@
 package atwoz.atwoz.member.presentation.member.dto;
 
 import java.util.List;
+import java.util.Set;
 
 public record BasicInfo(
         Long id,
@@ -10,7 +11,7 @@ public record BasicInfo(
         String gender,
         Integer height,
         String job,
-        List<String> hobbies,
+        Set<String> hobbies,
         String mbti,
         String region,
         String smokingStatus,

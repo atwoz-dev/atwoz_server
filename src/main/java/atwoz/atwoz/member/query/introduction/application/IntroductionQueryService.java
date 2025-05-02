@@ -82,7 +82,7 @@ public class IntroductionQueryService {
                 IntroductionCacheKeyPrefix.SAME_HOBBY,
                 null,
                 (excluded, ideal, member, unused) ->
-                        IntroductionSearchCondition.ofHobbyIds(excluded, ideal, member.getGender().getOpposite(), member.getProfile().getHobbyIds())
+                        IntroductionSearchCondition.ofHobbies(excluded, ideal, member.getGender().getOpposite(), member.getProfile().getHobbies())
         );
     }
 

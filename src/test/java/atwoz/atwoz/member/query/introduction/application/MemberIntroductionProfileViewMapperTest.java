@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.query.introduction.application;
 
+import atwoz.atwoz.member.command.domain.member.Hobby;
 import atwoz.atwoz.member.query.introduction.intra.InterviewAnswerQueryResult;
 import atwoz.atwoz.member.query.introduction.intra.MemberIntroductionProfileQueryResult;
 import org.junit.jupiter.api.DisplayName;
@@ -7,13 +8,14 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MemberIntroductionProfileViewMapperTest {
     private final Long expectedMemberId = 1L;
     private final String expectedProfileImageUrl = "imageUrl";
-    private final List<String> expectedHobbies = List.of("drawing", "cycling");
+    private final Set<String> expectedHobbies = Set.of(Hobby.CAMPING.name(), Hobby.WINE.name());
     private final String expectedReligion = "Buddhist";
     private final String expectedMbti = "INFJ";
     private final String expectedLikeLevel = "INTEREST";

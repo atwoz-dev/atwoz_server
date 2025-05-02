@@ -1,10 +1,11 @@
 package atwoz.atwoz.member.query.introduction.intra;
 
+import atwoz.atwoz.member.command.domain.member.Hobby;
 import atwoz.atwoz.member.query.introduction.application.IntroductionSearchCondition;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.NumberPath;
+
+import com.querydsl.core.types.dsl.EnumPath;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -13,13 +14,13 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static atwoz.atwoz.admin.command.domain.hobby.QHobby.hobby;
 import static atwoz.atwoz.interview.command.domain.answer.QInterviewAnswer.interviewAnswer;
 import static atwoz.atwoz.like.command.domain.like.QLike.like;
 import static atwoz.atwoz.match.command.domain.match.QMatch.match;
 import static atwoz.atwoz.member.command.domain.introduction.QMemberIntroduction.memberIntroduction;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
 import static atwoz.atwoz.member.command.domain.profileImage.QProfileImage.profileImage;
+import static com.querydsl.core.types.dsl.Expressions.enumPath;
 
 @Repository
 @RequiredArgsConstructor
@@ -70,24 +71,26 @@ public class IntroductionQueryRepository {
                 .orderBy(member.id.desc())
                 .limit(LIMIT);
 
-        applyHobbyIdsCondition(query, condition);
+        applyHobbiesCondition(query, condition);
         return new HashSet<>(query.fetch());
     }
 
     public List<MemberIntroductionProfileQueryResult> findAllMemberIntroductionProfileQueryResultByMemberIds(long memberId, Set<Long> memberIds) {
+        EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
+
         return new ArrayList<>(queryFactory
                 .from(member)
-                .leftJoin(hobby).on(hobby.id.in(member.profile.hobbyIds))
                 .leftJoin(memberIntroduction).on(memberIntroduction.memberId.eq(memberId))
                 .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.isTrue()))
                 .leftJoin(like).on(like.senderId.eq(memberId).and(like.receiverId.eq(member.id)))
+                .leftJoin(member.profile.hobbies, hobby)
                 .where(member.id.in(memberIds))
                 .orderBy(member.id.desc())
                 .transform(GroupBy.groupBy(member.id).as(
                         new QMemberIntroductionProfileQueryResult(
                                 member.id,
                                 profileImage.imageUrl.value,
-                                GroupBy.list(hobby.name),
+                                GroupBy.set(hobby.stringValue()),
                                 member.profile.religion.stringValue(),
                                 member.profile.mbti.stringValue(),
                                 like.likeLevel.stringValue(),
@@ -181,11 +184,11 @@ public class IntroductionQueryRepository {
         return member.createdAt.goe(createdAt);
     }
 
-    private void applyHobbyIdsCondition(JPAQuery<?> query, IntroductionSearchCondition condition) {
-        if (condition.getHobbyIds() != null && !condition.getHobbyIds().isEmpty()) {
-            NumberPath<Long> hobbyId = Expressions.numberPath(Long.class, "hobbyId");
-            query.join(member.profile.hobbyIds, hobbyId)
-                    .on(hobbyId.in(condition.getHobbyIds()))
+    private void applyHobbiesCondition(JPAQuery<?> query, IntroductionSearchCondition condition) {
+        if (condition.getHobbies() != null && !condition.getHobbies().isEmpty()) {
+            EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
+            query.join(member.profile.hobbies, hobby)
+                    .where(hobby.stringValue().in(condition.getHobbies()))
                     .distinct();
         }
     }

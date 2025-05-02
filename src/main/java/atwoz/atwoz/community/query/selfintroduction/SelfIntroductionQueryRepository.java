@@ -4,25 +4,25 @@ import atwoz.atwoz.community.query.selfintroduction.view.QSelfIntroductionSummar
 import atwoz.atwoz.community.query.selfintroduction.view.QSelfIntroductionView;
 import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionSummaryView;
 import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionView;
+import atwoz.atwoz.member.command.domain.member.Hobby;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.EnumPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static atwoz.atwoz.admin.command.domain.hobby.QHobby.hobby;
+
 import static atwoz.atwoz.community.command.domain.selfintroduction.QSelfIntroduction.selfIntroduction;
 import static atwoz.atwoz.like.command.domain.like.QLike.like;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
 import static atwoz.atwoz.member.command.domain.profileImage.QProfileImage.profileImage;
-import static com.querydsl.core.group.GroupBy.groupBy;
-import static com.querydsl.core.group.GroupBy.list;
+import static com.querydsl.core.group.GroupBy.*;
+import static com.querydsl.core.types.dsl.Expressions.enumPath;
 
 @Repository
 @RequiredArgsConstructor
@@ -50,12 +50,14 @@ public class SelfIntroductionQueryRepository {
     }
 
     public Optional<SelfIntroductionView> findSelfIntroductionByIdWithMemberId(Long id, Long memberId) {
+        EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
+
         Map<Long, SelfIntroductionView> view = queryFactory
                 .from(selfIntroduction)
                 .leftJoin(member).on(member.id.eq(selfIntroduction.memberId))
                 .leftJoin(like).on(like.senderId.eq(memberId).and(like.receiverId.eq(member.id)))
                 .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
-                .leftJoin(hobby).on(hobby.id.in(member.profile.hobbyIds))
+                .leftJoin(member.profile.hobbies, hobby)
                 .where(selfIntroduction.id.eq(id))
                 .transform(
                         groupBy(member.id).as(
@@ -67,7 +69,7 @@ public class SelfIntroductionQueryRepository {
                                         member.profile.region.city.stringValue(),
                                         member.profile.region.district.stringValue(),
                                         member.profile.mbti.stringValue(),
-                                        list(hobby.name),
+                                        set(hobby.stringValue()),
                                         like.likeLevel.stringValue(),
                                         selfIntroduction.title,
                                         selfIntroduction.content

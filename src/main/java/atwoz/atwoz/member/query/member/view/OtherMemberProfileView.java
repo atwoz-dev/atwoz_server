@@ -1,9 +1,8 @@
 package atwoz.atwoz.member.query.member.view;
 
-import atwoz.atwoz.member.query.member.AgeConverter;
 import com.querydsl.core.annotations.QueryProjection;
 
-import java.util.List;
+import java.util.Set;
 
 public record OtherMemberProfileView(
         BasicMemberInfo basicMemberInfo,
@@ -16,7 +15,7 @@ public record OtherMemberProfileView(
             String gender,
             Integer height,
             String job,
-            List<String> hobbies,
+            Set<String> hobbies,
             String mbti,
             String city,
             String smokingStatus,

@@ -2,12 +2,12 @@ package atwoz.atwoz.member.query.introduction.intra;
 
 import com.querydsl.core.annotations.QueryProjection;
 
-import java.util.List;
+import java.util.Set;
 
 public record MemberIntroductionProfileQueryResult(
         long memberId,
         String profileImageUrl,
-        List<String> hobbies,
+        Set<String> hobbies,
         String religion,
         String mbti,
         String likeLevel,

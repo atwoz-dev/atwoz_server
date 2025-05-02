@@ -260,7 +260,12 @@ public enum District {
     JANGSU_GUN(City.JEOLLABUK, "장수군"),
     JEONJU_SI(City.JEOLLABUK, "전주시"),
     JEONGEUP_SI(City.JEOLLABUK, "정읍시"),
-    JINAN_GUN(City.JEOLLABUK, "진안군");
+    JINAN_GUN(City.JEOLLABUK, "진안군"),
+
+    // 제주도
+    JEJU_SI(City.JEJU, "제주시"),
+    SEOGWIPO_SI(City.JEJU, "서귀포시");
+
 
 
     private final City city;

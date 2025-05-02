@@ -1,7 +1,5 @@
 package atwoz.atwoz.member.command.application.member;
 
-import atwoz.atwoz.admin.command.domain.hobby.HobbyCommandRepository;
-import atwoz.atwoz.admin.command.domain.job.JobCommandRepository;
 import atwoz.atwoz.member.command.application.member.exception.KakaoIdAlreadyExistsException;
 import atwoz.atwoz.member.command.application.member.exception.PhoneNumberAlreadyExistsException;
 import atwoz.atwoz.member.command.domain.member.Member;
@@ -25,12 +23,6 @@ public class MemberContactServiceTest {
 
     @Mock
     private MemberCommandRepository memberCommandRepository;
-
-    @Mock
-    private HobbyCommandRepository hobbyCommandRepository;
-
-    @Mock
-    private JobCommandRepository jobCommandRepository;
 
     @InjectMocks
     private MemberContactService memberContactService;

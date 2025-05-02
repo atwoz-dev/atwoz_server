@@ -1,6 +1,6 @@
 package atwoz.atwoz.member.query.member.view;
 
-import java.util.List;
+import java.util.Set;
 
 public record BasicMemberInfo(
         Long id,
@@ -10,7 +10,7 @@ public record BasicMemberInfo(
         String gender,
         Integer height,
         String job,
-        List<String> hobbies,
+        Set<String> hobbies,
         String mbti,
         String city,
         String smokingStatus,

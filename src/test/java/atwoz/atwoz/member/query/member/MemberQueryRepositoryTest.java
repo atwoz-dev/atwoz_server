@@ -1,8 +1,6 @@
 package atwoz.atwoz.member.query.member;
 
 import atwoz.atwoz.QuerydslConfig;
-import atwoz.atwoz.admin.command.domain.hobby.Hobby;
-import atwoz.atwoz.admin.command.domain.job.Job;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.interview.command.domain.answer.InterviewAnswer;
@@ -63,14 +61,9 @@ public class MemberQueryRepositoryTest {
         @DisplayName("존재하는 아이디인 경우, 프로필 조회 성공.")
         void isSuccessWhenMemberIsExists() {
             // Given
-            Job job = Job.from("직업1");
-            Hobby hobby1 = Hobby.from("취미1");
-            Hobby hobby2 = Hobby.from("취미2");
-            entityManager.persist(job);
-            entityManager.persist(hobby1);
-            entityManager.persist(hobby2);
-
-            entityManager.flush();
+            Job job = Job.JOB_SEARCHING;
+            Hobby hobby1 = Hobby.ANIMATION;
+            Hobby hobby2 = Hobby.BOARD_GAMES;
 
             Member member = Member.fromPhoneNumber("01012345678");
             MemberProfile updateProfile = MemberProfile.builder()
@@ -84,8 +77,8 @@ public class MemberQueryRepositoryTest {
                     .mbti(Mbti.ENFJ)
                     .drinkingStatus(DrinkingStatus.NONE)
                     .religion(Religion.BUDDHIST)
-                    .jobId(job.getId())
-                    .hobbyIds(Set.of(hobby1.getId(), hobby2.getId()))
+                    .job(job)
+                    .hobbies(Set.of(hobby1, hobby2))
                     .build();
 
             member.updateProfile(updateProfile);
@@ -101,8 +94,8 @@ public class MemberQueryRepositoryTest {
             Assertions.assertThat(memberProfileView.yearOfBirth()).isEqualTo(savedMemberProfile.getYearOfBirth().getValue());
             Assertions.assertThat(memberProfileView.height()).isEqualTo(savedMemberProfile.getHeight());
             Assertions.assertThat(memberProfileView.drinkingStatus()).isEqualTo(savedMemberProfile.getDrinkingStatus().toString());
-            Assertions.assertThat(memberProfileView.job()).isEqualTo(job.getName());
-            Assertions.assertThat(memberProfileView.hobbies().size()).isEqualTo(savedMemberProfile.getHobbyIds().size());
+            Assertions.assertThat(memberProfileView.job()).isEqualTo(job.name());
+            Assertions.assertThat(memberProfileView.hobbies().size()).isEqualTo(savedMemberProfile.getHobbies().size());
             Assertions.assertThat(memberProfileView.nickname()).isEqualTo(savedMemberProfile.getNickname().getValue());
             Assertions.assertThat(memberProfileView.city()).isEqualTo(savedMemberProfile.getRegion().getCity().toString());
             Assertions.assertThat(memberProfileView.district()).isEqualTo(savedMemberProfile.getRegion().getDistrict().toString());
@@ -159,7 +152,8 @@ public class MemberQueryRepositoryTest {
 
         LikeLevel likeLevel = LikeLevel.INTEREST;
         String profileImageUrl = "primaryImage";
-        String jobName = "직업1";
+        Job jobName = Job.JOB_SEARCHING;
+        Set<Hobby> hobbies = Set.of(Hobby.ANIMATION, Hobby.BOARD_GAMES);
         static MockedStatic<Events> mockedEvents;
 
 
@@ -169,14 +163,10 @@ public class MemberQueryRepositoryTest {
             mockedEvents.when(() -> Events.raise(Mockito.any()))
                     .thenAnswer(invocation -> null);
 
-            Job job = Job.from(jobName);
-            Hobby hobby1 = Hobby.from("취미1");
-            Hobby hobby2 = Hobby.from("취미2");
-            entityManager.persist(job);
-            entityManager.persist(hobby1);
-            entityManager.persist(hobby2);
+            Job job = Job.JOB_SEARCHING;
+            Hobby hobby1 = Hobby.ANIMATION;
+            Hobby hobby2 = Hobby.BOARD_GAMES;
 
-            entityManager.flush();
 
             otherMember = Member.fromPhoneNumber("01012345678");
 
@@ -191,8 +181,8 @@ public class MemberQueryRepositoryTest {
                     .mbti(Mbti.ENFJ)
                     .drinkingStatus(DrinkingStatus.NONE)
                     .religion(Religion.BUDDHIST)
-                    .jobId(job.getId())
-                    .hobbyIds(Set.of(hobby1.getId(), hobby2.getId()))
+                    .job(job)
+                    .hobbies(Set.of(hobby1, hobby2))
                     .build();
 
             otherMember.updateProfile(updateProfile);
@@ -416,7 +406,7 @@ public class MemberQueryRepositoryTest {
             Assertions.assertThat(basicMemberInfo.yearOfBirth()).isEqualTo(otherMemberProfile.getYearOfBirth().getValue());
             Assertions.assertThat(basicMemberInfo.gender()).isEqualTo(otherMemberProfile.getGender().toString());
             Assertions.assertThat(basicMemberInfo.height()).isEqualTo(otherMemberProfile.getHeight());
-            Assertions.assertThat(basicMemberInfo.job()).isEqualTo(jobName);
+            Assertions.assertThat(basicMemberInfo.job()).isEqualTo(jobName.toString());
             Assertions.assertThat(basicMemberInfo.hobbies().size()).isEqualTo(2);
             Assertions.assertThat(basicMemberInfo.mbti()).isEqualTo(otherMemberProfile.getMbti().toString());
             Assertions.assertThat(basicMemberInfo.city()).isEqualTo(otherMemberProfile.getRegion().getCity().toString());

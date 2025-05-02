@@ -6,7 +6,6 @@ import atwoz.atwoz.member.command.application.member.exception.BannedMemberExcep
 import atwoz.atwoz.member.command.application.member.exception.KakaoIdAlreadyExistsException;
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.application.member.exception.PhoneNumberAlreadyExistsException;
-import atwoz.atwoz.member.command.domain.member.exception.InvalidHobbyIdException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -43,14 +42,6 @@ public class MemberExceptionHandler {
     @ExceptionHandler(KakaoIdAlreadyExistsException.class)
     public ResponseEntity<BaseResponse<Void>> handleKakaoIdAlreadyExistsException(KakaoIdAlreadyExistsException e) {
         log.warn("카카오 아이디 변경에 실패하였습니다. {}", e.getMessage());
-
-        return ResponseEntity.badRequest()
-                .body(BaseResponse.from(StatusType.BAD_REQUEST));
-    }
-
-    @ExceptionHandler(InvalidHobbyIdException.class)
-    public ResponseEntity<BaseResponse<Void>> handleInvalidHobbyIdException(InvalidHobbyIdException e) {
-        log.warn("유효하지 않은 취미 아이디입니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
                 .body(BaseResponse.from(StatusType.BAD_REQUEST));

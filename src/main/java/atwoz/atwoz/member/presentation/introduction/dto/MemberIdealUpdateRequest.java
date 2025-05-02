@@ -21,6 +21,6 @@ public record MemberIdealUpdateRequest(
         String smokingStatus,
         String drinkingStatus,
         @NotNull(message = "취미를 입력해주세요.")
-        Set<Long> hobbyIds
+        Set<String> hobbies
 ) {
 }
