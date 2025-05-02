@@ -24,117 +24,17 @@ public class IntroductionSearchCondition {
     private final String gender;
     private final LocalDateTime joinedAfter;
 
-    public static IntroductionSearchCondition ofGrade(
-            Set<Long> excludedMemberIds,
-            MemberIdeal memberIdeal,
-            Gender gender,
-            Grade grade
-    ) {
-        return new IntroductionSearchCondition(
-                excludedMemberIds,
-                memberIdeal.getAgeRange(),
-                memberIdeal.getHobbies(),
-                memberIdeal.getCities(),
-                memberIdeal.getReligion(),
-                memberIdeal.getSmokingStatus(),
-                memberIdeal.getDrinkingStatus(),
-                grade,
-                gender,
-                null
-        );
-    }
-
-    public static IntroductionSearchCondition ofHobbies(
-            Set<Long> excludedMemberIds,
-            MemberIdeal memberIdeal,
-            Gender gender,
-            Set<Hobby> hobbies
-    ) {
-        return new IntroductionSearchCondition(
-                excludedMemberIds,
-                memberIdeal.getAgeRange(),
-                hobbies,
-                memberIdeal.getCities(),
-                memberIdeal.getReligion(),
-                memberIdeal.getSmokingStatus(),
-                memberIdeal.getDrinkingStatus(),
-                null,
-                gender,
-                null
-        );
-    }
-
-    public static IntroductionSearchCondition ofReligion(
-            Set<Long> excludedMemberIds,
-            MemberIdeal memberIdeal,
-            Gender gender,
-            Religion religion
-    ) {
-        return new IntroductionSearchCondition(
-                excludedMemberIds,
-                memberIdeal.getAgeRange(),
-                memberIdeal.getHobbies(),
-                memberIdeal.getCities(),
-                religion,
-                memberIdeal.getSmokingStatus(),
-                memberIdeal.getDrinkingStatus(),
-                null,
-                gender,
-                null
-        );
-    }
-
-    public static IntroductionSearchCondition ofCity(
-            Set<Long> excludedMemberIds,
-            MemberIdeal memberIdeal,
-            Gender gender,
-            City city
-    ) {
-        return new IntroductionSearchCondition(
-                excludedMemberIds,
-                memberIdeal.getAgeRange(),
-                memberIdeal.getHobbies(),
-                Set.of(city),
-                memberIdeal.getReligion(),
-                memberIdeal.getSmokingStatus(),
-                memberIdeal.getDrinkingStatus(),
-                null,
-                gender,
-                null
-        );
-    }
-
-    public static IntroductionSearchCondition ofJoinDate(
-            Set<Long> excludedMemberIds,
-            MemberIdeal memberIdeal,
-            Gender gender,
-            LocalDateTime joinedAfter
-    ) {
-        return new IntroductionSearchCondition(
-                excludedMemberIds,
-                memberIdeal.getAgeRange(),
-                memberIdeal.getHobbies(),
-                memberIdeal.getCities(),
-                memberIdeal.getReligion(),
-                memberIdeal.getSmokingStatus(),
-                memberIdeal.getDrinkingStatus(),
-                null,
-                gender,
-                joinedAfter
-        );
-    }
-
     private IntroductionSearchCondition(
-            Set<Long> excludedMemberIds,
-            AgeRange ageRange,
-            Set<Hobby> hobbies,
-            Set<City> cities,
-            Religion religion,
-            SmokingStatus smokingStatus,
-            DrinkingStatus drinkingStatus,
-            Grade memberGrade,
-            @NonNull Gender gender,
-            LocalDateTime joinedAfter
+        Set<Long> excludedMemberIds,
+        AgeRange ageRange,
+        Set<Hobby> hobbies,
+        Set<City> cities,
+        Religion religion,
+        SmokingStatus smokingStatus,
+        DrinkingStatus drinkingStatus,
+        Grade memberGrade,
+        @NonNull Gender gender,
+        LocalDateTime joinedAfter
     ) {
         this.excludedMemberIds = excludedMemberIds;
         this.minAge = (ageRange != null) ? ageRange.getMinAge() : null;
@@ -147,5 +47,105 @@ public class IntroductionSearchCondition {
         this.memberGrade = (memberGrade != null) ? memberGrade.name() : null;
         this.gender = gender.name();
         this.joinedAfter = joinedAfter;
+    }
+
+    public static IntroductionSearchCondition ofGrade(
+        Set<Long> excludedMemberIds,
+        MemberIdeal memberIdeal,
+        Gender gender,
+        Grade grade
+    ) {
+        return new IntroductionSearchCondition(
+            excludedMemberIds,
+            memberIdeal.getAgeRange(),
+            memberIdeal.getHobbies(),
+            memberIdeal.getCities(),
+            memberIdeal.getReligion(),
+            memberIdeal.getSmokingStatus(),
+            memberIdeal.getDrinkingStatus(),
+            grade,
+            gender,
+            null
+        );
+    }
+
+    public static IntroductionSearchCondition ofHobbies(
+        Set<Long> excludedMemberIds,
+        MemberIdeal memberIdeal,
+        Gender gender,
+        Set<Hobby> hobbies
+    ) {
+        return new IntroductionSearchCondition(
+            excludedMemberIds,
+            memberIdeal.getAgeRange(),
+            hobbies,
+            memberIdeal.getCities(),
+            memberIdeal.getReligion(),
+            memberIdeal.getSmokingStatus(),
+            memberIdeal.getDrinkingStatus(),
+            null,
+            gender,
+            null
+        );
+    }
+
+    public static IntroductionSearchCondition ofReligion(
+        Set<Long> excludedMemberIds,
+        MemberIdeal memberIdeal,
+        Gender gender,
+        Religion religion
+    ) {
+        return new IntroductionSearchCondition(
+            excludedMemberIds,
+            memberIdeal.getAgeRange(),
+            memberIdeal.getHobbies(),
+            memberIdeal.getCities(),
+            religion,
+            memberIdeal.getSmokingStatus(),
+            memberIdeal.getDrinkingStatus(),
+            null,
+            gender,
+            null
+        );
+    }
+
+    public static IntroductionSearchCondition ofCity(
+        Set<Long> excludedMemberIds,
+        MemberIdeal memberIdeal,
+        Gender gender,
+        City city
+    ) {
+        return new IntroductionSearchCondition(
+            excludedMemberIds,
+            memberIdeal.getAgeRange(),
+            memberIdeal.getHobbies(),
+            Set.of(city),
+            memberIdeal.getReligion(),
+            memberIdeal.getSmokingStatus(),
+            memberIdeal.getDrinkingStatus(),
+            null,
+            gender,
+            null
+        );
+    }
+
+    public static IntroductionSearchCondition ofJoinDate(
+        Set<Long> excludedMemberIds,
+        MemberIdeal memberIdeal,
+        Gender gender,
+        LocalDateTime joinedAfter
+    ) {
+        return new IntroductionSearchCondition(
+            excludedMemberIds,
+            memberIdeal.getAgeRange(),
+            memberIdeal.getHobbies(),
+            memberIdeal.getCities(),
+            memberIdeal.getReligion(),
+            memberIdeal.getSmokingStatus(),
+            memberIdeal.getDrinkingStatus(),
+            null,
+            gender,
+            joinedAfter
+        );
     }
 }

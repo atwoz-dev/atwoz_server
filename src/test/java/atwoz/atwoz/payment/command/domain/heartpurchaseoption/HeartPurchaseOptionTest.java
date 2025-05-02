@@ -27,7 +27,7 @@ class HeartPurchaseOptionTest {
 
         // when & then
         assertThatThrownBy(() -> HeartPurchaseOption.of(amount, price, name))
-                .isInstanceOf(NullPointerException.class);
+            .isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -40,7 +40,7 @@ class HeartPurchaseOptionTest {
 
         // when, then
         assertThatThrownBy(() -> HeartPurchaseOption.of(amount, price, name))
-                .isInstanceOf(InvalidHeartPurchaseOptionException.class);
+            .isInstanceOf(InvalidHeartPurchaseOptionException.class);
     }
 
     @Test
@@ -53,7 +53,7 @@ class HeartPurchaseOptionTest {
 
         // when, then
         assertThatThrownBy(() -> HeartPurchaseOption.of(amount, price, name))
-                .isInstanceOf(InvalidHeartPurchaseOptionException.class);
+            .isInstanceOf(InvalidHeartPurchaseOptionException.class);
     }
 
     @Test
@@ -90,10 +90,10 @@ class HeartPurchaseOptionTest {
 
             // Then
             eventsMockedStatic.verify(() ->
-                    Events.raise(argThat((HeartPurchasedEvent event) ->
-                            event.getMemberId().equals(memberId) &&
-                                    event.getAmount().equals(expectedAmount)
-                    )), times(1));
+                Events.raise(argThat((HeartPurchasedEvent event) ->
+                    event.getMemberId().equals(memberId) &&
+                        event.getAmount().equals(expectedAmount)
+                )), times(1));
         }
     }
 }

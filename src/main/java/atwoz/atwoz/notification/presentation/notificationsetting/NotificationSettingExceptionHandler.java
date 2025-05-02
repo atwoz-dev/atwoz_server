@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class NotificationSettingExceptionHandler {
 
     @ExceptionHandler(NotificationSettingNotFoundException.class)
-    public ResponseEntity<BaseResponse<Void>> handleNotificationSettingNotFoundException(NotificationSettingNotFoundException e) {
+    public ResponseEntity<BaseResponse<Void>> handleNotificationSettingNotFoundException(
+        NotificationSettingNotFoundException e) {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
-                .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.from(StatusType.NOT_FOUND));
     }
 }

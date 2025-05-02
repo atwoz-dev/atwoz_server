@@ -22,8 +22,8 @@ public class NotificationSettingController {
 
     @PatchMapping("/device-token")
     public ResponseEntity<BaseResponse<Void>> updateDeviceToken(
-            @RequestBody DeviceTokenUpdateRequest request,
-            @AuthPrincipal AuthContext authContext
+        @RequestBody DeviceTokenUpdateRequest request,
+        @AuthPrincipal AuthContext authContext
     ) {
         notificationSettingService.updateDeviceToken(request, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(OK));

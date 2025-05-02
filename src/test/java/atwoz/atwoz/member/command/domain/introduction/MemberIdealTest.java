@@ -11,8 +11,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Set;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MemberIdealTest {
 
@@ -80,7 +80,8 @@ class MemberIdealTest {
             ageRange = null;
 
             // when, then
-            assertThatThrownBy(() -> memberIdeal.update(ageRange, hobbies, cities, religion, smokingStatus, drinkingStatus))
+            assertThatThrownBy(
+                () -> memberIdeal.update(ageRange, hobbies, cities, religion, smokingStatus, drinkingStatus))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -92,7 +93,8 @@ class MemberIdealTest {
             hobbies = null;
 
             // when, then
-            assertThatThrownBy(() -> memberIdeal.update(ageRange, hobbies, cities, religion, smokingStatus, drinkingStatus))
+            assertThatThrownBy(
+                () -> memberIdeal.update(ageRange, hobbies, cities, religion, smokingStatus, drinkingStatus))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -104,7 +106,8 @@ class MemberIdealTest {
             cities = null;
 
             // when, then
-            assertThatThrownBy(() -> memberIdeal.update(ageRange, hobbies, cities, religion, smokingStatus, drinkingStatus))
+            assertThatThrownBy(
+                () -> memberIdeal.update(ageRange, hobbies, cities, religion, smokingStatus, drinkingStatus))
                 .isInstanceOf(NullPointerException.class);
         }
 

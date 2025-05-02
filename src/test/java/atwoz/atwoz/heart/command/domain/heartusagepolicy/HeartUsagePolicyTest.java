@@ -1,7 +1,7 @@
 package atwoz.atwoz.heart.command.domain.heartusagepolicy;
 
-import atwoz.atwoz.heart.command.domain.hearttransaction.vo.TransactionType;
 import atwoz.atwoz.heart.command.domain.hearttransaction.exception.InvalidHeartTransactionTypeException;
+import atwoz.atwoz.heart.command.domain.hearttransaction.vo.TransactionType;
 import atwoz.atwoz.member.command.domain.member.Gender;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -38,10 +38,11 @@ class HeartUsagePolicyTest {
             // given
             TransactionType transactionType = fieldName.equals("usageType is null") ? null : TransactionType.MESSAGE;
             Gender gender = fieldName.equals("gender is null") ? null : Gender.MALE;
-            HeartPriceAmount heartPriceAmount = fieldName.equals("heartPriceAmount is null") ? null : HeartPriceAmount.from(10L);
+            HeartPriceAmount heartPriceAmount =
+                fieldName.equals("heartPriceAmount is null") ? null : HeartPriceAmount.from(10L);
             // when & then
             assertThatThrownBy(() -> HeartUsagePolicy.of(transactionType, gender, heartPriceAmount))
-                    .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(NullPointerException.class);
         }
 
         @Test
@@ -53,7 +54,7 @@ class HeartUsagePolicyTest {
             HeartPriceAmount heartPriceAmount = HeartPriceAmount.from(10L);
             // when & then
             assertThatThrownBy(() -> HeartUsagePolicy.of(transactionType, gender, heartPriceAmount))
-                    .isInstanceOf(InvalidHeartTransactionTypeException.class);
+                .isInstanceOf(InvalidHeartTransactionTypeException.class);
         }
     }
 

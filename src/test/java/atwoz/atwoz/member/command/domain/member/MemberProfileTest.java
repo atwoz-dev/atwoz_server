@@ -16,19 +16,19 @@ class MemberProfileTest {
     void isNeededProfileSettingWhenNullValueExists() {
         // Given
         MemberProfile memberProfile = MemberProfile.builder()
-                .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
-                .height(180)
-                .job(Job.JOB_SEARCHING)
-                .mbti(Mbti.ENFJ)
-                .drinkingStatus(DrinkingStatus.NONE)
-                .smokingStatus(SmokingStatus.VAPE)
-                .religion(Religion.NONE)
-                .highestEducation(HighestEducation.DOCTORATE)
-                .gender(Gender.MALE)
-                .nickname(Nickname.from("Hello"))
-                .hobbies(Set.of(Hobby.ANIMATION))
-                .region(null)
-                .build();
+            .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
+            .height(180)
+            .job(Job.JOB_SEARCHING)
+            .mbti(Mbti.ENFJ)
+            .drinkingStatus(DrinkingStatus.NONE)
+            .smokingStatus(SmokingStatus.VAPE)
+            .religion(Religion.NONE)
+            .highestEducation(HighestEducation.DOCTORATE)
+            .gender(Gender.MALE)
+            .nickname(Nickname.from("Hello"))
+            .hobbies(Set.of(Hobby.ANIMATION))
+            .region(null)
+            .build();
 
         // When & Then
         Assertions.assertThat(memberProfile.isProfileSettingNeeded()).isTrue();
@@ -39,19 +39,19 @@ class MemberProfileTest {
     void isNeededProfileSettingWhenHobbyListIsEmpty() {
         // Given
         MemberProfile memberProfile = MemberProfile.builder()
-                .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
-                .height(180)
-                .job(Job.JOB_SEARCHING)
-                .mbti(Mbti.ENFJ)
-                .drinkingStatus(DrinkingStatus.NONE)
-                .smokingStatus(SmokingStatus.VAPE)
-                .religion(Religion.NONE)
-                .highestEducation(HighestEducation.DOCTORATE)
-                .gender(Gender.MALE)
-                .nickname(Nickname.from("Hello"))
-                .hobbies(Set.of())
-                .region(Region.of(District.GANGBUK_GU))
-                .build();
+            .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
+            .height(180)
+            .job(Job.JOB_SEARCHING)
+            .mbti(Mbti.ENFJ)
+            .drinkingStatus(DrinkingStatus.NONE)
+            .smokingStatus(SmokingStatus.VAPE)
+            .religion(Religion.NONE)
+            .highestEducation(HighestEducation.DOCTORATE)
+            .gender(Gender.MALE)
+            .nickname(Nickname.from("Hello"))
+            .hobbies(Set.of())
+            .region(Region.of(District.GANGBUK_GU))
+            .build();
 
         // When & Then
         Assertions.assertThat(memberProfile.isProfileSettingNeeded()).isTrue();
@@ -62,19 +62,19 @@ class MemberProfileTest {
     void isNeededProfileSettingWhenHobbyListIsNotEmptyAndNullValueDoesntNotExist() {
         // Given
         MemberProfile memberProfile = MemberProfile.builder()
-                .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
-                .height(180)
-                .job(Job.JOB_SEARCHING)
-                .mbti(Mbti.ENFJ)
-                .drinkingStatus(DrinkingStatus.NONE)
-                .smokingStatus(SmokingStatus.VAPE)
-                .religion(Religion.NONE)
-                .highestEducation(HighestEducation.DOCTORATE)
-                .gender(Gender.MALE)
-                .nickname(Nickname.from("Hello"))
-                .hobbies(Set.of(Hobby.ANIMATION))
-                .region(Region.of(District.GANGBUK_GU))
-                .build();
+            .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
+            .height(180)
+            .job(Job.JOB_SEARCHING)
+            .mbti(Mbti.ENFJ)
+            .drinkingStatus(DrinkingStatus.NONE)
+            .smokingStatus(SmokingStatus.VAPE)
+            .religion(Religion.NONE)
+            .highestEducation(HighestEducation.DOCTORATE)
+            .gender(Gender.MALE)
+            .nickname(Nickname.from("Hello"))
+            .hobbies(Set.of(Hobby.ANIMATION))
+            .region(Region.of(District.GANGBUK_GU))
+            .build();
 
         // When & Then
         Assertions.assertThat(memberProfile.isProfileSettingNeeded()).isFalse();

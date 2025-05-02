@@ -49,13 +49,14 @@ class AdminInterviewQuestionQueryRepositoryTest {
             entityManager.persist(question3);
             entityManager.flush();
             List<InterviewQuestion> sortedQuestions = List.of(question1, question2, question3)
-                    .stream()
-                    .sorted(Comparator.comparing(InterviewQuestion::getId).reversed())
-                    .collect(Collectors.toList());
+                .stream()
+                .sorted(Comparator.comparing(InterviewQuestion::getId).reversed())
+                .collect(Collectors.toList());
             PageRequest pageRequest = PageRequest.of(0, 10);
 
             // when
-            Page<AdminInterviewQuestionView> result = adminInterviewQuestionQueryRepository.findAdminInterviewQuestionPage(pageRequest);
+            Page<AdminInterviewQuestionView> result = adminInterviewQuestionQueryRepository.findAdminInterviewQuestionPage(
+                pageRequest);
 
             // then
             assertThat(result.getContent()).hasSize(3);
@@ -64,7 +65,8 @@ class AdminInterviewQuestionQueryRepositoryTest {
             assertThat(result.getContent().get(0).content()).isEqualTo(sortedQuestions.get(0).getContent());
             assertThat(result.getContent().get(0).category()).isEqualTo(sortedQuestions.get(0).getCategory().name());
             assertThat(result.getContent().get(0).isPublic()).isEqualTo(sortedQuestions.get(0).isPublic());
-            assertThat(result.getContent().get(0).createdAt()).isCloseTo(sortedQuestions.get(0).getCreatedAt(), within(1, ChronoUnit.MICROS));
+            assertThat(result.getContent().get(0).createdAt()).isCloseTo(sortedQuestions.get(0).getCreatedAt(),
+                within(1, ChronoUnit.MICROS));
             assertThat(result.getContent().get(1).id()).isEqualTo(sortedQuestions.get(1).getId());
             assertThat(result.getContent().get(2).id()).isEqualTo(sortedQuestions.get(2).getId());
         }
@@ -83,7 +85,8 @@ class AdminInterviewQuestionQueryRepositoryTest {
             entityManager.flush();
 
             // when
-            Optional<AdminInterviewQuestionView> result = adminInterviewQuestionQueryRepository.findAdminInterviewQuestionById(question.getId());
+            Optional<AdminInterviewQuestionView> result = adminInterviewQuestionQueryRepository.findAdminInterviewQuestionById(
+                question.getId());
 
             // then
             assertThat(result).isNotNull();
@@ -104,7 +107,8 @@ class AdminInterviewQuestionQueryRepositoryTest {
             entityManager.flush();
 
             // when
-            Optional<AdminInterviewQuestionView> result = adminInterviewQuestionQueryRepository.findAdminInterviewQuestionById(question.getId() + 1);
+            Optional<AdminInterviewQuestionView> result = adminInterviewQuestionQueryRepository.findAdminInterviewQuestionById(
+                question.getId() + 1);
 
             // then
             assertThat(result).isEmpty();

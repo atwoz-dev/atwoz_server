@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 public class ProfileImageMapper {
     private static ProfileImageUploadResponse toUploadResponse(ProfileImage profileImage) {
         return ProfileImageUploadResponse.builder()
-                .id(profileImage.getId())
-                .imageUrl(profileImage.getUrl())
-                .order(profileImage.getOrder())
-                .isPrimary(profileImage.isPrimary())
-                .build();
+            .id(profileImage.getId())
+            .imageUrl(profileImage.getUrl())
+            .order(profileImage.getOrder())
+            .isPrimary(profileImage.isPrimary())
+            .build();
     }
 
     static public List<ProfileImageUploadResponse> toList(List<ProfileImage> profileImages) {

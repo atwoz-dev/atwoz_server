@@ -16,6 +16,7 @@ public class PurchaseHeartGainedEventHandler {
     @Async
     @TransactionalEventListener(value = PurchaseHeartGainedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handle(PurchaseHeartGainedEvent event) {
-        heartTransactionService.createHeartPurchaseTransaction(event.getMemberId(), event.getAmount(), event.getMissionHeartBalance(), event.getPurchaseHeartBalance());
+        heartTransactionService.createHeartPurchaseTransaction(event.getMemberId(), event.getAmount(),
+            event.getMissionHeartBalance(), event.getPurchaseHeartBalance());
     }
 }

@@ -24,7 +24,7 @@ public class ProfileExchangeAcceptedMessageTemplate implements MessageTemplate {
     @Override
     public String getTitle(MessageTemplateParameters parameters) {
         Member receiver = memberCommandRepository.findById(parameters.getReceiverId())
-                .orElseThrow(MemberNotFoundException::new);
+            .orElseThrow(MemberNotFoundException::new);
         return receiver.getProfile().getNickname() + "님이 프로필 교환을 수락하셨습니다.";
     }
 

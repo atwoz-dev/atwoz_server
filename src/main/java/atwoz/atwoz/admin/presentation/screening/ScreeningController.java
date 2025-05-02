@@ -25,8 +25,8 @@ public class ScreeningController {
 
     @GetMapping
     public ResponseEntity<BaseResponse<Page<ScreeningView>>> getScreenings(
-            @Valid @ModelAttribute ScreeningSearchCondition condition,
-            Pageable pageable
+        @Valid @ModelAttribute ScreeningSearchCondition condition,
+        Pageable pageable
     ) {
         return ResponseEntity.ok(BaseResponse.of(OK, screeningQueryRepository.findScreenings(condition, pageable)));
     }
@@ -38,9 +38,9 @@ public class ScreeningController {
 
     @PostMapping("/{screeningId}/approve")
     public ResponseEntity<BaseResponse<Void>> approve(
-            @PathVariable long screeningId,
-            @RequestBody ScreeningApproveRequest request,
-            @AuthPrincipal AuthContext authContext
+        @PathVariable long screeningId,
+        @RequestBody ScreeningApproveRequest request,
+        @AuthPrincipal AuthContext authContext
     ) {
         screeningService.approve(screeningId, request, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(OK));
@@ -48,9 +48,9 @@ public class ScreeningController {
 
     @PostMapping("/{screeningId}/reject")
     public ResponseEntity<BaseResponse<Void>> reject(
-            @PathVariable long screeningId,
-            @Valid @RequestBody ScreeningRejectRequest request,
-            @AuthPrincipal AuthContext authContext
+        @PathVariable long screeningId,
+        @Valid @RequestBody ScreeningRejectRequest request,
+        @AuthPrincipal AuthContext authContext
     ) {
         screeningService.reject(screeningId, authContext.getId(), request);
         return ResponseEntity.ok(BaseResponse.from(OK));

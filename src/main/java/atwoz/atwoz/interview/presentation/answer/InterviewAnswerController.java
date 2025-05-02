@@ -19,7 +19,8 @@ public class InterviewAnswerController {
     private final InterviewAnswerService interviewAnswerService;
 
     @PostMapping
-    public void saveAnswer(@Valid @RequestBody InterviewAnswerSaveRequest request, @AuthPrincipal AuthContext authContext) {
+    public void saveAnswer(@Valid @RequestBody InterviewAnswerSaveRequest request,
+        @AuthPrincipal AuthContext authContext) {
         interviewAnswerService.saveAnswer(request, authContext.getId());
     }
 }

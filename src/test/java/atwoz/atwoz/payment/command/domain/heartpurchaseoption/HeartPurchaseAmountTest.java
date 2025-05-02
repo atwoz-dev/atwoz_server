@@ -17,7 +17,7 @@ class HeartPurchaseAmountTest {
 
         // when, then
         assertThatThrownBy(() -> HeartPurchaseAmount.from(amount))
-                .isInstanceOf(InvalidHeartPurchaseAmountException.class);
+            .isInstanceOf(InvalidHeartPurchaseAmountException.class);
     }
 
     @Test
@@ -28,7 +28,7 @@ class HeartPurchaseAmountTest {
 
         // when, then
         assertThatThrownBy(() -> HeartPurchaseAmount.from(amount))
-                .isInstanceOf(NullPointerException.class);
+            .isInstanceOf(NullPointerException.class);
     }
 
     @Test

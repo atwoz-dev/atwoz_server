@@ -24,6 +24,13 @@ public class Password {
     @Column(name = "password")
     private final String hashedValue;
 
+    private Password(@NonNull String hashedValue) {
+        if (hashedValue.isBlank()) {
+            throw new InvalidPasswordException(hashedValue);
+        }
+        this.hashedValue = hashedValue;
+    }
+
     public static Password fromRaw(@NonNull String rawValue, PasswordHasher hasher) {
         if (!PASSWORD_PATTERN.matcher(rawValue).matches()) {
             throw new InvalidPasswordException(rawValue);
@@ -34,13 +41,6 @@ public class Password {
 
     public static Password fromHashed(String hashedValue) {
         return new Password(hashedValue);
-    }
-
-    private Password(@NonNull String hashedValue) {
-        if (hashedValue.isBlank()) {
-            throw new InvalidPasswordException(hashedValue);
-        }
-        this.hashedValue = hashedValue;
     }
 
     public boolean matches(String rawValue, PasswordHasher hasher) {

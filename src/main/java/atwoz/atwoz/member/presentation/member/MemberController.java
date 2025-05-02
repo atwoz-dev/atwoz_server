@@ -25,7 +25,8 @@ public class MemberController {
     private final MemberQueryRepository memberQueryRepository;
 
     @PutMapping("/profile")
-    public ResponseEntity<BaseResponse<Void>> updateProfile(@RequestBody MemberProfileUpdateRequest request, @AuthPrincipal AuthContext authContext) {
+    public ResponseEntity<BaseResponse<Void>> updateProfile(@RequestBody MemberProfileUpdateRequest request,
+        @AuthPrincipal AuthContext authContext) {
         memberProfileService.updateMember(authContext.getId(), request);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
@@ -35,22 +36,26 @@ public class MemberController {
         MemberProfileView response = memberQueryRepository.findProfileByMemberId(authContext.getId()).orElse(null);
         if (response == null) {
             return ResponseEntity.status(404)
-                    .body(BaseResponse.from(StatusType.NOT_FOUND));
+                .body(BaseResponse.from(StatusType.NOT_FOUND));
         }
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, response));
     }
 
     @GetMapping("/{memberId}")
-    public ResponseEntity<BaseResponse<MemberProfileResponse>> getOtherProfile(@AuthPrincipal AuthContext authContext, @PathVariable Long memberId) {
-        OtherMemberProfileView profileView = memberQueryRepository.findOtherProfileByMemberId(authContext.getId(), memberId).orElse(null);
+    public ResponseEntity<BaseResponse<MemberProfileResponse>> getOtherProfile(@AuthPrincipal AuthContext authContext,
+        @PathVariable Long memberId) {
+        OtherMemberProfileView profileView = memberQueryRepository.findOtherProfileByMemberId(authContext.getId(),
+            memberId).orElse(null);
         List<InterviewResultView> interviewResultViews = memberQueryRepository.findInterviewsByMemberId(memberId);
 
         if (profileView == null) {
             return ResponseEntity.status(404)
-                    .body(BaseResponse.from(StatusType.NOT_FOUND));
+                .body(BaseResponse.from(StatusType.NOT_FOUND));
         }
 
-        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, new MemberProfileResponse(MemberMapper.toBasicInfo(profileView.basicMemberInfo()), profileView.matchInfo(), interviewResultViews)));
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK,
+            new MemberProfileResponse(MemberMapper.toBasicInfo(profileView.basicMemberInfo()), profileView.matchInfo(),
+                interviewResultViews)));
     }
 
     @PostMapping("/profile/dormant")
@@ -64,19 +69,21 @@ public class MemberController {
         MemberContactView response = memberQueryRepository.findContactsByMemberId(authContext.getId()).orElse(null);
         if (response == null) {
             return ResponseEntity.status(404)
-                    .body(BaseResponse.from(StatusType.NOT_FOUND));
+                .body(BaseResponse.from(StatusType.NOT_FOUND));
         }
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, response));
     }
 
     @PatchMapping("/profile/contact/kakao")
-    public ResponseEntity<BaseResponse<Void>> updateKakaoId(@AuthPrincipal AuthContext authContext, @RequestBody String kakaoId) {
+    public ResponseEntity<BaseResponse<Void>> updateKakaoId(@AuthPrincipal AuthContext authContext,
+        @RequestBody String kakaoId) {
         memberContactService.updateKakaoId(authContext.getId(), kakaoId);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
     @PatchMapping("/profile/contact/phone")
-    public ResponseEntity<BaseResponse<Void>> updatePhoneNumber(@AuthPrincipal AuthContext authContext, @RequestBody String phone) {
+    public ResponseEntity<BaseResponse<Void>> updatePhoneNumber(@AuthPrincipal AuthContext authContext,
+        @RequestBody String phone) {
         memberContactService.updatePhoneNumber(authContext.getId(), phone);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
@@ -86,7 +93,7 @@ public class MemberController {
         HeartBalanceView view = memberQueryRepository.findHeartBalanceByMemberId(authContext.getId());
         if (view == null) {
             return ResponseEntity.status(404)
-                    .body(BaseResponse.from(StatusType.NOT_FOUND));
+                .body(BaseResponse.from(StatusType.NOT_FOUND));
         }
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, view));
     }

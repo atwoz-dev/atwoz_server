@@ -53,7 +53,7 @@ class HeartAmountTest {
             Long amount = null;
             // when & then
             assertThatThrownBy(() -> HeartAmount.from(amount))
-                    .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(NullPointerException.class);
         }
     }
 

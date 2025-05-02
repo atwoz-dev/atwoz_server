@@ -19,25 +19,26 @@ public class InterviewQuestionQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     public List<InterviewQuestionView> findAllQuestionByCategoryWithMemberId(
-            String category,
-            Long memberId
+        String category,
+        Long memberId
     ) {
         return queryFactory
-                .select(new QInterviewQuestionView(
-                        interviewQuestion.id,
-                        interviewQuestion.content,
-                        interviewQuestion.category.stringValue(),
-                        interviewAnswer.id.isNotNull(),
-                        interviewAnswer.id,
-                        interviewAnswer.content
-                ))
-                .from(interviewQuestion)
-                .leftJoin(interviewAnswer).on(interviewAnswer.questionId.eq(interviewQuestion.id).and(interviewAnswer.memberId.eq(memberId)))
-                .where(
-                        categoryEq(category),
-                        interviewQuestion.isPublic.isTrue()
-                )
-                .fetch();
+            .select(new QInterviewQuestionView(
+                interviewQuestion.id,
+                interviewQuestion.content,
+                interviewQuestion.category.stringValue(),
+                interviewAnswer.id.isNotNull(),
+                interviewAnswer.id,
+                interviewAnswer.content
+            ))
+            .from(interviewQuestion)
+            .leftJoin(interviewAnswer)
+            .on(interviewAnswer.questionId.eq(interviewQuestion.id).and(interviewAnswer.memberId.eq(memberId)))
+            .where(
+                categoryEq(category),
+                interviewQuestion.isPublic.isTrue()
+            )
+            .fetch();
     }
 
     private BooleanExpression categoryEq(String category) {

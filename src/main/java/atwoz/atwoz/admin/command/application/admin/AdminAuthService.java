@@ -49,7 +49,7 @@ public class AdminAuthService {
 
     private void validateEmailUniqueness(String email) {
         adminCommandRepository.findByEmail(Email.from(email))
-                .ifPresent(admin -> { throw new DuplicateEmailException(); });
+            .ifPresent(admin -> {throw new DuplicateEmailException();});
     }
 
     private Admin createAdmin(AdminSignupRequest request) {
@@ -60,7 +60,7 @@ public class AdminAuthService {
 
     private Admin findAdminByEmail(String email) {
         return adminCommandRepository.findByEmail(Email.from(email))
-                .orElseThrow(AdminNotFoundException::new);
+            .orElseThrow(AdminNotFoundException::new);
     }
 
     private String createAccessToken(long id, Instant issuedAt) {

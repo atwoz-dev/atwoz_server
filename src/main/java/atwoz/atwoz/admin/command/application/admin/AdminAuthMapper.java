@@ -13,19 +13,19 @@ public class AdminAuthMapper {
 
     public static Admin toAdmin(AdminSignupRequest request, Password password) {
         return Admin.builder()
-                .email(Email.from(request.email()))
-                .password(password)
-                .name(Name.from(request.name()))
-                .phoneNumber(PhoneNumber.from(request.phoneNumber()))
-                .build();
+            .email(Email.from(request.email()))
+            .password(password)
+            .name(Name.from(request.name()))
+            .phoneNumber(PhoneNumber.from(request.phoneNumber()))
+            .build();
     }
 
     public static AdminSignupResponse toSignupResponse(Admin admin) {
         return new AdminSignupResponse(
-                admin.getId(),
-                admin.getEmail().getAddress(),
-                admin.getName().getValue(),
-                admin.getPhoneNumber().getValue()
+            admin.getId(),
+            admin.getEmail().getAddress(),
+            admin.getName().getValue(),
+            admin.getPhoneNumber().getValue()
         );
     }
 

@@ -22,14 +22,14 @@ public class ImageUrl {
         this.value = value;
     }
 
+    public static ImageUrl from(String value) {
+        return new ImageUrl(value);
+    }
+
     private void validateUrl(String value) {
         if (value == null || value.isEmpty()) {
             throw new InvalidImageUrlException();
         }
-    }
-
-    public static ImageUrl from(String value) {
-        return new ImageUrl(value);
     }
 
 }

@@ -18,26 +18,29 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class InterviewAnswerExceptionHandler {
 
     @ExceptionHandler(InterviewQuestionNotFoundException.class)
-    public ResponseEntity<BaseResponse<Void>> handleInterviewQuestionNotFoundException(InterviewQuestionNotFoundException e) {
+    public ResponseEntity<BaseResponse<Void>> handleInterviewQuestionNotFoundException(
+        InterviewQuestionNotFoundException e) {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
-                .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.from(StatusType.NOT_FOUND));
     }
 
     @ExceptionHandler(InterviewQuestionIsNotPublicException.class)
-    public ResponseEntity<BaseResponse<Void>> handleInterviewQuestionIsNotPublicException(InterviewQuestionIsNotPublicException e) {
+    public ResponseEntity<BaseResponse<Void>> handleInterviewQuestionIsNotPublicException(
+        InterviewQuestionIsNotPublicException e) {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-                .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.from(StatusType.BAD_REQUEST));
     }
 
     @ExceptionHandler(InterviewAnswerAlreadyExistsException.class)
-    public ResponseEntity<BaseResponse<Void>> handleInterviewAnserAlreadyExistsException(InterviewAnswerAlreadyExistsException e) {
+    public ResponseEntity<BaseResponse<Void>> handleInterviewAnserAlreadyExistsException(
+        InterviewAnswerAlreadyExistsException e) {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-                .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.from(StatusType.BAD_REQUEST));
     }
 }

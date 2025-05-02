@@ -1,7 +1,7 @@
 package atwoz.atwoz.interview.command.application.question;
 
-import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionNotFoundException;
 import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionAlreadyExistsException;
+import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionNotFoundException;
 import atwoz.atwoz.interview.command.domain.question.InterviewCategory;
 import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;
 import atwoz.atwoz.interview.command.domain.question.InterviewQuestionCommandRepository;
@@ -44,7 +44,7 @@ public class InterviewQuestionService {
 
     private InterviewQuestion getInterviewQuestion(Long questionId) {
         return interviewQuestionCommandRepository.findById(questionId)
-                .orElseThrow(() -> new InterviewQuestionNotFoundException());
+            .orElseThrow(() -> new InterviewQuestionNotFoundException());
     }
 
     private void validateQuestionUpdate(InterviewQuestion interviewQuestion, String questionContent) {

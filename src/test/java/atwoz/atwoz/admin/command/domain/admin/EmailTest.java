@@ -28,6 +28,6 @@ class EmailTest {
     void throwsExceptionWhenFormatIsInvalid(String invalidEmail) {
         // when & then
         assertThatThrownBy(() -> Email.from(invalidEmail))
-                .isInstanceOf(InvalidEmailException.class);
+            .isInstanceOf(InvalidEmailException.class);
     }
 }

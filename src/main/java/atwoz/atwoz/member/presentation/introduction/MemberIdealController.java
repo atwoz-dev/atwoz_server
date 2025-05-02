@@ -25,12 +25,13 @@ public class MemberIdealController {
     public ResponseEntity<BaseResponse<MemberIdealView>> getMemberIdeal(@AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
         MemberIdealView memberIdealView = memberIdealQueryRepository.findMemberIdealByMemberId(memberId)
-                .orElseThrow(MemberIdealNotFoundException::new);
+            .orElseThrow(MemberIdealNotFoundException::new);
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, memberIdealView));
     }
 
     @PatchMapping
-    public ResponseEntity<BaseResponse<Void>> updateIdeal(@Valid @RequestBody MemberIdealUpdateRequest request, @AuthPrincipal AuthContext authContext) {
+    public ResponseEntity<BaseResponse<Void>> updateIdeal(@Valid @RequestBody MemberIdealUpdateRequest request,
+        @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
         idealService.update(request, memberId);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));

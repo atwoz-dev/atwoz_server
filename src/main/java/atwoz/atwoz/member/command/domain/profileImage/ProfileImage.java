@@ -8,9 +8,9 @@ import lombok.*;
 
 @Entity
 @Table(name = "profile_images",
-        indexes = {
-                @Index(name = "idx_member_id_is_primary", columnList = "memberId, isPrimary")
-        })
+    indexes = {
+        @Index(name = "idx_member_id_is_primary", columnList = "memberId, isPrimary")
+    })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProfileImage extends BaseEntity {
@@ -46,6 +46,11 @@ public class ProfileImage extends BaseEntity {
         return order;
     }
 
+    private void setOrder(int order) {
+        validateOrder(order);
+        this.order = order;
+    }
+
     public Boolean isPrimary() {
         return isPrimary;
     }
@@ -56,16 +61,13 @@ public class ProfileImage extends BaseEntity {
     }
 
     public void updateUrl(String imageUrl) {
-        if (imageUrl != null) setImageUrl(ImageUrl.from(imageUrl));
+        if (imageUrl != null) {
+            setImageUrl(ImageUrl.from(imageUrl));
+        }
     }
 
     private void setMemberId(@NonNull Long memberId) {
         this.memberId = memberId;
-    }
-
-    private void setOrder(int order) {
-        validateOrder(order);
-        this.order = order;
     }
 
     private void setPrimary(boolean isPrimary) {

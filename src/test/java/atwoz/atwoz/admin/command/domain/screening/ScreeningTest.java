@@ -126,7 +126,7 @@ class ScreeningTest {
 
             // when & then
             assertThatThrownBy(() -> screening.reject(11L, RejectionReasonType.CONTACT_IN_PROFILE))
-                    .isInstanceOf(CannotRejectApprovedScreeningException.class);
+                .isInstanceOf(CannotRejectApprovedScreeningException.class);
         }
     }
 }

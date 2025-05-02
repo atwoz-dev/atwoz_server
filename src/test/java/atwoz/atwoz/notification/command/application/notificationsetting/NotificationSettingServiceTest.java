@@ -56,7 +56,7 @@ class NotificationSettingServiceTest {
 
             // when & then
             assertThatThrownBy(() -> notificationSettingService.create(memberId))
-                    .isInstanceOf(DuplicateNotificationSettingException.class);
+                .isInstanceOf(DuplicateNotificationSettingException.class);
         }
     }
 
@@ -92,7 +92,7 @@ class NotificationSettingServiceTest {
 
             // when & then
             assertThatThrownBy(() -> notificationSettingService.updateDeviceToken(request, memberId))
-                    .isInstanceOf(NotificationSettingNotFoundException.class);
+                .isInstanceOf(NotificationSettingNotFoundException.class);
         }
     }
 
@@ -124,7 +124,7 @@ class NotificationSettingServiceTest {
 
             // when & then
             assertThatThrownBy(() -> notificationSettingService.optIn(memberId))
-                    .isInstanceOf(NotificationSettingNotFoundException.class);
+                .isInstanceOf(NotificationSettingNotFoundException.class);
         }
     }
 
@@ -158,7 +158,7 @@ class NotificationSettingServiceTest {
 
             // when & then
             assertThatThrownBy(() -> notificationSettingService.optOut(memberId))
-                    .isInstanceOf(NotificationSettingNotFoundException.class);
+                .isInstanceOf(NotificationSettingNotFoundException.class);
         }
     }
 }

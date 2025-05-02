@@ -45,7 +45,7 @@ class InterviewAnswerServiceTest {
 
         // when & then
         assertThatThrownBy(() -> interviewAnswerService.saveAnswer(request, memberId))
-                .isInstanceOf(InterviewQuestionNotFoundException.class);
+            .isInstanceOf(InterviewQuestionNotFoundException.class);
     }
 
     @Test
@@ -59,11 +59,12 @@ class InterviewAnswerServiceTest {
 
         InterviewQuestion interviewQuestion = mock(InterviewQuestion.class);
         when(interviewQuestion.isPublic()).thenReturn(false);
-        when(interviewQuestionCommandRepository.findById(interviewQuestionId)).thenReturn(Optional.of(interviewQuestion));
+        when(interviewQuestionCommandRepository.findById(interviewQuestionId)).thenReturn(
+            Optional.of(interviewQuestion));
 
         // when & then
         assertThatThrownBy(() -> interviewAnswerService.saveAnswer(request, memberId))
-                .isInstanceOf(InterviewQuestionIsNotPublicException.class);
+            .isInstanceOf(InterviewQuestionIsNotPublicException.class);
     }
 
     @Test
@@ -77,12 +78,14 @@ class InterviewAnswerServiceTest {
 
         InterviewQuestion interviewQuestion = mock(InterviewQuestion.class);
         when(interviewQuestion.isPublic()).thenReturn(true);
-        when(interviewQuestionCommandRepository.findById(interviewQuestionId)).thenReturn(Optional.of(interviewQuestion));
-        when(interviewAnswerCommandRepository.existsByQuestionIdAndMemberId(interviewQuestionId, memberId)).thenReturn(true);
+        when(interviewQuestionCommandRepository.findById(interviewQuestionId)).thenReturn(
+            Optional.of(interviewQuestion));
+        when(interviewAnswerCommandRepository.existsByQuestionIdAndMemberId(interviewQuestionId, memberId)).thenReturn(
+            true);
 
         // when & then
         assertThatThrownBy(() -> interviewAnswerService.saveAnswer(request, memberId))
-                .isInstanceOf(InterviewAnswerAlreadyExistsException.class);
+            .isInstanceOf(InterviewAnswerAlreadyExistsException.class);
     }
 
     @Test
@@ -96,14 +99,16 @@ class InterviewAnswerServiceTest {
 
         InterviewQuestion interviewQuestion = mock(InterviewQuestion.class);
         when(interviewQuestion.isPublic()).thenReturn(true);
-        when(interviewQuestionCommandRepository.findById(interviewQuestionId)).thenReturn(Optional.of(interviewQuestion));
+        when(interviewQuestionCommandRepository.findById(interviewQuestionId)).thenReturn(
+            Optional.of(interviewQuestion));
         when(interviewAnswerCommandRepository.existsByMemberId(memberId)).thenReturn(false);
-        when(interviewAnswerCommandRepository.existsByQuestionIdAndMemberId(interviewQuestionId, memberId)).thenReturn(false);
+        when(interviewAnswerCommandRepository.existsByQuestionIdAndMemberId(interviewQuestionId, memberId)).thenReturn(
+            false);
 
         InterviewAnswer interviewAnswer = mock(InterviewAnswer.class);
         try (MockedStatic<InterviewAnswer> mockedStatic = mockStatic(InterviewAnswer.class)) {
             mockedStatic.when(() -> InterviewAnswer.of(eq(interviewQuestionId), eq(memberId), eq(answerContent)))
-                    .thenReturn(interviewAnswer);
+                .thenReturn(interviewAnswer);
 
             // when
             interviewAnswerService.saveAnswer(request, memberId);
@@ -126,14 +131,16 @@ class InterviewAnswerServiceTest {
 
         InterviewQuestion interviewQuestion = mock(InterviewQuestion.class);
         when(interviewQuestion.isPublic()).thenReturn(true);
-        when(interviewQuestionCommandRepository.findById(interviewQuestionId)).thenReturn(Optional.of(interviewQuestion));
+        when(interviewQuestionCommandRepository.findById(interviewQuestionId)).thenReturn(
+            Optional.of(interviewQuestion));
         when(interviewAnswerCommandRepository.existsByMemberId(memberId)).thenReturn(true);
-        when(interviewAnswerCommandRepository.existsByQuestionIdAndMemberId(interviewQuestionId, memberId)).thenReturn(false);
+        when(interviewAnswerCommandRepository.existsByQuestionIdAndMemberId(interviewQuestionId, memberId)).thenReturn(
+            false);
 
         InterviewAnswer interviewAnswer = mock(InterviewAnswer.class);
         try (MockedStatic<InterviewAnswer> mockedStatic = mockStatic(InterviewAnswer.class)) {
             mockedStatic.when(() -> InterviewAnswer.of(eq(interviewQuestionId), eq(memberId), eq(answerContent)))
-                    .thenReturn(interviewAnswer);
+                .thenReturn(interviewAnswer);
 
             // when
             interviewAnswerService.saveAnswer(request, memberId);

@@ -21,8 +21,8 @@ public class JwtProvider implements TokenProvider {
     private final Key key;
 
     public JwtProvider(@Value("${jwt.secret}") String secret,
-                       @Value("${jwt.access-token.expiration}") int accessTokenExpiration,
-                       @Value("${jwt.refresh-token.expiration}") int refreshTokenExpiration) {
+        @Value("${jwt.access-token.expiration}") int accessTokenExpiration,
+        @Value("${jwt.refresh-token.expiration}") int refreshTokenExpiration) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
         this.accessTokenExpiration = accessTokenExpiration;
         this.refreshTokenExpiration = refreshTokenExpiration;
@@ -38,11 +38,11 @@ public class JwtProvider implements TokenProvider {
 
     private String createToken(long id, Role role, long expiration, Instant issuedAt) {
         return Jwts.builder()
-                .setSubject(String.valueOf(id))
-                .claim(ROLE, role)
-                .setIssuedAt(Date.from(issuedAt))
-                .setExpiration(Date.from(issuedAt.plusSeconds(expiration)))
-                .signWith(key)
-                .compact();
+            .setSubject(String.valueOf(id))
+            .claim(ROLE, role)
+            .setIssuedAt(Date.from(issuedAt))
+            .setExpiration(Date.from(issuedAt.plusSeconds(expiration)))
+            .signWith(key)
+            .compact();
     }
 }

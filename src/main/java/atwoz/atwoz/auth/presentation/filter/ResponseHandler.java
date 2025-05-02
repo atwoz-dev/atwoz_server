@@ -28,7 +28,8 @@ public class ResponseHandler {
         setResponseBody(response, statusType.getStatus(), statusType.getCode(), statusType.getMessage());
     }
 
-    private void setResponseHeader(HttpServletResponse response, int status, String contentType, String characterEncoding) {
+    private void setResponseHeader(HttpServletResponse response, int status, String contentType,
+        String characterEncoding) {
         response.setStatus(status);
         response.setContentType(contentType);
         response.setCharacterEncoding(characterEncoding);

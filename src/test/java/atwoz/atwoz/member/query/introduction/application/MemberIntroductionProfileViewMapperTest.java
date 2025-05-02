@@ -36,7 +36,7 @@ class MemberIntroductionProfileViewMapperTest {
 
         // when
         List<MemberIntroductionProfileView> views =
-                MemberIntroductionProfileViewMapper.mapWithDefaultTag(profileResults, interviewResults);
+            MemberIntroductionProfileViewMapper.mapWithDefaultTag(profileResults, interviewResults);
 
         // then
         assertProfileView(views, expectedTags);
@@ -55,7 +55,7 @@ class MemberIntroductionProfileViewMapperTest {
 
         // when
         List<MemberIntroductionProfileView> views =
-                MemberIntroductionProfileViewMapper.mapWithSameHobbyTag(profileResults, interviewResults);
+            MemberIntroductionProfileViewMapper.mapWithSameHobbyTag(profileResults, interviewResults);
 
         // then
         assertProfileView(views, expectedTags);
@@ -74,7 +74,7 @@ class MemberIntroductionProfileViewMapperTest {
 
         // when
         List<MemberIntroductionProfileView> views =
-                MemberIntroductionProfileViewMapper.mapWithSameReligionTag(profileResults, interviewResults);
+            MemberIntroductionProfileViewMapper.mapWithSameReligionTag(profileResults, interviewResults);
 
         // then
         assertProfileView(views, expectedTags);
@@ -82,13 +82,13 @@ class MemberIntroductionProfileViewMapperTest {
 
     private List<MemberIntroductionProfileQueryResult> getProfileQueryResults() {
         MemberIntroductionProfileQueryResult profileResult = new MemberIntroductionProfileQueryResult(
-                expectedMemberId,
-                expectedProfileImageUrl,
-                expectedHobbies,
-                expectedReligion,
-                expectedMbti,
-                expectedLikeLevel,
-                expectedIsIntroduced
+            expectedMemberId,
+            expectedProfileImageUrl,
+            expectedHobbies,
+            expectedReligion,
+            expectedMbti,
+            expectedLikeLevel,
+            expectedIsIntroduced
         );
 
         return List.of(profileResult);
@@ -96,8 +96,8 @@ class MemberIntroductionProfileViewMapperTest {
 
     private List<InterviewAnswerQueryResult> getInterviewResults() {
         InterviewAnswerQueryResult interviewResult = new InterviewAnswerQueryResult(
-                expectedMemberId,
-                expectedInterviewAnswer
+            expectedMemberId,
+            expectedInterviewAnswer
         );
 
         return List.of(interviewResult);

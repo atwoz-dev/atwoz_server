@@ -174,9 +174,9 @@ class AuthServiceTest {
             String reissuedRefreshToken = "reissuedRefreshToken";
 
             when(tokenProvider.createAccessToken(eq(1L), eq(Role.MEMBER), any(Instant.class)))
-                    .thenReturn(reissuedAccessToken);
+                .thenReturn(reissuedAccessToken);
             when(tokenProvider.createRefreshToken(eq(1L), eq(Role.MEMBER), any(Instant.class)))
-                    .thenReturn(reissuedRefreshToken);
+                .thenReturn(reissuedRefreshToken);
 
             // when
             AuthResponse response = authService.authenticate(ACCESS_TOKEN, REFRESH_TOKEN);

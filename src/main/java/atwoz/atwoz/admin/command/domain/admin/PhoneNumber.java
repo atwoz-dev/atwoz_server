@@ -19,14 +19,14 @@ public class PhoneNumber {
     @Column(name = "phone_number")
     private final String value;
 
-    public static PhoneNumber from(String value) {
-        return new PhoneNumber(value);
-    }
-
     private PhoneNumber(@NonNull String value) {
         if (!PHONE_NUMBER_PATTERN.matcher(value).matches()) {
             throw new InvalidPhoneNumberException(value);
         }
         this.value = value;
+    }
+
+    public static PhoneNumber from(String value) {
+        return new PhoneNumber(value);
     }
 }

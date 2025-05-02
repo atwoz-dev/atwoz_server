@@ -10,10 +10,10 @@ import lombok.NonNull;
 
 @Entity
 @Table(
-        name = "orders",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"transactionId", "paymentMethod"})
-        }
+    name = "orders",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"transactionId", "paymentMethod"})
+    }
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order extends BaseEntity {
@@ -34,6 +34,13 @@ public class Order extends BaseEntity {
     @Getter
     private OrderStatus status;
 
+    private Order(Long memberId, String transactionId, PaymentMethod paymentMethod) {
+        setMemberId(memberId);
+        setTransactionId(transactionId);
+        setPaymentMethod(paymentMethod);
+        setStatus(OrderStatus.PAID);
+    }
+
     public static Order of(Long memberId, String transactionId, PaymentMethod paymentMethod) {
         return new Order(memberId, transactionId, paymentMethod);
     }
@@ -43,13 +50,6 @@ public class Order extends BaseEntity {
             throw new InvalidOrderStatusException("PAID 상태의 주문만 환불할 수 있습니다. orderStatus=" + status);
         }
         setStatus(OrderStatus.REFUNDED);
-    }
-
-    private Order(Long memberId, String transactionId, PaymentMethod paymentMethod) {
-        setMemberId(memberId);
-        setTransactionId(transactionId);
-        setPaymentMethod(paymentMethod);
-        setStatus(OrderStatus.PAID);
     }
 
     private void setMemberId(@NonNull Long memberId) {

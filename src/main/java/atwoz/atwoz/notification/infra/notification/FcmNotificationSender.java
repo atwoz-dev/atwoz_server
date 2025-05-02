@@ -18,14 +18,14 @@ public class FcmNotificationSender implements NotificationSender {
     public void send(Notification notification, String receiverDeviceToken) {
         try {
             Message message = Message.builder()
-                    .putData("senderId", String.valueOf(notification.getSenderId()))
-                    .putData("senderType", notification.getSenderType().toString())
-                    .putData("receiverId", String.valueOf(notification.getReceiverId()))
-                    .putData("notificationType", notification.getType().toString())
-                    .putData("title", notification.getTitle())
-                    .putData("content", notification.getContent())
-                    .setToken(receiverDeviceToken)
-                    .build();
+                .putData("senderId", String.valueOf(notification.getSenderId()))
+                .putData("senderType", notification.getSenderType().toString())
+                .putData("receiverId", String.valueOf(notification.getReceiverId()))
+                .putData("notificationType", notification.getType().toString())
+                .putData("title", notification.getTitle())
+                .putData("content", notification.getContent())
+                .setToken(receiverDeviceToken)
+                .build();
 
             String response = FirebaseMessaging.getInstance().send(message);
             log.info("FCM 메시지 전송 성공, response: {}", response);

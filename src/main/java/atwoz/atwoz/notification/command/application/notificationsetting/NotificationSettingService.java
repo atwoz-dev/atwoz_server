@@ -43,6 +43,6 @@ public class NotificationSettingService {
 
     private NotificationSetting getNotificationSetting(long memberId) {
         return notificationSettingRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new NotificationSettingNotFoundException(memberId));
+            .orElseThrow(() -> new NotificationSettingNotFoundException(memberId));
     }
 }

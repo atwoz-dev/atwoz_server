@@ -267,7 +267,6 @@ public enum District {
     SEOGWIPO_SI(City.JEJU, "서귀포시");
 
 
-
     private final City city;
     private final String description;
 
@@ -277,7 +276,9 @@ public enum District {
     }
 
     public static District from(String value) {
-        if (value == null || value.isEmpty()) return null;
+        if (value == null || value.isEmpty()) {
+            return null;
+        }
         try {
             return District.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {

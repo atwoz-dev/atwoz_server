@@ -18,11 +18,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class NotificationExceptionHandler {
 
     @ExceptionHandler(ReceiverNotificationSettingNotFoundException.class)
-    public ResponseEntity<BaseResponse<Void>> handleReceiverNotificationSettingNotFoundException(ReceiverNotificationSettingNotFoundException e) {
+    public ResponseEntity<BaseResponse<Void>> handleReceiverNotificationSettingNotFoundException(
+        ReceiverNotificationSettingNotFoundException e) {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
-                .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.from(StatusType.NOT_FOUND));
     }
 
     @ExceptionHandler(MemberNotFoundException.class)
@@ -30,7 +31,7 @@ public class NotificationExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
-                .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.from(StatusType.NOT_FOUND));
     }
 
     @ExceptionHandler(NotificationNotFoundException.class)
@@ -38,6 +39,6 @@ public class NotificationExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
-                .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.from(StatusType.NOT_FOUND));
     }
 }

@@ -44,24 +44,29 @@ class IntroductionQueryServiceTest {
         long memberId = 1L;
         Set<Long> introductionMemberIds = Set.of(2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L);
         when(introductionMemberIdFetcher.fetch(
-                eq(memberId),
-                eq(IntroductionCacheKeyPrefix.DIAMOND),
-                eq(Grade.DIAMOND),
-                ArgumentMatchers.<IntroductionMemberIdFetcher.IntroductionConditionSupplier<Grade>>any()
+            eq(memberId),
+            eq(IntroductionCacheKeyPrefix.DIAMOND),
+            eq(Grade.DIAMOND),
+            ArgumentMatchers.<IntroductionMemberIdFetcher.IntroductionConditionSupplier<Grade>>any()
         )).thenReturn(introductionMemberIds);
         List<MemberIntroductionProfileQueryResult> memberIntroductionProfileQueryResults = List.of();
-        when(introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId, introductionMemberIds))
-                .thenReturn(memberIntroductionProfileQueryResults);
+        when(introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId,
+            introductionMemberIds))
+            .thenReturn(memberIntroductionProfileQueryResults);
         List<InterviewAnswerQueryResult> interviewAnswerQueryResults = List.of();
         when(introductionQueryRepository.findAllInterviewAnswerInfoByMemberIds(introductionMemberIds))
-                .thenReturn(interviewAnswerQueryResults);
+            .thenReturn(interviewAnswerQueryResults);
         List<MemberIntroductionProfileView> expectedResult = List.of();
 
         // when && then
-        try (MockedStatic<MemberIntroductionProfileViewMapper> mockedStatic = mockStatic(MemberIntroductionProfileViewMapper.class)) {
-            mockedStatic.when(() -> MemberIntroductionProfileViewMapper.mapWithDefaultTag(memberIntroductionProfileQueryResults, interviewAnswerQueryResults))
-                    .thenReturn(expectedResult);
-            List<MemberIntroductionProfileView> result = introductionQueryService.findDiamondGradeIntroductions(memberId);
+        try (MockedStatic<MemberIntroductionProfileViewMapper> mockedStatic = mockStatic(
+            MemberIntroductionProfileViewMapper.class)) {
+            mockedStatic.when(
+                    () -> MemberIntroductionProfileViewMapper.mapWithDefaultTag(memberIntroductionProfileQueryResults,
+                        interviewAnswerQueryResults))
+                .thenReturn(expectedResult);
+            List<MemberIntroductionProfileView> result = introductionQueryService.findDiamondGradeIntroductions(
+                memberId);
             assertThat(result).isEqualTo(expectedResult);
         }
     }
@@ -73,23 +78,27 @@ class IntroductionQueryServiceTest {
         long memberId = 1L;
         Set<Long> introductionMemberIds = Set.of(2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L);
         when(introductionMemberIdFetcher.fetch(
-                eq(memberId),
-                eq(IntroductionCacheKeyPrefix.SAME_HOBBY),
-                isNull(),
-                ArgumentMatchers.<IntroductionMemberIdFetcher.IntroductionConditionSupplier<Set>>any()
+            eq(memberId),
+            eq(IntroductionCacheKeyPrefix.SAME_HOBBY),
+            isNull(),
+            ArgumentMatchers.<IntroductionMemberIdFetcher.IntroductionConditionSupplier<Set>>any()
         )).thenReturn(introductionMemberIds);
         List<MemberIntroductionProfileQueryResult> memberIntroductionProfileQueryResults = List.of();
-        when(introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId, introductionMemberIds))
-                .thenReturn(memberIntroductionProfileQueryResults);
+        when(introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId,
+            introductionMemberIds))
+            .thenReturn(memberIntroductionProfileQueryResults);
         List<InterviewAnswerQueryResult> interviewAnswerQueryResults = List.of();
         when(introductionQueryRepository.findAllInterviewAnswerInfoByMemberIds(introductionMemberIds))
-                .thenReturn(interviewAnswerQueryResults);
+            .thenReturn(interviewAnswerQueryResults);
         List<MemberIntroductionProfileView> expectedResult = List.of();
 
         // when && then
-        try (MockedStatic<MemberIntroductionProfileViewMapper> mockedStatic = mockStatic(MemberIntroductionProfileViewMapper.class)) {
-            mockedStatic.when(() -> MemberIntroductionProfileViewMapper.mapWithSameHobbyTag(memberIntroductionProfileQueryResults, interviewAnswerQueryResults))
-                    .thenReturn(expectedResult);
+        try (MockedStatic<MemberIntroductionProfileViewMapper> mockedStatic = mockStatic(
+            MemberIntroductionProfileViewMapper.class)) {
+            mockedStatic.when(
+                    () -> MemberIntroductionProfileViewMapper.mapWithSameHobbyTag(memberIntroductionProfileQueryResults,
+                        interviewAnswerQueryResults))
+                .thenReturn(expectedResult);
             List<MemberIntroductionProfileView> result = introductionQueryService.findSameHobbyIntroductions(memberId);
             assertThat(result).isEqualTo(expectedResult);
         }
@@ -102,24 +111,29 @@ class IntroductionQueryServiceTest {
         long memberId = 1L;
         Set<Long> introductionMemberIds = Set.of(2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L);
         when(introductionMemberIdFetcher.fetch(
-                eq(memberId),
-                eq(IntroductionCacheKeyPrefix.SAME_RELIGION),
-                isNull(),
-                ArgumentMatchers.<IntroductionMemberIdFetcher.IntroductionConditionSupplier<Religion>>any()
+            eq(memberId),
+            eq(IntroductionCacheKeyPrefix.SAME_RELIGION),
+            isNull(),
+            ArgumentMatchers.<IntroductionMemberIdFetcher.IntroductionConditionSupplier<Religion>>any()
         )).thenReturn(introductionMemberIds);
         List<MemberIntroductionProfileQueryResult> memberIntroductionProfileQueryResults = List.of();
-        when(introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId, introductionMemberIds))
-                .thenReturn(memberIntroductionProfileQueryResults);
+        when(introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId,
+            introductionMemberIds))
+            .thenReturn(memberIntroductionProfileQueryResults);
         List<InterviewAnswerQueryResult> interviewAnswerQueryResults = List.of();
         when(introductionQueryRepository.findAllInterviewAnswerInfoByMemberIds(introductionMemberIds))
-                .thenReturn(interviewAnswerQueryResults);
+            .thenReturn(interviewAnswerQueryResults);
         List<MemberIntroductionProfileView> expectedResult = List.of();
 
         // when && then
-        try (MockedStatic<MemberIntroductionProfileViewMapper> mockedStatic = mockStatic(MemberIntroductionProfileViewMapper.class)) {
-            mockedStatic.when(() -> MemberIntroductionProfileViewMapper.mapWithSameReligionTag(memberIntroductionProfileQueryResults, interviewAnswerQueryResults))
-                    .thenReturn(expectedResult);
-            List<MemberIntroductionProfileView> result = introductionQueryService.findSameReligionIntroductions(memberId);
+        try (MockedStatic<MemberIntroductionProfileViewMapper> mockedStatic = mockStatic(
+            MemberIntroductionProfileViewMapper.class)) {
+            mockedStatic.when(
+                    () -> MemberIntroductionProfileViewMapper.mapWithSameReligionTag(memberIntroductionProfileQueryResults,
+                        interviewAnswerQueryResults))
+                .thenReturn(expectedResult);
+            List<MemberIntroductionProfileView> result = introductionQueryService.findSameReligionIntroductions(
+                memberId);
             assertThat(result).isEqualTo(expectedResult);
         }
     }
@@ -131,23 +145,27 @@ class IntroductionQueryServiceTest {
         long memberId = 1L;
         Set<Long> introductionMemberIds = Set.of(2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L);
         when(introductionMemberIdFetcher.fetch(
-                eq(memberId),
-                eq(IntroductionCacheKeyPrefix.SAME_REGION),
-                isNull(),
-                ArgumentMatchers.<IntroductionMemberIdFetcher.IntroductionConditionSupplier<City>>any()
+            eq(memberId),
+            eq(IntroductionCacheKeyPrefix.SAME_REGION),
+            isNull(),
+            ArgumentMatchers.<IntroductionMemberIdFetcher.IntroductionConditionSupplier<City>>any()
         )).thenReturn(introductionMemberIds);
         List<MemberIntroductionProfileQueryResult> memberIntroductionProfileQueryResults = List.of();
-        when(introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId, introductionMemberIds))
-                .thenReturn(memberIntroductionProfileQueryResults);
+        when(introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId,
+            introductionMemberIds))
+            .thenReturn(memberIntroductionProfileQueryResults);
         List<InterviewAnswerQueryResult> interviewAnswerQueryResults = List.of();
         when(introductionQueryRepository.findAllInterviewAnswerInfoByMemberIds(introductionMemberIds))
-                .thenReturn(interviewAnswerQueryResults);
+            .thenReturn(interviewAnswerQueryResults);
         List<MemberIntroductionProfileView> expectedResult = List.of();
 
         // when && then
-        try (MockedStatic<MemberIntroductionProfileViewMapper> mockedStatic = mockStatic(MemberIntroductionProfileViewMapper.class)) {
-            mockedStatic.when(() -> MemberIntroductionProfileViewMapper.mapWithDefaultTag(memberIntroductionProfileQueryResults, interviewAnswerQueryResults))
-                    .thenReturn(expectedResult);
+        try (MockedStatic<MemberIntroductionProfileViewMapper> mockedStatic = mockStatic(
+            MemberIntroductionProfileViewMapper.class)) {
+            mockedStatic.when(
+                    () -> MemberIntroductionProfileViewMapper.mapWithDefaultTag(memberIntroductionProfileQueryResults,
+                        interviewAnswerQueryResults))
+                .thenReturn(expectedResult);
             List<MemberIntroductionProfileView> result = introductionQueryService.findSameRegionIntroductions(memberId);
             assertThat(result).isEqualTo(expectedResult);
         }
@@ -160,24 +178,29 @@ class IntroductionQueryServiceTest {
         long memberId = 1L;
         Set<Long> introductionMemberIds = Set.of(2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L);
         when(introductionMemberIdFetcher.fetch(
-                eq(memberId),
-                eq(IntroductionCacheKeyPrefix.RECENTLY_JOINED),
-                isNull(),
-                ArgumentMatchers.<IntroductionMemberIdFetcher.IntroductionConditionSupplier<LocalDateTime>>any()
+            eq(memberId),
+            eq(IntroductionCacheKeyPrefix.RECENTLY_JOINED),
+            isNull(),
+            ArgumentMatchers.<IntroductionMemberIdFetcher.IntroductionConditionSupplier<LocalDateTime>>any()
         )).thenReturn(introductionMemberIds);
         List<MemberIntroductionProfileQueryResult> memberIntroductionProfileQueryResults = List.of();
-        when(introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId, introductionMemberIds))
-                .thenReturn(memberIntroductionProfileQueryResults);
+        when(introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId,
+            introductionMemberIds))
+            .thenReturn(memberIntroductionProfileQueryResults);
         List<InterviewAnswerQueryResult> interviewAnswerQueryResults = List.of();
         when(introductionQueryRepository.findAllInterviewAnswerInfoByMemberIds(introductionMemberIds))
-                .thenReturn(interviewAnswerQueryResults);
+            .thenReturn(interviewAnswerQueryResults);
         List<MemberIntroductionProfileView> expectedResult = List.of();
 
         // when && then
-        try (MockedStatic<MemberIntroductionProfileViewMapper> mockedStatic = mockStatic(MemberIntroductionProfileViewMapper.class)) {
-            mockedStatic.when(() -> MemberIntroductionProfileViewMapper.mapWithDefaultTag(memberIntroductionProfileQueryResults, interviewAnswerQueryResults))
-                    .thenReturn(expectedResult);
-            List<MemberIntroductionProfileView> result = introductionQueryService.findRecentlyJoinedIntroductions(memberId);
+        try (MockedStatic<MemberIntroductionProfileViewMapper> mockedStatic = mockStatic(
+            MemberIntroductionProfileViewMapper.class)) {
+            mockedStatic.when(
+                    () -> MemberIntroductionProfileViewMapper.mapWithDefaultTag(memberIntroductionProfileQueryResults,
+                        interviewAnswerQueryResults))
+                .thenReturn(expectedResult);
+            List<MemberIntroductionProfileView> result = introductionQueryService.findRecentlyJoinedIntroductions(
+                memberId);
             assertThat(result).isEqualTo(expectedResult);
         }
     }

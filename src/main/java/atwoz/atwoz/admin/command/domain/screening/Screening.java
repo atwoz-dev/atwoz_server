@@ -33,15 +33,15 @@ public class Screening extends BaseEntity {
     @Version
     private Long version;
 
-    public static Screening from(long memberId) {
-        return new Screening(memberId, null, null, ScreeningStatus.PENDING);
-    }
-
     private Screening(long memberId, Long adminId, RejectionReasonType rejectionReason, ScreeningStatus status) {
         this.memberId = memberId;
         this.adminId = adminId;
         this.rejectionReason = rejectionReason;
         this.status = status;
+    }
+
+    public static Screening from(long memberId) {
+        return new Screening(memberId, null, null, ScreeningStatus.PENDING);
     }
 
     public boolean hasVersionConflict(long version) {

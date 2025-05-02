@@ -22,7 +22,7 @@ public class AdminExceptionHandler {
         log.warn("관리자 회원가입에 실패했습니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
-                .body(BaseResponse.from(StatusType.INVALID_DUPLICATE_VALUE));
+            .body(BaseResponse.from(StatusType.INVALID_DUPLICATE_VALUE));
     }
 
     @ExceptionHandler(AdminNotFoundException.class)
@@ -30,7 +30,7 @@ public class AdminExceptionHandler {
         log.warn("관리자 로그인에 실패했습니다. {}", e.getMessage());
 
         return ResponseEntity.status(401)
-                .body(BaseResponse.from(StatusType.UNAUTHORIZED));
+            .body(BaseResponse.from(StatusType.UNAUTHORIZED));
     }
 
     @ExceptionHandler(IncorrectPasswordException.class)
@@ -38,6 +38,6 @@ public class AdminExceptionHandler {
         log.warn("관리자 로그인에 실패했습니다. {}", e.getMessage());
 
         return ResponseEntity.status(401)
-                .body(BaseResponse.from(StatusType.UNAUTHORIZED));
+            .body(BaseResponse.from(StatusType.UNAUTHORIZED));
     }
 }

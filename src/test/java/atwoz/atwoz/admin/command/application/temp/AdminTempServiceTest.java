@@ -43,7 +43,7 @@ class AdminTempServiceTest {
 
         // when & then
         assertThatThrownBy(() -> adminTempService.grantMissionHeart(request))
-                .isInstanceOf(MemberNotFoundException.class);
+            .isInstanceOf(MemberNotFoundException.class);
     }
 
     @Test
@@ -59,17 +59,17 @@ class AdminTempServiceTest {
 
         // when
         try (MockedStatic<HeartAmount> heartAmountMockedStatic = mockStatic(HeartAmount.class);
-             MockedStatic<HeartTransaction> heartTransactionMockedStatic = mockStatic(HeartTransaction.class)
+            MockedStatic<HeartTransaction> heartTransactionMockedStatic = mockStatic(HeartTransaction.class)
         ) {
             HeartAmount heartAmount = mock(HeartAmount.class);
             heartAmountMockedStatic.when(() -> HeartAmount.from(request.heartAmount())).thenReturn(heartAmount);
 
             HeartTransaction heartTransaction = mock(HeartTransaction.class);
             heartTransactionMockedStatic.when(() -> HeartTransaction.of(
-                    request.memberId(),
-                    TransactionType.MISSION,
-                    heartAmount,
-                    heartBalance
+                request.memberId(),
+                TransactionType.MISSION,
+                heartAmount,
+                heartBalance
             )).thenReturn(heartTransaction);
 
             adminTempService.grantMissionHeart(request);

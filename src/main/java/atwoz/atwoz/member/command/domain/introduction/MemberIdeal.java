@@ -58,18 +58,16 @@ public class MemberIdeal extends BaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private DrinkingStatus drinkingStatus;
 
-    public static MemberIdeal init(Long memberId) {
-        return new MemberIdeal(memberId, AgeRange.init(), new HashSet<>(), new HashSet<>(), null, null, null);
-    }
-
-    public void update(
-            AgeRange ageRange,
-            Set<Hobby> hobbies,
-            Set<City> cities,
-            Religion religion,
-            SmokingStatus smokingStatus,
-            DrinkingStatus drinkingStatus
+    private MemberIdeal(
+        Long memberId,
+        AgeRange ageRange,
+        Set<Hobby> hobbies,
+        Set<City> cities,
+        Religion religion,
+        SmokingStatus smokingStatus,
+        DrinkingStatus drinkingStatus
     ) {
+        setMemberId(memberId);
         setAgeRange(ageRange);
         setHobbies(hobbies);
         setCities(cities);
@@ -78,16 +76,18 @@ public class MemberIdeal extends BaseEntity {
         this.drinkingStatus = drinkingStatus;
     }
 
-    private MemberIdeal(
-            Long memberId,
-            AgeRange ageRange,
-            Set<Hobby> hobbies,
-            Set<City> cities,
-            Religion religion,
-            SmokingStatus smokingStatus,
-            DrinkingStatus drinkingStatus
+    public static MemberIdeal init(Long memberId) {
+        return new MemberIdeal(memberId, AgeRange.init(), new HashSet<>(), new HashSet<>(), null, null, null);
+    }
+
+    public void update(
+        AgeRange ageRange,
+        Set<Hobby> hobbies,
+        Set<City> cities,
+        Religion religion,
+        SmokingStatus smokingStatus,
+        DrinkingStatus drinkingStatus
     ) {
-        setMemberId(memberId);
         setAgeRange(ageRange);
         setHobbies(hobbies);
         setCities(cities);

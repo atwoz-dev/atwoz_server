@@ -49,8 +49,9 @@ public class SelfIntroductionServiceTest {
             Mockito.when(memberCommandRepository.findById(memberId)).thenReturn(Optional.empty());
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> selfIntroductionService.write(new SelfIntroductionWriteRequest(title, content), memberId))
-                    .isInstanceOf(MemberNotFoundException.class);
+            Assertions.assertThatThrownBy(
+                    () -> selfIntroductionService.write(new SelfIntroductionWriteRequest(title, content), memberId))
+                .isInstanceOf(MemberNotFoundException.class);
         }
 
         @DisplayName("셀프 소개를 작성한다.")
@@ -61,16 +62,17 @@ public class SelfIntroductionServiceTest {
             String title = "셀프 소개 제목";
             String content = "셀프 소개 내용입니다. 최소 내용이 30자 이상입니다~!!! (30자 이상)";
 
-            Mockito.when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(Mockito.mock(Member.class)));
+            Mockito.when(memberCommandRepository.findById(memberId))
+                .thenReturn(Optional.of(Mockito.mock(Member.class)));
 
             // When
             selfIntroductionService.write(new SelfIntroductionWriteRequest(title, content), memberId);
 
             // Then
             verify(selfIntroductionCommandRepository).save(argThat(selfIntroduction ->
-                    selfIntroduction.getMemberId().equals(memberId) &&
-                            selfIntroduction.getContent().equals(content) &&
-                            selfIntroduction.getTitle().equals(title)
+                selfIntroduction.getMemberId().equals(memberId) &&
+                    selfIntroduction.getContent().equals(content) &&
+                    selfIntroduction.getTitle().equals(title)
             ));
         }
     }
@@ -91,8 +93,10 @@ public class SelfIntroductionServiceTest {
             Mockito.when(memberCommandRepository.findById(memberId)).thenReturn(Optional.empty());
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> selfIntroductionService.update(new SelfIntroductionWriteRequest(title, content), memberId, selfIntroductionId))
-                    .isInstanceOf(MemberNotFoundException.class);
+            Assertions.assertThatThrownBy(
+                    () -> selfIntroductionService.update(new SelfIntroductionWriteRequest(title, content), memberId,
+                        selfIntroductionId))
+                .isInstanceOf(MemberNotFoundException.class);
         }
 
         @Test
@@ -104,12 +108,15 @@ public class SelfIntroductionServiceTest {
             String title = "셀프 소개 제목";
             String content = "셀프 소개 내용입니다. 최소 내용이 30자 이상입니다~!!! (30자 이상)";
 
-            Mockito.when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(Mockito.mock(Member.class)));
+            Mockito.when(memberCommandRepository.findById(memberId))
+                .thenReturn(Optional.of(Mockito.mock(Member.class)));
             Mockito.when(selfIntroductionCommandRepository.findById(selfIntroductionId)).thenReturn(Optional.empty());
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> selfIntroductionService.update(new SelfIntroductionWriteRequest(title, content), memberId, selfIntroductionId))
-                    .isInstanceOf(SelfIntroductionNotFoundException.class);
+            Assertions.assertThatThrownBy(
+                    () -> selfIntroductionService.update(new SelfIntroductionWriteRequest(title, content), memberId,
+                        selfIntroductionId))
+                .isInstanceOf(SelfIntroductionNotFoundException.class);
         }
 
         @Test
@@ -123,12 +130,16 @@ public class SelfIntroductionServiceTest {
 
             SelfIntroduction selfIntroduction = SelfIntroduction.write(1L, title, content);
 
-            Mockito.when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(Mockito.mock(Member.class)));
-            Mockito.when(selfIntroductionCommandRepository.findById(selfIntroductionId)).thenReturn(Optional.of(selfIntroduction));
+            Mockito.when(memberCommandRepository.findById(memberId))
+                .thenReturn(Optional.of(Mockito.mock(Member.class)));
+            Mockito.when(selfIntroductionCommandRepository.findById(selfIntroductionId))
+                .thenReturn(Optional.of(selfIntroduction));
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> selfIntroductionService.update(new SelfIntroductionWriteRequest(title, content), memberId, selfIntroductionId))
-                    .isInstanceOf(NotSelfIntroductionAuthorException.class);
+            Assertions.assertThatThrownBy(
+                    () -> selfIntroductionService.update(new SelfIntroductionWriteRequest(title, content), memberId,
+                        selfIntroductionId))
+                .isInstanceOf(NotSelfIntroductionAuthorException.class);
         }
 
         @Test
@@ -143,11 +154,14 @@ public class SelfIntroductionServiceTest {
 
             SelfIntroduction selfIntroduction = SelfIntroduction.write(memberId, title, content);
 
-            Mockito.when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(Mockito.mock(Member.class)));
-            Mockito.when(selfIntroductionCommandRepository.findById(selfIntroductionId)).thenReturn(Optional.of(selfIntroduction));
+            Mockito.when(memberCommandRepository.findById(memberId))
+                .thenReturn(Optional.of(Mockito.mock(Member.class)));
+            Mockito.when(selfIntroductionCommandRepository.findById(selfIntroductionId))
+                .thenReturn(Optional.of(selfIntroduction));
 
             // When
-            selfIntroductionService.update(new SelfIntroductionWriteRequest(title, updatedContent), memberId, selfIntroductionId);
+            selfIntroductionService.update(new SelfIntroductionWriteRequest(title, updatedContent), memberId,
+                selfIntroductionId);
 
             // When
             Assertions.assertThat(selfIntroduction.getMemberId()).isEqualTo(memberId);
@@ -171,7 +185,7 @@ public class SelfIntroductionServiceTest {
 
             // When & Then
             Assertions.assertThatThrownBy(() -> selfIntroductionService.delete(selfIntroductionId, memberId))
-                    .isInstanceOf(MemberNotFoundException.class);
+                .isInstanceOf(MemberNotFoundException.class);
 
         }
 
@@ -182,12 +196,13 @@ public class SelfIntroductionServiceTest {
             Long selfIntroductionId = 1L;
             Long memberId = 2L;
 
-            Mockito.when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(Mockito.mock(Member.class)));
+            Mockito.when(memberCommandRepository.findById(memberId))
+                .thenReturn(Optional.of(Mockito.mock(Member.class)));
             Mockito.when(selfIntroductionCommandRepository.findById(selfIntroductionId)).thenReturn(Optional.empty());
 
             // When & Then
             Assertions.assertThatThrownBy(() -> selfIntroductionService.delete(selfIntroductionId, memberId))
-                    .isInstanceOf(SelfIntroductionNotFoundException.class);
+                .isInstanceOf(SelfIntroductionNotFoundException.class);
         }
 
         @Test
@@ -198,17 +213,19 @@ public class SelfIntroductionServiceTest {
             Long memberId = 2L;
 
             SelfIntroduction selfIntroduction = SelfIntroduction.write(
-                    1L,
-                    "셀프 소개 제목",
-                    "셀프 소개 내용입니다. 최소 내용이 30자 이상입니다~!!! (30자 이상)"
+                1L,
+                "셀프 소개 제목",
+                "셀프 소개 내용입니다. 최소 내용이 30자 이상입니다~!!! (30자 이상)"
             );
 
-            Mockito.when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(Mockito.mock(Member.class)));
-            Mockito.when(selfIntroductionCommandRepository.findById(selfIntroductionId)).thenReturn(Optional.of(selfIntroduction));
+            Mockito.when(memberCommandRepository.findById(memberId))
+                .thenReturn(Optional.of(Mockito.mock(Member.class)));
+            Mockito.when(selfIntroductionCommandRepository.findById(selfIntroductionId))
+                .thenReturn(Optional.of(selfIntroduction));
 
             // When & Then
             Assertions.assertThatThrownBy(() -> selfIntroductionService.delete(selfIntroductionId, memberId))
-                    .isInstanceOf(NotSelfIntroductionAuthorException.class);
+                .isInstanceOf(NotSelfIntroductionAuthorException.class);
         }
 
         @Test
@@ -219,13 +236,15 @@ public class SelfIntroductionServiceTest {
             Long memberId = 2L;
 
             SelfIntroduction selfIntroduction = SelfIntroduction.write(
-                    memberId,
-                    "셀프 소개 제목",
-                    "셀프 소개 내용입니다. 최소 내용이 30자 이상입니다~!!! (30자 이상)"
+                memberId,
+                "셀프 소개 제목",
+                "셀프 소개 내용입니다. 최소 내용이 30자 이상입니다~!!! (30자 이상)"
             );
 
-            Mockito.when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(Mockito.mock(Member.class)));
-            Mockito.when(selfIntroductionCommandRepository.findById(selfIntroductionId)).thenReturn(Optional.of(selfIntroduction));
+            Mockito.when(memberCommandRepository.findById(memberId))
+                .thenReturn(Optional.of(Mockito.mock(Member.class)));
+            Mockito.when(selfIntroductionCommandRepository.findById(selfIntroductionId))
+                .thenReturn(Optional.of(selfIntroduction));
 
             // When
             selfIntroductionService.delete(selfIntroductionId, memberId);

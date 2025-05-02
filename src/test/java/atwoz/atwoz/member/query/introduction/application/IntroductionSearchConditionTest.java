@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -73,11 +72,13 @@ class IntroductionSearchConditionTest {
         Set<Hobby> memberHobbies = Set.of(Hobby.CAMPING, Hobby.ANIMATION);
 
         // when
-        IntroductionSearchCondition condition = IntroductionSearchCondition.ofHobbies(excludedIds, ideal, gender, memberHobbies);
+        IntroductionSearchCondition condition = IntroductionSearchCondition.ofHobbies(excludedIds, ideal, gender,
+            memberHobbies);
 
         // then
         assertCommonFields(condition);
-        assertThat(condition.getHobbies()).isEqualTo(memberHobbies.stream().map(Hobby::name).collect(Collectors.toSet()));
+        assertThat(condition.getHobbies()).isEqualTo(
+            memberHobbies.stream().map(Hobby::name).collect(Collectors.toSet()));
         assertThat(condition.getCities()).isEqualTo(cities.stream().map(City::name).collect(Collectors.toSet()));
         assertThat(condition.getReligion()).isEqualTo(religion.name());
         assertThat(condition.getMemberGrade()).isNull();
@@ -92,7 +93,8 @@ class IntroductionSearchConditionTest {
         Religion memberReligion = Religion.NONE;
 
         // when
-        IntroductionSearchCondition condition = IntroductionSearchCondition.ofReligion(excludedIds, ideal, gender, memberReligion);
+        IntroductionSearchCondition condition = IntroductionSearchCondition.ofReligion(excludedIds, ideal, gender,
+            memberReligion);
 
         // then
         assertCommonFields(condition);
@@ -111,7 +113,8 @@ class IntroductionSearchConditionTest {
         City memberRegion = City.DAEJEON;
 
         // when
-        IntroductionSearchCondition condition = IntroductionSearchCondition.ofCity(excludedIds, ideal, gender, memberRegion);
+        IntroductionSearchCondition condition = IntroductionSearchCondition.ofCity(excludedIds, ideal, gender,
+            memberRegion);
 
         // then
         assertCommonFields(condition);
@@ -130,7 +133,8 @@ class IntroductionSearchConditionTest {
         LocalDateTime joinedAfter = LocalDateTime.now();
 
         // when
-        IntroductionSearchCondition condition = IntroductionSearchCondition.ofJoinDate(excludedIds, ideal, gender, joinedAfter);
+        IntroductionSearchCondition condition = IntroductionSearchCondition.ofJoinDate(excludedIds, ideal, gender,
+            joinedAfter);
 
         // then
         assertCommonFields(condition);

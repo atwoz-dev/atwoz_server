@@ -50,11 +50,11 @@ class ScreeningQueryRepositoryTest {
         em.clear();
 
         ScreeningSearchCondition condition = new ScreeningSearchCondition(
-                null,
-                null,
-                null,
-                null,
-                null
+            null,
+            null,
+            null,
+            null,
+            null
         );
         PageRequest pageRequest = PageRequest.of(0, 10);
 
@@ -64,7 +64,7 @@ class ScreeningQueryRepositoryTest {
         // then
         assertThat(screeningMembers.getTotalElements()).isEqualTo(2);
         assertThat(screeningMembers.getContent()).extracting("nickname")
-                .containsExactlyInAnyOrder("member1", "member2");
+            .containsExactlyInAnyOrder("member1", "member2");
     }
 
     @Test
@@ -85,11 +85,11 @@ class ScreeningQueryRepositoryTest {
         em.clear();
 
         ScreeningSearchCondition condition = new ScreeningSearchCondition(
-                "PENDING",
-                null,
-                null,
-                null,
-                null
+            "PENDING",
+            null,
+            null,
+            null,
+            null
         );
         PageRequest pageRequest = PageRequest.of(0, 10);
 
@@ -99,7 +99,7 @@ class ScreeningQueryRepositoryTest {
         // then
         assertThat(screeningMembers.getTotalElements()).isEqualTo(2);
         assertThat(screeningMembers.getContent()).extracting("nickname")
-                .containsExactlyInAnyOrder("member1", "member2");
+            .containsExactlyInAnyOrder("member1", "member2");
     }
 
     @Test
@@ -120,11 +120,11 @@ class ScreeningQueryRepositoryTest {
         em.clear();
 
         ScreeningSearchCondition condition = new ScreeningSearchCondition(
-                "APPROVED",
-                null,
-                null,
-                null,
-                null
+            "APPROVED",
+            null,
+            null,
+            null,
+            null
         );
         PageRequest pageRequest = PageRequest.of(0, 10);
 
@@ -153,11 +153,11 @@ class ScreeningQueryRepositoryTest {
         em.clear();
 
         ScreeningSearchCondition condition = new ScreeningSearchCondition(
-                null,
-                "member1",
-                null,
-                null,
-                null
+            null,
+            "member1",
+            null,
+            null,
+            null
         );
         PageRequest pageRequest = PageRequest.of(0, 10);
 
@@ -187,11 +187,11 @@ class ScreeningQueryRepositoryTest {
         em.clear();
 
         ScreeningSearchCondition condition = new ScreeningSearchCondition(
-                null,
-                null,
-                "01011111111",
-                null,
-                null
+            null,
+            null,
+            "01011111111",
+            null,
+            null
         );
         PageRequest pageRequest = PageRequest.of(0, 10);
 
@@ -221,11 +221,11 @@ class ScreeningQueryRepositoryTest {
         em.clear();
 
         ScreeningSearchCondition condition = new ScreeningSearchCondition(
-                null,
-                null,
-                null,
-                LocalDate.EPOCH,
-                LocalDate.now().plusDays(1)
+            null,
+            null,
+            null,
+            LocalDate.EPOCH,
+            LocalDate.now().plusDays(1)
         );
         PageRequest pageRequest = PageRequest.of(0, 10);
 
@@ -235,7 +235,7 @@ class ScreeningQueryRepositoryTest {
         // then
         assertThat(screeningMembers.getTotalElements()).isEqualTo(2);
         assertThat(screeningMembers.getContent()).extracting("nickname")
-                .containsExactlyInAnyOrder("member1", "member2");
+            .containsExactlyInAnyOrder("member1", "member2");
     }
 
     @Test
@@ -256,11 +256,11 @@ class ScreeningQueryRepositoryTest {
         em.clear();
 
         ScreeningSearchCondition condition = new ScreeningSearchCondition(
-                "PENDING",
-                "member1",
-                "01011111111",
-                LocalDate.EPOCH,
-                LocalDate.now().plusDays(1)
+            "PENDING",
+            "member1",
+            "01011111111",
+            LocalDate.EPOCH,
+            LocalDate.now().plusDays(1)
         );
         PageRequest pageRequest = PageRequest.of(0, 10);
 
@@ -277,13 +277,13 @@ class ScreeningQueryRepositoryTest {
 
     private Member createMember(String nickname, String phoneNumber) {
         return Member.builder()
-                .phoneNumber(PhoneNumber.from(phoneNumber))
-                .profile(
-                        MemberProfile.builder()
-                                .nickname(Nickname.from(nickname))
-                                .gender(Gender.MALE)
-                                .build()
-                )
-                .build();
+            .phoneNumber(PhoneNumber.from(phoneNumber))
+            .profile(
+                MemberProfile.builder()
+                    .nickname(Nickname.from(nickname))
+                    .gender(Gender.MALE)
+                    .build()
+            )
+            .build();
     }
 }

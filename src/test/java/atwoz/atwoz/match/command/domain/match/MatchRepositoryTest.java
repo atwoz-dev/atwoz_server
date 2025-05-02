@@ -20,20 +20,17 @@ import org.springframework.context.annotation.Import;
 @DataJpaTest
 public class MatchRepositoryTest {
 
+    private static MockedStatic<Events> mockedEvents;
     @Autowired
     private MatchRepository matchRepository;
-
     @Autowired
     private TestEntityManager entityManager;
-
-    private static MockedStatic<Events> mockedEvents;
-
 
     @BeforeEach
     void setUp() {
         mockedEvents = Mockito.mockStatic(Events.class);
         mockedEvents.when(() -> Events.raise(Mockito.any()))
-                .thenAnswer(invocation -> null);
+            .thenAnswer(invocation -> null);
     }
 
     @AfterEach

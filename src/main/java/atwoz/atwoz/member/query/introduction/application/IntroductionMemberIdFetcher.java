@@ -27,12 +27,8 @@ public class IntroductionMemberIdFetcher {
     private final MemberCommandRepository memberCommandRepository;
     private final MemberIdealCommandRepository memberIdealCommandRepository;
 
-    @FunctionalInterface
-    public interface IntroductionConditionSupplier<T> {
-        IntroductionSearchCondition get(Set<Long> excludedMemberIds, MemberIdeal memberIdeal, Member member, T criteria);
-    }
-
-    public <T> Set<Long> fetch(long memberId, IntroductionCacheKeyPrefix cacheKeyPrefix, T criteria, IntroductionConditionSupplier<T> supplier) {
+    public <T> Set<Long> fetch(long memberId, IntroductionCacheKeyPrefix cacheKeyPrefix, T criteria,
+        IntroductionConditionSupplier<T> supplier) {
         String cacheKey = buildKey(cacheKeyPrefix, memberId);
         Set<Long> cachedIds = introductionRedisRepository.findIntroductionMemberIds(cacheKey);
         if (!cachedIds.isEmpty()) {
@@ -40,9 +36,9 @@ public class IntroductionMemberIdFetcher {
         }
         Set<Long> excludedMemberIds = findExcludedMemberIds(memberId);
         MemberIdeal memberIdeal = memberIdealCommandRepository.findByMemberId(memberId)
-                .orElseThrow(MemberIdealNotFoundException::new);
+            .orElseThrow(MemberIdealNotFoundException::new);
         Member member = memberCommandRepository.findById(memberId)
-                .orElseThrow(MemberNotFoundException::new);
+            .orElseThrow(MemberNotFoundException::new);
         IntroductionSearchCondition condition = supplier.get(excludedMemberIds, memberIdeal, member, criteria);
         Set<Long> introductionMemberIds = introductionQueryRepository.findAllIntroductionMemberId(condition);
         introductionRedisRepository.saveIntroductionMemberIds(cacheKey, introductionMemberIds, getExpireAt());
@@ -65,5 +61,11 @@ public class IntroductionMemberIdFetcher {
 
     private String buildKey(IntroductionCacheKeyPrefix prefix, long memberId) {
         return prefix.getPrefix() + memberId;
+    }
+
+    @FunctionalInterface
+    public interface IntroductionConditionSupplier<T> {
+        IntroductionSearchCondition get(Set<Long> excludedMemberIds, MemberIdeal memberIdeal, Member member,
+            T criteria);
     }
 }

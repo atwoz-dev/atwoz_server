@@ -11,8 +11,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "matches", indexes = {
-        @Index(name = "idx_responder_id", columnList = "responderId"),
-        @Index(name = "idx_requester_id_responder_id", columnList = "requesterId, responderId")
+    @Index(name = "idx_responder_id", columnList = "responderId"),
+    @Index(name = "idx_requester_id_responder_id", columnList = "requesterId, responderId")
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -33,14 +33,14 @@ public class Match {
     @Getter
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "value", column = @Column(name = "request_message"))
+        @AttributeOverride(name = "value", column = @Column(name = "request_message"))
     })
     private Message requestMessage;
 
     @Getter
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "value", column = @Column(name = "response_message"))
+        @AttributeOverride(name = "value", column = @Column(name = "response_message"))
     })
     private Message responseMessage;
 
@@ -48,6 +48,18 @@ public class Match {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
     private MatchStatus status;
+
+    public static Match request(long requesterId, long responderId, @NonNull Message requestMessage) {
+        Events.raise(MatchRequestedEvent.of(requesterId, responderId));
+        Events.raise(MatchRequestCompletedEvent.of(requesterId, responderId));
+
+        return Match.builder()
+            .requesterId(requesterId)
+            .responderId(responderId)
+            .requestMessage(requestMessage)
+            .status(MatchStatus.WAITING)
+            .build();
+    }
 
     public void approve(@NonNull Message message) {
         validateChangeStatus();
@@ -73,25 +85,15 @@ public class Match {
         status = MatchStatus.REJECT_CHECKED;
     }
 
-    public static Match request(long requesterId, long responderId, @NonNull Message requestMessage) {
-        Events.raise(MatchRequestedEvent.of(requesterId, responderId));
-        Events.raise(MatchRequestCompletedEvent.of(requesterId, responderId));
-
-        return Match.builder()
-                .requesterId(requesterId)
-                .responderId(responderId)
-                .requestMessage(requestMessage)
-                .status(MatchStatus.WAITING)
-                .build();
-    }
-
     private void validateChangeStatus() {
-        if (status != MatchStatus.WAITING)
+        if (status != MatchStatus.WAITING) {
             throw new InvalidMatchStatusChangeException();
+        }
     }
 
     private void validateChangeRejectChecked() {
-        if (status != MatchStatus.REJECTED)
+        if (status != MatchStatus.REJECTED) {
             throw new InvalidMatchStatusChangeException();
+        }
     }
 }

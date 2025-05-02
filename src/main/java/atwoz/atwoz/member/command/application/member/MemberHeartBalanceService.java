@@ -22,6 +22,6 @@ public class MemberHeartBalanceService {
 
     private Member getMemberById(Long memberId) {
         return memberCommandRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException());
+            .orElseThrow(() -> new MemberNotFoundException());
     }
 }

@@ -37,7 +37,8 @@ public class TokenFilter extends OncePerRequestFilter {
     private final RefreshTokenCookieProperties refreshTokenCookieProperties;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+        throws ServletException, IOException {
         if (isExcluded(request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;

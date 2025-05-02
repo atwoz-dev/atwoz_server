@@ -25,7 +25,7 @@ class OrderTest {
             PaymentMethod paymentMethod = condition.equals("paymentMethod is null") ? null : PaymentMethod.GOOGLE_PLAY;
             // when & then
             assertThatThrownBy(() -> Order.of(memberId, transactionId, paymentMethod))
-                    .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(NullPointerException.class);
         }
 
         @Test
@@ -81,7 +81,7 @@ class OrderTest {
         void throwsInvalidOrderStatusExceptionWhenRefundMethodIsCalled() {
             // when & then
             assertThatThrownBy(order::refund)
-                    .isInstanceOf(InvalidOrderStatusException.class);
+                .isInstanceOf(InvalidOrderStatusException.class);
         }
     }
 }

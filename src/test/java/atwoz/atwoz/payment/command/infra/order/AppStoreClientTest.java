@@ -42,7 +42,7 @@ class AppStoreClientTest {
 
         // then
         assertThat(actualResponse.getSignedTransactionInfo())
-                .isEqualTo(signedTransactionInfo);
+            .isEqualTo(signedTransactionInfo);
     }
 
     @Test
@@ -56,7 +56,7 @@ class AppStoreClientTest {
 
         // when && then
         assertThatThrownBy(() -> appStoreClient.getTransactionInfo(transactionId))
-                .isInstanceOf(InvalidTransactionIdException.class);
+            .isInstanceOf(InvalidTransactionIdException.class);
 
         verify(appStoreServerAPIClient, times(1)).getTransactionInfo(transactionId);
     }
@@ -72,7 +72,7 @@ class AppStoreClientTest {
 
         // when && then
         assertThatThrownBy(() -> appStoreClient.getTransactionInfo(transactionId))
-                .isInstanceOf(InvalidTransactionIdException.class);
+            .isInstanceOf(InvalidTransactionIdException.class);
 
         verify(appStoreServerAPIClient, times(1)).getTransactionInfo(transactionId);
     }
@@ -88,7 +88,7 @@ class AppStoreClientTest {
 
         // when && then
         assertThatThrownBy(() -> appStoreClient.getTransactionInfo(transactionId))
-                .isInstanceOf(AppStoreClientException.class);
+            .isInstanceOf(AppStoreClientException.class);
 
         verify(appStoreServerAPIClient, times(1)).getTransactionInfo(transactionId);
     }
@@ -104,7 +104,7 @@ class AppStoreClientTest {
 
         // when && then
         assertThatThrownBy(() -> appStoreClient.getTransactionInfo(transactionId))
-                .isInstanceOf(AppStoreClientException.class);
+            .isInstanceOf(AppStoreClientException.class);
 
         verify(appStoreServerAPIClient, times(1)).getTransactionInfo(transactionId);
     }
@@ -120,7 +120,7 @@ class AppStoreClientTest {
 
         // when && then
         assertThatThrownBy(() -> appStoreClient.getTransactionInfo(transactionId))
-                .isInstanceOf(AppStoreClientException.class);
+            .isInstanceOf(AppStoreClientException.class);
 
         verify(appStoreServerAPIClient, times(1)).getTransactionInfo(transactionId);
     }

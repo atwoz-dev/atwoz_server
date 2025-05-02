@@ -27,19 +27,17 @@ import static org.mockito.ArgumentMatchers.any;
 @ExtendWith(MockitoExtension.class)
 public class MatchServiceTest {
 
+    private static MockedStatic<Events> mockedEvents;
     @Mock
     private MatchRepository matchRepository;
-
     @InjectMocks
     private MatchService matchService;
-
-    private static MockedStatic<Events> mockedEvents;
 
     @BeforeEach
     void setUp() {
         mockedEvents = Mockito.mockStatic(Events.class);
         mockedEvents.when(() -> Events.raise(Mockito.any()))
-                .thenAnswer(invocation -> null);
+            .thenAnswer(invocation -> null);
     }
 
     @AfterEach
@@ -66,11 +64,11 @@ public class MatchServiceTest {
             }).when(matchRepository).withNamedLock(any(), any());
 
             Mockito.when(matchRepository.existsActiveMatchBetween(requesterId, requestDto.responderId()))
-                    .thenReturn(true);
+                .thenReturn(true);
 
             // When & Then
             Assertions.assertThatThrownBy(() -> matchService.request(requesterId, requestDto))
-                    .isInstanceOf(ExistsMatchException.class);
+                .isInstanceOf(ExistsMatchException.class);
         }
 
 
@@ -90,7 +88,7 @@ public class MatchServiceTest {
             }).when(matchRepository).withNamedLock(any(), any());
 
             Mockito.when(matchRepository.existsActiveMatchBetween(requesterId, requestDto.responderId()))
-                    .thenReturn(false);
+                .thenReturn(false);
 
             // When
             matchService.request(requesterId, requestDto);
@@ -98,9 +96,9 @@ public class MatchServiceTest {
 
             // Then
             Mockito.verify(matchRepository).save(
-                    Mockito.argThat(match -> match.getRequesterId().equals(requesterId) &&
-                            match.getResponderId().equals(responderId) &&
-                            match.getRequestMessage().getValue().equals(requestMessage))
+                Mockito.argThat(match -> match.getRequesterId().equals(requesterId) &&
+                    match.getResponderId().equals(responderId) &&
+                    match.getRequestMessage().getValue().equals(requestMessage))
             );
         }
     }
@@ -119,11 +117,11 @@ public class MatchServiceTest {
             MatchResponseDto responseDto = new MatchResponseDto(responseMessage);
 
             Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
-                    .thenReturn(Optional.empty());
+                .thenReturn(Optional.empty());
 
             // When & Then
             Assertions.assertThatThrownBy(() -> matchService.approve(matchId, responderId, responseDto))
-                    .isInstanceOf(MatchNotFoundException.class);
+                .isInstanceOf(MatchNotFoundException.class);
         }
 
         @DisplayName("매치의 상태가 대기중이 아닐 경우, 예외 발생")
@@ -140,11 +138,11 @@ public class MatchServiceTest {
             match.reject();
 
             Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
-                    .thenReturn(Optional.of(match));
+                .thenReturn(Optional.of(match));
 
             // When & Then
             Assertions.assertThatThrownBy(() -> matchService.approve(matchId, responderId, responseDto))
-                    .isInstanceOf(InvalidMatchUpdateException.class);
+                .isInstanceOf(InvalidMatchUpdateException.class);
         }
 
         @DisplayName("매치의 상태가 대기중이며, 응답자 아이디가 일치할 경우 수락.")
@@ -161,7 +159,7 @@ public class MatchServiceTest {
             MatchResponseDto responseDto = new MatchResponseDto(responseMessage);
 
             Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
-                    .thenReturn(Optional.of(match));
+                .thenReturn(Optional.of(match));
 
             // When
             matchService.approve(matchId, responderId, responseDto);
@@ -185,11 +183,11 @@ public class MatchServiceTest {
             Long matchId = 1L;
 
             Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
-                    .thenReturn(Optional.empty());
+                .thenReturn(Optional.empty());
 
             // When & Then
             Assertions.assertThatThrownBy(() -> matchService.reject(matchId, responderId))
-                    .isInstanceOf(MatchNotFoundException.class);
+                .isInstanceOf(MatchNotFoundException.class);
         }
 
         @DisplayName("매치의 상태가 대기중이 아닐 경우, 예외 발생")
@@ -206,11 +204,11 @@ public class MatchServiceTest {
 
 
             Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
-                    .thenReturn(Optional.of(match));
+                .thenReturn(Optional.of(match));
 
             // When & Then
             Assertions.assertThatThrownBy(() -> matchService.reject(matchId, responderId))
-                    .isInstanceOf(InvalidMatchUpdateException.class);
+                .isInstanceOf(InvalidMatchUpdateException.class);
         }
 
         @DisplayName("매치의 상태가 대기중이며, 응답자 아이디가 일치할 경우 거절.")
@@ -226,7 +224,7 @@ public class MatchServiceTest {
             match = Match.request(requesterId, responderId, Message.from(requestMessage));
 
             Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
-                    .thenReturn(Optional.of(match));
+                .thenReturn(Optional.of(match));
 
             // When
             matchService.reject(matchId, responderId);
@@ -253,11 +251,11 @@ public class MatchServiceTest {
             Match match = Match.request(requesterId, responderId, Message.from(requestMessage));
 
             Mockito.when(matchRepository.findByIdAndRequesterId(matchId, requesterId))
-                    .thenReturn(Optional.of(match));
+                .thenReturn(Optional.of(match));
 
             // When & Then
             Assertions.assertThatThrownBy(() -> matchService.rejectCheck(requesterId, matchId))
-                    .isInstanceOf(InvalidMatchUpdateException.class);
+                .isInstanceOf(InvalidMatchUpdateException.class);
         }
 
         @DisplayName("매치가 존재하지 않는 경우, 예외 발생")
@@ -268,11 +266,11 @@ public class MatchServiceTest {
             Long matchId = 3L;
 
             Mockito.when(matchRepository.findByIdAndRequesterId(matchId, requesterId))
-                    .thenReturn(Optional.empty());
+                .thenReturn(Optional.empty());
 
             // When & Then
             Assertions.assertThatThrownBy(() -> matchService.rejectCheck(requesterId, matchId))
-                    .isInstanceOf(MatchNotFoundException.class);
+                .isInstanceOf(MatchNotFoundException.class);
         }
 
         @DisplayName("매치가 존재하며, 해당 상태가 거절일 경우 상태 변경")
@@ -289,7 +287,7 @@ public class MatchServiceTest {
 
 
             Mockito.when(matchRepository.findByIdAndRequesterId(matchId, requesterId))
-                    .thenReturn(Optional.of(match));
+                .thenReturn(Optional.of(match));
 
             // When
             matchService.rejectCheck(requesterId, matchId);

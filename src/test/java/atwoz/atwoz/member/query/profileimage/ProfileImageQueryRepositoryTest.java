@@ -29,18 +29,18 @@ public class ProfileImageQueryRepositoryTest {
         // Given
         Long memberId = 1L;
         ProfileImage profileImage1 = ProfileImage.builder()
-                .memberId(memberId)
-                .imageUrl(ImageUrl.from("https://example.com"))
-                .isPrimary(true)
-                .order(1)
-                .build();
+            .memberId(memberId)
+            .imageUrl(ImageUrl.from("https://example.com"))
+            .isPrimary(true)
+            .order(1)
+            .build();
 
         ProfileImage profileImage2 = ProfileImage.builder()
-                .memberId(memberId)
-                .imageUrl(ImageUrl.from("https://example2.com"))
-                .isPrimary(false)
-                .order(2)
-                .build();
+            .memberId(memberId)
+            .imageUrl(ImageUrl.from("https://example2.com"))
+            .isPrimary(false)
+            .order(2)
+            .build();
 
         entityManager.persist(profileImage1);
         entityManager.persist(profileImage2);

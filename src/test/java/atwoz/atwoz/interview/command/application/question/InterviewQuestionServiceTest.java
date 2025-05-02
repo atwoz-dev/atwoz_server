@@ -1,7 +1,7 @@
 package atwoz.atwoz.interview.command.application.question;
 
-import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionNotFoundException;
 import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionAlreadyExistsException;
+import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionNotFoundException;
 import atwoz.atwoz.interview.command.domain.question.InterviewCategory;
 import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;
 import atwoz.atwoz.interview.command.domain.question.InterviewQuestionCommandRepository;
@@ -46,7 +46,7 @@ class InterviewQuestionServiceTest {
 
             // when & then
             assertThatThrownBy(() -> interviewQuestionService.createQuestion(request))
-                    .isInstanceOf(InterviewQuestionAlreadyExistsException.class);
+                .isInstanceOf(InterviewQuestionAlreadyExistsException.class);
         }
 
         @Test
@@ -62,7 +62,7 @@ class InterviewQuestionServiceTest {
 
             // when & then
             assertThatThrownBy(() -> interviewQuestionService.createQuestion(request))
-                    .isInstanceOf(InvalidInterviewCategoryException.class);
+                .isInstanceOf(InvalidInterviewCategoryException.class);
         }
 
         @Test
@@ -102,7 +102,7 @@ class InterviewQuestionServiceTest {
 
             // when & then
             assertThatThrownBy(() -> interviewQuestionService.updateQuestion(questionId, request))
-                    .isInstanceOf(InterviewQuestionNotFoundException.class);
+                .isInstanceOf(InterviewQuestionNotFoundException.class);
         }
 
         @Test
@@ -115,13 +115,14 @@ class InterviewQuestionServiceTest {
             String updatedContent = "updated content";
             String updatedCategory = "notExist";
             boolean updatedIsPublic = false;
-            InterviewQuestionSaveRequest request = new InterviewQuestionSaveRequest(updatedContent, updatedCategory, updatedIsPublic);
+            InterviewQuestionSaveRequest request = new InterviewQuestionSaveRequest(updatedContent, updatedCategory,
+                updatedIsPublic);
 
             when(interviewQuestionCommandRepository.findById(questionId)).thenReturn(Optional.of(interviewQuestion));
 
             // when & then
             assertThatThrownBy(() -> interviewQuestionService.updateQuestion(questionId, request))
-                    .isInstanceOf(InvalidInterviewCategoryException.class);
+                .isInstanceOf(InvalidInterviewCategoryException.class);
         }
 
         @Test
@@ -136,14 +137,15 @@ class InterviewQuestionServiceTest {
             String updatedContent = "updated content";
             String updatedCategory = InterviewCategory.SOCIAL.name();
             boolean updatedIsPublic = false;
-            InterviewQuestionSaveRequest request = new InterviewQuestionSaveRequest(updatedContent, updatedCategory, updatedIsPublic);
+            InterviewQuestionSaveRequest request = new InterviewQuestionSaveRequest(updatedContent, updatedCategory,
+                updatedIsPublic);
 
             when(interviewQuestionCommandRepository.findById(questionId)).thenReturn(Optional.of(interviewQuestion));
             when(interviewQuestionCommandRepository.existsByContent(updatedContent)).thenReturn(true);
 
             // when & then
             assertThatThrownBy(() -> interviewQuestionService.updateQuestion(questionId, request))
-                    .isInstanceOf(InterviewQuestionAlreadyExistsException.class);
+                .isInstanceOf(InterviewQuestionAlreadyExistsException.class);
         }
 
         @Test
@@ -158,7 +160,8 @@ class InterviewQuestionServiceTest {
             String updatedContent = "updated content";
             String updatedCategory = InterviewCategory.SOCIAL.name();
             boolean updatedIsPublic = false;
-            InterviewQuestionSaveRequest request = new InterviewQuestionSaveRequest(updatedContent, updatedCategory, updatedIsPublic);
+            InterviewQuestionSaveRequest request = new InterviewQuestionSaveRequest(updatedContent, updatedCategory,
+                updatedIsPublic);
 
             when(interviewQuestionCommandRepository.findById(questionId)).thenReturn(Optional.of(interviewQuestion));
             when(interviewQuestionCommandRepository.existsByContent(updatedContent)).thenReturn(false);
@@ -182,7 +185,8 @@ class InterviewQuestionServiceTest {
             String updatedContent = "content";
             String updatedCategory = InterviewCategory.SOCIAL.name();
             boolean updatedIsPublic = false;
-            InterviewQuestionSaveRequest request = new InterviewQuestionSaveRequest(updatedContent, updatedCategory, updatedIsPublic);
+            InterviewQuestionSaveRequest request = new InterviewQuestionSaveRequest(updatedContent, updatedCategory,
+                updatedIsPublic);
 
             when(interviewQuestionCommandRepository.findById(questionId)).thenReturn(Optional.of(interviewQuestion));
 

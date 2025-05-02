@@ -20,7 +20,7 @@ public class MemberExceptionHandler {
         log.warn("멤버 로그인에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.status(401)
-                .body(BaseResponse.from(StatusType.UNAUTHORIZED));
+            .body(BaseResponse.from(StatusType.UNAUTHORIZED));
     }
 
     @ExceptionHandler(MemberNotFoundException.class)
@@ -28,15 +28,16 @@ public class MemberExceptionHandler {
         log.warn("멤버 조회에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.status(404)
-                .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.from(StatusType.NOT_FOUND));
     }
 
     @ExceptionHandler(PhoneNumberAlreadyExistsException.class)
-    public ResponseEntity<BaseResponse<Void>> handlePhoneNumberAlreadyExistsException(PhoneNumberAlreadyExistsException e) {
+    public ResponseEntity<BaseResponse<Void>> handlePhoneNumberAlreadyExistsException(
+        PhoneNumberAlreadyExistsException e) {
         log.warn("휴대폰 번호 변경에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
-                .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.from(StatusType.BAD_REQUEST));
     }
 
     @ExceptionHandler(KakaoIdAlreadyExistsException.class)
@@ -44,6 +45,6 @@ public class MemberExceptionHandler {
         log.warn("카카오 아이디 변경에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
-                .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.from(StatusType.BAD_REQUEST));
     }
 }

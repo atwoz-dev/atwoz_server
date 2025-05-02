@@ -61,14 +61,14 @@ class IntroductionQueryRepositoryTest {
 
             Member member1 = Member.fromPhoneNumber("01011111111");
             MemberProfile profile1 = MemberProfile.builder()
-                    .yearOfBirth(currentYear - 19) // 20살
-                    .hobbies(Set.of(hobby1, hobby2))
-                    .religion(Religion.BUDDHIST)
-                    .region(Region.of(District.DONG_GU_DAEJEON))
-                    .smokingStatus(SmokingStatus.DAILY)
-                    .drinkingStatus(DrinkingStatus.SOCIAL)
-                    .gender(Gender.MALE)
-                    .build();
+                .yearOfBirth(currentYear - 19) // 20살
+                .hobbies(Set.of(hobby1, hobby2))
+                .religion(Religion.BUDDHIST)
+                .region(Region.of(District.DONG_GU_DAEJEON))
+                .smokingStatus(SmokingStatus.DAILY)
+                .drinkingStatus(DrinkingStatus.SOCIAL)
+                .gender(Gender.MALE)
+                .build();
             member1.updateProfile(profile1);
 
             entityManager.persist(member1);
@@ -76,14 +76,14 @@ class IntroductionQueryRepositoryTest {
 
             Member member2 = Member.fromPhoneNumber("01022222222");
             MemberProfile profile2 = MemberProfile.builder()
-                    .yearOfBirth(currentYear - 39) // 40살
-                    .hobbies(Set.of(hobby3, hobby4))
-                    .religion(Religion.NONE)
-                    .region(atwoz.atwoz.member.command.domain.member.vo.Region.of(District.GANGNAM_GU))
-                    .smokingStatus(SmokingStatus.NONE)
-                    .drinkingStatus(DrinkingStatus.NONE)
-                    .gender(Gender.FEMALE)
-                    .build();
+                .yearOfBirth(currentYear - 39) // 40살
+                .hobbies(Set.of(hobby3, hobby4))
+                .religion(Religion.NONE)
+                .region(atwoz.atwoz.member.command.domain.member.vo.Region.of(District.GANGNAM_GU))
+                .smokingStatus(SmokingStatus.NONE)
+                .drinkingStatus(DrinkingStatus.NONE)
+                .gender(Gender.FEMALE)
+                .build();
             member2.updateProfile(profile2);
 
             entityManager.persist(member2);
@@ -91,20 +91,35 @@ class IntroductionQueryRepositoryTest {
 
 
             IntroductionSearchCondition condition = mock(IntroductionSearchCondition.class);
-            when(condition.getExcludedMemberIds()).thenReturn(fieldName.equals("excludedIds") ? Set.of(member2.getId()) : Set.of());
+            when(condition.getExcludedMemberIds()).thenReturn(
+                fieldName.equals("excludedIds") ? Set.of(member2.getId()) : Set.of());
 
             // 수정 by 공태현 (출생연도에 따른 계산으로.)
-            when(condition.getMaxAge()).thenReturn(fieldName.equals("maxAge") ? currentYear - member1.getProfile().getYearOfBirth().getValue() + 1 : null); // 나이 최대 20살
-            when(condition.getMinAge()).thenReturn(fieldName.equals("minAge") ? currentYear - member2.getProfile().getYearOfBirth().getValue() + 1 : null); // 나이 최소 40살
+            when(condition.getMaxAge()).thenReturn(
+                fieldName.equals("maxAge") ? currentYear - member1.getProfile().getYearOfBirth().getValue() + 1
+                    : null); // 나이 최대 20살
+            when(condition.getMinAge()).thenReturn(
+                fieldName.equals("minAge") ? currentYear - member2.getProfile().getYearOfBirth().getValue() + 1
+                    : null); // 나이 최소 40살
 
-            when(condition.getHobbies()).thenReturn(fieldName.equals("hobbies") ? member1.getProfile().getHobbies().stream().map(Hobby::name).collect(Collectors.toSet()) : Set.of());
-            when(condition.getReligion()).thenReturn(fieldName.equals("religion") ? member1.getProfile().getReligion().name() : null);
-            when(condition.getCities()).thenReturn(fieldName.equals("cities") ? Set.of(member1.getProfile().getRegion().getCity().name()) : Set.of());
-            when(condition.getSmokingStatus()).thenReturn(fieldName.equals("smokingStatus") ? member1.getProfile().getSmokingStatus().name() : null);
-            when(condition.getDrinkingStatus()).thenReturn(fieldName.equals("drinkingStatus") ? member1.getProfile().getDrinkingStatus().name() : null);
+            when(condition.getHobbies()).thenReturn(fieldName.equals("hobbies") ? member1.getProfile()
+                .getHobbies()
+                .stream()
+                .map(Hobby::name)
+                .collect(Collectors.toSet()) : Set.of());
+            when(condition.getReligion()).thenReturn(
+                fieldName.equals("religion") ? member1.getProfile().getReligion().name() : null);
+            when(condition.getCities()).thenReturn(
+                fieldName.equals("cities") ? Set.of(member1.getProfile().getRegion().getCity().name()) : Set.of());
+            when(condition.getSmokingStatus()).thenReturn(
+                fieldName.equals("smokingStatus") ? member1.getProfile().getSmokingStatus().name() : null);
+            when(condition.getDrinkingStatus()).thenReturn(
+                fieldName.equals("drinkingStatus") ? member1.getProfile().getDrinkingStatus().name() : null);
             when(condition.getMemberGrade()).thenReturn(fieldName.equals("memberGrade") ? Grade.DIAMOND.name() : null);
-            when(condition.getGender()).thenReturn(fieldName.equals("gender") ? member1.getProfile().getGender().name() : null);
-            when(condition.getJoinedAfter()).thenReturn(fieldName.equals("joinedAfter") ? LocalDateTime.now().plusDays(1) : null);
+            when(condition.getGender()).thenReturn(
+                fieldName.equals("gender") ? member1.getProfile().getGender().name() : null);
+            when(condition.getJoinedAfter()).thenReturn(
+                fieldName.equals("joinedAfter") ? LocalDateTime.now().plusDays(1) : null);
 
             // when
             Set<Long> result = introductionQueryRepository.findAllIntroductionMemberId(condition);
@@ -148,7 +163,7 @@ class IntroductionQueryRepositoryTest {
         void setUp() {
             mockedEvents = Mockito.mockStatic(Events.class);
             mockedEvents.when(() -> Events.raise(Mockito.any()))
-                    .thenAnswer(invocation -> null);
+                .thenAnswer(invocation -> null);
         }
 
         @AfterEach
@@ -168,13 +183,13 @@ class IntroductionQueryRepositoryTest {
 
             Member me = Member.fromPhoneNumber("01011111111");
             MemberProfile profile1 = MemberProfile.builder()
-                    .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
-                    .hobbies(Set.of(hobby1, hobby2))
-                    .religion(Religion.BUDDHIST)
-                    .region(Region.of(District.DONG_GU_DAEJEON))
-                    .smokingStatus(SmokingStatus.DAILY)
-                    .drinkingStatus(DrinkingStatus.SOCIAL)
-                    .build();
+                .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
+                .hobbies(Set.of(hobby1, hobby2))
+                .religion(Religion.BUDDHIST)
+                .region(Region.of(District.DONG_GU_DAEJEON))
+                .smokingStatus(SmokingStatus.DAILY)
+                .drinkingStatus(DrinkingStatus.SOCIAL)
+                .build();
             me.updateProfile(profile1);
 
             entityManager.persist(me);
@@ -182,32 +197,32 @@ class IntroductionQueryRepositoryTest {
 
             Member introductionTargetMember = Member.fromPhoneNumber("01022222222");
             MemberProfile introductionTargetMemberProfile = MemberProfile.builder()
-                    .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
-                    .hobbies(Set.of(hobby3, hobby4))
-                    .religion(Religion.NONE)
-                    .region(Region.of(District.GANGBUK_GU))
-                    .smokingStatus(SmokingStatus.NONE)
-                    .drinkingStatus(DrinkingStatus.NONE)
-                    .mbti(Mbti.ISTP)
-                    .build();
+                .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
+                .hobbies(Set.of(hobby3, hobby4))
+                .religion(Religion.NONE)
+                .region(Region.of(District.GANGBUK_GU))
+                .smokingStatus(SmokingStatus.NONE)
+                .drinkingStatus(DrinkingStatus.NONE)
+                .mbti(Mbti.ISTP)
+                .build();
             introductionTargetMember.updateProfile(introductionTargetMemberProfile);
 
             entityManager.persist(introductionTargetMember);
             entityManager.flush();
 
             ProfileImage primaryProfileImage = ProfileImage.builder()
-                    .memberId(introductionTargetMember.getId())
-                    .imageUrl(ImageUrl.from("https://example.com"))
-                    .isPrimary(true)
-                    .order(1)
-                    .build();
+                .memberId(introductionTargetMember.getId())
+                .imageUrl(ImageUrl.from("https://example.com"))
+                .isPrimary(true)
+                .order(1)
+                .build();
 
             ProfileImage nonPrimaryProfileImage = ProfileImage.builder()
-                    .memberId(introductionTargetMember.getId())
-                    .imageUrl(ImageUrl.from("https://example2.com"))
-                    .isPrimary(false)
-                    .order(2)
-                    .build();
+                .memberId(introductionTargetMember.getId())
+                .imageUrl(ImageUrl.from("https://example2.com"))
+                .isPrimary(false)
+                .order(2)
+                .build();
 
             entityManager.persist(primaryProfileImage);
             entityManager.persist(nonPrimaryProfileImage);
@@ -217,12 +232,14 @@ class IntroductionQueryRepositoryTest {
             entityManager.flush();
 
             if (fieldName.equals("introduced")) {
-                MemberIntroduction memberIntroduction = MemberIntroduction.of(me.getId(), introductionTargetMember.getId());
+                MemberIntroduction memberIntroduction = MemberIntroduction.of(me.getId(),
+                    introductionTargetMember.getId());
                 entityManager.persist(memberIntroduction);
                 entityManager.flush();
             }
             if (fieldName.equals("notIntroduced1")) {
-                MemberIntroduction memberIntroduction = MemberIntroduction.of(introductionTargetMember.getId(), me.getId());
+                MemberIntroduction memberIntroduction = MemberIntroduction.of(introductionTargetMember.getId(),
+                    me.getId());
                 entityManager.persist(memberIntroduction);
                 entityManager.flush();
             }
@@ -232,18 +249,21 @@ class IntroductionQueryRepositoryTest {
 
             // when
             List<MemberIntroductionProfileQueryResult> result = introductionQueryRepository
-                    .findAllMemberIntroductionProfileQueryResultByMemberIds(
-                            me.getId(),
-                            Set.of(introductionTargetMember.getId()));
+                .findAllMemberIntroductionProfileQueryResultByMemberIds(
+                    me.getId(),
+                    Set.of(introductionTargetMember.getId()));
 
             // then
             assertThat(result).hasSize(1);
             MemberIntroductionProfileQueryResult memberIntroductionProfileQueryResult = result.get(0);
             assertThat(memberIntroductionProfileQueryResult.memberId()).isEqualTo(introductionTargetMember.getId());
             assertThat(memberIntroductionProfileQueryResult.profileImageUrl()).isEqualTo(primaryProfileImage.getUrl());
-            assertThat(memberIntroductionProfileQueryResult.hobbies()).containsExactlyInAnyOrder(hobby3.name(), hobby4.name());
-            assertThat(memberIntroductionProfileQueryResult.religion()).isEqualTo(introductionTargetMember.getProfile().getReligion().name());
-            assertThat(memberIntroductionProfileQueryResult.mbti()).isEqualTo(introductionTargetMember.getProfile().getMbti().name());
+            assertThat(memberIntroductionProfileQueryResult.hobbies()).containsExactlyInAnyOrder(hobby3.name(),
+                hobby4.name());
+            assertThat(memberIntroductionProfileQueryResult.religion()).isEqualTo(
+                introductionTargetMember.getProfile().getReligion().name());
+            assertThat(memberIntroductionProfileQueryResult.mbti()).isEqualTo(
+                introductionTargetMember.getProfile().getMbti().name());
             assertThat(memberIntroductionProfileQueryResult.likeLevel()).isEqualTo(like.getLikeLevel().name());
             if (fieldName.equals("introduced")) {
                 assertThat(memberIntroductionProfileQueryResult.isIntroduced()).isTrue();

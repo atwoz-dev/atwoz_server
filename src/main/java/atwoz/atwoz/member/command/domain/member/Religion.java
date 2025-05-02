@@ -18,7 +18,9 @@ public enum Religion {
     }
 
     public static Religion from(String value) {
-        if (value == null || value.isEmpty()) return null;
+        if (value == null || value.isEmpty()) {
+            return null;
+        }
 
         try {
             return Religion.valueOf(value.toUpperCase());

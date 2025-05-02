@@ -11,10 +11,10 @@ import lombok.NonNull;
 
 @Entity
 @Table(name = "likes",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"senderId", "receiverId"}),
-        indexes = {
-                @Index(name = "idx_receiver_id", columnList = "receiverId")
-        })
+    uniqueConstraints = @UniqueConstraint(columnNames = {"senderId", "receiverId"}),
+    indexes = {
+        @Index(name = "idx_receiver_id", columnList = "receiverId")
+    })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Like extends BaseEntity {
@@ -30,14 +30,14 @@ public class Like extends BaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private LikeLevel likeLevel;
 
-    public static Like of(Long senderId, Long receiverId, LikeLevel likeLevel) {
-        Events.raise(LikeCreatedEvent.of(senderId, receiverId)); // 좋아요 알림을 위한 이벤트.
-        return new Like(senderId, receiverId, likeLevel);
-    }
-
     private Like(@NonNull Long senderId, @NonNull Long receiverId, @NonNull LikeLevel likeLevel) {
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.likeLevel = likeLevel;
+    }
+
+    public static Like of(Long senderId, Long receiverId, LikeLevel likeLevel) {
+        Events.raise(LikeCreatedEvent.of(senderId, receiverId)); // 좋아요 알림을 위한 이벤트.
+        return new Like(senderId, receiverId, likeLevel);
     }
 }

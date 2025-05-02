@@ -21,18 +21,18 @@ public class AgeRange {
         this.maxAge = MAX_VALUE;
     }
 
+    private AgeRange(@NonNull Integer minAge, @NonNull Integer maxAge) {
+        validateAgeRange(minAge, maxAge);
+        this.minAge = minAge;
+        this.maxAge = maxAge;
+    }
+
     public static AgeRange init() {
         return new AgeRange(MIN_VALUE, MAX_VALUE);
     }
 
     public static AgeRange of(Integer minAge, Integer maxAge) {
         return new AgeRange(minAge, maxAge);
-    }
-
-    private AgeRange(@NonNull Integer minAge, @NonNull Integer maxAge) {
-        validateAgeRange(minAge, maxAge);
-        this.minAge = minAge;
-        this.maxAge = maxAge;
     }
 
     private void validateAgeRange(Integer minAge, Integer maxAge) {

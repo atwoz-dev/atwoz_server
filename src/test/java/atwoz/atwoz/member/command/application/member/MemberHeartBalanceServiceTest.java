@@ -34,7 +34,7 @@ class MemberHeartBalanceServiceTest {
 
         // when & then
         assertThatThrownBy(() -> memberHeartBalanceService.grantPurchasedHearts(memberId, 100L))
-                .isInstanceOf(MemberNotFoundException.class);
+            .isInstanceOf(MemberNotFoundException.class);
     }
 
     @Test

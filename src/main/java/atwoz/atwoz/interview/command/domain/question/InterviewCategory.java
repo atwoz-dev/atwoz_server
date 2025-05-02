@@ -14,7 +14,9 @@ public enum InterviewCategory {
     }
 
     public static InterviewCategory from(String value) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
 
         try {
             return InterviewCategory.valueOf(value.toUpperCase());

@@ -62,10 +62,10 @@ public class MemberProfile {
 
     @Builder
     private MemberProfile(
-            Nickname nickname, Integer yearOfBirth, Gender gender, Integer height,
-            Mbti mbti, Region region, Religion religion,
-            SmokingStatus smokingStatus, DrinkingStatus drinkingStatus, HighestEducation highestEducation,
-            Job job, Set<Hobby> hobbies
+        Nickname nickname, Integer yearOfBirth, Gender gender, Integer height,
+        Mbti mbti, Region region, Religion religion,
+        SmokingStatus smokingStatus, DrinkingStatus drinkingStatus, HighestEducation highestEducation,
+        Job job, Set<Hobby> hobbies
     ) {
         this.nickname = nickname;
         this.yearOfBirth = YearOfBirth.from(yearOfBirth);
@@ -82,8 +82,9 @@ public class MemberProfile {
     }
 
     public boolean isProfileSettingNeeded() {
-        return nickname == null || yearOfBirth == null || yearOfBirth.getValue() == null || gender == null || height == null || job == null ||
-                hobbies == null || hobbies.isEmpty() || mbti == null || region == null || religion == null ||
-                smokingStatus == null || drinkingStatus == null || highestEducation == null;
+        return nickname == null || yearOfBirth == null || yearOfBirth.getValue() == null || gender == null
+            || height == null || job == null ||
+            hobbies == null || hobbies.isEmpty() || mbti == null || region == null || religion == null ||
+            smokingStatus == null || drinkingStatus == null || highestEducation == null;
     }
 }

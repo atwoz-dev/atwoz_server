@@ -20,7 +20,9 @@ public enum HighestEducation {
     }
 
     public static HighestEducation from(String value) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
 
         try {
             return HighestEducation.valueOf(value.toUpperCase());

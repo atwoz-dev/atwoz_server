@@ -17,14 +17,15 @@ public class YearOfBirth {
     @Column(name = "year_of_birth")
     private Integer value;
 
-    public static YearOfBirth from(Integer yearOfBirth) {
-        return new YearOfBirth(yearOfBirth);
+    private YearOfBirth(Integer value) {
+        if (value != null) {
+            validateYearOfBirth(value);
+        }
+        this.value = value;
     }
 
-    private YearOfBirth(Integer value) {
-        if (value != null)
-            validateYearOfBirth(value);
-        this.value = value;
+    public static YearOfBirth from(Integer yearOfBirth) {
+        return new YearOfBirth(yearOfBirth);
     }
 
     private void validateYearOfBirth(Integer yearOfBirth) {

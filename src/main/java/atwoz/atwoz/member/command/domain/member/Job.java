@@ -33,7 +33,9 @@ public enum Job {
     }
 
     public static Job from(String value) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
         try {
             return Job.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {

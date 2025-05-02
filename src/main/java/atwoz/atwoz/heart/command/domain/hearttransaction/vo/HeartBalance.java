@@ -16,6 +16,17 @@ public final class HeartBalance {
     @Getter
     private final Long missionHeartBalance;
 
+    protected HeartBalance() {
+        this.purchaseHeartBalance = MIN_HEART_BALANCE;
+        this.missionHeartBalance = MIN_HEART_BALANCE;
+    }
+
+    private HeartBalance(Long purchaseHeartBalance, Long missionHeartBalance) {
+        validateMinHeartBalance(purchaseHeartBalance, missionHeartBalance);
+        this.purchaseHeartBalance = purchaseHeartBalance;
+        this.missionHeartBalance = missionHeartBalance;
+    }
+
     public static HeartBalance init() {
         return new HeartBalance();
     }
@@ -28,7 +39,8 @@ public final class HeartBalance {
         validateUsingAmount(heartChangeAmount);
         validateBalanceIsUsable(heartChangeAmount);
         Long purchaseHeartBalanceAfterUsing = usePurchaseHeart(heartChangeAmount);
-        HeartAmount remainingHeartChangeAmount = calculateRemainingHeartChangeAmount(heartChangeAmount, purchaseHeartBalanceAfterUsing);
+        HeartAmount remainingHeartChangeAmount = calculateRemainingHeartChangeAmount(heartChangeAmount,
+            purchaseHeartBalanceAfterUsing);
         Long missionHeartBalanceAfterUsing = useMissionHeart(remainingHeartChangeAmount);
         return new HeartBalance(purchaseHeartBalanceAfterUsing, missionHeartBalanceAfterUsing);
     }
@@ -45,22 +57,11 @@ public final class HeartBalance {
         return new HeartBalance(this.purchaseHeartBalance, missionHeartBalanceAfterGaining);
     }
 
-    protected HeartBalance() {
-        this.purchaseHeartBalance = MIN_HEART_BALANCE;
-        this.missionHeartBalance = MIN_HEART_BALANCE;
-    }
-
     private void validateBalanceIsUsable(HeartAmount heartChangeAmount) {
         Long totalHeartBalance = this.purchaseHeartBalance + this.missionHeartBalance;
         if (totalHeartBalance + heartChangeAmount.getAmount() < MIN_HEART_BALANCE) {
             throw new InsufficientHeartBalanceException();
         }
-    }
-
-    private HeartBalance(Long purchaseHeartBalance, Long missionHeartBalance) {
-        validateMinHeartBalance(purchaseHeartBalance, missionHeartBalance);
-        this.purchaseHeartBalance = purchaseHeartBalance;
-        this.missionHeartBalance = missionHeartBalance;
     }
 
     private void validateMinHeartBalance(Long purchaseHeartBalance, Long missionHeartBalance) {
@@ -76,7 +77,8 @@ public final class HeartBalance {
         return Math.max(this.purchaseHeartBalance + heartChangeAmount.getAmount(), 0L);
     }
 
-    private HeartAmount calculateRemainingHeartChangeAmount(HeartAmount heartChangeAmount, Long purchaseHeartBalanceAfterUsing) {
+    private HeartAmount calculateRemainingHeartChangeAmount(HeartAmount heartChangeAmount,
+        Long purchaseHeartBalanceAfterUsing) {
         Long usedPurchaseHeart = this.purchaseHeartBalance - purchaseHeartBalanceAfterUsing;
         Long remainingHeartChangeAmount = heartChangeAmount.getAmount() + usedPurchaseHeart;
         return HeartAmount.from(remainingHeartChangeAmount);

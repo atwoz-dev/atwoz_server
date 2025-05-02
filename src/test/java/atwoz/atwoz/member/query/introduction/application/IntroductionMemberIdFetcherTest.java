@@ -53,14 +53,14 @@ class IntroductionMemberIdFetcherTest {
         Set<Long> cachedIds = Set.of(2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L);
         String key = introductionCacheKeyPrefix.getPrefix() + memberId;
         when(introductionRedisRepository.findIntroductionMemberIds(key))
-                .thenReturn(cachedIds);
+            .thenReturn(cachedIds);
 
         // when
         Set<Long> result = introductionMemberIdFetcher.fetch(
-                memberId,
-                introductionCacheKeyPrefix,
-                null,
-                (excludedMemberIds, memberIdeal, member, criteria) -> null);
+            memberId,
+            introductionCacheKeyPrefix,
+            null,
+            (excludedMemberIds, memberIdeal, member, criteria) -> null);
 
         // then
         assertThat(result).isEqualTo(cachedIds);
@@ -75,12 +75,13 @@ class IntroductionMemberIdFetcherTest {
         Set<Long> savedIds = Set.of(2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L);
         String key = introductionCacheKeyPrefix.getPrefix() + memberId;
         when(introductionRedisRepository.findIntroductionMemberIds(key))
-                .thenReturn(Set.of());
+            .thenReturn(Set.of());
 
         Set<Long> matchedRequestedMemberIds = Set.of(memberId, 12L);
         when(introductionQueryRepository.findAllMatchRequestedMemberId(memberId)).thenReturn(matchedRequestedMemberIds);
         Set<Long> matchedRequestingMemberIds = Set.of(memberId, 12L);
-        when(introductionQueryRepository.findAllMatchRequestingMemberId(memberId)).thenReturn(matchedRequestingMemberIds);
+        when(introductionQueryRepository.findAllMatchRequestingMemberId(memberId)).thenReturn(
+            matchedRequestingMemberIds);
         Set<Long> introducedMemberIds = Set.of(memberId, 13L);
         when(introductionQueryRepository.findAllIntroducedMemberId(memberId)).thenReturn(introducedMemberIds);
 
@@ -94,16 +95,19 @@ class IntroductionMemberIdFetcherTest {
         Member member = mock(Member.class);
         when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(member));
 
-        IntroductionSearchCondition dummyCondition = IntroductionSearchCondition.ofGrade(excludedMemberIds, memberIdeal, Gender.MALE, Grade.DIAMOND);
+        IntroductionSearchCondition dummyCondition = IntroductionSearchCondition.ofGrade(excludedMemberIds, memberIdeal,
+            Gender.MALE, Grade.DIAMOND);
         IntroductionMemberIdFetcher.IntroductionConditionSupplier<Grade> supplier =
-                (excluded, ideal, m, grade) -> dummyCondition;
+            (excluded, ideal, m, grade) -> dummyCondition;
 
         when(introductionQueryRepository.findAllIntroductionMemberId(dummyCondition)).thenReturn(savedIds);
 
-        doNothing().when(introductionRedisRepository).saveIntroductionMemberIds(anyString(), eq(savedIds), any(Date.class));
+        doNothing().when(introductionRedisRepository)
+            .saveIntroductionMemberIds(anyString(), eq(savedIds), any(Date.class));
 
         // when
-        Set<Long> result = introductionMemberIdFetcher.fetch(memberId, IntroductionCacheKeyPrefix.DIAMOND, Grade.DIAMOND, supplier);
+        Set<Long> result = introductionMemberIdFetcher.fetch(memberId, IntroductionCacheKeyPrefix.DIAMOND,
+            Grade.DIAMOND, supplier);
 
         // then
         assertThat(result).isEqualTo(savedIds);
@@ -119,12 +123,13 @@ class IntroductionMemberIdFetcherTest {
         Set<Long> savedIds = Set.of(2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L);
         String key = introductionCacheKeyPrefix.getPrefix() + memberId;
         when(introductionRedisRepository.findIntroductionMemberIds(key))
-                .thenReturn(Set.of());
+            .thenReturn(Set.of());
 
         Set<Long> matchedRequestedMemberIds = Set.of(memberId, 12L);
         when(introductionQueryRepository.findAllMatchRequestedMemberId(memberId)).thenReturn(matchedRequestedMemberIds);
         Set<Long> matchedRequestingMemberIds = Set.of(memberId, 12L);
-        when(introductionQueryRepository.findAllMatchRequestingMemberId(memberId)).thenReturn(matchedRequestingMemberIds);
+        when(introductionQueryRepository.findAllMatchRequestingMemberId(memberId)).thenReturn(
+            matchedRequestingMemberIds);
         Set<Long> introducedMemberIds = Set.of(memberId, 13L);
         when(introductionQueryRepository.findAllIntroducedMemberId(memberId)).thenReturn(introducedMemberIds);
 
@@ -137,13 +142,16 @@ class IntroductionMemberIdFetcherTest {
         when(memberIdealCommandRepository.findByMemberId(memberId)).thenReturn(Optional.of(memberIdeal));
         when(memberCommandRepository.findById(memberId)).thenReturn(Optional.empty());
 
-        IntroductionSearchCondition dummyCondition = IntroductionSearchCondition.ofGrade(excludedMemberIds, memberIdeal, Gender.MALE, Grade.DIAMOND);
+        IntroductionSearchCondition dummyCondition = IntroductionSearchCondition.ofGrade(excludedMemberIds, memberIdeal,
+            Gender.MALE, Grade.DIAMOND);
         IntroductionMemberIdFetcher.IntroductionConditionSupplier<Grade> supplier =
-                (excluded, ideal, m, grade) -> dummyCondition;
+            (excluded, ideal, m, grade) -> dummyCondition;
 
         // when && then
-        assertThatThrownBy(() -> introductionMemberIdFetcher.fetch(memberId, IntroductionCacheKeyPrefix.DIAMOND, Grade.DIAMOND, supplier))
-                .isInstanceOf(MemberNotFoundException.class);
+        assertThatThrownBy(
+            () -> introductionMemberIdFetcher.fetch(memberId, IntroductionCacheKeyPrefix.DIAMOND, Grade.DIAMOND,
+                supplier))
+            .isInstanceOf(MemberNotFoundException.class);
     }
 
     @Test
@@ -155,12 +163,13 @@ class IntroductionMemberIdFetcherTest {
         Set<Long> savedIds = Set.of(2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L);
         String key = introductionCacheKeyPrefix.getPrefix() + memberId;
         when(introductionRedisRepository.findIntroductionMemberIds(key))
-                .thenReturn(Set.of());
+            .thenReturn(Set.of());
 
         Set<Long> matchedRequestedMemberIds = Set.of(memberId, 12L);
         when(introductionQueryRepository.findAllMatchRequestedMemberId(memberId)).thenReturn(matchedRequestedMemberIds);
         Set<Long> matchedRequestingMemberIds = Set.of(memberId, 12L);
-        when(introductionQueryRepository.findAllMatchRequestingMemberId(memberId)).thenReturn(matchedRequestingMemberIds);
+        when(introductionQueryRepository.findAllMatchRequestingMemberId(memberId)).thenReturn(
+            matchedRequestingMemberIds);
         Set<Long> introducedMemberIds = Set.of(memberId, 13L);
         when(introductionQueryRepository.findAllIntroducedMemberId(memberId)).thenReturn(introducedMemberIds);
 
@@ -172,12 +181,15 @@ class IntroductionMemberIdFetcherTest {
         when(memberIdealCommandRepository.findByMemberId(memberId)).thenReturn(Optional.empty());
 
         MemberIdeal memberIdeal = mock(MemberIdeal.class);
-        IntroductionSearchCondition dummyCondition = IntroductionSearchCondition.ofGrade(excludedMemberIds, memberIdeal, Gender.MALE, Grade.DIAMOND);
+        IntroductionSearchCondition dummyCondition = IntroductionSearchCondition.ofGrade(excludedMemberIds, memberIdeal,
+            Gender.MALE, Grade.DIAMOND);
         IntroductionMemberIdFetcher.IntroductionConditionSupplier<Grade> supplier =
-                (excluded, ideal, m, grade) -> dummyCondition;
+            (excluded, ideal, m, grade) -> dummyCondition;
 
         // when && then
-        assertThatThrownBy(() -> introductionMemberIdFetcher.fetch(memberId, IntroductionCacheKeyPrefix.DIAMOND, Grade.DIAMOND, supplier))
-                .isInstanceOf(MemberIdealNotFoundException.class);
+        assertThatThrownBy(
+            () -> introductionMemberIdFetcher.fetch(memberId, IntroductionCacheKeyPrefix.DIAMOND, Grade.DIAMOND,
+                supplier))
+            .isInstanceOf(MemberIdealNotFoundException.class);
     }
 }

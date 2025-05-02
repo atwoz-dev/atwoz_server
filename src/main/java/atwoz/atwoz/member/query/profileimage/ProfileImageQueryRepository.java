@@ -17,15 +17,15 @@ public class ProfileImageQueryRepository {
 
     public List<ProfileImageView> findByMemberId(Long memberId) {
         return queryFactory
-                .select(new QProfileImageView(
-                        profileImage.id,
-                        profileImage.imageUrl.value,
-                        profileImage.isPrimary,
-                        profileImage.order
-                ))
-                .from(profileImage)
-                .where(profileImage.memberId.eq(memberId))
-                .orderBy(profileImage.order.asc())
-                .fetch();
+            .select(new QProfileImageView(
+                profileImage.id,
+                profileImage.imageUrl.value,
+                profileImage.isPrimary,
+                profileImage.order
+            ))
+            .from(profileImage)
+            .where(profileImage.memberId.eq(memberId))
+            .orderBy(profileImage.order.asc())
+            .fetch();
     }
 }

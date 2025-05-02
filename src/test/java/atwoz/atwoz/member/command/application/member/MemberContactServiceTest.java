@@ -43,11 +43,13 @@ public class MemberContactServiceTest {
                 String updatePhoneNumber = anotherMember.getPhoneNumber();
                 ReflectionTestUtils.setField(member, "id", 1L);
 
-                Mockito.when(memberCommandRepository.existsByPhoneNumberAndIdNot(Mockito.any(), Mockito.any())).thenReturn(true);
+                Mockito.when(memberCommandRepository.existsByPhoneNumberAndIdNot(Mockito.any(), Mockito.any()))
+                    .thenReturn(true);
 
                 // When & Then
-                Assertions.assertThatThrownBy(() -> memberContactService.updatePhoneNumber(member.getId(), updatePhoneNumber))
-                        .isInstanceOf(PhoneNumberAlreadyExistsException.class);
+                Assertions.assertThatThrownBy(
+                        () -> memberContactService.updatePhoneNumber(member.getId(), updatePhoneNumber))
+                    .isInstanceOf(PhoneNumberAlreadyExistsException.class);
             }
 
             @Test
@@ -56,7 +58,8 @@ public class MemberContactServiceTest {
                 // Given
                 String updatedPhoneNumber = "01099999999";
 
-                Mockito.when(memberCommandRepository.existsByPhoneNumberAndIdNot(Mockito.any(), Mockito.any())).thenReturn(false);
+                Mockito.when(memberCommandRepository.existsByPhoneNumberAndIdNot(Mockito.any(), Mockito.any()))
+                    .thenReturn(false);
                 Mockito.when(memberCommandRepository.findById(member.getId())).thenReturn(Optional.of(member));
 
                 // When
@@ -72,7 +75,8 @@ public class MemberContactServiceTest {
                 // Given
                 String updatedPhoneNumber = member.getPhoneNumber();
 
-                Mockito.when(memberCommandRepository.existsByPhoneNumberAndIdNot(Mockito.any(), Mockito.any())).thenReturn(false);
+                Mockito.when(memberCommandRepository.existsByPhoneNumberAndIdNot(Mockito.any(), Mockito.any()))
+                    .thenReturn(false);
                 Mockito.when(memberCommandRepository.findById(member.getId())).thenReturn(Optional.of(member));
 
                 // When
@@ -96,11 +100,12 @@ public class MemberContactServiceTest {
                 // Given
                 String kakaoId = "kakaoId";
 
-                Mockito.when(memberCommandRepository.existsByKakaoIdAndIdNot(Mockito.any(), Mockito.any())).thenReturn(true);
+                Mockito.when(memberCommandRepository.existsByKakaoIdAndIdNot(Mockito.any(), Mockito.any()))
+                    .thenReturn(true);
 
                 // When & Then
                 Assertions.assertThatThrownBy(() -> memberContactService.updateKakaoId(member.getId(), kakaoId))
-                        .isInstanceOf(KakaoIdAlreadyExistsException.class);
+                    .isInstanceOf(KakaoIdAlreadyExistsException.class);
             }
 
             @Test
@@ -109,7 +114,8 @@ public class MemberContactServiceTest {
                 // Given
                 String kakaoId = "kakaoId";
 
-                Mockito.when(memberCommandRepository.existsByKakaoIdAndIdNot(Mockito.any(), Mockito.any())).thenReturn(false);
+                Mockito.when(memberCommandRepository.existsByKakaoIdAndIdNot(Mockito.any(), Mockito.any()))
+                    .thenReturn(false);
                 Mockito.when(memberCommandRepository.findById(member.getId())).thenReturn(Optional.of(member));
 
                 // When
@@ -126,7 +132,8 @@ public class MemberContactServiceTest {
                 String kakaoId = "kakaoId";
                 member.changePrimaryContactTypeToKakao(KakaoId.from(kakaoId));
 
-                Mockito.when(memberCommandRepository.existsByKakaoIdAndIdNot(Mockito.any(), Mockito.any())).thenReturn(false);
+                Mockito.when(memberCommandRepository.existsByKakaoIdAndIdNot(Mockito.any(), Mockito.any()))
+                    .thenReturn(false);
                 Mockito.when(memberCommandRepository.findById(member.getId())).thenReturn(Optional.of(member));
 
                 // When

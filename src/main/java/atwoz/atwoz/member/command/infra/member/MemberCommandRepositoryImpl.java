@@ -21,13 +21,13 @@ public class MemberCommandRepositoryImpl implements MemberCommandRepository {
     }
 
     @Override
-    public Optional<Member> findByPhoneNumber(String phoneNumber) {
-        return memberCommandJpaRepository.findByPhoneNumber(PhoneNumber.from(phoneNumber));
+    public Optional<Member> findById(Long id) {
+        return memberCommandJpaRepository.findById(id);
     }
 
     @Override
-    public Optional<Member> findById(Long id) {
-        return memberCommandJpaRepository.findById(id);
+    public Optional<Member> findByPhoneNumber(String phoneNumber) {
+        return memberCommandJpaRepository.findByPhoneNumber(PhoneNumber.from(phoneNumber));
     }
 
     @Override

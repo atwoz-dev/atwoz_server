@@ -21,8 +21,8 @@ public class SignedTransactionInfoParser implements TokenParser {
 
     private Jws<Claims> parseJws(String token) {
         return Jwts.parserBuilder()
-                .build()
-                .parseClaimsJws(token);
+            .build()
+            .parseClaimsJws(token);
     }
 
     private Claims parseClaims(String token) {

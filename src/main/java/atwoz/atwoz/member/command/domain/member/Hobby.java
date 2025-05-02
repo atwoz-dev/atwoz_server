@@ -42,7 +42,9 @@ public enum Hobby {
     }
 
     public static Hobby from(String value) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
         try {
             return Hobby.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {

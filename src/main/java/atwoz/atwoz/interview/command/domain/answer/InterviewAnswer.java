@@ -26,18 +26,18 @@ public class InterviewAnswer extends BaseEntity {
     @Getter
     private String content;
 
+    private InterviewAnswer(Long questionId, Long memberId, String content) {
+        setQuestionId(questionId);
+        setMemberId(memberId);
+        setContent(content);
+    }
+
     public static InterviewAnswer of(Long questionId, Long memberId, String content) {
         return new InterviewAnswer(questionId, memberId, content);
     }
 
     public void submitFirstInterviewAnswer() {
         Events.raise(new FirstInterviewSubmittedEvent(memberId));
-    }
-
-    private InterviewAnswer(Long questionId, Long memberId, String content) {
-        setQuestionId(questionId);
-        setMemberId(memberId);
-        setContent(content);
     }
 
     private void setQuestionId(@NonNull Long questionId) {

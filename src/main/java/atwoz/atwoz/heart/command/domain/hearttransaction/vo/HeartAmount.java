@@ -1,7 +1,9 @@
 package atwoz.atwoz.heart.command.domain.hearttransaction.vo;
 
 import jakarta.persistence.Embeddable;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
 
 @Embeddable
 @EqualsAndHashCode
@@ -15,6 +17,10 @@ public final class HeartAmount {
         this.amount = 0L;
     }
 
+    private HeartAmount(@NonNull Long amount) {
+        this.amount = amount;
+    }
+
     public static HeartAmount from(Long amount) {
         return new HeartAmount(amount);
     }
@@ -25,9 +31,5 @@ public final class HeartAmount {
 
     public boolean isGainingAmount() {
         return this.amount >= MIN_GAINING_AMOUNT;
-    }
-
-    private HeartAmount(@NonNull Long amount) {
-        this.amount = amount;
     }
 }

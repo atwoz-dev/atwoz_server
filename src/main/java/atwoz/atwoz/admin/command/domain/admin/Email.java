@@ -24,14 +24,14 @@ public class Email {
     @Column(name = "email")
     private final String address;
 
-    public static Email from(String address) {
-        return new Email(address);
-    }
-
     private Email(@NonNull String address) {
         if (!EMAIL_PATTERN.matcher(address).matches()) {
             throw new InvalidEmailException(address);
         }
         this.address = address;
+    }
+
+    public static Email from(String address) {
+        return new Email(address);
     }
 }

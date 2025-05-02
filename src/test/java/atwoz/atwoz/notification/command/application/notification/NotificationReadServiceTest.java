@@ -48,6 +48,6 @@ class NotificationReadServiceTest {
 
         // when & then
         assertThatThrownBy(() -> notificationReadService.markAsRead(notificationId))
-                .isInstanceOf(NotificationNotFoundException.class);
+            .isInstanceOf(NotificationNotFoundException.class);
     }
 }

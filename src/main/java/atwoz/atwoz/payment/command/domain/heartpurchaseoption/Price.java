@@ -16,10 +16,6 @@ public class Price {
     @Column(name = "price")
     private final Long value;
 
-    public static Price from(Long value) {
-        return new Price(value);
-    }
-
     protected Price() {
         this.value = MIN_PRICE;
     }
@@ -27,6 +23,10 @@ public class Price {
     private Price(@NonNull Long value) {
         validateMinPrice(value);
         this.value = value;
+    }
+
+    public static Price from(Long value) {
+        return new Price(value);
     }
 
     private void validateMinPrice(Long value) {

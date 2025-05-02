@@ -11,7 +11,8 @@ import org.mockito.MockedStatic;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 
 class MemberIntroductionTest {
 
@@ -25,7 +26,7 @@ class MemberIntroductionTest {
 
         // when & then
         assertThatThrownBy(() -> MemberIntroduction.of(memberId, introducedMemberId))
-                .isInstanceOf(NullPointerException.class);
+            .isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -37,7 +38,7 @@ class MemberIntroductionTest {
 
 
         try (MockedStatic<Events> eventsMock = mockStatic(Events.class);
-             MockedStatic<MemberIntroducedEvent> memberIntroducedEventMock = mockStatic(MemberIntroducedEvent.class)
+            MockedStatic<MemberIntroducedEvent> memberIntroducedEventMock = mockStatic(MemberIntroducedEvent.class)
         ) {
             MemberIntroducedEvent memberIntroducedEvent = mock(MemberIntroducedEvent.class);
             memberIntroducedEventMock.when(() -> MemberIntroducedEvent.of(memberId)).thenReturn(memberIntroducedEvent);

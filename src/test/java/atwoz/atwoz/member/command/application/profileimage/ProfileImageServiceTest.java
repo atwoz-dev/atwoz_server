@@ -1,13 +1,13 @@
 package atwoz.atwoz.member.command.application.profileimage;
 
 import atwoz.atwoz.member.command.application.profileImage.ProfileImageService;
-import atwoz.atwoz.member.presentation.profileimage.dto.ProfileImageUploadRequest;
 import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadResponse;
 import atwoz.atwoz.member.command.application.profileImage.exception.*;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImageCommandRepository;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.command.infra.profileImage.S3Uploader;
+import atwoz.atwoz.member.presentation.profileimage.dto.ProfileImageUploadRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,21 +47,22 @@ public class ProfileImageServiceTest {
         void setUp() {
             MultipartFile imageFile1 = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
             MultipartFile imageFile2 = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
-            goodRequests = List.of(new ProfileImageUploadRequest(1L, imageFile1, false, 3), new ProfileImageUploadRequest(null, imageFile2, false, 4));
+            goodRequests = List.of(new ProfileImageUploadRequest(1L, imageFile1, false, 3),
+                new ProfileImageUploadRequest(null, imageFile2, false, 4));
 
             ProfileImage profileImage1 = ProfileImage.builder()
-                    .memberId(1L)
-                    .order(1)
-                    .imageUrl(ImageUrl.from("imageUrl"))
-                    .isPrimary(true)
-                    .build();
+                .memberId(1L)
+                .order(1)
+                .imageUrl(ImageUrl.from("imageUrl"))
+                .isPrimary(true)
+                .build();
 
             ProfileImage profileImage2 = ProfileImage.builder()
-                    .memberId(1L)
-                    .order(2)
-                    .imageUrl(ImageUrl.from("imageUrl"))
-                    .isPrimary(false)
-                    .build();
+                .memberId(1L)
+                .order(2)
+                .imageUrl(ImageUrl.from("imageUrl"))
+                .isPrimary(false)
+                .build();
 
             ReflectionTestUtils.setField(profileImage1, "id", 1L);
             ReflectionTestUtils.setField(profileImage2, "id", 2L);
@@ -81,7 +82,7 @@ public class ProfileImageServiceTest {
 
             // When & Then
             Assertions.assertThatThrownBy(() -> profileImageService.save(memberId, request))
-                    .isInstanceOf(InvalidPrimaryProfileImageCountException.class);
+                .isInstanceOf(InvalidPrimaryProfileImageCountException.class);
         }
 
         @Test
@@ -91,21 +92,22 @@ public class ProfileImageServiceTest {
             Long memberId = 1L;
             int duplicatedOrder = 3;
             MultipartFile imageFile = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
-            List<ProfileImageUploadRequest> request = List.of(new ProfileImageUploadRequest(null, imageFile, true, duplicatedOrder));
+            List<ProfileImageUploadRequest> request = List.of(
+                new ProfileImageUploadRequest(null, imageFile, true, duplicatedOrder));
 
 
             Mockito.when(profileImageCommandRepository.findByMemberId(memberId)).thenReturn(
-                    List.of(ProfileImage.builder()
-                            .isPrimary(true)
-                            .imageUrl(ImageUrl.from("imageUrl"))
-                            .memberId(1L)
-                            .order(duplicatedOrder)
-                            .build())
+                List.of(ProfileImage.builder()
+                    .isPrimary(true)
+                    .imageUrl(ImageUrl.from("imageUrl"))
+                    .memberId(1L)
+                    .order(duplicatedOrder)
+                    .build())
             );
 
             // When & Then
             Assertions.assertThatThrownBy(() -> profileImageService.save(memberId, request))
-                    .isInstanceOf(DuplicateProfileImageOrderException.class);
+                .isInstanceOf(DuplicateProfileImageOrderException.class);
         }
 
         @Test
@@ -116,13 +118,15 @@ public class ProfileImageServiceTest {
             Long notExistedId = 2L;
             MultipartFile imageFile1 = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
             MultipartFile imageFile2 = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
-            List<ProfileImageUploadRequest> requests = List.of(new ProfileImageUploadRequest(notExistedId, imageFile1, true, 3), new ProfileImageUploadRequest(null, imageFile2, false, 4));
+            List<ProfileImageUploadRequest> requests = List.of(
+                new ProfileImageUploadRequest(notExistedId, imageFile1, true, 3),
+                new ProfileImageUploadRequest(null, imageFile2, false, 4));
 
             Mockito.when(profileImageCommandRepository.findByMemberId(memberId)).thenReturn(List.of());
 
             // When & Then
             Assertions.assertThatThrownBy(() -> profileImageService.save(memberId, requests))
-                    .isInstanceOf(ProfileImageNotFoundException.class);
+                .isInstanceOf(ProfileImageNotFoundException.class);
         }
 
         @Test
@@ -130,12 +134,13 @@ public class ProfileImageServiceTest {
         public void isFailWhenUpdateWithEmptyFile() {
             // Given
             Long memberId = 1L;
-            List<ProfileImageUploadRequest> emptyFileRequests = List.of(new ProfileImageUploadRequest(null, null, false, 3));
+            List<ProfileImageUploadRequest> emptyFileRequests = List.of(
+                new ProfileImageUploadRequest(null, null, false, 3));
 
 
             // When & Then
             Assertions.assertThatThrownBy(() -> profileImageService.save(memberId, emptyFileRequests))
-                    .isInstanceOf(EmptyImageUploadException.class);
+                .isInstanceOf(EmptyImageUploadException.class);
         }
 
         @Test
@@ -146,10 +151,13 @@ public class ProfileImageServiceTest {
 
             MultipartFile imageFile1 = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
             MultipartFile imageFile2 = new MockMultipartFile("file", "image.jpeg", "image/jpeg", "image".getBytes());
-            List<ProfileImageUploadRequest> firstRequests = List.of(new ProfileImageUploadRequest(null, imageFile1, true, 3), new ProfileImageUploadRequest(null, imageFile2, false, 4));
+            List<ProfileImageUploadRequest> firstRequests = List.of(
+                new ProfileImageUploadRequest(null, imageFile1, true, 3),
+                new ProfileImageUploadRequest(null, imageFile2, false, 4));
 
             Mockito.when(profileImageCommandRepository.findByMemberId(memberId)).thenReturn(List.of());
-            Mockito.when(s3Uploader.uploadImageAsync(Mockito.any())).thenReturn(CompletableFuture.completedFuture("imageUrl"));
+            Mockito.when(s3Uploader.uploadImageAsync(Mockito.any()))
+                .thenReturn(CompletableFuture.completedFuture("imageUrl"));
 
             // When
             List<ProfileImageUploadResponse> response = profileImageService.save(memberId, firstRequests);
@@ -171,7 +179,8 @@ public class ProfileImageServiceTest {
             Long memberId = 1L;
 
             Mockito.when(profileImageCommandRepository.findByMemberId(memberId)).thenReturn(existsProfileImages);
-            Mockito.when(s3Uploader.uploadImageAsync(Mockito.any())).thenReturn(CompletableFuture.completedFuture("imageUrl"));
+            Mockito.when(s3Uploader.uploadImageAsync(Mockito.any()))
+                .thenReturn(CompletableFuture.completedFuture("imageUrl"));
 
             // When
             List<ProfileImageUploadResponse> response = profileImageService.save(memberId, goodRequests);
@@ -184,9 +193,9 @@ public class ProfileImageServiceTest {
             }
 
             ProfileImage profileImage = existsProfileImages.stream().filter(i -> i.getId() == 1L)
-                    .findFirst().orElseThrow(RuntimeException::new);
+                .findFirst().orElseThrow(RuntimeException::new);
             ProfileImageUploadRequest request = goodRequests.stream().filter(i -> i.getId() == 1L)
-                    .findFirst().orElseThrow(RuntimeException::new);
+                .findFirst().orElseThrow(RuntimeException::new);
 
             Assertions.assertThat(profileImage.getId()).isEqualTo(request.getId());
             Assertions.assertThat(profileImage.getOrder()).isEqualTo(request.getOrder());
@@ -205,7 +214,8 @@ public class ProfileImageServiceTest {
             Mockito.when(profileImageCommandRepository.findById(profileImageId)).thenReturn(Optional.empty());
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> profileImageService.delete(profileImageId, memberId)).isInstanceOf(ProfileImageNotFoundException.class);
+            Assertions.assertThatThrownBy(() -> profileImageService.delete(profileImageId, memberId))
+                .isInstanceOf(ProfileImageNotFoundException.class);
         }
 
         @Test
@@ -214,11 +224,17 @@ public class ProfileImageServiceTest {
             // Given
             Long profileImageId = 1L;
             Long memberId = 1L;
-            ProfileImage profileImage = ProfileImage.builder().memberId(2L).imageUrl(ImageUrl.from("url")).order(1).isPrimary(true).build();
+            ProfileImage profileImage = ProfileImage.builder()
+                .memberId(2L)
+                .imageUrl(ImageUrl.from("url"))
+                .order(1)
+                .isPrimary(true)
+                .build();
             Mockito.when(profileImageCommandRepository.findById(profileImageId)).thenReturn(Optional.of(profileImage));
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> profileImageService.delete(profileImageId, memberId)).isInstanceOf(ProfileImageMemberIdMismatchException.class);
+            Assertions.assertThatThrownBy(() -> profileImageService.delete(profileImageId, memberId))
+                .isInstanceOf(ProfileImageMemberIdMismatchException.class);
         }
 
         @Test
@@ -227,11 +243,17 @@ public class ProfileImageServiceTest {
             // Given
             Long profileImageId = 1L;
             Long memberId = 1L;
-            ProfileImage profileImage = ProfileImage.builder().memberId(memberId).imageUrl(ImageUrl.from("url")).order(1).isPrimary(true).build();
+            ProfileImage profileImage = ProfileImage.builder()
+                .memberId(memberId)
+                .imageUrl(ImageUrl.from("url"))
+                .order(1)
+                .isPrimary(true)
+                .build();
             Mockito.when(profileImageCommandRepository.findById(profileImageId)).thenReturn(Optional.of(profileImage));
 
             // When & Then
-            Assertions.assertThatCode(() -> profileImageService.delete(profileImageId, memberId)).doesNotThrowAnyException();
+            Assertions.assertThatCode(() -> profileImageService.delete(profileImageId, memberId))
+                .doesNotThrowAnyException();
         }
     }
 

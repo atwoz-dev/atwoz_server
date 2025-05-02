@@ -28,6 +28,6 @@ class PhoneNumberTest {
     void isInvalidWhenFormatIsIncorrect(String invalidPhoneNumber) {
         // when & then
         assertThatThrownBy(() -> PhoneNumber.from(invalidPhoneNumber))
-                .isInstanceOf(InvalidPhoneNumberException.class);
+            .isInstanceOf(InvalidPhoneNumberException.class);
     }
 }

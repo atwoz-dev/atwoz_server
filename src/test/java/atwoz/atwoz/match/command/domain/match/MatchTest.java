@@ -28,7 +28,7 @@ public class MatchTest {
 
             // When & Then
             Assertions.assertThatThrownBy(() -> Match.request(requesterId, responderId, requestMessage))
-                    .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(NullPointerException.class);
         }
 
         @Test
@@ -41,7 +41,7 @@ public class MatchTest {
 
             // When & Then
             Assertions.assertThatThrownBy(() -> Match.request(requesterId, responderId, requestMessage))
-                    .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(NullPointerException.class);
         }
 
         @Test
@@ -54,7 +54,7 @@ public class MatchTest {
 
             // When & Then
             Assertions.assertThatThrownBy(() -> Match.request(requesterId, responderId, requestMessage))
-                    .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(NullPointerException.class);
         }
 
         @Test
@@ -100,7 +100,7 @@ public class MatchTest {
 
             // When & Then
             Assertions.assertThatThrownBy(() -> match.approve(responseMessage))
-                    .isInstanceOf(InvalidMatchStatusChangeException.class);
+                .isInstanceOf(InvalidMatchStatusChangeException.class);
         }
 
         @Test
@@ -141,7 +141,7 @@ public class MatchTest {
 
             // When & Then
             Assertions.assertThatThrownBy(match::checkRejected)
-                    .isInstanceOf(InvalidMatchStatusChangeException.class);
+                .isInstanceOf(InvalidMatchStatusChangeException.class);
         }
 
         @Test

@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class HeartUsagePolicyExceptionHandler {
 
     @ExceptionHandler(InsufficientHeartBalanceException.class)
-    public ResponseEntity<BaseResponse<Void>> handleInsufficientHeartBalanceException(InsufficientHeartBalanceException e) {
+    public ResponseEntity<BaseResponse<Void>> handleInsufficientHeartBalanceException(
+        InsufficientHeartBalanceException e) {
         log.warn("하트 잔액이 부족합니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
-                .body(BaseResponse.from(StatusType.INSUFFICIENT_HEARTS));
+            .body(BaseResponse.from(StatusType.INSUFFICIENT_HEARTS));
     }
 }

@@ -15,10 +15,10 @@ public class NotificationMapper {
 
     public static Notification toNotification(NotificationRequest request) {
         return Notification.of(
-                request.senderId(),
-                toSenderType(request.senderType()),
-                request.receiverId(),
-                toNotificationType(request.notificationType())
+            request.senderId(),
+            toSenderType(request.senderType()),
+            request.receiverId(),
+            toNotificationType(request.notificationType())
         );
     }
 

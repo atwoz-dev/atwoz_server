@@ -17,7 +17,7 @@ class HeartPriceAmountTest {
         Long price = 0L;
         // when & then
         assertThatThrownBy(() -> HeartPriceAmount.from(price))
-                .isInstanceOf(InvalidHeartPriceAmountException.class);
+            .isInstanceOf(InvalidHeartPriceAmountException.class);
     }
 
     @Test
@@ -38,6 +38,6 @@ class HeartPriceAmountTest {
         Long price = null;
         // when & then
         assertThatThrownBy(() -> HeartPriceAmount.from(price))
-                .isInstanceOf(NullPointerException.class);
+            .isInstanceOf(NullPointerException.class);
     }
 }

@@ -16,7 +16,7 @@ class PriceTest {
 
         // when, then
         assertThatThrownBy(() -> Price.from(value))
-                .isInstanceOf(InvalidPriceException.class);
+            .isInstanceOf(InvalidPriceException.class);
     }
 
     @Test
@@ -27,7 +27,7 @@ class PriceTest {
 
         // when, then
         assertThatThrownBy(() -> Price.from(value))
-                .isInstanceOf(NullPointerException.class);
+            .isInstanceOf(NullPointerException.class);
     }
 
     @Test

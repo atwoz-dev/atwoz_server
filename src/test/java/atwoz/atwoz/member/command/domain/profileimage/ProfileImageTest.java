@@ -1,8 +1,8 @@
 package atwoz.atwoz.member.command.domain.profileimage;
 
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
-import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.command.domain.profileImage.exception.InvalidOrderException;
+import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,11 +20,11 @@ public class ProfileImageTest {
 
         // When
         ProfileImage profileImage = ProfileImage.builder()
-                .memberId(memberId)
-                .isPrimary(isPrimary)
-                .order(order)
-                .imageUrl(ImageUrl.from(imageUrl))
-                .build();
+            .memberId(memberId)
+            .isPrimary(isPrimary)
+            .order(order)
+            .imageUrl(ImageUrl.from(imageUrl))
+            .build();
 
         // Then
         Assertions.assertThat(profileImage).isNotNull();
@@ -41,11 +41,11 @@ public class ProfileImageTest {
 
         // When & Then
         Assertions.assertThatThrownBy(() -> ProfileImage.builder()
-                .memberId(memberId)
-                .imageUrl(ImageUrl.from(imageUrl))
-                .isPrimary(isPrimary)
-                .order(order)
-                .build()).isInstanceOf(NullPointerException.class);
+            .memberId(memberId)
+            .imageUrl(ImageUrl.from(imageUrl))
+            .isPrimary(isPrimary)
+            .order(order)
+            .build()).isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -59,12 +59,12 @@ public class ProfileImageTest {
 
         // When & Then
         Assertions.assertThatThrownBy(() -> ProfileImage.builder()
-                        .memberId(memberId)
-                        .imageUrl(ImageUrl.from(imageUrl))
-                        .isPrimary(isPrimary)
-                        .order(order)
-                        .build())
-                .isInstanceOf(InvalidOrderException.class);
+                .memberId(memberId)
+                .imageUrl(ImageUrl.from(imageUrl))
+                .isPrimary(isPrimary)
+                .order(order)
+                .build())
+            .isInstanceOf(InvalidOrderException.class);
 
     }
 }

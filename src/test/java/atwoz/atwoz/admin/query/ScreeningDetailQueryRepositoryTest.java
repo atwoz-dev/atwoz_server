@@ -77,9 +77,9 @@ class ScreeningDetailQueryRepositoryTest {
 
         assertThat(screeningDetail.profileImages()).hasSize(2);
         assertThat(screeningDetail.profileImages()).extracting("imageUrl")
-                .containsExactlyInAnyOrder("image_url_1", "image_url_2");
+            .containsExactlyInAnyOrder("image_url_1", "image_url_2");
         assertThat(screeningDetail.profileImages()).extracting("isPrimary")
-                .containsExactlyInAnyOrder(true, false);
+            .containsExactlyInAnyOrder(true, false);
 
         assertThat(screeningDetail.interviews()).hasSize(1);
         assertThat(screeningDetail.interviews().getFirst().question()).isEqualTo("question1");
@@ -88,23 +88,23 @@ class ScreeningDetailQueryRepositoryTest {
 
     private Member createMember() {
         return Member.builder()
-                .phoneNumber(PhoneNumber.from("01011111111"))
-                .profile(
-                        MemberProfile.builder()
-                                .nickname(Nickname.from("member"))
-                                .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
-                                .gender(Gender.MALE)
-                                .build()
-                )
-                .build();
+            .phoneNumber(PhoneNumber.from("01011111111"))
+            .profile(
+                MemberProfile.builder()
+                    .nickname(Nickname.from("member"))
+                    .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
+                    .gender(Gender.MALE)
+                    .build()
+            )
+            .build();
     }
 
     private ProfileImage createProfileImage(long memberId, String imageUrl, boolean isPrimary) {
         return ProfileImage.builder()
-                .memberId(memberId)
-                .imageUrl(ImageUrl.from(imageUrl))
-                .isPrimary(isPrimary)
-                .build();
+            .memberId(memberId)
+            .imageUrl(ImageUrl.from(imageUrl))
+            .isPrimary(isPrimary)
+            .build();
     }
 
     private InterviewQuestion createInterviewQuestion(String question1, boolean isPublic) {

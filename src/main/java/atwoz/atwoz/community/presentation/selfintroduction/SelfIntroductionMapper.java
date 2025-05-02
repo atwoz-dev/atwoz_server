@@ -6,12 +6,13 @@ import atwoz.atwoz.member.command.domain.member.Gender;
 import atwoz.atwoz.member.query.member.AgeConverter;
 
 public class SelfIntroductionMapper {
-    static SelfIntroductionSearchCondition toSelfIntroductionSearchCondition(SelfIntroductionSearchRequest selfIntroductionSearchRequest) {
+    static SelfIntroductionSearchCondition toSelfIntroductionSearchCondition(
+        SelfIntroductionSearchRequest selfIntroductionSearchRequest) {
         return new SelfIntroductionSearchCondition(
-                selfIntroductionSearchRequest.preferredCities(),
-                AgeConverter.toYearOfBirth(selfIntroductionSearchRequest.toAge()),
-                AgeConverter.toYearOfBirth(selfIntroductionSearchRequest.fromAge()),
-                Gender.from(selfIntroductionSearchRequest.gender())
+            selfIntroductionSearchRequest.preferredCities(),
+            AgeConverter.toYearOfBirth(selfIntroductionSearchRequest.toAge()),
+            AgeConverter.toYearOfBirth(selfIntroductionSearchRequest.fromAge()),
+            Gender.from(selfIntroductionSearchRequest.gender())
         );
     }
 }

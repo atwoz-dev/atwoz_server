@@ -26,23 +26,23 @@ public class MemberIdealQueryRepository {
         EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
 
         MemberIdealView memberIdealView = queryFactory
-                .from(memberIdeal)
-                .where(memberIdeal.memberId.eq(memberId))
-                .leftJoin(memberIdeal.hobbies, hobby)
-                .leftJoin(memberIdeal.cities, city)
-                .transform(
-                        groupBy(memberIdeal.memberId).as(
-                                new QMemberIdealView(
-                                        memberIdeal.ageRange.minAge,
-                                        memberIdeal.ageRange.maxAge,
-                                        set(hobby.stringValue()),
-                                        set(city.stringValue()),
-                                        memberIdeal.religion.stringValue(),
-                                        memberIdeal.smokingStatus.stringValue(),
-                                        memberIdeal.drinkingStatus.stringValue()
-                                )
-                        )
-                ).get(memberId);
+            .from(memberIdeal)
+            .where(memberIdeal.memberId.eq(memberId))
+            .leftJoin(memberIdeal.hobbies, hobby)
+            .leftJoin(memberIdeal.cities, city)
+            .transform(
+                groupBy(memberIdeal.memberId).as(
+                    new QMemberIdealView(
+                        memberIdeal.ageRange.minAge,
+                        memberIdeal.ageRange.maxAge,
+                        set(hobby.stringValue()),
+                        set(city.stringValue()),
+                        memberIdeal.religion.stringValue(),
+                        memberIdeal.smokingStatus.stringValue(),
+                        memberIdeal.drinkingStatus.stringValue()
+                    )
+                )
+            ).get(memberId);
 
         return Optional.ofNullable(memberIdealView);
     }

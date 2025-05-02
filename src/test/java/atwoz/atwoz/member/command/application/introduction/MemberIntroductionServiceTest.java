@@ -44,7 +44,7 @@ class MemberIntroductionServiceTest {
 
         // when & then
         assertThatThrownBy(() -> memberIntroductionService.create(memberId, introducedMemberId))
-                .isInstanceOf(IntroducedMemberNotFoundException.class);
+            .isInstanceOf(IntroducedMemberNotFoundException.class);
     }
 
     @Test
@@ -60,7 +60,7 @@ class MemberIntroductionServiceTest {
 
         // when & then
         assertThatThrownBy(() -> memberIntroductionService.create(memberId, introducedMemberId))
-                .isInstanceOf(IntroducedMemberNotActiveException.class);
+            .isInstanceOf(IntroducedMemberNotActiveException.class);
     }
 
 
@@ -74,11 +74,12 @@ class MemberIntroductionServiceTest {
         Member introducedMember = mock(Member.class);
         when(introducedMember.isActive()).thenReturn(true);
         when(memberCommandRepository.findById(introducedMemberId)).thenReturn(Optional.of(introducedMember));
-        when(memberIntroductionCommandRepository.existsByMemberIdAndIntroducedMemberId(memberId, introducedMemberId)).thenReturn(true);
+        when(memberIntroductionCommandRepository.existsByMemberIdAndIntroducedMemberId(memberId,
+            introducedMemberId)).thenReturn(true);
 
         // when & then
         assertThatThrownBy(() -> memberIntroductionService.create(memberId, introducedMemberId))
-                .isInstanceOf(MemberIntroductionAlreadyExistsException.class);
+            .isInstanceOf(MemberIntroductionAlreadyExistsException.class);
     }
 
     @Test
@@ -91,12 +92,14 @@ class MemberIntroductionServiceTest {
         Member introducedMember = mock(Member.class);
         when(introducedMember.isActive()).thenReturn(true);
         when(memberCommandRepository.findById(introducedMemberId)).thenReturn(Optional.of(introducedMember));
-        when(memberIntroductionCommandRepository.existsByMemberIdAndIntroducedMemberId(memberId, introducedMemberId)).thenReturn(false);
+        when(memberIntroductionCommandRepository.existsByMemberIdAndIntroducedMemberId(memberId,
+            introducedMemberId)).thenReturn(false);
 
         // when
         try (MockedStatic<MemberIntroduction> memberIntroductionMock = mockStatic(MemberIntroduction.class)) {
             MemberIntroduction memberIntroduction = mock(MemberIntroduction.class);
-            memberIntroductionMock.when(() -> MemberIntroduction.of(memberId, introducedMemberId)).thenReturn(memberIntroduction);
+            memberIntroductionMock.when(() -> MemberIntroduction.of(memberId, introducedMemberId))
+                .thenReturn(memberIntroduction);
             memberIntroductionService.create(memberId, introducedMemberId);
 
             // then

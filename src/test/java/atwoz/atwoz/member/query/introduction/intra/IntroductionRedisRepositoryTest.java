@@ -72,7 +72,7 @@ class IntroductionRedisRepositoryTest {
 
             // when & then
             assertThatThrownBy(() -> repository.saveIntroductionMemberIds(key, ids, expireAt))
-                    .isInstanceOf(IntroductionMemberIdSerializationFailedException.class);
+                .isInstanceOf(IntroductionMemberIdSerializationFailedException.class);
         }
     }
 
@@ -126,11 +126,12 @@ class IntroductionRedisRepositoryTest {
 
             when(redisTemplate.opsForValue()).thenReturn(valueOps);
             when(valueOps.get(fullKey)).thenReturn(json);
-            when(mapper.readValue(eq(json), any(TypeReference.class))).thenThrow(new JsonProcessingException("error") {});
+            when(mapper.readValue(eq(json), any(TypeReference.class))).thenThrow(
+                new JsonProcessingException("error") {});
 
             // when & then
             assertThatThrownBy(() -> repository.findIntroductionMemberIds(key))
-                    .isInstanceOf(IntroductionMemberIdSerializationFailedException.class);
+                .isInstanceOf(IntroductionMemberIdSerializationFailedException.class);
         }
     }
 }

@@ -18,11 +18,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ScreeningExceptionHandler {
 
     @ExceptionHandler(CannotRejectApprovedScreeningException.class)
-    public ResponseEntity<BaseResponse<Void>> handleCannotRejectApprovedScreeningException(CannotRejectApprovedScreeningException e) {
+    public ResponseEntity<BaseResponse<Void>> handleCannotRejectApprovedScreeningException(
+        CannotRejectApprovedScreeningException e) {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-                .body(BaseResponse.from(StatusType.CANNOT_BE_EDITED));
+            .body(BaseResponse.from(StatusType.CANNOT_BE_EDITED));
     }
 
     @ExceptionHandler(ScreeningNotFoundException.class)
@@ -30,7 +31,7 @@ public class ScreeningExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
-                .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.from(StatusType.NOT_FOUND));
     }
 
     @ExceptionHandler(InvalidRejectionReasonException.class)
@@ -38,6 +39,6 @@ public class ScreeningExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-                .body(BaseResponse.from(StatusType.INVALID_INPUT_VALUE));
+            .body(BaseResponse.from(StatusType.INVALID_INPUT_VALUE));
     }
 }

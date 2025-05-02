@@ -37,7 +37,8 @@ public class SoftDeleteBaseEntityTest {
         // when
         entityManager.remove(entity);
         entityManager.flush();
-        SoftDeleteBaseEntityTestEntity deletedEntity = entityManager.find(SoftDeleteBaseEntityTestEntity.class, entity.getId());
+        SoftDeleteBaseEntityTestEntity deletedEntity = entityManager.find(SoftDeleteBaseEntityTestEntity.class,
+            entity.getId());
 
         // then
         assertThat(deletedEntity.isDeleted()).isTrue();

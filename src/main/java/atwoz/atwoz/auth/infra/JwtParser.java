@@ -52,15 +52,15 @@ public class JwtParser implements TokenParser {
 
     public Instant getExpiration(String token) {
         return getExpirationDate(token)
-                .toInstant()
-                .truncatedTo(ChronoUnit.SECONDS);
+            .toInstant()
+            .truncatedTo(ChronoUnit.SECONDS);
     }
 
     private Jws<Claims> parseJws(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token);
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token);
     }
 
     private Claims parseClaims(String token) {
