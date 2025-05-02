@@ -16,7 +16,7 @@ public class YearOfBirthTest {
 
         // When & Then
         Assertions.assertThatThrownBy(() -> YearOfBirth.from(age))
-                .isInstanceOf(InvalidYearOfBirthException.class);
+            .isInstanceOf(InvalidYearOfBirthException.class);
     }
 
     @DisplayName("나이가 46살 초과인 경우, 예외 발생")
@@ -27,7 +27,7 @@ public class YearOfBirthTest {
 
         // When & Then
         Assertions.assertThatThrownBy(() -> YearOfBirth.from(age))
-                .isInstanceOf(InvalidYearOfBirthException.class);
+            .isInstanceOf(InvalidYearOfBirthException.class);
     }
 
     @DisplayName("나이가 null 인 경우, 정상 동작")

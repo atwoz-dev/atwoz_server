@@ -60,8 +60,8 @@ class NotificationTest {
 
             MessageTemplate template = new DefaultMessageTemplate();
             MessageTemplateParameters parameters = MessageTemplateParameters.of(
-                    notification.getSenderId(),
-                    notification.getReceiverId()
+                notification.getSenderId(),
+                notification.getReceiverId()
             );
 
             // when

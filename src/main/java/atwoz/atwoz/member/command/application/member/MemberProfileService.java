@@ -1,11 +1,11 @@
 package atwoz.atwoz.member.command.application.member;
 
 
-import atwoz.atwoz.member.presentation.member.MemberMapper;
-import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
+import atwoz.atwoz.member.presentation.member.MemberMapper;
+import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

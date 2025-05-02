@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.command.domain.profileimage;
 
-import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.command.domain.profileImage.exception.InvalidImageUrlException;
+import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ public class ImageUrlTest {
 
         // When & Then
         Assertions.assertThatThrownBy(() -> ImageUrl.from(url))
-                .isInstanceOf(InvalidImageUrlException.class);
+            .isInstanceOf(InvalidImageUrlException.class);
     }
 
     @Test
@@ -27,7 +27,7 @@ public class ImageUrlTest {
 
         // When & Then
         Assertions.assertThatThrownBy(() -> ImageUrl.from(url))
-                .isInstanceOf(InvalidImageUrlException.class);
+            .isInstanceOf(InvalidImageUrlException.class);
     }
 
     @Test

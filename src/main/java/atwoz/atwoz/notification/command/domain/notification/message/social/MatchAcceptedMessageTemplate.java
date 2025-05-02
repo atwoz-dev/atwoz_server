@@ -24,7 +24,7 @@ public class MatchAcceptedMessageTemplate implements MessageTemplate {
     @Override
     public String getTitle(MessageTemplateParameters parameters) {
         Member receiver = memberCommandRepository.findById(parameters.getReceiverId())
-                .orElseThrow(MemberNotFoundException::new);
+            .orElseThrow(MemberNotFoundException::new);
         return receiver.getProfile().getNickname() + "님과 매칭되었습니다. 축하합니다!";
     }
 

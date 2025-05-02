@@ -20,7 +20,8 @@ public class PaymentController {
     private final AppStorePaymentService appStorePaymentService;
 
     @PostMapping("/app-store/verify-receipt")
-    public ResponseEntity<BaseResponse<Void>> verifyReceipt(@RequestBody String receiptToken, @AuthPrincipal AuthContext authContext) {
+    public ResponseEntity<BaseResponse<Void>> verifyReceipt(@RequestBody String receiptToken,
+        @AuthPrincipal AuthContext authContext) {
         appStorePaymentService.verifyReceipt(receiptToken, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }

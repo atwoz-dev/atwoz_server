@@ -56,7 +56,7 @@ class ScreeningServiceTest {
 
             // when & then
             assertThatThrownBy(() -> screeningService.create(memberId))
-                    .isInstanceOf(DuplicateScreeningException.class);
+                .isInstanceOf(DuplicateScreeningException.class);
         }
     }
 
@@ -90,7 +90,7 @@ class ScreeningServiceTest {
 
             // when & then
             assertThatThrownBy(() -> screeningService.approve(screeningId, new ScreeningApproveRequest(1L), 999L))
-                    .isInstanceOf(ScreeningNotFoundException.class);
+                .isInstanceOf(ScreeningNotFoundException.class);
         }
     }
 
@@ -129,7 +129,7 @@ class ScreeningServiceTest {
 
             // when & then
             assertThatThrownBy(() -> screeningService.reject(screeningId, 999L, request))
-                    .isInstanceOf(ScreeningNotFoundException.class);
+                .isInstanceOf(ScreeningNotFoundException.class);
         }
 
         @Test
@@ -144,7 +144,7 @@ class ScreeningServiceTest {
 
             // when & then
             assertThatThrownBy(() -> screeningService.reject(screeningId, 999L, request))
-                    .isInstanceOf(InvalidRejectionReasonException.class);
+                .isInstanceOf(InvalidRejectionReasonException.class);
         }
     }
 }

@@ -62,11 +62,11 @@ class AdminAuthServiceTest {
             when(adminCommandRepository.findByEmail(Email.from(email))).thenReturn(Optional.empty());
             when(passwordHasher.hash(rawPassword)).thenReturn("hashed-password123^^");
             when(adminCommandRepository.save(any(Admin.class)))
-                    .thenAnswer(invocation -> {
-                        Admin admin = invocation.getArgument(0, Admin.class);
-                        setField(admin, "id", 1L);
-                        return admin;
-                    });
+                .thenAnswer(invocation -> {
+                    Admin admin = invocation.getArgument(0, Admin.class);
+                    setField(admin, "id", 1L);
+                    return admin;
+                });
 
             // when
             AdminSignupResponse response = adminAuthService.signup(request);
@@ -137,9 +137,9 @@ class AdminAuthServiceTest {
             String newAccessToken = "accessToken";
             String newRefreshToken = "refreshToken";
             when(tokenProvider.createAccessToken(eq(1L), eq(Role.ADMIN), any(Instant.class)))
-                    .thenReturn(newAccessToken);
+                .thenReturn(newAccessToken);
             when(tokenProvider.createRefreshToken(eq(1L), eq(Role.ADMIN), any(Instant.class)))
-                    .thenReturn(newRefreshToken);
+                .thenReturn(newRefreshToken);
 
             // when
             AdminLoginResponse response = adminAuthService.login(request);

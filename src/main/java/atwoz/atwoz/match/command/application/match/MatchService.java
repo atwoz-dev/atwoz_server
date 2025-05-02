@@ -27,7 +27,8 @@ public class MatchService {
                 throw new ExistsMatchException();
             }
 
-            Match match = Match.request(requesterId, requestDto.responderId(), Message.from(requestDto.requestMessage()));
+            Match match = Match.request(requesterId, requestDto.responderId(),
+                Message.from(requestDto.requestMessage()));
             matchRepository.save(match);
         });
     }
@@ -60,17 +61,21 @@ public class MatchService {
 
     private Match getWaitingMatchByIdAndResponderId(Long id, Long responderId) {
         Match match = matchRepository.findByIdAndResponderId(id, responderId)
-                .orElseThrow(MatchNotFoundException::new);
+            .orElseThrow(MatchNotFoundException::new);
 
-        if (match.getStatus() != MatchStatus.WAITING) throw new InvalidMatchUpdateException();
+        if (match.getStatus() != MatchStatus.WAITING) {
+            throw new InvalidMatchUpdateException();
+        }
         return match;
     }
 
     private Match getRejectedMatchByIdAndRequesterId(Long id, Long requesterId) {
         Match match = matchRepository.findByIdAndRequesterId(id, requesterId)
-                .orElseThrow(MatchNotFoundException::new);
+            .orElseThrow(MatchNotFoundException::new);
 
-        if (match.getStatus() != MatchStatus.REJECTED) throw new InvalidMatchUpdateException();
+        if (match.getStatus() != MatchStatus.REJECTED) {
+            throw new InvalidMatchUpdateException();
+        }
         return match;
     }
 }

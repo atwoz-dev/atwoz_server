@@ -1,15 +1,15 @@
 package atwoz.atwoz.payment.command.application.order;
 
 import atwoz.atwoz.payment.command.application.order.exception.HeartPurchaseOptionNotFoundException;
-import atwoz.atwoz.payment.command.domain.heartpurchaseoption.HeartPurchaseOption;
-import atwoz.atwoz.payment.command.domain.heartpurchaseoption.HeartPurchaseOptionCommandRepository;
 import atwoz.atwoz.payment.command.application.order.exception.InvalidOrderException;
 import atwoz.atwoz.payment.command.application.order.exception.OrderAlreadyExistsException;
+import atwoz.atwoz.payment.command.domain.heartpurchaseoption.HeartPurchaseOption;
+import atwoz.atwoz.payment.command.domain.heartpurchaseoption.HeartPurchaseOptionCommandRepository;
 import atwoz.atwoz.payment.command.domain.order.Order;
+import atwoz.atwoz.payment.command.domain.order.OrderCommandRepository;
 import atwoz.atwoz.payment.command.domain.order.PaymentMethod;
 import atwoz.atwoz.payment.command.domain.order.TokenParser;
 import atwoz.atwoz.payment.command.infra.order.AppStoreClient;
-import atwoz.atwoz.payment.command.domain.order.OrderCommandRepository;
 import atwoz.atwoz.payment.command.infra.order.TransactionInfo;
 import com.apple.itunes.storekit.model.TransactionInfoResponse;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,8 @@ public class AppStorePaymentService {
         if (transactionInfo.isRevoked()) {
             throw new InvalidOrderException();
         }
-        if (orderCommandRepository.existsByTransactionIdAndPaymentMethod(transactionInfo.getTransactionId(), PaymentMethod.APP_STORE)) {
+        if (orderCommandRepository.existsByTransactionIdAndPaymentMethod(transactionInfo.getTransactionId(),
+            PaymentMethod.APP_STORE)) {
             throw new OrderAlreadyExistsException();
         }
     }
@@ -54,7 +55,8 @@ public class AppStorePaymentService {
 
     private void purchaseHeart(Long memberId, String productId, Integer quantity) {
         HeartPurchaseOption heartPurchaseOption = heartPurchaseOptionCommandRepository.findByProductId(productId)
-                .orElseThrow(() -> new HeartPurchaseOptionNotFoundException("하트 구매 옵션이 존재하지 않습니다. product id:" + productId));
+            .orElseThrow(
+                () -> new HeartPurchaseOptionNotFoundException("하트 구매 옵션이 존재하지 않습니다. product id:" + productId));
         heartPurchaseOption.purchase(memberId, quantity);
     }
 }

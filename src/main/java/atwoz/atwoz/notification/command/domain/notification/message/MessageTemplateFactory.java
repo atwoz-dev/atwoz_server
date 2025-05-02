@@ -14,7 +14,7 @@ public class MessageTemplateFactory {
 
     public MessageTemplateFactory(List<MessageTemplate> messageTemplates) {
         messageTemplateMap = messageTemplates.stream()
-                .collect(Collectors.toMap(MessageTemplate::getNotificationType, s -> s));
+            .collect(Collectors.toMap(MessageTemplate::getNotificationType, s -> s));
     }
 
     public MessageTemplate getByNotificationType(NotificationType notificationType) {

@@ -47,10 +47,10 @@ public class S3Uploader {
         clientConfiguration.setSocketTimeout(30000);
 
         s3Client = (AmazonS3Client) AmazonS3ClientBuilder.standard()
-                .withRegion(region)
-                .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
-                .withClientConfiguration(clientConfiguration)
-                .build();
+            .withRegion(region)
+            .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
+            .withClientConfiguration(clientConfiguration)
+            .build();
 
         prefixUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/";
     }
@@ -74,7 +74,9 @@ public class S3Uploader {
 
     @Async
     public CompletableFuture<String> uploadImageAsync(MultipartFile image) {
-        if (image == null) return CompletableFuture.completedFuture(null);
+        if (image == null) {
+            return CompletableFuture.completedFuture(null);
+        }
         String imageUrl = uploadFile(image);
         return CompletableFuture.completedFuture(imageUrl);
     }

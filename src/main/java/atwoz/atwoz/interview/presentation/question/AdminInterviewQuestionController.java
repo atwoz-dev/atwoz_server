@@ -28,21 +28,23 @@ public class AdminInterviewQuestionController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<BaseResponse<Void>> updateQuestion(@PathVariable Long id, @Valid @RequestBody InterviewQuestionSaveRequest request) {
+    public ResponseEntity<BaseResponse<Void>> updateQuestion(@PathVariable Long id,
+        @Valid @RequestBody InterviewQuestionSaveRequest request) {
         interviewQuestionService.updateQuestion(id, request);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
     @GetMapping
     public ResponseEntity<BaseResponse<Page<AdminInterviewQuestionView>>> getQuestionPage(Pageable pageable) {
-        Page<AdminInterviewQuestionView> views = adminInterviewQuestionQueryRepository.findAdminInterviewQuestionPage(pageable);
+        Page<AdminInterviewQuestionView> views = adminInterviewQuestionQueryRepository.findAdminInterviewQuestionPage(
+            pageable);
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, views));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<AdminInterviewQuestionView>> getQuestionById(@PathVariable Long id) {
         AdminInterviewQuestionView view = adminInterviewQuestionQueryRepository.findAdminInterviewQuestionById(id)
-                .orElseThrow(InterviewQuestionNotFoundException::new);
+            .orElseThrow(InterviewQuestionNotFoundException::new);
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, view));
     }
 }

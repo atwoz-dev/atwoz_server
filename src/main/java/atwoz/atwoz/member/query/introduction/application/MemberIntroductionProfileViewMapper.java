@@ -12,51 +12,51 @@ import java.util.stream.Collectors;
 public class MemberIntroductionProfileViewMapper {
 
     public static List<MemberIntroductionProfileView> mapWithDefaultTag(
-            List<MemberIntroductionProfileQueryResult> profileResults,
-            List<InterviewAnswerQueryResult> interviewResults
+        List<MemberIntroductionProfileQueryResult> profileResults,
+        List<InterviewAnswerQueryResult> interviewResults
     ) {
         return map(profileResults, interviewResults, MemberIntroductionProfileViewMapper::toDefaultTags);
     }
 
     public static List<MemberIntroductionProfileView> mapWithSameHobbyTag(
-            List<MemberIntroductionProfileQueryResult> profileResults,
-            List<InterviewAnswerQueryResult> interviewResults
+        List<MemberIntroductionProfileQueryResult> profileResults,
+        List<InterviewAnswerQueryResult> interviewResults
     ) {
         return map(profileResults, interviewResults, MemberIntroductionProfileViewMapper::toSameHobbyTags);
     }
 
     public static List<MemberIntroductionProfileView> mapWithSameReligionTag(
-            List<MemberIntroductionProfileQueryResult> profileResults,
-            List<InterviewAnswerQueryResult> interviewResults
+        List<MemberIntroductionProfileQueryResult> profileResults,
+        List<InterviewAnswerQueryResult> interviewResults
     ) {
         return map(profileResults, interviewResults, MemberIntroductionProfileViewMapper::toSameReligionTags);
     }
 
     private static List<MemberIntroductionProfileView> map(
-            List<MemberIntroductionProfileQueryResult> profileResults,
-            List<InterviewAnswerQueryResult> interviewResults,
-            Function<MemberIntroductionProfileQueryResult, List<String>> tagExtractor
+        List<MemberIntroductionProfileQueryResult> profileResults,
+        List<InterviewAnswerQueryResult> interviewResults,
+        Function<MemberIntroductionProfileQueryResult, List<String>> tagExtractor
     ) {
         Map<Long, String> interviewAnswerMap = getFirstInterviewAnswerMap(interviewResults);
         return profileResults.stream()
-                .map(result -> new MemberIntroductionProfileView(
-                        result.memberId(),
-                        result.profileImageUrl(),
-                        tagExtractor.apply(result),
-                        interviewAnswerMap.get(result.memberId()),
-                        result.likeLevel(),
-                        result.isIntroduced()
-                ))
-                .collect(Collectors.toList());
+            .map(result -> new MemberIntroductionProfileView(
+                result.memberId(),
+                result.profileImageUrl(),
+                tagExtractor.apply(result),
+                interviewAnswerMap.get(result.memberId()),
+                result.likeLevel(),
+                result.isIntroduced()
+            ))
+            .collect(Collectors.toList());
     }
 
     private static Map<Long, String> getFirstInterviewAnswerMap(List<InterviewAnswerQueryResult> interviewResults) {
         return interviewResults.stream()
-                .collect(Collectors.toMap(
-                        InterviewAnswerQueryResult::memberId,
-                        InterviewAnswerQueryResult::content,
-                        (existing, replacement) -> existing
-                ));
+            .collect(Collectors.toMap(
+                InterviewAnswerQueryResult::memberId,
+                InterviewAnswerQueryResult::content,
+                (existing, replacement) -> existing
+            ));
     }
 
     private static List<String> toDefaultTags(MemberIntroductionProfileQueryResult view) {

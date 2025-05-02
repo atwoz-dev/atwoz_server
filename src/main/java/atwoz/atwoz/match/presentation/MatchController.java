@@ -18,25 +18,29 @@ public class MatchController {
     private final MatchService matchService;
 
     @PostMapping("/request")
-    public ResponseEntity<BaseResponse<Void>> requestMatch(@RequestBody MatchRequestDto matchRequestDto, @AuthPrincipal AuthContext authContext) {
+    public ResponseEntity<BaseResponse<Void>> requestMatch(@RequestBody MatchRequestDto matchRequestDto,
+        @AuthPrincipal AuthContext authContext) {
         matchService.request(authContext.getId(), matchRequestDto);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
     @PatchMapping("/{matchId}/approve")
-    public ResponseEntity<BaseResponse<Void>> approveMatch(@PathVariable Long matchId, @RequestBody MatchResponseDto matchResponseDto, @AuthPrincipal AuthContext authContext) {
+    public ResponseEntity<BaseResponse<Void>> approveMatch(@PathVariable Long matchId,
+        @RequestBody MatchResponseDto matchResponseDto, @AuthPrincipal AuthContext authContext) {
         matchService.approve(matchId, authContext.getId(), matchResponseDto);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
     @PatchMapping("/{matchId}/reject")
-    public ResponseEntity<BaseResponse<Void>> rejectMatch(@PathVariable Long matchId, @AuthPrincipal AuthContext authContext) {
+    public ResponseEntity<BaseResponse<Void>> rejectMatch(@PathVariable Long matchId,
+        @AuthPrincipal AuthContext authContext) {
         matchService.reject(matchId, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
     @PatchMapping("/{matchId}/check")
-    public ResponseEntity<BaseResponse<Void>> check(@PathVariable Long matchId, @AuthPrincipal AuthContext authContext) {
+    public ResponseEntity<BaseResponse<Void>> check(@PathVariable Long matchId,
+        @AuthPrincipal AuthContext authContext) {
         matchService.rejectCheck(authContext.getId(), matchId);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }

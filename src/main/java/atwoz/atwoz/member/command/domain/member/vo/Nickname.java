@@ -16,14 +16,14 @@ public class Nickname {
     @Column(name = "nickname")
     private final String value;
 
-    public static Nickname from(String nickname) {
-        return new Nickname(nickname);
-    }
-
     private Nickname(@NonNull String value) {
         if (!value.matches(NICKNAME_REGEX)) {
             throw new InvalidNicknameException();
         }
         this.value = value;
+    }
+
+    public static Nickname from(String nickname) {
+        return new Nickname(nickname);
     }
 }

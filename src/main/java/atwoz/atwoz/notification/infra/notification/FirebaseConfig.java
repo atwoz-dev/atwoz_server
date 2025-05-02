@@ -16,8 +16,8 @@ public class FirebaseConfig {
     @PostConstruct
     private void init() throws IOException {
         FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.getApplicationDefault())
-                .build();
+            .setCredentials(GoogleCredentials.getApplicationDefault())
+            .build();
 
         FirebaseApp.initializeApp(options);
     }

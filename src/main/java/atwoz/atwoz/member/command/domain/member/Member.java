@@ -56,12 +56,12 @@ public class Member extends SoftDeleteBaseEntity {
 
     public static Member fromPhoneNumber(@NonNull String phoneNumber) {
         return Member.builder()
-                .phoneNumber(PhoneNumber.from(phoneNumber))
-                .activityStatus(ActivityStatus.ACTIVE)
-                .heartBalance(HeartBalance.init())
-                .isVip(false)
-                .primaryContactType(PrimaryContactType.PHONE_NUMBER)
-                .build();
+            .phoneNumber(PhoneNumber.from(phoneNumber))
+            .activityStatus(ActivityStatus.ACTIVE)
+            .heartBalance(HeartBalance.init())
+            .isVip(false)
+            .primaryContactType(PrimaryContactType.PHONE_NUMBER)
+            .build();
     }
 
     public void updateProfile(@NonNull MemberProfile profile) {
@@ -69,12 +69,16 @@ public class Member extends SoftDeleteBaseEntity {
     }
 
     public boolean isProfileSettingNeeded() {
-        if (profile == null) return true;
+        if (profile == null) {
+            return true;
+        }
         return profile.isProfileSettingNeeded();
     }
 
     public String getKakaoId() {
-        if (kakaoId == null) return null;
+        if (kakaoId == null) {
+            return null;
+        }
         return kakaoId.getValue();
     }
 
@@ -117,7 +121,8 @@ public class Member extends SoftDeleteBaseEntity {
 
     public void gainPurchaseHeart(HeartAmount heartAmount) {
         heartBalance = heartBalance.gainPurchaseHeart(heartAmount);
-        Events.raise(PurchaseHeartGainedEvent.of(id, heartAmount.getAmount(), heartBalance.getMissionHeartBalance(), heartBalance.getPurchaseHeartBalance()));
+        Events.raise(PurchaseHeartGainedEvent.of(id, heartAmount.getAmount(), heartBalance.getMissionHeartBalance(),
+            heartBalance.getPurchaseHeartBalance()));
     }
 
     public void gainMissionHeart(HeartAmount heartAmount) {

@@ -1,10 +1,10 @@
 package atwoz.atwoz.heart.command.domain.heartransaction;
 
 import atwoz.atwoz.heart.command.domain.hearttransaction.HeartTransaction;
+import atwoz.atwoz.heart.command.domain.hearttransaction.exception.InvalidHeartAmountException;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartBalance;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.TransactionType;
-import atwoz.atwoz.heart.command.domain.hearttransaction.exception.InvalidHeartAmountException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -25,13 +25,14 @@ class HeartTransactionTest {
         void ofMethodWithNullFieldThrowsException(String fieldName) {
             // given
             Long memberId = fieldName.equals("memberId is null") ? null : 1L;
-            TransactionType transactionType = fieldName.equals("transactionType is null") ? null : TransactionType.MISSION;
+            TransactionType transactionType =
+                fieldName.equals("transactionType is null") ? null : TransactionType.MISSION;
             HeartAmount heartAmount = fieldName.equals("heartAmount is null") ? null : HeartAmount.from(10L);
             HeartBalance heartBalance = fieldName.equals("heartBalance is null") ? null : HeartBalance.init();
 
             // when & then
             assertThatThrownBy(() -> HeartTransaction.of(memberId, transactionType, heartAmount, heartBalance))
-                    .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(NullPointerException.class);
         }
 
         @Test
@@ -44,7 +45,8 @@ class HeartTransactionTest {
             HeartBalance heartBalance = HeartBalance.init();
 
             // when
-            HeartTransaction heartTransaction = HeartTransaction.of(memberId, transactionType, heartAmount, heartBalance);
+            HeartTransaction heartTransaction = HeartTransaction.of(memberId, transactionType, heartAmount,
+                heartBalance);
 
             // then
             assertThat(heartTransaction).isNotNull();
@@ -60,7 +62,8 @@ class HeartTransactionTest {
             HeartBalance heartBalance = HeartBalance.init();
 
             // when
-            HeartTransaction heartTransaction = HeartTransaction.of(memberId, transactionType, heartAmount, heartBalance);
+            HeartTransaction heartTransaction = HeartTransaction.of(memberId, transactionType, heartAmount,
+                heartBalance);
 
             // then
             assertThat(heartTransaction).isNotNull();
@@ -78,7 +81,7 @@ class HeartTransactionTest {
             // when
             // then
             assertThatThrownBy(() -> HeartTransaction.of(memberId, transactionType, heartAmount, heartBalance))
-                    .isInstanceOf(InvalidHeartAmountException.class);
+                .isInstanceOf(InvalidHeartAmountException.class);
         }
 
         @Test
@@ -93,7 +96,7 @@ class HeartTransactionTest {
             // when
             // then
             assertThatThrownBy(() -> HeartTransaction.of(memberId, transactionType, heartAmount, heartBalance))
-                    .isInstanceOf(InvalidHeartAmountException.class);
+                .isInstanceOf(InvalidHeartAmountException.class);
         }
     }
 }

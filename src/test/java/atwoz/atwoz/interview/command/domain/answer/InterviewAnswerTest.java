@@ -33,7 +33,7 @@ class InterviewAnswerTest {
 
             // when & then
             assertThatThrownBy(() -> InterviewAnswer.of(questionId, memberId, content))
-                    .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(NullPointerException.class);
         }
 
         @Test
@@ -46,7 +46,7 @@ class InterviewAnswerTest {
 
             // when & then
             assertThatThrownBy(() -> InterviewAnswer.of(questionId, memberId, content))
-                    .isInstanceOf(InvalidInterviewAnswerContentException.class);
+                .isInstanceOf(InvalidInterviewAnswerContentException.class);
         }
 
         @Test
@@ -83,9 +83,9 @@ class InterviewAnswerTest {
 
                 // Then
                 eventsMockedStatic.verify(() ->
-                        Events.raise(argThat((FirstInterviewSubmittedEvent event) ->
-                                event.getMemberId().equals(memberId)
-                        )), times(1));
+                    Events.raise(argThat((FirstInterviewSubmittedEvent event) ->
+                        event.getMemberId().equals(memberId)
+                    )), times(1));
             }
         }
     }

@@ -21,11 +21,12 @@ public class AdminTempService {
 
     @Transactional
     public void grantMissionHeart(GrantMissionHeartRequest request) {
-        Member member   = memberCommandRepository.findById(request.memberId())
-                .orElseThrow(MemberNotFoundException::new);
+        Member member = memberCommandRepository.findById(request.memberId())
+            .orElseThrow(MemberNotFoundException::new);
         HeartAmount heartAmount = HeartAmount.from(request.heartAmount());
         member.gainMissionHeart(heartAmount);
-        HeartTransaction heartTransaction = HeartTransaction.of(member.getId(), TransactionType.MISSION, heartAmount, member.getHeartBalance());
+        HeartTransaction heartTransaction = HeartTransaction.of(member.getId(), TransactionType.MISSION, heartAmount,
+            member.getHeartBalance());
         heartTransactionCommandRepository.save(heartTransaction);
     }
 }

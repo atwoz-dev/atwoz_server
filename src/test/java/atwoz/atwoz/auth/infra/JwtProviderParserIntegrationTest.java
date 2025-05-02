@@ -48,7 +48,7 @@ class JwtProviderParserIntegrationTest {
         assertThat(jwtParser.getRole(token)).isEqualTo(role);
         Instant expirationFrom = jwtParser.getExpiration(token);
         assertThat(expirationFrom)
-                .isEqualTo(now.plus(Duration.ofSeconds(accessTokenExpiration)));
+            .isEqualTo(now.plus(Duration.ofSeconds(accessTokenExpiration)));
     }
 
     @Test
@@ -67,7 +67,7 @@ class JwtProviderParserIntegrationTest {
         assertThat(jwtParser.getId(token)).isEqualTo(id);
         assertThat(jwtParser.getRole(token)).isEqualTo(role);
         assertThat(jwtParser.getExpiration(token))
-                .isEqualTo(now.plus(Duration.ofSeconds(refreshTokenExpiration)));
+            .isEqualTo(now.plus(Duration.ofSeconds(refreshTokenExpiration)));
     }
 
     @Test

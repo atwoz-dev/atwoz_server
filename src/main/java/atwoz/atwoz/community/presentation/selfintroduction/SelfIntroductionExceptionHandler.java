@@ -14,11 +14,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class SelfIntroductionExceptionHandler {
 
     @ExceptionHandler(SelfIntroductionNotFoundException.class)
-    public ResponseEntity<BaseResponse<Void>> handleSelfIntroductionNotFoundException(SelfIntroductionNotFoundException e) {
+    public ResponseEntity<BaseResponse<Void>> handleSelfIntroductionNotFoundException(
+        SelfIntroductionNotFoundException e) {
         log.warn("셀프 소개 조회에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.status(404)
-                .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.from(StatusType.NOT_FOUND));
     }
 
     @ExceptionHandler(NotSelfIntroductionAuthorException.class)
@@ -26,6 +27,6 @@ public class SelfIntroductionExceptionHandler {
         log.warn("셀프 소개 작성에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.status(401)
-                .body(BaseResponse.from(StatusType.UNAUTHORIZED));
+            .body(BaseResponse.from(StatusType.UNAUTHORIZED));
     }
 }

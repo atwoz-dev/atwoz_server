@@ -51,6 +51,6 @@ public class ScreeningService {
 
     private Screening getScreening(long id) {
         return screeningCommandRepository.findById(id)
-                .orElseThrow(ScreeningNotFoundException::new);
+            .orElseThrow(ScreeningNotFoundException::new);
     }
 }

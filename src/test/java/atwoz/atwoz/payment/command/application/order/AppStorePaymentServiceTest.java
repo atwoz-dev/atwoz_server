@@ -1,16 +1,16 @@
 package atwoz.atwoz.payment.command.application.order;
 
-import atwoz.atwoz.payment.command.domain.heartpurchaseoption.HeartPurchaseOption;
-import atwoz.atwoz.payment.command.domain.heartpurchaseoption.HeartPurchaseOptionCommandRepository;
 import atwoz.atwoz.payment.command.application.order.exception.HeartPurchaseOptionNotFoundException;
 import atwoz.atwoz.payment.command.application.order.exception.InvalidOrderException;
 import atwoz.atwoz.payment.command.application.order.exception.OrderAlreadyExistsException;
+import atwoz.atwoz.payment.command.domain.heartpurchaseoption.HeartPurchaseOption;
+import atwoz.atwoz.payment.command.domain.heartpurchaseoption.HeartPurchaseOptionCommandRepository;
 import atwoz.atwoz.payment.command.domain.order.Order;
+import atwoz.atwoz.payment.command.domain.order.OrderCommandRepository;
 import atwoz.atwoz.payment.command.domain.order.PaymentMethod;
 import atwoz.atwoz.payment.command.domain.order.TokenParser;
-import atwoz.atwoz.payment.command.infra.order.TransactionInfo;
 import atwoz.atwoz.payment.command.infra.order.AppStoreClient;
-import atwoz.atwoz.payment.command.domain.order.OrderCommandRepository;
+import atwoz.atwoz.payment.command.infra.order.TransactionInfo;
 import com.apple.itunes.storekit.model.TransactionInfoResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -66,10 +66,11 @@ public class AppStorePaymentServiceTest {
         when(transactionInfo.getQuantity()).thenReturn(quantity);
 
         when(orderCommandRepository.existsByTransactionIdAndPaymentMethod(transactionId, PaymentMethod.APP_STORE))
-                .thenReturn(false);
+            .thenReturn(false);
 
         HeartPurchaseOption heartPurchaseOption = mock(HeartPurchaseOption.class);
-        when(heartPurchaseOptionCommandRepository.findByProductId(productId)).thenReturn(Optional.of(heartPurchaseOption));
+        when(heartPurchaseOptionCommandRepository.findByProductId(productId)).thenReturn(
+            Optional.of(heartPurchaseOption));
 
         // When
         appStorePaymentService.verifyReceipt(receiptToken, memberId);
@@ -97,8 +98,8 @@ public class AppStorePaymentServiceTest {
 
         // When & Then
         assertThatThrownBy(() ->
-                appStorePaymentService.verifyReceipt(receiptToken, memberId))
-                .isInstanceOf(InvalidOrderException.class);
+            appStorePaymentService.verifyReceipt(receiptToken, memberId))
+            .isInstanceOf(InvalidOrderException.class);
 
         verify(orderCommandRepository, never()).save(any(Order.class));
     }
@@ -124,12 +125,12 @@ public class AppStorePaymentServiceTest {
         when(transactionInfo.getTransactionId()).thenReturn(transactionId);
 
         when(orderCommandRepository.existsByTransactionIdAndPaymentMethod(transactionId, PaymentMethod.APP_STORE))
-                .thenReturn(true);
+            .thenReturn(true);
 
         // When & Then
         assertThatThrownBy(() ->
-                appStorePaymentService.verifyReceipt(receiptToken, memberId))
-                .isInstanceOf(OrderAlreadyExistsException.class);
+            appStorePaymentService.verifyReceipt(receiptToken, memberId))
+            .isInstanceOf(OrderAlreadyExistsException.class);
         verify(orderCommandRepository, never()).save(any(Order.class));
     }
 
@@ -154,14 +155,14 @@ public class AppStorePaymentServiceTest {
         when(transactionInfo.getProductId()).thenReturn(productId);
 
         when(orderCommandRepository.existsByTransactionIdAndPaymentMethod(transactionId, PaymentMethod.APP_STORE))
-                .thenReturn(false);
+            .thenReturn(false);
 
         when(heartPurchaseOptionCommandRepository.findByProductId(productId)).thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() ->
-                appStorePaymentService.verifyReceipt(receiptToken, memberId))
-                .isInstanceOf(HeartPurchaseOptionNotFoundException.class);
+            appStorePaymentService.verifyReceipt(receiptToken, memberId))
+            .isInstanceOf(HeartPurchaseOptionNotFoundException.class);
         verify(orderCommandRepository).save(any(Order.class));
     }
 }

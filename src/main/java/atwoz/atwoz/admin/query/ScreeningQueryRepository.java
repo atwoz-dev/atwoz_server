@@ -23,40 +23,40 @@ public class ScreeningQueryRepository {
 
     public Page<ScreeningView> findScreenings(ScreeningSearchCondition condition, Pageable pageable) {
         List<ScreeningView> content = queryFactory
-                .select(new QScreeningView(
-                        screening.id,
-                        member.profile.nickname.value,
-                        member.profile.gender.stringValue(),
-                        member.createdAt.stringValue(),
-                        screening.status.stringValue(),
-                        screening.rejectionReason.stringValue()
-                ))
-                .from(screening)
-                .join(member).on(member.id.eq(screening.memberId))
-                .where(
-                        screeningStatusEq(condition.screeningStatus()),
-                        nicknameEq(condition.nickname()),
-                        phoneNumberEq(condition.phoneNumber()),
-                        startDateGoe(condition.startDate()),
-                        loeEndDate(condition.endDate())
-                )
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+            .select(new QScreeningView(
+                screening.id,
+                member.profile.nickname.value,
+                member.profile.gender.stringValue(),
+                member.createdAt.stringValue(),
+                screening.status.stringValue(),
+                screening.rejectionReason.stringValue()
+            ))
+            .from(screening)
+            .join(member).on(member.id.eq(screening.memberId))
+            .where(
+                screeningStatusEq(condition.screeningStatus()),
+                nicknameEq(condition.nickname()),
+                phoneNumberEq(condition.phoneNumber()),
+                startDateGoe(condition.startDate()),
+                loeEndDate(condition.endDate())
+            )
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
 
         long totalCount = Optional.ofNullable(
-                queryFactory
-                        .select(screening.count())
-                        .from(screening)
-                        .join(member).on(member.id.eq(screening.id))
-                        .where(
-                                screeningStatusEq(condition.screeningStatus()),
-                                nicknameEq(condition.nickname()),
-                                phoneNumberEq(condition.phoneNumber()),
-                                startDateGoe(condition.startDate()),
-                                loeEndDate(condition.endDate())
-                        )
-                        .fetchOne()
+            queryFactory
+                .select(screening.count())
+                .from(screening)
+                .join(member).on(member.id.eq(screening.id))
+                .where(
+                    screeningStatusEq(condition.screeningStatus()),
+                    nicknameEq(condition.nickname()),
+                    phoneNumberEq(condition.phoneNumber()),
+                    startDateGoe(condition.startDate()),
+                    loeEndDate(condition.endDate())
+                )
+                .fetchOne()
         ).orElse(0L);
 
         return new PageImpl<>(content, pageable, totalCount);

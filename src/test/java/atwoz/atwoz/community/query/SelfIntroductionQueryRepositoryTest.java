@@ -57,22 +57,22 @@ public class SelfIntroductionQueryRepositoryTest {
         void setUp() {
             mockedEvents = Mockito.mockStatic(Events.class);
             mockedEvents.when(() -> Events.raise(Mockito.any()))
-                    .thenAnswer(invocation -> null);
+                .thenAnswer(invocation -> null);
 
             maleMember = Member.fromPhoneNumber("01012345678");
             femaleMember = Member.fromPhoneNumber("01012345679");
 
             MemberProfile maleMemberProfile = MemberProfile.builder()
-                    .gender(Gender.MALE)
-                    .region(Region.of(District.GANGBUK_GU))
-                    .yearOfBirth(AgeConverter.toYearOfBirth(25))
-                    .build();
+                .gender(Gender.MALE)
+                .region(Region.of(District.GANGBUK_GU))
+                .yearOfBirth(AgeConverter.toYearOfBirth(25))
+                .build();
 
             MemberProfile femaleMemberProfile = MemberProfile.builder()
-                    .gender(Gender.FEMALE)
-                    .region(Region.of(District.DONG_GU_DAEJEON))
-                    .yearOfBirth(AgeConverter.toYearOfBirth(35))
-                    .build();
+                .gender(Gender.FEMALE)
+                .region(Region.of(District.DONG_GU_DAEJEON))
+                .yearOfBirth(AgeConverter.toYearOfBirth(35))
+                .build();
 
             maleMember.updateProfile(maleMemberProfile);
             femaleMember.updateProfile(femaleMemberProfile);
@@ -83,17 +83,17 @@ public class SelfIntroductionQueryRepositoryTest {
 
             // 프로필 이미지 설정.
             ProfileImage maleMemberProfileImage = ProfileImage.builder()
-                    .isPrimary(true)
-                    .order(1)
-                    .imageUrl(ImageUrl.from(maleMemberProfileImageUrl))
-                    .memberId(maleMember.getId())
-                    .build();
+                .isPrimary(true)
+                .order(1)
+                .imageUrl(ImageUrl.from(maleMemberProfileImageUrl))
+                .memberId(maleMember.getId())
+                .build();
 
             ProfileImage femaleMemberProfileImage = ProfileImage.builder()
-                    .isPrimary(true)
-                    .imageUrl(ImageUrl.from(femaleMemberProfileImageUrl))
-                    .memberId(femaleMember.getId())
-                    .build();
+                .isPrimary(true)
+                .imageUrl(ImageUrl.from(femaleMemberProfileImageUrl))
+                .memberId(femaleMember.getId())
+                .build();
 
             entityManager.persist(maleMemberProfileImage);
             entityManager.persist(femaleMemberProfileImage);
@@ -102,8 +102,10 @@ public class SelfIntroductionQueryRepositoryTest {
             // 셀프 소개 글 작성.
             // 남자 6개, 여자 6개
             for (int i = 0; i < 6; i++) {
-                SelfIntroduction maleSelfIntroduction = SelfIntroduction.write(maleMember.getId(), "제목" + i, "내용은 30자 이상 이어야 합니다. 30자 채우기용 30자 채우기용 " + i);
-                SelfIntroduction femaleSelfIntroduction = SelfIntroduction.write(femaleMember.getId(), "제목" + i, "내용은 30자 이상 이어야 합니다. 30자 채우기용 30자 채우기용 " + i);
+                SelfIntroduction maleSelfIntroduction = SelfIntroduction.write(maleMember.getId(), "제목" + i,
+                    "내용은 30자 이상 이어야 합니다. 30자 채우기용 30자 채우기용 " + i);
+                SelfIntroduction femaleSelfIntroduction = SelfIntroduction.write(femaleMember.getId(), "제목" + i,
+                    "내용은 30자 이상 이어야 합니다. 30자 채우기용 30자 채우기용 " + i);
 
                 selfIntroductions.add(maleSelfIntroduction);
                 selfIntroductions.add(femaleSelfIntroduction);
@@ -126,19 +128,20 @@ public class SelfIntroductionQueryRepositoryTest {
         void getAllSelfIntroductions() {
             // Given
             SelfIntroductionSearchCondition searchCondition = new SelfIntroductionSearchCondition(
-                    null, null, null, null
+                null, null, null, null
             );
 
             // When
             List<SelfIntroductionSummaryView> selfIntroductionPage1 = selfIntroductionQueryRepository
-                    .findSelfIntroductions(searchCondition, null);
+                .findSelfIntroductions(searchCondition, null);
             List<SelfIntroductionSummaryView> selfIntroductionPage2 = selfIntroductionQueryRepository
-                    .findSelfIntroductions(searchCondition, selfIntroductionPage1.getLast().id());
+                .findSelfIntroductions(searchCondition, selfIntroductionPage1.getLast().id());
 
             // Then
             Assertions.assertThat(selfIntroductionPage1).isNotNull();
             Assertions.assertThat(selfIntroductionPage2).isNotNull();
-            Assertions.assertThat(selfIntroductionPage1.size() + selfIntroductionPage2.size()).isEqualTo(selfIntroductions.size());
+            Assertions.assertThat(selfIntroductionPage1.size() + selfIntroductionPage2.size())
+                .isEqualTo(selfIntroductions.size());
         }
 
         @Test
@@ -146,14 +149,16 @@ public class SelfIntroductionQueryRepositoryTest {
         void getSelfIntroductionsByGender() {
             // Given
             SelfIntroductionSearchCondition searchCondition = new SelfIntroductionSearchCondition(
-                    null, null, null, Gender.MALE
+                null, null, null, Gender.MALE
             );
-            List<SelfIntroduction> maleSelfIntroduction = selfIntroductions.stream().filter(s -> s.getMemberId() == maleMember.getId()).toList();
+            List<SelfIntroduction> maleSelfIntroduction = selfIntroductions.stream()
+                .filter(s -> s.getMemberId() == maleMember.getId())
+                .toList();
 
 
             // When
             List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                    .findSelfIntroductions(searchCondition, null);
+                .findSelfIntroductions(searchCondition, null);
 
 
             // Then
@@ -168,7 +173,8 @@ public class SelfIntroductionQueryRepositoryTest {
                 Assertions.assertThat(view.title()).isEqualTo(selfIntroduction.getTitle());
                 Assertions.assertThat(view.nickname()).isEqualTo(maleMember.getProfile().getNickname());
                 Assertions.assertThat(view.profileUrl()).isEqualTo(maleMemberProfileImageUrl);
-                Assertions.assertThat(view.yearOfBirth()).isEqualTo(maleMember.getProfile().getYearOfBirth().getValue());
+                Assertions.assertThat(view.yearOfBirth())
+                    .isEqualTo(maleMember.getProfile().getYearOfBirth().getValue());
             }
         }
 
@@ -178,12 +184,12 @@ public class SelfIntroductionQueryRepositoryTest {
             // Given
             int toYearOfBirth = maleMember.getProfile().getYearOfBirth().getValue() + 1;
             SelfIntroductionSearchCondition searchCondition = new SelfIntroductionSearchCondition(
-                    null, null, toYearOfBirth, null
+                null, null, toYearOfBirth, null
             );
 
             // When
             List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                    .findSelfIntroductions(searchCondition, null);
+                .findSelfIntroductions(searchCondition, null);
 
             // Then
             Assertions.assertThat(selfIntroductionPage).isNotNull();
@@ -199,13 +205,13 @@ public class SelfIntroductionQueryRepositoryTest {
             // Given
             int fromYearOfBirth = femaleMember.getProfile().getYearOfBirth().getValue() - 1;
             SelfIntroductionSearchCondition searchCondition = new SelfIntroductionSearchCondition(
-                    null, fromYearOfBirth, null, null
+                null, fromYearOfBirth, null, null
             );
 
 
             // When
             List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                    .findSelfIntroductions(searchCondition, null);
+                .findSelfIntroductions(searchCondition, null);
 
             // Then
             Assertions.assertThat(selfIntroductionPage).isNotNull();
@@ -223,12 +229,12 @@ public class SelfIntroductionQueryRepositoryTest {
             int fromYearOfBirth = femaleMember.getProfile().getYearOfBirth().getValue();
 
             SelfIntroductionSearchCondition searchCondition = new SelfIntroductionSearchCondition(
-                    null, fromYearOfBirth, toYearOfBirth, null
+                null, fromYearOfBirth, toYearOfBirth, null
             );
 
             // When
             List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                    .findSelfIntroductions(searchCondition, null);
+                .findSelfIntroductions(searchCondition, null);
 
             // Then
             Assertions.assertThat(selfIntroductionPage).isNotNull();
@@ -244,14 +250,16 @@ public class SelfIntroductionQueryRepositoryTest {
             // Given
             City city = maleMember.getProfile().getRegion().getCity();
             SelfIntroductionSearchCondition searchCondition = new SelfIntroductionSearchCondition(
-                    List.of(city), null, null, null
+                List.of(city), null, null, null
             );
 
-            List<SelfIntroduction> maleSelfIntroduction = selfIntroductions.stream().filter(s -> s.getMemberId() == maleMember.getId()).toList();
+            List<SelfIntroduction> maleSelfIntroduction = selfIntroductions.stream()
+                .filter(s -> s.getMemberId() == maleMember.getId())
+                .toList();
 
             // When
             List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                    .findSelfIntroductions(searchCondition, null);
+                .findSelfIntroductions(searchCondition, null);
 
             // Then
             Assertions.assertThat(selfIntroductionPage).isNotNull();
@@ -268,13 +276,16 @@ public class SelfIntroductionQueryRepositoryTest {
         void findSelfIntroductions() {
             // Given
             SelfIntroductionSearchCondition searchCondition = new SelfIntroductionSearchCondition(
-                    List.of(City.DAEJEON, City.SEOUL), femaleMember.getProfile().getYearOfBirth().getValue(), maleMember.getProfile().getYearOfBirth().getValue(), maleMember.getProfile().getGender()
+                List.of(City.DAEJEON, City.SEOUL), femaleMember.getProfile().getYearOfBirth().getValue(),
+                maleMember.getProfile().getYearOfBirth().getValue(), maleMember.getProfile().getGender()
             );
-            List<SelfIntroduction> maleSelfIntroduction = selfIntroductions.stream().filter(s -> s.getMemberId() == maleMember.getId()).toList();
+            List<SelfIntroduction> maleSelfIntroduction = selfIntroductions.stream()
+                .filter(s -> s.getMemberId() == maleMember.getId())
+                .toList();
 
             // When
             List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                    .findSelfIntroductions(searchCondition, null);
+                .findSelfIntroductions(searchCondition, null);
 
             // Then
             Assertions.assertThat(selfIntroductionPage).isNotNull();
@@ -305,7 +316,7 @@ public class SelfIntroductionQueryRepositoryTest {
         void setUp() {
             mockedEvents = Mockito.mockStatic(Events.class);
             mockedEvents.when(() -> Events.raise(Mockito.any()))
-                    .thenAnswer(invocation -> null);
+                .thenAnswer(invocation -> null);
 
             // 취미 데이터 생성.
             Hobby hobby = Hobby.ANIMATION;
@@ -317,12 +328,12 @@ public class SelfIntroductionQueryRepositoryTest {
             targetMember = Member.fromPhoneNumber("01056781234");
 
             MemberProfile memberProfile = MemberProfile.builder()
-                    .mbti(Mbti.ENFJ)
-                    .region(Region.of(District.GANGBUK_GU))
-                    .nickname(Nickname.from("닉네임"))
-                    .yearOfBirth(AgeConverter.toYearOfBirth(25))
-                    .hobbies(Set.of(hobby, hobby2))
-                    .build();
+                .mbti(Mbti.ENFJ)
+                .region(Region.of(District.GANGBUK_GU))
+                .nickname(Nickname.from("닉네임"))
+                .yearOfBirth(AgeConverter.toYearOfBirth(25))
+                .hobbies(Set.of(hobby, hobby2))
+                .build();
 
             targetMember.updateProfile(memberProfile);
 
@@ -332,18 +343,18 @@ public class SelfIntroductionQueryRepositoryTest {
 
             // 프로필 이미지 설정.
             profileImage = ProfileImage.builder()
-                    .imageUrl(ImageUrl.from("imageUrl1"))
-                    .memberId(targetMember.getId())
-                    .isPrimary(true)
-                    .order(1)
-                    .build();
+                .imageUrl(ImageUrl.from("imageUrl1"))
+                .memberId(targetMember.getId())
+                .isPrimary(true)
+                .order(1)
+                .build();
 
             ProfileImage subImage = ProfileImage.builder()
-                    .imageUrl(ImageUrl.from("imageUrl2"))
-                    .memberId(targetMember.getId())
-                    .isPrimary(false)
-                    .order(2)
-                    .build();
+                .imageUrl(ImageUrl.from("imageUrl2"))
+                .memberId(targetMember.getId())
+                .isPrimary(false)
+                .order(2)
+                .build();
 
 
             entityManager.persist(profileImage);
@@ -357,7 +368,7 @@ public class SelfIntroductionQueryRepositoryTest {
 
             // 셀프 소개 데이터 생성.
             selfIntroduction = SelfIntroduction.write(
-                    targetMember.getId(), "제목", "내용은 50자를 넘어야합니다. 50자를 넘어야 합니다. 50자를 넘어야.."
+                targetMember.getId(), "제목", "내용은 50자를 넘어야합니다. 50자를 넘어야 합니다. 50자를 넘어야.."
             );
             entityManager.persist(selfIntroduction);
 
@@ -380,19 +391,26 @@ public class SelfIntroductionQueryRepositoryTest {
             System.out.println(selfIntroductionId);
 
             // When
-            SelfIntroductionView view = selfIntroductionQueryRepository.findSelfIntroductionByIdWithMemberId(selfIntroductionId, memberId).orElse(null);
+            SelfIntroductionView view = selfIntroductionQueryRepository.findSelfIntroductionByIdWithMemberId(
+                selfIntroductionId, memberId).orElse(null);
 
             // Then
             Assertions.assertThat(view.title()).isEqualTo(selfIntroduction.getTitle());
             Assertions.assertThat(view.content()).isEqualTo(selfIntroduction.getContent());
             Assertions.assertThat(view.like()).isEqualTo(like.getLikeLevel().toString());
             Assertions.assertThat(view.memberBasicInfo().memberId()).isEqualTo(targetMember.getId());
-            Assertions.assertThat(view.memberBasicInfo().age()).isEqualTo(AgeConverter.toAge(targetMember.getProfile().getYearOfBirth().getValue()));
-            Assertions.assertThat(view.memberBasicInfo().mbti()).isEqualTo(targetMember.getProfile().getMbti().toString());
-            Assertions.assertThat(view.memberBasicInfo().nickname()).isEqualTo(targetMember.getProfile().getNickname().getValue());
-            Assertions.assertThat(view.memberBasicInfo().city()).isEqualTo(targetMember.getProfile().getRegion().getCity().toString());
-            Assertions.assertThat(view.memberBasicInfo().district()).isEqualTo(targetMember.getProfile().getRegion().getDistrict().toString());
-            Assertions.assertThat(view.memberBasicInfo().hobbies().size()).isEqualTo(targetMember.getProfile().getHobbies().size());
+            Assertions.assertThat(view.memberBasicInfo().age())
+                .isEqualTo(AgeConverter.toAge(targetMember.getProfile().getYearOfBirth().getValue()));
+            Assertions.assertThat(view.memberBasicInfo().mbti())
+                .isEqualTo(targetMember.getProfile().getMbti().toString());
+            Assertions.assertThat(view.memberBasicInfo().nickname())
+                .isEqualTo(targetMember.getProfile().getNickname().getValue());
+            Assertions.assertThat(view.memberBasicInfo().city())
+                .isEqualTo(targetMember.getProfile().getRegion().getCity().toString());
+            Assertions.assertThat(view.memberBasicInfo().district())
+                .isEqualTo(targetMember.getProfile().getRegion().getDistrict().toString());
+            Assertions.assertThat(view.memberBasicInfo().hobbies().size())
+                .isEqualTo(targetMember.getProfile().getHobbies().size());
             Assertions.assertThat(view.memberBasicInfo().profileImageUrl()).isEqualTo(profileImage.getUrl());
         }
 
@@ -404,7 +422,9 @@ public class SelfIntroductionQueryRepositoryTest {
             Long memberId = member.getId();
 
             // When & Then
-            Assertions.assertThat(selfIntroductionQueryRepository.findSelfIntroductionByIdWithMemberId(notExistsSelfIntroductionId, memberId)).isEmpty();
+            Assertions.assertThat(
+                selfIntroductionQueryRepository.findSelfIntroductionByIdWithMemberId(notExistsSelfIntroductionId,
+                    memberId)).isEmpty();
         }
     }
 }

@@ -1,10 +1,10 @@
 package atwoz.atwoz.heart.command.domain.hearttransaction;
 
 import atwoz.atwoz.common.entity.BaseEntity;
+import atwoz.atwoz.heart.command.domain.hearttransaction.exception.InvalidHeartAmountException;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartBalance;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.TransactionType;
-import atwoz.atwoz.heart.command.domain.hearttransaction.exception.InvalidHeartAmountException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -36,16 +36,18 @@ public class HeartTransaction extends BaseEntity {
     @Getter
     private HeartBalance heartBalance;
 
-    public static HeartTransaction of(Long memberId, TransactionType transactionType, HeartAmount heartAmount, HeartBalance heartBalance) {
-        return new HeartTransaction(memberId, transactionType, heartAmount, heartBalance);
-    }
-
-    private HeartTransaction(Long memberId, TransactionType transactionType, HeartAmount heartAmount, HeartBalance heartBalance) {
+    private HeartTransaction(Long memberId, TransactionType transactionType, HeartAmount heartAmount,
+        HeartBalance heartBalance) {
         setMemberId(memberId);
         setTransactionType(transactionType);
         setHeartAmount(heartAmount);
         setHeartBalance(heartBalance);
         validateHeartTransaction(transactionType, heartAmount);
+    }
+
+    public static HeartTransaction of(Long memberId, TransactionType transactionType, HeartAmount heartAmount,
+        HeartBalance heartBalance) {
+        return new HeartTransaction(memberId, transactionType, heartAmount, heartBalance);
     }
 
     private void setMemberId(@NonNull Long memberId) {
@@ -66,10 +68,12 @@ public class HeartTransaction extends BaseEntity {
 
     private void validateHeartTransaction(TransactionType transactionType, HeartAmount heartAmount) {
         if (transactionType.isUsingType() && !heartAmount.isUsingAmount()) {
-            throw new InvalidHeartAmountException("잘못된 하트 사용량 입니다. transactionType: " + transactionType + ", heartAmount: " + heartAmount);
+            throw new InvalidHeartAmountException(
+                "잘못된 하트 사용량 입니다. transactionType: " + transactionType + ", heartAmount: " + heartAmount);
         }
         if (transactionType.isGainingType() && !heartAmount.isGainingAmount()) {
-            throw new InvalidHeartAmountException("잘못된 하트 획득량 입니다. transactionType: " + transactionType + ", heartAmount: " + heartAmount);
+            throw new InvalidHeartAmountException(
+                "잘못된 하트 획득량 입니다. transactionType: " + transactionType + ", heartAmount: " + heartAmount);
         }
     }
 }

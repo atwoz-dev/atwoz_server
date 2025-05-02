@@ -30,13 +30,13 @@ class AdminTest {
 
         // when & then
         assertThatThrownBy(() ->
-                Admin.builder()
-                        .email(fieldName.equals("email") ? null : email)
-                        .password(fieldName.equals("password") ? null : password)
-                        .name(fieldName.equals("name") ? null : name)
-                        .phoneNumber(fieldName.equals("phoneNumber") ? null : phoneNumber)
-                        .build())
-                .isInstanceOf(NullPointerException.class);
+            Admin.builder()
+                .email(fieldName.equals("email") ? null : email)
+                .password(fieldName.equals("password") ? null : password)
+                .name(fieldName.equals("name") ? null : name)
+                .phoneNumber(fieldName.equals("phoneNumber") ? null : phoneNumber)
+                .build())
+            .isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -44,11 +44,11 @@ class AdminTest {
     void throwsPasswordMismatchExceptionWhenPasswordMismatch() {
         // given
         Admin admin = Admin.builder()
-                .email(Email.from("example@me.com"))
-                .password(Password.fromHashed("hashed-password"))
-                .name(Name.from("홍길동"))
-                .phoneNumber(PhoneNumber.from("01012345678"))
-                .build();
+            .email(Email.from("example@me.com"))
+            .password(Password.fromHashed("hashed-password"))
+            .name(Name.from("홍길동"))
+            .phoneNumber(PhoneNumber.from("01012345678"))
+            .build();
 
         String rawPassword = "raw-password";
         String hashedPassword = "hashed-password";
@@ -56,6 +56,6 @@ class AdminTest {
 
         // when & then
         assertThatThrownBy(() -> admin.matchPassword(rawPassword, passwordHasher))
-                .isInstanceOf(IncorrectPasswordException.class);
+            .isInstanceOf(IncorrectPasswordException.class);
     }
 }

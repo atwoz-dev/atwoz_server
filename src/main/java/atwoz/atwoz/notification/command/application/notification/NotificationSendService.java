@@ -31,6 +31,6 @@ public class NotificationSendService {
 
     private NotificationSetting getNotificationSetting(long receiverId) {
         return notificationSettingCommandRepository.findByMemberId(receiverId)
-                .orElseThrow(() -> new ReceiverNotificationSettingNotFoundException(receiverId));
+            .orElseThrow(() -> new ReceiverNotificationSettingNotFoundException(receiverId));
     }
 }

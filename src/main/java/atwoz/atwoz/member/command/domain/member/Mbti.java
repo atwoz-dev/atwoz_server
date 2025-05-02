@@ -11,7 +11,9 @@ public enum Mbti {
     INFP, INFJ, INTP, INTJ;
 
     public static Mbti from(String value) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
 
         try {
             return Mbti.valueOf(value.toUpperCase());

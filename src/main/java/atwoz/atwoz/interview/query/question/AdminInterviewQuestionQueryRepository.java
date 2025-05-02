@@ -21,23 +21,23 @@ public class AdminInterviewQuestionQueryRepository {
 
     public Page<AdminInterviewQuestionView> findAdminInterviewQuestionPage(Pageable pageable) {
         List<AdminInterviewQuestionView> content = queryFactory
-                .select(new QAdminInterviewQuestionView(
-                        interviewQuestion.id,
-                        interviewQuestion.content,
-                        interviewQuestion.category.stringValue(),
-                        interviewQuestion.isPublic,
-                        interviewQuestion.createdAt
-                ))
-                .from(interviewQuestion)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy(interviewQuestion.id.desc())
-                .fetch();
+            .select(new QAdminInterviewQuestionView(
+                interviewQuestion.id,
+                interviewQuestion.content,
+                interviewQuestion.category.stringValue(),
+                interviewQuestion.isPublic,
+                interviewQuestion.createdAt
+            ))
+            .from(interviewQuestion)
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .orderBy(interviewQuestion.id.desc())
+            .fetch();
 
         long totalCount = Optional.ofNullable(queryFactory
-                .select(interviewQuestion.count())
-                .from(interviewQuestion)
-                .fetchOne()
+            .select(interviewQuestion.count())
+            .from(interviewQuestion)
+            .fetchOne()
         ).orElse(0L);
 
         return new PageImpl<>(content, pageable, totalCount);
@@ -45,16 +45,16 @@ public class AdminInterviewQuestionQueryRepository {
 
     public Optional<AdminInterviewQuestionView> findAdminInterviewQuestionById(Long id) {
         return Optional.ofNullable(queryFactory
-                .select(new QAdminInterviewQuestionView(
-                        interviewQuestion.id,
-                        interviewQuestion.content,
-                        interviewQuestion.category.stringValue(),
-                        interviewQuestion.isPublic,
-                        interviewQuestion.createdAt
-                ))
-                .from(interviewQuestion)
-                .where(interviewQuestion.id.eq(id))
-                .fetchOne()
+            .select(new QAdminInterviewQuestionView(
+                interviewQuestion.id,
+                interviewQuestion.content,
+                interviewQuestion.category.stringValue(),
+                interviewQuestion.isPublic,
+                interviewQuestion.createdAt
+            ))
+            .from(interviewQuestion)
+            .where(interviewQuestion.id.eq(id))
+            .fetchOne()
         );
     }
 }

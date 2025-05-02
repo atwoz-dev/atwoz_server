@@ -3,9 +3,9 @@ package atwoz.atwoz.member.query.member.view;
 import com.querydsl.core.annotations.QueryProjection;
 
 public record InterviewResultView(
-        String content,
-        String category,
-        String answer
+    String content,
+    String category,
+    String answer
 ) {
     @QueryProjection
     public InterviewResultView(String content, String category, String answer) {

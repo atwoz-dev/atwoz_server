@@ -23,14 +23,14 @@ public class MemberIntroduction extends BaseEntity {
     @Getter
     private Long introducedMemberId;
 
+    private MemberIntroduction(@NonNull Long memberId, @NonNull Long introducedMemberId) {
+        this.memberId = memberId;
+        this.introducedMemberId = introducedMemberId;
+    }
+
     public static MemberIntroduction of(Long memberId, Long introducedMemberId) {
         MemberIntroduction memberIntroduction = new MemberIntroduction(memberId, introducedMemberId);
         Events.raise(MemberIntroducedEvent.of(memberId));
         return memberIntroduction;
-    }
-
-    private MemberIntroduction(@NonNull Long memberId, @NonNull Long introducedMemberId) {
-        this.memberId = memberId;
-        this.introducedMemberId = introducedMemberId;
     }
 }

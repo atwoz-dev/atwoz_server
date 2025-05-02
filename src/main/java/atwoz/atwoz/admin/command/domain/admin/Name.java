@@ -24,14 +24,14 @@ public class Name {
     @Column(name = "name")
     private final String value;
 
-    public static Name from(String value) {
-        return new Name(value);
-    }
-
     private Name(@NonNull String value) {
         if (!NAME_PATTERN.matcher(value).matches()) {
             throw new InvalidNameException(value);
         }
         this.value = value;
+    }
+
+    public static Name from(String value) {
+        return new Name(value);
     }
 }

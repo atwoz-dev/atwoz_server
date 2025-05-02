@@ -28,14 +28,14 @@ public class InterviewQuestion extends BaseEntity {
     @Getter
     private boolean isPublic;
 
-    public static InterviewQuestion of(String content, InterviewCategory category, boolean isPublic) {
-        return new InterviewQuestion(content, category, isPublic);
-    }
-
     private InterviewQuestion(String content, InterviewCategory category, boolean isPublic) {
         setContent(content);
         setCategory(category);
         this.isPublic = isPublic;
+    }
+
+    public static InterviewQuestion of(String content, InterviewCategory category, boolean isPublic) {
+        return new InterviewQuestion(content, category, isPublic);
     }
 
     private void setContent(@NonNull String content) {

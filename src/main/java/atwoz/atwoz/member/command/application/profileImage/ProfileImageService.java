@@ -1,12 +1,12 @@
 package atwoz.atwoz.member.command.application.profileImage;
 
-import atwoz.atwoz.member.presentation.profileimage.dto.ProfileImageUploadRequest;
 import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadResponse;
 import atwoz.atwoz.member.command.application.profileImage.exception.*;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImageCommandRepository;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.command.infra.profileImage.S3Uploader;
+import atwoz.atwoz.member.presentation.profileimage.dto.ProfileImageUploadRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,8 +47,8 @@ public class ProfileImageService {
 
         // 비동기로 s3 요청.
         List<CompletableFuture<ProfileImage>> futures = requests.stream()
-                .map(request -> handleImageUpload(request, memberId, profileImages))
-                .collect(Collectors.toList());
+            .map(request -> handleImageUpload(request, memberId, profileImages))
+            .collect(Collectors.toList());
 
 
         // 비동기 결과 병합 (기존 엔티티 + 새롭게 추가된 엔티티).
@@ -68,43 +68,48 @@ public class ProfileImageService {
 
     private List<ProfileImage> gatherProfileImages(List<CompletableFuture<ProfileImage>> futures) {
         return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
-                .thenApply(v -> futures.stream()
-                        .map(CompletableFuture::join)
-                        .toList())
-                .join();
+            .thenApply(v -> futures.stream()
+                .map(CompletableFuture::join)
+                .toList())
+            .join();
     }
 
-    private void updateByRequests(List<ProfileImageUploadRequest> imageUpdateRequests, List<ProfileImage> profileImages) {
+    private void updateByRequests(List<ProfileImageUploadRequest> imageUpdateRequests,
+        List<ProfileImage> profileImages) {
         imageUpdateRequests.forEach(r -> {
             ProfileImage profileImage = profileImages.stream().filter(p -> p.getId().equals(r.getId()))
-                    .findFirst()
-                    .orElseThrow(ProfileImageNotFoundException::new);
+                .findFirst()
+                .orElseThrow(ProfileImageNotFoundException::new);
 
             profileImage.updateOrderAndPrimary(r.getOrder(), r.getIsPrimary());
         });
     }
 
-    private void validateRequestsWithProfileImages(List<ProfileImageUploadRequest> imageUploadRequests, List<ProfileImage> profileImages) {
+    private void validateRequestsWithProfileImages(List<ProfileImageUploadRequest> imageUploadRequests,
+        List<ProfileImage> profileImages) {
         validateOrderUniqueness(imageUploadRequests, profileImages);
         validatePrimaryImageCount(imageUploadRequests, profileImages);
     }
 
-    private void validateOrderUniqueness(List<ProfileImageUploadRequest> imageUploadRequests, List<ProfileImage> profileImages) {
+    private void validateOrderUniqueness(List<ProfileImageUploadRequest> imageUploadRequests,
+        List<ProfileImage> profileImages) {
         Set<Integer> orderSet = new HashSet<>();
 
         // 중복된 order 확인: 요청 리스트와 프로필 이미지 리스트 합쳐서 처리
         Stream.concat(imageUploadRequests.stream(), profileImages.stream())
-                .map(item -> item instanceof ProfileImageUploadRequest ? ((ProfileImageUploadRequest) item).getOrder() : ((ProfileImage) item).getOrder())
-                .forEach(order -> {
-                    if (!orderSet.add(order)) {
-                        throw new DuplicateProfileImageOrderException();
-                    }
-                });
+            .map(item -> item instanceof ProfileImageUploadRequest ? ((ProfileImageUploadRequest) item).getOrder()
+                : ((ProfileImage) item).getOrder())
+            .forEach(order -> {
+                if (!orderSet.add(order)) {
+                    throw new DuplicateProfileImageOrderException();
+                }
+            });
     }
 
-    private void validatePrimaryImageCount(List<ProfileImageUploadRequest> imageUploadRequests, List<ProfileImage> profileImages) {
+    private void validatePrimaryImageCount(List<ProfileImageUploadRequest> imageUploadRequests,
+        List<ProfileImage> profileImages) {
         long primaryCount = imageUploadRequests.stream().filter(ProfileImageUploadRequest::getIsPrimary).count() +
-                profileImages.stream().filter(ProfileImage::isPrimary).count();
+            profileImages.stream().filter(ProfileImage::isPrimary).count();
 
         if (primaryCount > 1) {
             throw new InvalidPrimaryProfileImageCountException();
@@ -121,7 +126,8 @@ public class ProfileImageService {
     }
 
     private ProfileImage findByIdAndMemberId(Long profileImageId, Long memberId) {
-        ProfileImage profileImage = profileImageCommandRepository.findById(profileImageId).orElseThrow(ProfileImageNotFoundException::new);
+        ProfileImage profileImage = profileImageCommandRepository.findById(profileImageId)
+            .orElseThrow(ProfileImageNotFoundException::new);
         if (!profileImage.getMemberId().equals(memberId)) {
             throw new ProfileImageMemberIdMismatchException();
         }
@@ -132,12 +138,14 @@ public class ProfileImageService {
         return profileImages.stream().filter(p -> p.getId().equals(profileImageId)).findFirst().orElse(null);
     }
 
-    private CompletableFuture<ProfileImage> handleImageUpload(ProfileImageUploadRequest request, Long memberId, List<ProfileImage> profileImages) {
+    private CompletableFuture<ProfileImage> handleImageUpload(ProfileImageUploadRequest request, Long memberId,
+        List<ProfileImage> profileImages) {
         return s3Uploader.uploadImageAsync(request.getImage())
-                .thenApply(imageUrl -> processUploadedImage(request, memberId, profileImages, imageUrl));
+            .thenApply(imageUrl -> processUploadedImage(request, memberId, profileImages, imageUrl));
     }
 
-    private ProfileImage processUploadedImage(ProfileImageUploadRequest request, Long memberId, List<ProfileImage> profileImages, String imageUrl) {
+    private ProfileImage processUploadedImage(ProfileImageUploadRequest request, Long memberId,
+        List<ProfileImage> profileImages, String imageUrl) {
         if (isReplacedImage(request, imageUrl)) { // 기존 프로필 이미지의 파일을 교체하는 경우.
             ProfileImage profileImage = findById(request.getId(), profileImages);
             s3Uploader.deleteFile(profileImage.getUrl()); // 기존 이미지 삭제.
@@ -159,10 +167,10 @@ public class ProfileImageService {
 
     private ProfileImage createNewProfileImage(ProfileImageUploadRequest request, Long memberId, String imageUrl) {
         return ProfileImage.builder()
-                .memberId(memberId)
-                .imageUrl(ImageUrl.from(imageUrl))
-                .order(request.getOrder())
-                .isPrimary(request.getIsPrimary())
-                .build();
+            .memberId(memberId)
+            .imageUrl(ImageUrl.from(imageUrl))
+            .order(request.getOrder())
+            .isPrimary(request.getIsPrimary())
+            .build();
     }
 }

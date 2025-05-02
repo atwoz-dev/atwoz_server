@@ -30,15 +30,16 @@ class HeartTransactionServiceTest {
         Long purchaseHeartBalance = 100L;
 
         // when
-        heartTransactionService.createHeartPurchaseTransaction(memberId, amount, missionHeartBalance, purchaseHeartBalance);
+        heartTransactionService.createHeartPurchaseTransaction(memberId, amount, missionHeartBalance,
+            purchaseHeartBalance);
 
         // then
         verify(heartTransactionCommandRepository).save(argThat(heartTransaction ->
-                heartTransaction.getMemberId().equals(memberId) &&
-                        heartTransaction.getTransactionType() == TransactionType.PURCHASE &&
-                        heartTransaction.getHeartAmount().getAmount().equals(amount) &&
-                        heartTransaction.getHeartBalance().getMissionHeartBalance().equals(missionHeartBalance) &&
-                        heartTransaction.getHeartBalance().getPurchaseHeartBalance().equals(purchaseHeartBalance)
+            heartTransaction.getMemberId().equals(memberId) &&
+                heartTransaction.getTransactionType() == TransactionType.PURCHASE &&
+                heartTransaction.getHeartAmount().getAmount().equals(amount) &&
+                heartTransaction.getHeartBalance().getMissionHeartBalance().equals(missionHeartBalance) &&
+                heartTransaction.getHeartBalance().getPurchaseHeartBalance().equals(purchaseHeartBalance)
         ));
     }
 }

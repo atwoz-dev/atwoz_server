@@ -16,7 +16,7 @@ class NicknameTest {
 
         // When & Then
         Assertions.assertThatThrownBy(() -> Nickname.from(nickname))
-                .isInstanceOf(NullPointerException.class);
+            .isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -27,7 +27,7 @@ class NicknameTest {
 
         // When & Then
         Assertions.assertThatThrownBy(() -> Nickname.from(nickname))
-                .isInstanceOf(InvalidNicknameException.class);
+            .isInstanceOf(InvalidNicknameException.class);
     }
 
     @Test
@@ -38,7 +38,7 @@ class NicknameTest {
 
         // When & Then
         Assertions.assertThatThrownBy(() -> Nickname.from(nickname))
-                .isInstanceOf(InvalidNicknameException.class);
+            .isInstanceOf(InvalidNicknameException.class);
     }
 
     @Test
@@ -49,7 +49,7 @@ class NicknameTest {
 
         // When & Then
         Assertions.assertThatThrownBy(() -> Nickname.from(nickname))
-                .isInstanceOf(InvalidNicknameException.class);
+            .isInstanceOf(InvalidNicknameException.class);
     }
 
     @Test

@@ -63,10 +63,11 @@ public class MemberAuthServiceTest {
         String phoneNumber = "01012345678";
 
         Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber))
-                .thenReturn(Optional.of(permanentStoppedMember));
+            .thenReturn(Optional.of(permanentStoppedMember));
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber)).isInstanceOf(BannedMemberException.class);
+        Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber))
+            .isInstanceOf(BannedMemberException.class);
     }
 
     @Test
@@ -79,8 +80,9 @@ public class MemberAuthServiceTest {
             mockedInstant.when(Instant::now).thenReturn(fixedInstant);
 
             Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.of(member));
-            Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
-                    .thenReturn("accessToken");
+            Mockito.when(
+                    jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
+                .thenReturn("accessToken");
 
             // When
             String token = memberAuthService.login(phoneNumber).accessToken();
@@ -102,8 +104,9 @@ public class MemberAuthServiceTest {
             mockedInstant.when(Instant::now).thenReturn(fixedInstant);
 
             Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
-            Mockito.when(jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
-                    .thenReturn("accessToken");
+            Mockito.when(
+                    jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
+                .thenReturn("accessToken");
             Mockito.when(memberCommandRepository.save(Mockito.any())).thenReturn(member);
 
             // When
@@ -127,6 +130,7 @@ public class MemberAuthServiceTest {
         Mockito.when(memberCommandRepository.save(Mockito.any())).thenThrow(DataIntegrityViolationException.class);
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber)).isInstanceOf(MemberLoginConflictException.class);
+        Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber))
+            .isInstanceOf(MemberLoginConflictException.class);
     }
 }

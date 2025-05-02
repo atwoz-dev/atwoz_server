@@ -32,12 +32,13 @@ public class HeartUsagePolicyService {
 
     private Member getMember(long memberId) {
         return memberCommandRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException());
+            .orElseThrow(() -> new MemberNotFoundException());
     }
 
     private HeartAmount getHeartAmount(Member member, TransactionType transactionType) {
-        HeartUsagePolicy heartUsagePolicy = heartUsagePolicyCommandRepository.findByGenderAndTransactionType(member.getGender(), transactionType)
-                .orElseThrow(() -> new HeartUsagePolicyNotFoundException());
+        HeartUsagePolicy heartUsagePolicy = heartUsagePolicyCommandRepository.findByGenderAndTransactionType(
+                member.getGender(), transactionType)
+            .orElseThrow(() -> new HeartUsagePolicyNotFoundException());
         HeartAmount heartAmount = HeartAmount.from(heartUsagePolicy.getAmount(member.isVip()));
         return heartAmount;
     }
@@ -48,8 +49,10 @@ public class HeartUsagePolicyService {
         return balanceAfterUsingHeart;
     }
 
-    private HeartTransaction createHeartTransaction(Member member, TransactionType transactionType, HeartAmount heartAmount, HeartBalance balanceAfterUsingHeart) {
-        HeartTransaction heartTransaction = HeartTransaction.of(member.getId(), transactionType, heartAmount, balanceAfterUsingHeart);
+    private HeartTransaction createHeartTransaction(Member member, TransactionType transactionType,
+        HeartAmount heartAmount, HeartBalance balanceAfterUsingHeart) {
+        HeartTransaction heartTransaction = HeartTransaction.of(member.getId(), transactionType, heartAmount,
+            balanceAfterUsingHeart);
         return heartTransactionCommandRepository.save(heartTransaction);
     }
 }

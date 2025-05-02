@@ -14,14 +14,14 @@ public class PathMatcherHelper {
         PathPatternParser parser = new PathPatternParser();
 
         this.excludePatterns = excludePatterns.stream()
-                .map(parser::parse)
-                .toList();
+            .map(parser::parse)
+            .toList();
     }
 
     public boolean isExcluded(String uri) {
         PathContainer path = PathContainer.parsePath(uri);
 
         return excludePatterns.stream()
-                .anyMatch(pattern -> pattern.matches(path));
+            .anyMatch(pattern -> pattern.matches(path));
     }
 }

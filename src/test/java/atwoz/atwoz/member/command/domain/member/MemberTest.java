@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
@@ -99,12 +99,12 @@ public class MemberTest {
                 // Then
                 Assertions.assertThat(member.getHeartBalance()).isEqualTo(expectedHeartBalance);
                 eventsMockedStatic.verify(() ->
-                        Events.raise(argThat((PurchaseHeartGainedEvent event) ->
-                                event.getMemberId().equals(memberId) &&
-                                        event.getAmount().equals(purchaseHeartAmount.getAmount()) &&
-                                        event.getMissionHeartBalance().equals(expectedHeartBalance.getMissionHeartBalance()) &&
-                                        event.getPurchaseHeartBalance().equals(expectedHeartBalance.getPurchaseHeartBalance())
-                        )), times(1));
+                    Events.raise(argThat((PurchaseHeartGainedEvent event) ->
+                        event.getMemberId().equals(memberId) &&
+                            event.getAmount().equals(purchaseHeartAmount.getAmount()) &&
+                            event.getMissionHeartBalance().equals(expectedHeartBalance.getMissionHeartBalance()) &&
+                            event.getPurchaseHeartBalance().equals(expectedHeartBalance.getPurchaseHeartBalance())
+                    )), times(1));
             }
         }
     }

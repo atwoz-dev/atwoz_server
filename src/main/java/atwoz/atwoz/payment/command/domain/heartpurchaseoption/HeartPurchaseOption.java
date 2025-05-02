@@ -29,6 +29,12 @@ public class HeartPurchaseOption extends SoftDeleteBaseEntity {
 
     private String productId;
 
+    private HeartPurchaseOption(HeartPurchaseAmount amount, Price price, String name) {
+        setAmount(amount);
+        setPrice(price);
+        setName(name);
+    }
+
     public static HeartPurchaseOption of(HeartPurchaseAmount amount, Price price, String name) {
         return new HeartPurchaseOption(amount, price, name);
     }
@@ -40,12 +46,6 @@ public class HeartPurchaseOption extends SoftDeleteBaseEntity {
     public void purchase(@NonNull Long memberId, @NonNull Integer quantity) {
         Long heartAmount = getHeartAmount() * quantity;
         Events.raise(HeartPurchasedEvent.of(memberId, heartAmount));
-    }
-
-    private HeartPurchaseOption(HeartPurchaseAmount amount, Price price, String name) {
-        setAmount(amount);
-        setPrice(price);
-        setName(name);
     }
 
     private void setAmount(@NonNull HeartPurchaseAmount amount) {

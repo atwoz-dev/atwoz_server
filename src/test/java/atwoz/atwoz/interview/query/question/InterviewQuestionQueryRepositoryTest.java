@@ -46,7 +46,8 @@ class InterviewQuestionQueryRepositoryTest {
             entityManager.flush();
 
             // when
-            List<InterviewQuestionView> views = interviewQuestionQueryRepository.findAllQuestionByCategoryWithMemberId(question.getCategory().name(), member.getId());
+            List<InterviewQuestionView> views = interviewQuestionQueryRepository.findAllQuestionByCategoryWithMemberId(
+                question.getCategory().name(), member.getId());
 
             // then
             assertThat(views).hasSize(1);
@@ -70,7 +71,8 @@ class InterviewQuestionQueryRepositoryTest {
             entityManager.flush();
 
             // when
-            List<InterviewQuestionView> views = interviewQuestionQueryRepository.findAllQuestionByCategoryWithMemberId(question.getCategory().name(), member.getId());
+            List<InterviewQuestionView> views = interviewQuestionQueryRepository.findAllQuestionByCategoryWithMemberId(
+                question.getCategory().name(), member.getId());
 
             // then
             assertThat(views).hasSize(1);
@@ -94,7 +96,8 @@ class InterviewQuestionQueryRepositoryTest {
             entityManager.flush();
 
             // when
-            List<InterviewQuestionView> views = interviewQuestionQueryRepository.findAllQuestionByCategoryWithMemberId(question.getCategory().name(), member.getId());
+            List<InterviewQuestionView> views = interviewQuestionQueryRepository.findAllQuestionByCategoryWithMemberId(
+                question.getCategory().name(), member.getId());
 
             // then
             assertThat(views).isEmpty();
@@ -111,7 +114,8 @@ class InterviewQuestionQueryRepositoryTest {
             entityManager.flush();
 
             // when
-            List<InterviewQuestionView> views = interviewQuestionQueryRepository.findAllQuestionByCategoryWithMemberId(InterviewCategory.SOCIAL.name(), member.getId());
+            List<InterviewQuestionView> views = interviewQuestionQueryRepository.findAllQuestionByCategoryWithMemberId(
+                InterviewCategory.SOCIAL.name(), member.getId());
 
             // then
             assertThat(views).isEmpty();

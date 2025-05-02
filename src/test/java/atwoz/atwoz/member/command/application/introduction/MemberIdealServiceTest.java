@@ -54,13 +54,13 @@ class MemberIdealServiceTest {
             drinkingStatus = DrinkingStatus.SOCIAL;
             hobbies = Set.of(Hobby.DANCE, Hobby.WINE);
             request = new MemberIdealUpdateRequest(
-                    ageRange.getMinAge(),
-                    ageRange.getMaxAge(),
-                    cities.stream().map(City::name).collect(Collectors.toSet()),
-                    religion.name(),
-                    smokingStatus.name(),
-                    drinkingStatus.name(),
-                    hobbies.stream().map(Hobby::name).collect(Collectors.toSet())
+                ageRange.getMinAge(),
+                ageRange.getMaxAge(),
+                cities.stream().map(City::name).collect(Collectors.toSet()),
+                religion.name(),
+                smokingStatus.name(),
+                drinkingStatus.name(),
+                hobbies.stream().map(Hobby::name).collect(Collectors.toSet())
             );
         }
 
@@ -74,7 +74,7 @@ class MemberIdealServiceTest {
 
             // when && then
             assertThatThrownBy(() -> memberIdealService.update(request, memberId))
-                    .isInstanceOf(MemberIdealNotFoundException.class);
+                .isInstanceOf(MemberIdealNotFoundException.class);
         }
 
         @Test
@@ -104,7 +104,7 @@ class MemberIdealServiceTest {
 
             // when && then
             assertThatThrownBy(() -> memberIdealService.init(memberId))
-                    .isInstanceOf(MemberIdealAlreadyExistsException.class);
+                .isInstanceOf(MemberIdealAlreadyExistsException.class);
         }
 
         @Test
@@ -114,7 +114,7 @@ class MemberIdealServiceTest {
             long memberId = 1L;
             when(memberIdealCommandRepository.existsByMemberId(memberId)).thenReturn(false);
 
-            try(MockedStatic<MemberIdeal> memberIdealMock = mockStatic(MemberIdeal.class)) {
+            try (MockedStatic<MemberIdeal> memberIdealMock = mockStatic(MemberIdeal.class)) {
                 MemberIdeal memberIdeal = mock(MemberIdeal.class);
                 memberIdealMock.when(() -> MemberIdeal.init(memberId)).thenReturn(memberIdeal);
 

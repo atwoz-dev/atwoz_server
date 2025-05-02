@@ -11,7 +11,7 @@ import lombok.NonNull;
 
 @Entity
 @Table(name = "self_introductions",
-        indexes = @Index(name = "idx_member_id", columnList = "memberId")
+    indexes = @Index(name = "idx_member_id", columnList = "memberId")
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SelfIntroduction extends BaseEntity {
@@ -30,17 +30,17 @@ public class SelfIntroduction extends BaseEntity {
     @Getter
     private String content;
 
+    private SelfIntroduction(@NonNull Long memberId, @NonNull String title, @NonNull String content) {
+        this.memberId = memberId;
+        setTitle(title);
+        setContent(content);
+    }
+
     public static SelfIntroduction write(Long memberId, String title, String content) {
         return new SelfIntroduction(memberId, title, content);
     }
 
     public void update(String title, String content) {
-        setTitle(title);
-        setContent(content);
-    }
-
-    private SelfIntroduction(@NonNull Long memberId, @NonNull String title, @NonNull String content) {
-        this.memberId = memberId;
         setTitle(title);
         setContent(content);
     }
@@ -62,6 +62,8 @@ public class SelfIntroduction extends BaseEntity {
     }
 
     private void validateTitle(String title) {
-        if (title.isBlank()) throw new InvalidSelfIntroductionTitleException();
+        if (title.isBlank()) {
+            throw new InvalidSelfIntroductionTitleException();
+        }
     }
 }

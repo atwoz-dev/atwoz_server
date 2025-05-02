@@ -37,36 +37,37 @@ public class AdminAuthController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + response.accessToken());
-        ResponseCookie refreshTokenCookie = ResponseCookie.from(refreshTokenCookieProperties.name(), response.refreshToken())
-                .httpOnly(refreshTokenCookieProperties.httpOnly())
-                .secure(refreshTokenCookieProperties.secure())
-                .sameSite(refreshTokenCookieProperties.sameSite())
-                .path(refreshTokenCookieProperties.path())
-                .maxAge(refreshTokenCookieProperties.maxAge())
-                .build();
+        ResponseCookie refreshTokenCookie = ResponseCookie.from(refreshTokenCookieProperties.name(),
+                response.refreshToken())
+            .httpOnly(refreshTokenCookieProperties.httpOnly())
+            .secure(refreshTokenCookieProperties.secure())
+            .sameSite(refreshTokenCookieProperties.sameSite())
+            .path(refreshTokenCookieProperties.path())
+            .maxAge(refreshTokenCookieProperties.maxAge())
+            .build();
         headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
         return ResponseEntity.ok()
-                .headers(headers)
-                .body(BaseResponse.from(StatusType.OK));
+            .headers(headers)
+            .body(BaseResponse.from(StatusType.OK));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<BaseResponse<Void>> logout(
-            @CookieValue(value = "refresh_token", required = false) String refreshToken
+        @CookieValue(value = "refresh_token", required = false) String refreshToken
     ) {
         adminAuthService.logout(refreshToken);
 
         ResponseCookie refreshTokenCookie = ResponseCookie.from(refreshTokenCookieProperties.name(), "")
-                .httpOnly(refreshTokenCookieProperties.httpOnly())
-                .secure(refreshTokenCookieProperties.secure())
-                .sameSite(refreshTokenCookieProperties.sameSite())
-                .path(refreshTokenCookieProperties.path())
-                .maxAge(0)
-                .build();
+            .httpOnly(refreshTokenCookieProperties.httpOnly())
+            .secure(refreshTokenCookieProperties.secure())
+            .sameSite(refreshTokenCookieProperties.sameSite())
+            .path(refreshTokenCookieProperties.path())
+            .maxAge(0)
+            .build();
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-                .body(BaseResponse.from(StatusType.OK));
+            .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+            .body(BaseResponse.from(StatusType.OK));
     }
 }

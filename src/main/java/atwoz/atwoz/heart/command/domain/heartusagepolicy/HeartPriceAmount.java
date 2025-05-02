@@ -9,6 +9,15 @@ public class HeartPriceAmount {
     private static final Long MIN_PRICE = 1L;
     private final Long price;
 
+    protected HeartPriceAmount() {
+        this.price = MIN_PRICE;
+    }
+
+    private HeartPriceAmount(Long price) {
+        validateMinPrice(price);
+        this.price = price;
+    }
+
     public static HeartPriceAmount from(Long price) {
         return new HeartPriceAmount(price);
     }
@@ -19,15 +28,6 @@ public class HeartPriceAmount {
 
     public Long getPrice() {
         return price;
-    }
-
-    protected HeartPriceAmount() {
-        this.price = MIN_PRICE;
-    }
-
-    private HeartPriceAmount(Long price) {
-        validateMinPrice(price);
-        this.price = price;
     }
 
     private void validateMinPrice(@NonNull Long price) {

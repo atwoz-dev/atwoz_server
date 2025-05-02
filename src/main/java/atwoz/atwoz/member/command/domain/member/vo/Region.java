@@ -22,14 +22,16 @@ public class Region {
     @Column(columnDefinition = "varchar(50)")
     private District district;
 
-    public static Region of(District district) {
-        if (district == null) return null;
-        return new Region(district);
-    }
-
     private Region(District district) {
         this.city = district.getCity();
         this.district = district;
 
+    }
+
+    public static Region of(District district) {
+        if (district == null) {
+            return null;
+        }
+        return new Region(district);
     }
 }

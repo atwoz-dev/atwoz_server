@@ -7,8 +7,12 @@ public interface ProfileImageCommandRepository {
     ProfileImage save(ProfileImage profileImage);
 
     boolean existsByMemberIdAndIsPrimary(Long memberId);
+
     void saveAll(List<ProfileImage> profileImages);
+
     Optional<ProfileImage> findById(Long id);
+
     void delete(ProfileImage profileImage);
+
     List<ProfileImage> findByMemberId(Long memberId);
 }

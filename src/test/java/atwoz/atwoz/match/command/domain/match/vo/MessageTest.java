@@ -15,7 +15,7 @@ public class MessageTest {
 
         // When & Then
         Assertions.assertThatThrownBy(() -> Message.from(value))
-                .isInstanceOf(NullPointerException.class);
+            .isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -26,7 +26,7 @@ public class MessageTest {
 
         // When & Then
         Assertions.assertThatThrownBy(() -> Message.from(value))
-                .isInstanceOf(InvalidMessageException.class);
+            .isInstanceOf(InvalidMessageException.class);
     }
 
     @Test

@@ -26,7 +26,7 @@ public class MemberIntroductionService {
 
     private void validateIntroduction(long memberId, long introducedMemberId) {
         Member introductionMember = memberCommandRepository.findById(introducedMemberId)
-                .orElseThrow(IntroducedMemberNotFoundException::new);
+            .orElseThrow(IntroducedMemberNotFoundException::new);
         if (!introductionMember.isActive()) {
             throw new IntroducedMemberNotActiveException();
         }

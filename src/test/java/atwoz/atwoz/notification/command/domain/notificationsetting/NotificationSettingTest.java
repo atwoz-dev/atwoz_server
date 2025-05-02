@@ -54,7 +54,7 @@ class NotificationSettingTest {
 
             // when & then
             assertThatThrownBy(() -> setting.updateDeviceToken(null))
-                    .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(NullPointerException.class);
         }
     }
 

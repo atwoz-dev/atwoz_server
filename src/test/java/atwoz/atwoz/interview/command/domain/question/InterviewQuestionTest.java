@@ -21,12 +21,13 @@ class InterviewQuestionTest {
         void throwsExceptionWhenFieldValueIsNull(String fieldName) {
             // given
             String content = fieldName.equals("content is null") ? null : "content";
-            InterviewCategory interviewCategory = fieldName.equals("interviewCategory is null") ? null : InterviewCategory.PERSONAL;
+            InterviewCategory interviewCategory =
+                fieldName.equals("interviewCategory is null") ? null : InterviewCategory.PERSONAL;
             boolean isPublic = true;
 
             // when & then
             assertThatThrownBy(() -> InterviewQuestion.of(content, interviewCategory, isPublic))
-                    .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(NullPointerException.class);
         }
 
         @Test
@@ -39,7 +40,7 @@ class InterviewQuestionTest {
 
             // when & then
             assertThatThrownBy(() -> InterviewQuestion.of(content, interviewCategory, isPublic))
-                    .isInstanceOf(InvalidInterviewQuestionContentException.class);
+                .isInstanceOf(InvalidInterviewQuestionContentException.class);
         }
 
         @Test
@@ -69,12 +70,13 @@ class InterviewQuestionTest {
             // given
             InterviewQuestion interviewQuestion = InterviewQuestion.of("content", InterviewCategory.PERSONAL, true);
             String content = fieldName.equals("content is null") ? null : "updated content";
-            InterviewCategory interviewCategory = fieldName.equals("interviewCategory is null") ? null : InterviewCategory.SOCIAL;
+            InterviewCategory interviewCategory =
+                fieldName.equals("interviewCategory is null") ? null : InterviewCategory.SOCIAL;
             boolean isPublic = false;
 
             // when & then
             assertThatThrownBy(() -> interviewQuestion.update(content, interviewCategory, isPublic))
-                    .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(NullPointerException.class);
         }
 
         @Test
@@ -88,7 +90,7 @@ class InterviewQuestionTest {
 
             // when & then
             assertThatThrownBy(() -> interviewQuestion.update(content, interviewCategory, isPublic))
-                    .isInstanceOf(InvalidInterviewQuestionContentException.class);
+                .isInstanceOf(InvalidInterviewQuestionContentException.class);
         }
 
         @Test

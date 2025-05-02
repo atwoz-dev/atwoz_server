@@ -31,7 +31,7 @@ class PasswordTest {
         void canCreatePasswordWhenFormatIsValid(String validPassword) {
             // given
             when(passwordHasher.hash(anyString()))
-                    .thenAnswer(invocation -> "hashed" + invocation.getArgument(0, String.class));
+                .thenAnswer(invocation -> "hashed" + invocation.getArgument(0, String.class));
 
             // when
             Password password = Password.fromRaw(validPassword, passwordHasher);
@@ -43,18 +43,18 @@ class PasswordTest {
 
         @ParameterizedTest
         @ValueSource(strings = {
-                "pw123^^",
-                "abcdefghijklmnopqrstuvwxyz1234567890^^",
-                "1234567890^^",
-                "password^^",
-                "password1234",
-                "비밀번호abcd1234^^"
+            "pw123^^",
+            "abcdefghijklmnopqrstuvwxyz1234567890^^",
+            "1234567890^^",
+            "password^^",
+            "password1234",
+            "비밀번호abcd1234^^"
         })
         @DisplayName("잘못된 형식의 비밀번호는 InvalidPasswordException이 발생합니다.")
         void createPasswordWhenInvalidThrowsException(String invalidPassword) {
             // when & then
             assertThatThrownBy(() -> Password.fromRaw(invalidPassword, passwordHasher))
-                    .isInstanceOf(InvalidPasswordException.class);
+                .isInstanceOf(InvalidPasswordException.class);
         }
     }
 

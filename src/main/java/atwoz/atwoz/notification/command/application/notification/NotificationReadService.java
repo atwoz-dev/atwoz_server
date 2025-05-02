@@ -20,6 +20,6 @@ public class NotificationReadService {
 
     private Notification getNotification(long notificationId) {
         return notificationCommandRepository.findById(notificationId)
-                .orElseThrow(() -> new NotificationNotFoundException(notificationId));
+            .orElseThrow(() -> new NotificationNotFoundException(notificationId));
     }
 }

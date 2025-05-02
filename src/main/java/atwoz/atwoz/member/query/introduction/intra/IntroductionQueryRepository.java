@@ -4,7 +4,6 @@ import atwoz.atwoz.member.command.domain.member.Hobby;
 import atwoz.atwoz.member.query.introduction.application.IntroductionSearchCondition;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.dsl.BooleanExpression;
-
 import com.querydsl.core.types.dsl.EnumPath;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -25,90 +24,90 @@ import static com.querydsl.core.types.dsl.Expressions.enumPath;
 @Repository
 @RequiredArgsConstructor
 public class IntroductionQueryRepository {
-    private final JPAQueryFactory queryFactory;
-
     private static final Long LIMIT = 10L;
+    private final JPAQueryFactory queryFactory;
 
     public Set<Long> findAllMatchRequestedMemberId(long memberId) {
         return new HashSet<>(queryFactory
-                .select(match.requesterId)
-                .from(match)
-                .where(match.responderId.eq(memberId))
-                .fetch());
+            .select(match.requesterId)
+            .from(match)
+            .where(match.responderId.eq(memberId))
+            .fetch());
     }
 
     public Set<Long> findAllMatchRequestingMemberId(long memberId) {
         return new HashSet<>(queryFactory
-                .select(match.responderId)
-                .from(match)
-                .where(match.requesterId.eq(memberId))
-                .fetch());
+            .select(match.responderId)
+            .from(match)
+            .where(match.requesterId.eq(memberId))
+            .fetch());
     }
 
     public Set<Long> findAllIntroducedMemberId(long memberId) {
         return new HashSet<>(queryFactory
-                .select(memberIntroduction.introducedMemberId)
-                .from(memberIntroduction)
-                .where(memberIntroduction.memberId.eq(memberId))
-                .fetch());
+            .select(memberIntroduction.introducedMemberId)
+            .from(memberIntroduction)
+            .where(memberIntroduction.memberId.eq(memberId))
+            .fetch());
     }
 
     public Set<Long> findAllIntroductionMemberId(IntroductionSearchCondition condition) {
         JPAQuery<Long> query = queryFactory
-                .select(member.id)
-                .from(member)
-                .where(
-                        idsNotIn(condition.getExcludedMemberIds()),
-                        ageBetween(condition.getMinAge(), condition.getMaxAge()),
-                        cityIn(condition.getCities()),
-                        religionEq(condition.getReligion()),
-                        smokingStatusEq(condition.getSmokingStatus()),
-                        drinkingStatusEq(condition.getDrinkingStatus()),
-                        gradeEq(condition.getMemberGrade()),
-                        genderEq(condition.getGender()),
-                        createdAtGoe(condition.getJoinedAfter())
-                )
-                .orderBy(member.id.desc())
-                .limit(LIMIT);
+            .select(member.id)
+            .from(member)
+            .where(
+                idsNotIn(condition.getExcludedMemberIds()),
+                ageBetween(condition.getMinAge(), condition.getMaxAge()),
+                cityIn(condition.getCities()),
+                religionEq(condition.getReligion()),
+                smokingStatusEq(condition.getSmokingStatus()),
+                drinkingStatusEq(condition.getDrinkingStatus()),
+                gradeEq(condition.getMemberGrade()),
+                genderEq(condition.getGender()),
+                createdAtGoe(condition.getJoinedAfter())
+            )
+            .orderBy(member.id.desc())
+            .limit(LIMIT);
 
         applyHobbiesCondition(query, condition);
         return new HashSet<>(query.fetch());
     }
 
-    public List<MemberIntroductionProfileQueryResult> findAllMemberIntroductionProfileQueryResultByMemberIds(long memberId, Set<Long> memberIds) {
+    public List<MemberIntroductionProfileQueryResult> findAllMemberIntroductionProfileQueryResultByMemberIds(
+        long memberId, Set<Long> memberIds) {
         EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
 
         return new ArrayList<>(queryFactory
-                .from(member)
-                .leftJoin(memberIntroduction).on(memberIntroduction.memberId.eq(memberId))
-                .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.isTrue()))
-                .leftJoin(like).on(like.senderId.eq(memberId).and(like.receiverId.eq(member.id)))
-                .leftJoin(member.profile.hobbies, hobby)
-                .where(member.id.in(memberIds))
-                .orderBy(member.id.desc())
-                .transform(GroupBy.groupBy(member.id).as(
-                        new QMemberIntroductionProfileQueryResult(
-                                member.id,
-                                profileImage.imageUrl.value,
-                                GroupBy.set(hobby.stringValue()),
-                                member.profile.religion.stringValue(),
-                                member.profile.mbti.stringValue(),
-                                like.likeLevel.stringValue(),
-                                memberIntroduction.introducedMemberId.isNotNull()
-                        )
-                )).values());
+            .from(member)
+            .leftJoin(memberIntroduction).on(memberIntroduction.memberId.eq(memberId))
+            .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.isTrue()))
+            .leftJoin(like).on(like.senderId.eq(memberId).and(like.receiverId.eq(member.id)))
+            .leftJoin(member.profile.hobbies, hobby)
+            .where(member.id.in(memberIds))
+            .orderBy(member.id.desc())
+            .transform(GroupBy.groupBy(member.id).as(
+                new QMemberIntroductionProfileQueryResult(
+                    member.id,
+                    profileImage.imageUrl.value,
+                    GroupBy.set(hobby.stringValue()),
+                    member.profile.religion.stringValue(),
+                    member.profile.mbti.stringValue(),
+                    like.likeLevel.stringValue(),
+                    memberIntroduction.introducedMemberId.isNotNull()
+                )
+            )).values());
     }
 
     public List<InterviewAnswerQueryResult> findAllInterviewAnswerInfoByMemberIds(Set<Long> memberIds) {
         return queryFactory
-                .select(new QInterviewAnswerQueryResult(
-                        interviewAnswer.memberId,
-                        interviewAnswer.content
-                ))
-                .from(interviewAnswer)
-                .where(interviewAnswer.memberId.in(memberIds))
-                .orderBy(interviewAnswer.id.asc())
-                .fetch();
+            .select(new QInterviewAnswerQueryResult(
+                interviewAnswer.memberId,
+                interviewAnswer.content
+            ))
+            .from(interviewAnswer)
+            .where(interviewAnswer.memberId.in(memberIds))
+            .orderBy(interviewAnswer.id.asc())
+            .fetch();
     }
 
     private BooleanExpression idsNotIn(Set<Long> id) {
@@ -188,8 +187,8 @@ public class IntroductionQueryRepository {
         if (condition.getHobbies() != null && !condition.getHobbies().isEmpty()) {
             EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
             query.join(member.profile.hobbies, hobby)
-                    .where(hobby.stringValue().in(condition.getHobbies()))
-                    .distinct();
+                .where(hobby.stringValue().in(condition.getHobbies()))
+                .distinct();
         }
     }
 }

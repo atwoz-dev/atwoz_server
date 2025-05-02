@@ -1,9 +1,9 @@
 package atwoz.atwoz.member.command.application.member;
 
-import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.exception.InvalidMemberEnumValueException;
+import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +38,8 @@ class MemberProfileServiceTest {
         when(memberCommandRepository.findById(memberId)).thenReturn(Optional.empty());
 
         // Then
-        assertThatThrownBy(() -> memberProfileService.updateMember(memberId, null)).isInstanceOf(MemberNotFoundException.class);
+        assertThatThrownBy(() -> memberProfileService.updateMember(memberId, null)).isInstanceOf(
+            MemberNotFoundException.class);
     }
 
     @DisplayName("멤버가 존재하지만 Enum 값이 적절하지 않은 경우, 예외 발생")
@@ -50,9 +51,9 @@ class MemberProfileServiceTest {
         Set<Hobby> hobbies = Set.of(Hobby.ANIMATION, Hobby.DANCE);
 
         MemberProfileUpdateRequest invalidRequest = new MemberProfileUpdateRequest(
-                "nickname", "INVALID_ENUM", 20, 180, // 잘못된 gender 값
-                 "Daejeon", "OTHER", "ENFJ",
-                "DAILY", "QUIT", "BUDDHIST", hobbies.stream().map(Enum::name).collect(Collectors.toSet()), job.name()
+            "nickname", "INVALID_ENUM", 20, 180, // 잘못된 gender 값
+            "Daejeon", "OTHER", "ENFJ",
+            "DAILY", "QUIT", "BUDDHIST", hobbies.stream().map(Enum::name).collect(Collectors.toSet()), job.name()
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
@@ -60,7 +61,7 @@ class MemberProfileServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> memberProfileService.updateMember(memberId, invalidRequest))
-                .isInstanceOf(InvalidMemberEnumValueException.class);
+            .isInstanceOf(InvalidMemberEnumValueException.class);
     }
 
 
@@ -76,9 +77,9 @@ class MemberProfileServiceTest {
         Set<Hobby> hobbies = Set.of(Hobby.ANIMATION, Hobby.DANCE);
 
         MemberProfileUpdateRequest request = new MemberProfileUpdateRequest(
-                "nickname", "MALE", Calendar.getInstance().get(Calendar.YEAR) - 19, 180,
-                "DONG_GU_DAEJEON", "OTHER", "ENFJ",
-                "DAILY", "QUIT", "BUDDHIST", hobbies.stream().map(Enum::name).collect(Collectors.toSet()), job.name()
+            "nickname", "MALE", Calendar.getInstance().get(Calendar.YEAR) - 19, 180,
+            "DONG_GU_DAEJEON", "OTHER", "ENFJ",
+            "DAILY", "QUIT", "BUDDHIST", hobbies.stream().map(Enum::name).collect(Collectors.toSet()), job.name()
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 
@@ -107,9 +108,9 @@ class MemberProfileServiceTest {
 
 
         MemberProfileUpdateRequest request = new MemberProfileUpdateRequest(
-                "nickname", "MALE", Calendar.getInstance().get(Calendar.YEAR) - 19, 180,
-                 null, "OTHER", "ENFJ",
-                "DAILY", "QUIT", "BUDDHIST", null, job.name()
+            "nickname", "MALE", Calendar.getInstance().get(Calendar.YEAR) - 19, 180,
+            null, "OTHER", "ENFJ",
+            "DAILY", "QUIT", "BUDDHIST", null, job.name()
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
 

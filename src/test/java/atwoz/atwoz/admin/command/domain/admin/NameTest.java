@@ -28,6 +28,6 @@ class NameTest {
     void throwInvalidNameExceptionWhenFormatIsInvalid(String invalidName) {
         // when & then
         assertThatThrownBy(() -> Name.from(invalidName))
-                .isInstanceOf(InvalidNameException.class);
+            .isInstanceOf(InvalidNameException.class);
     }
 }

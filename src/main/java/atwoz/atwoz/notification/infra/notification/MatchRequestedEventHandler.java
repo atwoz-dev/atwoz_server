@@ -18,10 +18,10 @@ public class MatchRequestedEventHandler {
     @TransactionalEventListener(value = MatchRequestedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handle(MatchRequestedEvent event) {
         NotificationRequest request = new NotificationRequest(
-                event.getRequesterId(),
-                "MEMBER",
-                event.getResponderId(),
-                "MATCH_REQUESTED"
+            event.getRequesterId(),
+            "MEMBER",
+            event.getResponderId(),
+            "MATCH_REQUESTED"
         );
         notificationSendService.send(request);
     }

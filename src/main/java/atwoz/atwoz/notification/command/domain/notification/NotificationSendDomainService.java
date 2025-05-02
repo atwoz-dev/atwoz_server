@@ -21,7 +21,8 @@ public class NotificationSendDomainService {
 
     private void createMessage(Notification notification) {
         MessageTemplate template = messageTemplateFactory.getByNotificationType(notification.getType());
-        MessageTemplateParameters parameters = MessageTemplateParameters.of(notification.getSenderId(), notification.getReceiverId());
+        MessageTemplateParameters parameters = MessageTemplateParameters.of(notification.getSenderId(),
+            notification.getReceiverId());
         notification.setMessage(template, parameters);
     }
 

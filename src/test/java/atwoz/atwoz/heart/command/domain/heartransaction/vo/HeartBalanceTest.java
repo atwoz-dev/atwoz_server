@@ -53,7 +53,7 @@ class HeartBalanceTest {
             // when
             // then
             assertThatThrownBy(() -> heartBalance.gainPurchaseHeart(heartAmount))
-                    .isInstanceOf(InvalidHeartAmountException.class);
+                .isInstanceOf(InvalidHeartAmountException.class);
         }
 
         @Test
@@ -65,7 +65,7 @@ class HeartBalanceTest {
             // when
             // then
             assertThatThrownBy(() -> heartBalance.gainPurchaseHeart(heartAmount))
-                    .isInstanceOf(InvalidHeartAmountException.class);
+                .isInstanceOf(InvalidHeartAmountException.class);
         }
     }
 
@@ -94,7 +94,7 @@ class HeartBalanceTest {
             // when
             // then
             assertThatThrownBy(() -> heartBalance.gainMissionHeart(heartAmount))
-                    .isInstanceOf(InvalidHeartAmountException.class);
+                .isInstanceOf(InvalidHeartAmountException.class);
         }
 
         @Test
@@ -106,7 +106,7 @@ class HeartBalanceTest {
             // when
             // then
             assertThatThrownBy(() -> heartBalance.gainMissionHeart(heartAmount))
-                    .isInstanceOf(InvalidHeartAmountException.class);
+                .isInstanceOf(InvalidHeartAmountException.class);
         }
     }
 
@@ -119,7 +119,9 @@ class HeartBalanceTest {
             // given
             Long purchaseHeartBalance = 10L;
             Long missionHeartBalance = 10L;
-            HeartBalance heartBalance = HeartBalance.init().gainPurchaseHeart(HeartAmount.from(purchaseHeartBalance)).gainMissionHeart(HeartAmount.from(missionHeartBalance));
+            HeartBalance heartBalance = HeartBalance.init()
+                .gainPurchaseHeart(HeartAmount.from(purchaseHeartBalance))
+                .gainMissionHeart(HeartAmount.from(missionHeartBalance));
             HeartAmount heartAmount = HeartAmount.from(-1L);
             Long expectedPurchaseHeartBalance = purchaseHeartBalance + heartAmount.getAmount();
             Long expectedMissionHeartBalance = missionHeartBalance;
@@ -136,7 +138,9 @@ class HeartBalanceTest {
             // given
             Long purchaseHeartBalance = 10L;
             Long missionHeartBalance = 10L;
-            HeartBalance heartBalance = HeartBalance.init().gainPurchaseHeart(HeartAmount.from(purchaseHeartBalance)).gainMissionHeart(HeartAmount.from(missionHeartBalance));
+            HeartBalance heartBalance = HeartBalance.init()
+                .gainPurchaseHeart(HeartAmount.from(purchaseHeartBalance))
+                .gainMissionHeart(HeartAmount.from(missionHeartBalance));
             HeartAmount heartAmount = HeartAmount.from(-10L);
             Long expectedPurchaseHeartBalance = purchaseHeartBalance + heartAmount.getAmount();
             Long expectedMissionHeartBalance = missionHeartBalance;
@@ -153,7 +157,9 @@ class HeartBalanceTest {
             // given
             Long purchaseHeartBalance = 10L;
             Long missionHeartBalance = 10L;
-            HeartBalance heartBalance = HeartBalance.init().gainPurchaseHeart(HeartAmount.from(purchaseHeartBalance)).gainMissionHeart(HeartAmount.from(missionHeartBalance));
+            HeartBalance heartBalance = HeartBalance.init()
+                .gainPurchaseHeart(HeartAmount.from(purchaseHeartBalance))
+                .gainMissionHeart(HeartAmount.from(missionHeartBalance));
             HeartAmount heartAmount = HeartAmount.from(-15L);
             Long expectedPurchaseHeartBalance = 0L;
             Long expectedMissionHeartBalance = missionHeartBalance + (purchaseHeartBalance + heartAmount.getAmount());
@@ -170,7 +176,9 @@ class HeartBalanceTest {
             // given
             Long purchaseHeartBalance = 10L;
             Long missionHeartBalance = 10L;
-            HeartBalance heartBalance = HeartBalance.init().gainPurchaseHeart(HeartAmount.from(purchaseHeartBalance)).gainMissionHeart(HeartAmount.from(missionHeartBalance));
+            HeartBalance heartBalance = HeartBalance.init()
+                .gainPurchaseHeart(HeartAmount.from(purchaseHeartBalance))
+                .gainMissionHeart(HeartAmount.from(missionHeartBalance));
             HeartAmount heartAmount = HeartAmount.from(-20L);
             Long expectedPurchaseHeartBalance = 0L;
             Long expectedMissionHeartBalance = 0L;
@@ -187,12 +195,14 @@ class HeartBalanceTest {
             // given
             Long purchaseHeartBalance = 10L;
             Long missionHeartBalance = 10L;
-            HeartBalance heartBalance = HeartBalance.init().gainPurchaseHeart(HeartAmount.from(purchaseHeartBalance)).gainMissionHeart(HeartAmount.from(missionHeartBalance));
+            HeartBalance heartBalance = HeartBalance.init()
+                .gainPurchaseHeart(HeartAmount.from(purchaseHeartBalance))
+                .gainMissionHeart(HeartAmount.from(missionHeartBalance));
             HeartAmount heartAmount = HeartAmount.from(-21L);
             // when
             // then
             assertThatThrownBy(() -> heartBalance.useHeart(heartAmount))
-                    .isInstanceOf(InsufficientHeartBalanceException.class);
+                .isInstanceOf(InsufficientHeartBalanceException.class);
         }
 
         @Test
@@ -201,7 +211,9 @@ class HeartBalanceTest {
             // given
             Long purchaseHeartBalance = 10L;
             Long missionHeartBalance = 10L;
-            HeartBalance heartBalance = HeartBalance.init().gainPurchaseHeart(HeartAmount.from(purchaseHeartBalance)).gainMissionHeart(HeartAmount.from(missionHeartBalance));
+            HeartBalance heartBalance = HeartBalance.init()
+                .gainPurchaseHeart(HeartAmount.from(purchaseHeartBalance))
+                .gainMissionHeart(HeartAmount.from(missionHeartBalance));
             HeartAmount heartAmount = HeartAmount.from(0L);
             Long expectedPurchaseHeartBalance = purchaseHeartBalance;
             Long expectedMissionHeartBalance = missionHeartBalance;
@@ -233,12 +245,14 @@ class HeartBalanceTest {
             // given
             Long purchaseHeartBalance = 10L;
             Long missionHeartBalance = 10L;
-            HeartBalance heartBalance = HeartBalance.init().gainPurchaseHeart(HeartAmount.from(purchaseHeartBalance)).gainMissionHeart(HeartAmount.from(missionHeartBalance));
+            HeartBalance heartBalance = HeartBalance.init()
+                .gainPurchaseHeart(HeartAmount.from(purchaseHeartBalance))
+                .gainMissionHeart(HeartAmount.from(missionHeartBalance));
             HeartAmount heartAmount = HeartAmount.from(1L);
             // when
             // then
             assertThatThrownBy(() -> heartBalance.useHeart(heartAmount))
-                    .isInstanceOf(InvalidHeartAmountException.class);
+                .isInstanceOf(InvalidHeartAmountException.class);
         }
     }
 }
