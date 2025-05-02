@@ -48,7 +48,7 @@ public class ScreeningQueryRepository {
             queryFactory
                 .select(screening.count())
                 .from(screening)
-                .join(member).on(member.id.eq(screening.id))
+                .join(member).on(member.id.eq(screening.memberId))
                 .where(
                     screeningStatusEq(condition.screeningStatus()),
                     nicknameEq(condition.nickname()),
