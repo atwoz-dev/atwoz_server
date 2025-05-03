@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static atwoz.atwoz.community.command.domain.selfintroduction.QSelfIntroduction.selfIntroduction;
-import static atwoz.atwoz.like.command.domain.like.QLike.like;
+import static atwoz.atwoz.like.command.domain.QLike.like;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
 import static atwoz.atwoz.member.command.domain.profileImage.QProfileImage.profileImage;
 import static com.querydsl.core.group.GroupBy.groupBy;

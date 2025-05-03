@@ -7,8 +7,8 @@ import atwoz.atwoz.community.query.selfintroduction.SelfIntroductionQueryReposit
 import atwoz.atwoz.community.query.selfintroduction.SelfIntroductionSearchCondition;
 import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionSummaryView;
 import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionView;
-import atwoz.atwoz.like.command.domain.like.Like;
-import atwoz.atwoz.like.command.domain.like.LikeLevel;
+import atwoz.atwoz.like.command.domain.Like;
+import atwoz.atwoz.like.command.domain.LikeLevel;
 import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;
@@ -67,12 +67,14 @@ public class SelfIntroductionQueryRepositoryTest {
                 .gender(Gender.MALE)
                 .region(Region.of(District.GANGBUK_GU))
                 .yearOfBirth(AgeConverter.toYearOfBirth(25))
+                .nickname(Nickname.from("male"))
                 .build();
 
             MemberProfile femaleMemberProfile = MemberProfile.builder()
                 .gender(Gender.FEMALE)
                 .region(Region.of(District.DONG_GU_DAEJEON))
                 .yearOfBirth(AgeConverter.toYearOfBirth(35))
+                .nickname(Nickname.from("female"))
                 .build();
 
             maleMember.updateProfile(maleMemberProfile);
@@ -156,16 +158,12 @@ public class SelfIntroductionQueryRepositoryTest {
                 .filter(s -> s.getMemberId() == maleMember.getId())
                 .toList();
 
-
             // When
             List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
                 .findSelfIntroductions(searchCondition, null);
 
-
             // Then
-            assertThat(selfIntroductionPage)
-                .isNotNull()
-                .hasSameSizeAs(maleSelfIntroduction);
+            assertThat(selfIntroductionPage).isNotNull().hasSameSizeAs(maleSelfIntroduction);
 
             for (int i = 0; i < selfIntroductionPage.size(); i++) {
                 SelfIntroductionSummaryView view = selfIntroductionPage.get(i);
@@ -175,8 +173,7 @@ public class SelfIntroductionQueryRepositoryTest {
                 assertThat(view.title()).isEqualTo(selfIntroduction.getTitle());
                 assertThat(view.nickname()).isEqualTo(maleMember.getProfile().getNickname().getValue());
                 assertThat(view.profileUrl()).isEqualTo(maleMemberProfileImageUrl);
-                assertThat(view.yearOfBirth())
-                    .isEqualTo(maleMember.getProfile().getYearOfBirth().getValue());
+                assertThat(view.yearOfBirth()).isEqualTo(maleMember.getProfile().getYearOfBirth().getValue());
             }
         }
 

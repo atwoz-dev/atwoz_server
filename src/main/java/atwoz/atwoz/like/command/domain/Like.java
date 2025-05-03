@@ -1,4 +1,4 @@
-package atwoz.atwoz.like.command.domain.like;
+package atwoz.atwoz.like.command.domain;
 
 import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.common.event.Events;
@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity
-@Table(name = "likes",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"senderId", "receiverId"}),
-        indexes = {
-                @Index(name = "idx_receiver_id", columnList = "receiverId")
-        })
+@Table(
+    name = "likes",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"senderId", "receiverId"}),
+    indexes = {@Index(name = "idx_receiver_id", columnList = "receiverId")}
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Like extends BaseEntity {

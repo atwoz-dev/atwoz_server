@@ -1,4 +1,4 @@
-package atwoz.atwoz.like.command.domain.like;
+package atwoz.atwoz.like.command.domain;
 
 import lombok.Getter;
 

@@ -2,8 +2,8 @@ package atwoz.atwoz.member.query.introduction.intra;
 
 import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.common.event.Events;
-import atwoz.atwoz.like.command.domain.like.Like;
-import atwoz.atwoz.like.command.domain.like.LikeLevel;
+import atwoz.atwoz.like.command.domain.Like;
+import atwoz.atwoz.like.command.domain.LikeLevel;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
 import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;

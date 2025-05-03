@@ -1,4 +1,4 @@
-package atwoz.atwoz.like.command.domain.like;
+package atwoz.atwoz.like.command.domain;
 
 import atwoz.atwoz.common.event.Event;
 import lombok.AccessLevel;
