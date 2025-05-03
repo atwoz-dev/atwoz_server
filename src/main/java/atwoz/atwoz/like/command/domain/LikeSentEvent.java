@@ -7,11 +7,11 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class LikeCreatedEvent extends Event {
+public class LikeSentEvent extends Event {
     private final long senderId;
     private final long receiverId;
 
-    public static LikeCreatedEvent of(long senderId, long receiverId) {
-        return new LikeCreatedEvent(senderId, receiverId);
+    public static LikeSentEvent of(long senderId, long receiverId) {
+        return new LikeSentEvent(senderId, receiverId);
     }
 }

@@ -36,7 +36,7 @@ public class Like extends BaseEntity {
     }
 
     public static Like of(long senderId, long receiverId, LikeLevel level) {
-        Events.raise(LikeCreatedEvent.of(senderId, receiverId));
+        Events.raise(LikeSentEvent.of(senderId, receiverId));
         return new Like(senderId, receiverId, level);
     }
 }
