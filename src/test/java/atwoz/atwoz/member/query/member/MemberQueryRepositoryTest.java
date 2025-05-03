@@ -163,7 +163,6 @@ class MemberQueryRepositoryTest {
         LikeLevel likeLevel = LikeLevel.INTERESTED;
         String profileImageUrl = "primaryImage";
         Job jobName = Job.JOB_SEARCHING;
-        Set<Hobby> hobbies = Set.of(Hobby.ANIMATION, Hobby.BOARD_GAMES);
 
         @BeforeEach
         void setUp() {
@@ -525,7 +524,7 @@ class MemberQueryRepositoryTest {
         @DisplayName("인터뷰에 답변한 경우, 해당 멤버의 공개 질문과 답변을 모두 조회한다.")
         void getInterviewResultViewsWhenAnswersExist() {
             // Given
-            List<InterviewQuestion> publicQuestions = questions.stream().filter(q -> q.isPublic()).toList();
+            List<InterviewQuestion> publicQuestions = questions.stream().filter(InterviewQuestion::isPublic).toList();
 
 
             // When
@@ -558,7 +557,7 @@ class MemberQueryRepositoryTest {
         @DisplayName("존재하지 않는 멤버의 경우, null을 반환한다.")
         void returnNullWhenMemberIsNotExists() {
             // given
-            Long notExistsMemberId = 100L;
+            long notExistsMemberId = 100L;
 
             // when
             HeartBalanceView heartBalanceView = memberQueryRepository.findHeartBalanceByMemberId(notExistsMemberId);

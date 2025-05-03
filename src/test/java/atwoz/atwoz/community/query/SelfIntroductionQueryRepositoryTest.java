@@ -195,8 +195,7 @@ public class SelfIntroductionQueryRepositoryTest {
 
             // Then
             assertThat(selfIntroductionPage).isNotNull();
-            for (int i = 0; i < selfIntroductionPage.size(); i++) {
-                SelfIntroductionSummaryView view = selfIntroductionPage.get(i);
+            for (SelfIntroductionSummaryView view : selfIntroductionPage) {
                 assertThat(view.yearOfBirth()).isLessThanOrEqualTo(toYearOfBirth);
             }
         }
@@ -217,8 +216,7 @@ public class SelfIntroductionQueryRepositoryTest {
 
             // Then
             assertThat(selfIntroductionPage).isNotNull();
-            for (int i = 0; i < selfIntroductionPage.size(); i++) {
-                SelfIntroductionSummaryView view = selfIntroductionPage.get(i);
+            for (SelfIntroductionSummaryView view : selfIntroductionPage) {
                 assertThat(view.yearOfBirth()).isGreaterThanOrEqualTo(fromYearOfBirth);
             }
         }
@@ -240,8 +238,7 @@ public class SelfIntroductionQueryRepositoryTest {
 
             // Then
             assertThat(selfIntroductionPage).isNotNull();
-            for (int i = 0; i < selfIntroductionPage.size(); i++) {
-                SelfIntroductionSummaryView view = selfIntroductionPage.get(i);
+            for (SelfIntroductionSummaryView view : selfIntroductionPage) {
                 assertThat(view.yearOfBirth()).isBetween(fromYearOfBirth, toYearOfBirth);
             }
         }
