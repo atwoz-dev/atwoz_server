@@ -1,4 +1,4 @@
-package atwoz.atwoz.like.command.domain.like.event;
+package atwoz.atwoz.like.command.domain.like;
 
 import atwoz.atwoz.common.event.Event;
 import lombok.AccessLevel;
@@ -8,10 +8,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class LikeCreatedEvent extends Event {
-    private final Long senderId;
-    private final Long receiverId;
+    private final long senderId;
+    private final long receiverId;
 
-    public static LikeCreatedEvent of(Long senderId, Long receiverId) {
+    public static LikeCreatedEvent of(long senderId, long receiverId) {
         return new LikeCreatedEvent(senderId, receiverId);
     }
 }

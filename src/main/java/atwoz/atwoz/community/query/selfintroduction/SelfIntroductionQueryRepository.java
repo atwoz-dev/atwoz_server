@@ -26,7 +26,7 @@ import static com.querydsl.core.types.dsl.Expressions.enumPath;
 @Repository
 @RequiredArgsConstructor
 public class SelfIntroductionQueryRepository {
-    private final static int PAGE_SIZE = 10;
+    private static final int PAGE_SIZE = 10;
     private final JPAQueryFactory queryFactory;
 
     public List<SelfIntroductionSummaryView> findSelfIntroductions(SelfIntroductionSearchCondition searchCondition,
@@ -34,7 +34,7 @@ public class SelfIntroductionQueryRepository {
 
         BooleanExpression condition = getSearchCondition(searchCondition, lastId);
 
-        List<SelfIntroductionSummaryView> view = queryFactory
+        return queryFactory
             .select(
                 new QSelfIntroductionSummaryView(selfIntroduction.id, member.profile.nickname.value,
                     profileImage.imageUrl.value, member.profile.yearOfBirth.value, selfIntroduction.title)
@@ -46,8 +46,6 @@ public class SelfIntroductionQueryRepository {
             .limit(PAGE_SIZE)
             .orderBy(selfIntroduction.id.desc())
             .fetch();
-
-        return view;
     }
 
     public Optional<SelfIntroductionView> findSelfIntroductionByIdWithMemberId(Long id, Long memberId) {
@@ -71,7 +69,7 @@ public class SelfIntroductionQueryRepository {
                         member.profile.region.district.stringValue(),
                         member.profile.mbti.stringValue(),
                         set(hobby.stringValue()),
-                        like.likeLevel.stringValue(),
+                        like.level.stringValue(),
                         selfIntroduction.title,
                         selfIntroduction.content
                     )

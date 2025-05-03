@@ -92,7 +92,7 @@ public class IntroductionQueryRepository {
                     GroupBy.set(hobby.stringValue()),
                     member.profile.religion.stringValue(),
                     member.profile.mbti.stringValue(),
-                    like.likeLevel.stringValue(),
+                    like.level.stringValue(),
                     memberIntroduction.introducedMemberId.isNotNull()
                 )
             )).values());

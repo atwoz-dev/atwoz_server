@@ -2,7 +2,6 @@ package atwoz.atwoz.like.command.domain.like;
 
 import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.common.event.Events;
-import atwoz.atwoz.like.command.domain.like.event.LikeCreatedEvent;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,10 +10,10 @@ import lombok.NonNull;
 
 @Entity
 @Table(name = "likes",
-    uniqueConstraints = @UniqueConstraint(columnNames = {"senderId", "receiverId"}),
-    indexes = {
-        @Index(name = "idx_receiver_id", columnList = "receiverId")
-    })
+        uniqueConstraints = @UniqueConstraint(columnNames = {"senderId", "receiverId"}),
+        indexes = {
+                @Index(name = "idx_receiver_id", columnList = "receiverId")
+        })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Like extends BaseEntity {
@@ -28,16 +27,16 @@ public class Like extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
-    private LikeLevel likeLevel;
+    private LikeLevel level;
 
-    private Like(@NonNull Long senderId, @NonNull Long receiverId, @NonNull LikeLevel likeLevel) {
+    private Like(long senderId, long receiverId, @NonNull LikeLevel level) {
         this.senderId = senderId;
         this.receiverId = receiverId;
-        this.likeLevel = likeLevel;
+        this.level = level;
     }
 
-    public static Like of(Long senderId, Long receiverId, LikeLevel likeLevel) {
-        Events.raise(LikeCreatedEvent.of(senderId, receiverId)); // 좋아요 알림을 위한 이벤트.
-        return new Like(senderId, receiverId, likeLevel);
+    public static Like of(long senderId, long receiverId, LikeLevel level) {
+        Events.raise(LikeCreatedEvent.of(senderId, receiverId));
+        return new Like(senderId, receiverId, level);
     }
 }

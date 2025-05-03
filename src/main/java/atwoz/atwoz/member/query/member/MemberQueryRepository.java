@@ -101,7 +101,7 @@ public class MemberQueryRepository {
                         member.profile.drinkingStatus.stringValue(),
                         member.profile.highestEducation.stringValue(),
                         member.profile.religion.stringValue(),
-                        like.likeLevel.stringValue(),
+                        like.level.stringValue(),
                         match.id,
                         match.requesterId,
                         match.responderId,

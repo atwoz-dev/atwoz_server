@@ -227,7 +227,7 @@ class IntroductionQueryRepositoryTest {
             entityManager.persist(primaryProfileImage);
             entityManager.persist(nonPrimaryProfileImage);
 
-            Like like = Like.of(me.getId(), introductionTargetMember.getId(), LikeLevel.INTEREST);
+            Like like = Like.of(me.getId(), introductionTargetMember.getId(), LikeLevel.INTERESTED);
             entityManager.persist(like);
             entityManager.flush();
 
@@ -264,7 +264,7 @@ class IntroductionQueryRepositoryTest {
                 introductionTargetMember.getProfile().getReligion().name());
             assertThat(memberIntroductionProfileQueryResult.mbti()).isEqualTo(
                 introductionTargetMember.getProfile().getMbti().name());
-            assertThat(memberIntroductionProfileQueryResult.likeLevel()).isEqualTo(like.getLikeLevel().name());
+            assertThat(memberIntroductionProfileQueryResult.likeLevel()).isEqualTo(like.getLevel().name());
             if (fieldName.equals("introduced")) {
                 assertThat(memberIntroductionProfileQueryResult.isIntroduced()).isTrue();
             } else {

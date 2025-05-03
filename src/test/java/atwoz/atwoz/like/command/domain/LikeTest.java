@@ -7,14 +7,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-public class LikeTest {
+class LikeTest {
     @Test
     @DisplayName("좋아요 생성")
     void createLike() {
         // Given
-        Long senderId = 1L;
-        Long receiverId = 2L;
-        LikeLevel likeLevel = LikeLevel.INTEREST;
+        long senderId = 1L;
+        long receiverId = 2L;
+        LikeLevel likeLevel = LikeLevel.INTERESTED;
 
         // When
         Like like = Like.of(senderId, receiverId, likeLevel);
@@ -22,7 +22,7 @@ public class LikeTest {
         // Then
         Assertions.assertThat(like.getSenderId()).isEqualTo(senderId);
         Assertions.assertThat(like.getReceiverId()).isEqualTo(receiverId);
-        Assertions.assertThat(like.getLikeLevel()).isEqualTo(likeLevel);
+        Assertions.assertThat(like.getLevel()).isEqualTo(likeLevel);
     }
 
     @Nested
@@ -34,8 +34,8 @@ public class LikeTest {
         void throwExceptionWhenSenderIdIsNull() {
             // Given
             Long senderId = null;
-            Long receiverId = 1L;
-            LikeLevel likeLevel = LikeLevel.INTEREST;
+            long receiverId = 1L;
+            LikeLevel likeLevel = LikeLevel.INTERESTED;
 
             // When & Then
             Assertions.assertThatThrownBy(() -> Like.of(senderId, receiverId, likeLevel))
@@ -46,9 +46,9 @@ public class LikeTest {
         @DisplayName("receiverId가 null인 경우, 예외 발생")
         void throwExceptionWhenReceiverIdIsNull() {
             // Given
-            Long senderId = 1L;
+            long senderId = 1L;
             Long receiverId = null;
-            LikeLevel likeLevel = LikeLevel.INTEREST;
+            LikeLevel likeLevel = LikeLevel.INTERESTED;
 
             // When & Then
             Assertions.assertThatThrownBy(() -> Like.of(senderId, receiverId, likeLevel))
@@ -59,8 +59,8 @@ public class LikeTest {
         @DisplayName("likeLevel이 null인 경우, 예외 발생")
         void throwExceptionWhenLikeLevelIsNull() {
             // Given
-            Long senderId = 1L;
-            Long receiverId = 2L;
+            long senderId = 1L;
+            long receiverId = 2L;
             LikeLevel likeLevel = null;
 
             // When & Then
