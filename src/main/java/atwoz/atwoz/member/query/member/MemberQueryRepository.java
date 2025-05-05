@@ -74,6 +74,34 @@ public class MemberQueryRepository {
         return Optional.ofNullable(memberContactView);
     }
 
+    public Optional<MemberInfoView> findInfoByMemberId(Long memberId) {
+        EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
+
+        MemberInfoView memberInfoView = queryFactory
+            .from(member)
+            .leftJoin(member.profile.hobbies, hobby)
+            .leftJoin(interviewAnswer).on(getInterviewAnswerJoinCondition(memberId))
+            .leftJoin(interviewQuestion).on(interviewQuestion.id.eq(interviewAnswer.id))
+            .where(member.id.eq(memberId))
+            .transform(
+                groupBy(member.id).as(
+                    new QMemberInfoView(
+                        member.activityStatus.stringValue(), member.isVip.isTrue(),
+                        member.profile.nickname.value.stringValue(),
+                        member.profile.gender.stringValue(), member.kakaoId.value, member.profile.yearOfBirth.value,
+                        member.profile.height, member.phoneNumber.value, member.profile.job.stringValue(),
+                        member.profile.highestEducation.stringValue(), member.profile.region.city.stringValue(),
+                        member.profile.region.district.stringValue(),
+                        member.profile.mbti.stringValue(), member.profile.smokingStatus.stringValue(),
+                        member.profile.drinkingStatus.stringValue(),
+                        member.profile.religion.stringValue(), set(hobby.stringValue())
+                    )
+                )
+            ).get(memberId);
+
+        return Optional.ofNullable(memberInfoView);
+    }
+
     public Optional<OtherMemberProfileView> findOtherProfileByMemberId(Long memberId, Long otherMemberId) {
         EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
 
