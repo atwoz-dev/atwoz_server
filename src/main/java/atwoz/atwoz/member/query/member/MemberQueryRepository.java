@@ -15,7 +15,7 @@ import java.util.Optional;
 
 import static atwoz.atwoz.interview.command.domain.answer.QInterviewAnswer.interviewAnswer;
 import static atwoz.atwoz.interview.command.domain.question.QInterviewQuestion.interviewQuestion;
-import static atwoz.atwoz.like.command.domain.like.QLike.like;
+import static atwoz.atwoz.like.command.domain.QLike.like;
 import static atwoz.atwoz.match.command.domain.match.QMatch.match;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
 import static atwoz.atwoz.member.command.domain.profileImage.QProfileImage.profileImage;
@@ -101,7 +101,7 @@ public class MemberQueryRepository {
                         member.profile.drinkingStatus.stringValue(),
                         member.profile.highestEducation.stringValue(),
                         member.profile.religion.stringValue(),
-                        like.likeLevel.stringValue(),
+                        like.level.stringValue(),
                         match.id,
                         match.requesterId,
                         match.responderId,

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static atwoz.atwoz.interview.command.domain.answer.QInterviewAnswer.interviewAnswer;
-import static atwoz.atwoz.like.command.domain.like.QLike.like;
+import static atwoz.atwoz.like.command.domain.QLike.like;
 import static atwoz.atwoz.match.command.domain.match.QMatch.match;
 import static atwoz.atwoz.member.command.domain.introduction.QMemberIntroduction.memberIntroduction;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
@@ -92,7 +92,7 @@ public class IntroductionQueryRepository {
                     GroupBy.set(hobby.stringValue()),
                     member.profile.religion.stringValue(),
                     member.profile.mbti.stringValue(),
-                    like.likeLevel.stringValue(),
+                    like.level.stringValue(),
                     memberIntroduction.introducedMemberId.isNotNull()
                 )
             )).values());

@@ -25,7 +25,6 @@ public class Region {
     private Region(District district) {
         this.city = district.getCity();
         this.district = district;
-
     }
 
     public static Region of(District district) {

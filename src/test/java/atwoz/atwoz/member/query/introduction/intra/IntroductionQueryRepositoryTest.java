@@ -2,8 +2,8 @@ package atwoz.atwoz.member.query.introduction.intra;
 
 import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.common.event.Events;
-import atwoz.atwoz.like.command.domain.like.Like;
-import atwoz.atwoz.like.command.domain.like.LikeLevel;
+import atwoz.atwoz.like.command.domain.Like;
+import atwoz.atwoz.like.command.domain.LikeLevel;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
 import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
@@ -126,30 +126,19 @@ class IntroductionQueryRepositoryTest {
             System.out.println("hobby Condition : " + condition.getHobbies());
 
             // then
-            if (fieldName.equals("excludedIds")) {
-                assertThat(result).containsExactly(member1.getId());
-            } else if (fieldName.equals("minAge")) {
-                assertThat(result).containsExactly(member2.getId());
-            } else if (fieldName.equals("maxAge")) {
-                assertThat(result).containsExactly(member1.getId());
-            } else if (fieldName.equals("hobbies")) {
-                assertThat(result).containsExactly(member1.getId());
-            } else if (fieldName.equals("religion")) {
-                assertThat(result).containsExactly(member1.getId());
-            } else if (fieldName.equals("cities")) {
-                assertThat(result).containsExactly(member1.getId());
-            } else if (fieldName.equals("smokingStatus")) {
-                assertThat(result).containsExactly(member1.getId());
-            } else if (fieldName.equals("drinkingStatus")) {
-                assertThat(result).containsExactly(member1.getId());
-            } else if (fieldName.equals("memberGrade")) {
-                assertThat(result).isEmpty();
-            } else if (fieldName.equals("gender")) {
-                assertThat(result).containsExactly(member1.getId());
-            } else if (fieldName.equals("joinedAfter")) {
-                assertThat(result).isEmpty();
-            } else {
-                assertThat(result).containsExactlyInAnyOrder(member1.getId(), member2.getId());
+            switch (fieldName) {
+                case "excludedIds" -> assertThat(result).containsExactly(member1.getId());
+                case "minAge" -> assertThat(result).containsExactly(member2.getId());
+                case "maxAge" -> assertThat(result).containsExactly(member1.getId());
+                case "hobbies" -> assertThat(result).containsExactly(member1.getId());
+                case "religion" -> assertThat(result).containsExactly(member1.getId());
+                case "cities" -> assertThat(result).containsExactly(member1.getId());
+                case "smokingStatus" -> assertThat(result).containsExactly(member1.getId());
+                case "drinkingStatus" -> assertThat(result).containsExactly(member1.getId());
+                case "memberGrade" -> assertThat(result).isEmpty();
+                case "gender" -> assertThat(result).containsExactly(member1.getId());
+                case "joinedAfter" -> assertThat(result).isEmpty();
+                default -> assertThat(result).containsExactlyInAnyOrder(member1.getId(), member2.getId());
             }
         }
     }
@@ -227,7 +216,7 @@ class IntroductionQueryRepositoryTest {
             entityManager.persist(primaryProfileImage);
             entityManager.persist(nonPrimaryProfileImage);
 
-            Like like = Like.of(me.getId(), introductionTargetMember.getId(), LikeLevel.INTEREST);
+            Like like = Like.of(me.getId(), introductionTargetMember.getId(), LikeLevel.INTERESTED);
             entityManager.persist(like);
             entityManager.flush();
 
@@ -255,7 +244,7 @@ class IntroductionQueryRepositoryTest {
 
             // then
             assertThat(result).hasSize(1);
-            MemberIntroductionProfileQueryResult memberIntroductionProfileQueryResult = result.get(0);
+            MemberIntroductionProfileQueryResult memberIntroductionProfileQueryResult = result.getFirst();
             assertThat(memberIntroductionProfileQueryResult.memberId()).isEqualTo(introductionTargetMember.getId());
             assertThat(memberIntroductionProfileQueryResult.profileImageUrl()).isEqualTo(primaryProfileImage.getUrl());
             assertThat(memberIntroductionProfileQueryResult.hobbies()).containsExactlyInAnyOrder(hobby3.name(),
@@ -264,7 +253,7 @@ class IntroductionQueryRepositoryTest {
                 introductionTargetMember.getProfile().getReligion().name());
             assertThat(memberIntroductionProfileQueryResult.mbti()).isEqualTo(
                 introductionTargetMember.getProfile().getMbti().name());
-            assertThat(memberIntroductionProfileQueryResult.likeLevel()).isEqualTo(like.getLikeLevel().name());
+            assertThat(memberIntroductionProfileQueryResult.likeLevel()).isEqualTo(like.getLevel().name());
             if (fieldName.equals("introduced")) {
                 assertThat(memberIntroductionProfileQueryResult.isIntroduced()).isTrue();
             } else {

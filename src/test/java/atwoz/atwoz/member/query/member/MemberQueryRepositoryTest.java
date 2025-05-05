@@ -6,8 +6,8 @@ import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.interview.command.domain.answer.InterviewAnswer;
 import atwoz.atwoz.interview.command.domain.question.InterviewCategory;
 import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;
-import atwoz.atwoz.like.command.domain.like.Like;
-import atwoz.atwoz.like.command.domain.like.LikeLevel;
+import atwoz.atwoz.like.command.domain.Like;
+import atwoz.atwoz.like.command.domain.LikeLevel;
 import atwoz.atwoz.match.command.domain.match.Match;
 import atwoz.atwoz.match.command.domain.match.MatchStatus;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
@@ -19,7 +19,6 @@ import atwoz.atwoz.member.command.domain.member.vo.Region;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.query.member.view.*;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -32,10 +31,12 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 @DataJpaTest
 @Import({QuerydslConfig.class, MemberQueryRepository.class})
-public class MemberQueryRepositoryTest {
+class MemberQueryRepositoryTest {
 
     @Autowired
     private MemberQueryRepository memberQueryRepository;
@@ -54,7 +55,7 @@ public class MemberQueryRepositoryTest {
             Long notExistMemberId = 10L;
 
             // When & Then
-            Assertions.assertThat(memberQueryRepository.findContactsByMemberId(notExistMemberId).orElse(null)).isNull();
+            assertThat(memberQueryRepository.findContactsByMemberId(notExistMemberId)).isEmpty();
         }
 
         @Test
@@ -91,26 +92,26 @@ public class MemberQueryRepositoryTest {
 
             // Then
             MemberProfile savedMemberProfile = member.getProfile();
-            Assertions.assertThat(memberProfileView).isNotNull();
-            Assertions.assertThat(memberProfileView.yearOfBirth())
+            assertThat(memberProfileView).isNotNull();
+            assertThat(memberProfileView.yearOfBirth())
                 .isEqualTo(savedMemberProfile.getYearOfBirth().getValue());
-            Assertions.assertThat(memberProfileView.height()).isEqualTo(savedMemberProfile.getHeight());
-            Assertions.assertThat(memberProfileView.drinkingStatus())
+            assertThat(memberProfileView.height()).isEqualTo(savedMemberProfile.getHeight());
+            assertThat(memberProfileView.drinkingStatus())
                 .isEqualTo(savedMemberProfile.getDrinkingStatus().toString());
-            Assertions.assertThat(memberProfileView.job()).isEqualTo(job.name());
-            Assertions.assertThat(memberProfileView.hobbies().size()).isEqualTo(savedMemberProfile.getHobbies().size());
-            Assertions.assertThat(memberProfileView.nickname()).isEqualTo(savedMemberProfile.getNickname().getValue());
-            Assertions.assertThat(memberProfileView.city())
+            assertThat(memberProfileView.job()).isEqualTo(job.name());
+            assertThat(memberProfileView.hobbies()).hasSameSizeAs(savedMemberProfile.getHobbies());
+            assertThat(memberProfileView.nickname()).isEqualTo(savedMemberProfile.getNickname().getValue());
+            assertThat(memberProfileView.city())
                 .isEqualTo(savedMemberProfile.getRegion().getCity().toString());
-            Assertions.assertThat(memberProfileView.district())
+            assertThat(memberProfileView.district())
                 .isEqualTo(savedMemberProfile.getRegion().getDistrict().toString());
-            Assertions.assertThat(memberProfileView.gender()).isEqualTo(savedMemberProfile.getGender().toString());
-            Assertions.assertThat(memberProfileView.smokingStatus())
+            assertThat(memberProfileView.gender()).isEqualTo(savedMemberProfile.getGender().toString());
+            assertThat(memberProfileView.smokingStatus())
                 .isEqualTo(savedMemberProfile.getSmokingStatus().toString());
-            Assertions.assertThat(memberProfileView.mbti()).isEqualTo(savedMemberProfile.getMbti().toString());
-            Assertions.assertThat(memberProfileView.drinkingStatus())
+            assertThat(memberProfileView.mbti()).isEqualTo(savedMemberProfile.getMbti().toString());
+            assertThat(memberProfileView.drinkingStatus())
                 .isEqualTo(savedMemberProfile.getDrinkingStatus().toString());
-            Assertions.assertThat(memberProfileView.religion()).isEqualTo(savedMemberProfile.getReligion().toString());
+            assertThat(memberProfileView.religion()).isEqualTo(savedMemberProfile.getReligion().toString());
         }
     }
 
@@ -125,7 +126,7 @@ public class MemberQueryRepositoryTest {
             Long notExistMemberId = 10L;
 
             // When & Then
-            Assertions.assertThat(memberQueryRepository.findContactsByMemberId(notExistMemberId).orElse(null)).isNull();
+            assertThat(memberQueryRepository.findContactsByMemberId(notExistMemberId)).isEmpty();
         }
 
 
@@ -145,10 +146,10 @@ public class MemberQueryRepositoryTest {
                 .orElse(null);
 
             // Then
-            Assertions.assertThat(memberContactView).isNotNull();
-            Assertions.assertThat(memberContactView.phoneNumber()).isEqualTo(member.getPhoneNumber());
-            Assertions.assertThat(memberContactView.kakaoId()).isEqualTo(member.getKakaoId());
-            Assertions.assertThat(memberContactView.primaryContactType())
+            assertThat(memberContactView).isNotNull();
+            assertThat(memberContactView.phoneNumber()).isEqualTo(member.getPhoneNumber());
+            assertThat(memberContactView.kakaoId()).isEqualTo(member.getKakaoId());
+            assertThat(memberContactView.primaryContactType())
                 .isEqualTo(member.getPrimaryContactType().toString());
         }
     }
@@ -159,10 +160,9 @@ public class MemberQueryRepositoryTest {
         static MockedStatic<Events> mockedEvents;
         Member member;
         Member otherMember;
-        LikeLevel likeLevel = LikeLevel.INTEREST;
+        LikeLevel likeLevel = LikeLevel.INTERESTED;
         String profileImageUrl = "primaryImage";
         Job jobName = Job.JOB_SEARCHING;
-        Set<Hobby> hobbies = Set.of(Hobby.ANIMATION, Hobby.BOARD_GAMES);
 
         @BeforeEach
         void setUp() {
@@ -242,7 +242,7 @@ public class MemberQueryRepositoryTest {
                 otherMemberId).orElse(null);
 
             // Then
-            Assertions.assertThat(memberProfileView).isNull();
+            assertThat(memberProfileView).isNull();
         }
 
         @Test
@@ -257,14 +257,14 @@ public class MemberQueryRepositoryTest {
             MemberProfile otherMemberProfile = otherMember.getProfile();
 
             // Then
-            Assertions.assertThat(memberProfileView).isNotNull();
-            Assertions.assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
+            assertThat(memberProfileView).isNotNull();
+            assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
 
             // BasicInfo.
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
 
             // MatchInfo
-            Assertions.assertThat(memberProfileView.matchInfo()).isNull();
+            assertThat(memberProfileView.matchInfo()).isNull();
         }
 
         @Test
@@ -285,14 +285,14 @@ public class MemberQueryRepositoryTest {
             MemberProfile otherMemberProfile = otherMember.getProfile();
 
             // Then
-            Assertions.assertThat(memberProfileView).isNotNull();
-            Assertions.assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
+            assertThat(memberProfileView).isNotNull();
+            assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
 
             // BasicInfo.
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
 
             // MatchInfo
-            Assertions.assertThat(memberProfileView.matchInfo()).isNull();
+            assertThat(memberProfileView.matchInfo()).isNull();
         }
 
         @Test
@@ -315,14 +315,14 @@ public class MemberQueryRepositoryTest {
             MemberProfile otherMemberProfile = otherMember.getProfile();
 
             // Then
-            Assertions.assertThat(memberProfileView).isNotNull();
-            Assertions.assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
+            assertThat(memberProfileView).isNotNull();
+            assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
 
             // BasicInfo.
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
 
             // MatchInfo
-            Assertions.assertThat(memberProfileView.matchInfo()).isNull();
+            assertThat(memberProfileView.matchInfo()).isNull();
         }
 
         @Test
@@ -343,15 +343,15 @@ public class MemberQueryRepositoryTest {
             MemberProfile otherMemberProfile = otherMember.getProfile();
 
             // Then
-            Assertions.assertThat(memberProfileView).isNotNull();
-            Assertions.assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
+            assertThat(memberProfileView).isNotNull();
+            assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
 
             // BasicInfo.
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
 
             // MatchInfo
             assertionsMatchInfo(memberProfileView.matchInfo(), match);
-            Assertions.assertThat(memberProfileView.matchInfo().requesterId()).isEqualTo(member.getId());
+            assertThat(memberProfileView.matchInfo().requesterId()).isEqualTo(member.getId());
         }
 
         @Test
@@ -373,15 +373,15 @@ public class MemberQueryRepositoryTest {
             MemberProfile otherMemberProfile = otherMember.getProfile();
 
             // Then
-            Assertions.assertThat(memberProfileView).isNotNull();
-            Assertions.assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
+            assertThat(memberProfileView).isNotNull();
+            assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
 
             // BasicInfo.
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
 
             // MatchInfo
             assertionsMatchInfo(memberProfileView.matchInfo(), match);
-            Assertions.assertThat(memberProfileView.matchInfo().requesterId()).isEqualTo(member.getId());
+            assertThat(memberProfileView.matchInfo().requesterId()).isEqualTo(member.getId());
         }
 
         @Test
@@ -403,55 +403,55 @@ public class MemberQueryRepositoryTest {
             MemberProfile otherMemberProfile = otherMember.getProfile();
 
             // Then
-            Assertions.assertThat(memberProfileView).isNotNull();
-            Assertions.assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
+            assertThat(memberProfileView).isNotNull();
+            assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
 
             // BasicInfo.
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
 
             // MatchInfo
             assertionsMatchInfo(memberProfileView.matchInfo(), match);
-            Assertions.assertThat(memberProfileView.matchInfo().requesterId()).isEqualTo(member.getId());
+            assertThat(memberProfileView.matchInfo().requesterId()).isEqualTo(member.getId());
         }
 
         private void assertionsBasicInfo(BasicMemberInfo basicMemberInfo, MemberProfile otherMemberProfile) {
-            Assertions.assertThat(basicMemberInfo.nickname()).isEqualTo(otherMemberProfile.getNickname().getValue());
-            Assertions.assertThat(basicMemberInfo.profileImageUrl()).isEqualTo(profileImageUrl);
-            Assertions.assertThat(basicMemberInfo.yearOfBirth())
+            assertThat(basicMemberInfo.nickname()).isEqualTo(otherMemberProfile.getNickname().getValue());
+            assertThat(basicMemberInfo.profileImageUrl()).isEqualTo(profileImageUrl);
+            assertThat(basicMemberInfo.yearOfBirth())
                 .isEqualTo(otherMemberProfile.getYearOfBirth().getValue());
-            Assertions.assertThat(basicMemberInfo.gender()).isEqualTo(otherMemberProfile.getGender().toString());
-            Assertions.assertThat(basicMemberInfo.height()).isEqualTo(otherMemberProfile.getHeight());
-            Assertions.assertThat(basicMemberInfo.job()).isEqualTo(jobName.toString());
-            Assertions.assertThat(basicMemberInfo.hobbies().size()).isEqualTo(2);
-            Assertions.assertThat(basicMemberInfo.mbti()).isEqualTo(otherMemberProfile.getMbti().toString());
-            Assertions.assertThat(basicMemberInfo.city())
+            assertThat(basicMemberInfo.gender()).isEqualTo(otherMemberProfile.getGender().toString());
+            assertThat(basicMemberInfo.height()).isEqualTo(otherMemberProfile.getHeight());
+            assertThat(basicMemberInfo.job()).isEqualTo(jobName.toString());
+            assertThat(basicMemberInfo.hobbies()).hasSize(2);
+            assertThat(basicMemberInfo.mbti()).isEqualTo(otherMemberProfile.getMbti().toString());
+            assertThat(basicMemberInfo.city())
                 .isEqualTo(otherMemberProfile.getRegion().getCity().toString());
-            Assertions.assertThat(basicMemberInfo.smokingStatus())
+            assertThat(basicMemberInfo.smokingStatus())
                 .isEqualTo(otherMemberProfile.getSmokingStatus().toString());
-            Assertions.assertThat(basicMemberInfo.drinkingStatus())
+            assertThat(basicMemberInfo.drinkingStatus())
                 .isEqualTo(otherMemberProfile.getDrinkingStatus().toString());
-            Assertions.assertThat(basicMemberInfo.highestEducation())
+            assertThat(basicMemberInfo.highestEducation())
                 .isEqualTo(otherMemberProfile.getHighestEducation().toString());
-            Assertions.assertThat(basicMemberInfo.religion()).isEqualTo(otherMemberProfile.getReligion().toString());
-            Assertions.assertThat(basicMemberInfo.like()).isEqualTo(likeLevel.toString());
+            assertThat(basicMemberInfo.religion()).isEqualTo(otherMemberProfile.getReligion().toString());
+            assertThat(basicMemberInfo.like()).isEqualTo(likeLevel.toString());
         }
 
         private void assertionsMatchInfo(MatchInfo matchInfo, Match match) {
-            Assertions.assertThat(matchInfo.matchId()).isEqualTo(match.getId());
-            Assertions.assertThat(matchInfo.responderId()).isEqualTo(otherMember.getId());
-            Assertions.assertThat(matchInfo.requestMessage()).isEqualTo(match.getRequestMessage().getValue());
-            Assertions.assertThat(matchInfo.responseMessage())
+            assertThat(matchInfo.matchId()).isEqualTo(match.getId());
+            assertThat(matchInfo.responderId()).isEqualTo(otherMember.getId());
+            assertThat(matchInfo.requestMessage()).isEqualTo(match.getRequestMessage().getValue());
+            assertThat(matchInfo.responseMessage())
                 .isEqualTo(match.getResponseMessage() == null ? null : match.getResponseMessage().getValue());
-            Assertions.assertThat(matchInfo.matchStatus()).isEqualTo(match.getStatus().toString());
-            Assertions.assertThat(matchInfo.contactType()).isEqualTo(otherMember.getPrimaryContactType().toString());
+            assertThat(matchInfo.matchStatus()).isEqualTo(match.getStatus().toString());
+            assertThat(matchInfo.contactType()).isEqualTo(otherMember.getPrimaryContactType().toString());
 
 
             if (!match.getStatus().equals(MatchStatus.MATCHED)) {
-                Assertions.assertThat(matchInfo.contact()).isNull(); // 매치가 성사되지 않았으므로.
+                assertThat(matchInfo.contact()).isNull(); // 매치가 성사되지 않았으므로.
             } else if (otherMember.getPrimaryContactType().equals(PrimaryContactType.PHONE_NUMBER)) {
-                Assertions.assertThat(matchInfo.contact()).isEqualTo(otherMember.getPhoneNumber());
+                assertThat(matchInfo.contact()).isEqualTo(otherMember.getPhoneNumber());
             } else if (otherMember.getPrimaryContactType().equals(PrimaryContactType.KAKAO)) {
-                Assertions.assertThat(matchInfo.contact()).isEqualTo(otherMember.getKakaoId());
+                assertThat(matchInfo.contact()).isEqualTo(otherMember.getKakaoId());
             }
         }
     }
@@ -517,14 +517,14 @@ public class MemberQueryRepositoryTest {
                 notExistsMemberId);
 
             // Then
-            Assertions.assertThat(interviewResultViewList.size()).isEqualTo(0);
+            assertThat(interviewResultViewList).isEmpty();
         }
 
         @Test
         @DisplayName("인터뷰에 답변한 경우, 해당 멤버의 공개 질문과 답변을 모두 조회한다.")
         void getInterviewResultViewsWhenAnswersExist() {
             // Given
-            List<InterviewQuestion> publicQuestions = questions.stream().filter(q -> q.isPublic()).toList();
+            List<InterviewQuestion> publicQuestions = questions.stream().filter(InterviewQuestion::isPublic).toList();
 
 
             // When
@@ -534,19 +534,19 @@ public class MemberQueryRepositoryTest {
             InterviewResultView interviewResultView2 = interviewResultViewList.get(1);
 
             // Then
-            Assertions.assertThat(interviewResultViewList.size()).isEqualTo(publicQuestions.size());
+            assertThat(interviewResultViewList).hasSameSizeAs(publicQuestions);
 
-            Assertions.assertThat(interviewResultView1).isNotNull();
-            Assertions.assertThat(interviewResultView2).isNotNull();
+            assertThat(interviewResultView1).isNotNull();
+            assertThat(interviewResultView2).isNotNull();
 
-            Assertions.assertThat(interviewResultView1.content()).isEqualTo(publicQuestions.get(0).getContent());
-            Assertions.assertThat(interviewResultView2.content()).isEqualTo(publicQuestions.get(1).getContent());
+            assertThat(interviewResultView1.content()).isEqualTo(publicQuestions.get(0).getContent());
+            assertThat(interviewResultView2.content()).isEqualTo(publicQuestions.get(1).getContent());
 
-            Assertions.assertThat(interviewResultView1.category()).isEqualTo(questions.get(0).getCategory().toString());
-            Assertions.assertThat(interviewResultView2.category()).isEqualTo(questions.get(1).getCategory().toString());
+            assertThat(interviewResultView1.category()).isEqualTo(questions.get(0).getCategory().toString());
+            assertThat(interviewResultView2.category()).isEqualTo(questions.get(1).getCategory().toString());
 
-            Assertions.assertThat(interviewResultView1.answer()).isEqualTo(answers.get(0).getContent());
-            Assertions.assertThat(interviewResultView2.answer()).isEqualTo(answers.get(1).getContent());
+            assertThat(interviewResultView1.answer()).isEqualTo(answers.get(0).getContent());
+            assertThat(interviewResultView2.answer()).isEqualTo(answers.get(1).getContent());
         }
     }
 
@@ -557,13 +557,13 @@ public class MemberQueryRepositoryTest {
         @DisplayName("존재하지 않는 멤버의 경우, null을 반환한다.")
         void returnNullWhenMemberIsNotExists() {
             // given
-            Long notExistsMemberId = 100L;
+            long notExistsMemberId = 100L;
 
             // when
             HeartBalanceView heartBalanceView = memberQueryRepository.findHeartBalanceByMemberId(notExistsMemberId);
 
             // then
-            Assertions.assertThat(heartBalanceView).isNull();
+            assertThat(heartBalanceView).isNull();
         }
 
         @Test
@@ -582,9 +582,9 @@ public class MemberQueryRepositoryTest {
             HeartBalanceView heartBalanceView = memberQueryRepository.findHeartBalanceByMemberId(member.getId());
 
             // then
-            Assertions.assertThat(heartBalanceView.purchaseHeartBalance()).isEqualTo(purchaseHeartAmount.getAmount());
-            Assertions.assertThat(heartBalanceView.missionHeartBalance()).isEqualTo(missionHeartAmount.getAmount());
-            Assertions.assertThat(heartBalanceView.totalHeartBalance())
+            assertThat(heartBalanceView.purchaseHeartBalance()).isEqualTo(purchaseHeartAmount.getAmount());
+            assertThat(heartBalanceView.missionHeartBalance()).isEqualTo(missionHeartAmount.getAmount());
+            assertThat(heartBalanceView.totalHeartBalance())
                 .isEqualTo(purchaseHeartAmount.getAmount() + missionHeartAmount.getAmount());
         }
     }
