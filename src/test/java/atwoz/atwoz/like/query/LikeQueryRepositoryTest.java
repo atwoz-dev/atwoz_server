@@ -19,13 +19,16 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Import({QueryDslConfig.class, LikeQueryRepository.class})
 class LikeQueryRepositoryTest {
+    private static final int NUMBER_OF_PEOPLE = 30;
     private static final int PAGE_SIZE = 12;
 
     @Autowired
@@ -33,110 +36,178 @@ class LikeQueryRepositoryTest {
     @Autowired
     private TestEntityManager em;
 
-    private Member sender;
+    private List<Member> senders;
+    private List<ProfileImage> senderProfileImages;
     private List<Member> receivers;
-    private ProfileImage senderImage;
-    private List<ProfileImage> receiverImages;
+    private List<ProfileImage> receiverProfileImages;
     private List<Like> likes;
 
     @BeforeEach
     void setUp() {
-        sender = createMember("01012345678", "sender", District.GANGBUK_GU);
-        em.persistAndFlush(sender);
+        createSenders();
+        createSenderProfileImages();
 
-        receivers = new ArrayList<>();
-        for (int i = 0; i < 25; i++) {
-            var receiver = createMember(String.format("010%08d", i), "receiver" + i, District.DONG_GU_DAEJEON);
-            receivers.add(receiver);
-            em.persist(receiver);
-        }
-        em.flush();
+        createReceivers();
+        createReceiverProfileImages();
 
-        senderImage = createProfileImage(sender.getId(), "/sender.jpg");
-        em.persistAndFlush(senderImage);
+        createSenderToReceiverLikes();
+        createReceiverToSenderLikes();
 
-        receiverImages = new ArrayList<>();
-        for (int i = 0; i < 25; i++) {
-            var receiverImage = createProfileImage(receivers.get(i).getId(), "/receiver" + i + ".jpg");
-            receiverImages.add(receiverImage);
-            em.persist(receiverImage);
-        }
-        em.flush();
-
-        likes = new ArrayList<>();
-        for (final Member receiver : receivers) {
-            var like = Like.of(sender.getId(), receiver.getId(), LikeLevel.HIGHLY_INTERESTED);
-            likes.add(like);
-            em.persist(like);
-        }
         em.flush();
         em.clear();
 
-        likes.sort((l1, l2) -> Math.toIntExact(l2.getId() - l1.getId()));
+        likes.sort(Comparator.comparing(Like::getId).reversed());
     }
 
     @Test
-    @DisplayName("보낸 좋아요 목록을 최초 조회한다.")
+    @DisplayName("보낸 좋아요 목록을 조회한다.")
     void findSentLikes() {
+        // given
+        var senderId = senders.getFirst().getId();
+        var expectedLikes = likes.stream()
+            .filter(like -> like.getSenderId().equals(senderId))
+            .sorted(Comparator.comparing(Like::getId).reversed())
+            .limit(PAGE_SIZE)
+            .toList();
+
+        var profileImageUrlMap = receiverProfileImages.stream()
+            .collect(Collectors.toMap(ProfileImage::getMemberId, ProfileImage::getUrl));
+        var receiverProfileMap = receivers.stream()
+            .collect(Collectors.toMap(Member::getId, Member::getProfile));
+
         // when
-        var result = likeQueryRepository.findSentLikes(sender.getId(), null);
+        var firstPage = likeQueryRepository.findSentLikes(senderId, null);
 
         // then
-        assertThat(result).hasSize(PAGE_SIZE);
+        assertThat(firstPage).hasSize(expectedLikes.size());
 
-        for (int i = 0; i < result.size(); i++) {
-            var likeView = result.get(i);
-            var like = likes.get(i);
-            var receiverProfile = receivers.get(receivers.size() - 1 - i).getProfile();
-            var receiverImage = receiverImages.get(receivers.size() - 1 - i);
+        for (int i = 0; i < expectedLikes.size(); i++) {
+            var likeView = firstPage.get(i);
+            var expectedLike = expectedLikes.get(i);
 
-            assertThat(likeView.id()).isEqualTo(like.getId());
-            assertThat(likeView.profileImageUrl()).isEqualTo(receiverImage.getUrl());
+            assertThat(likeView.likeId()).isEqualTo(expectedLike.getId());
+            assertThat(likeView.opponentId()).isEqualTo(expectedLike.getReceiverId());
+
+            var expectedUrl = profileImageUrlMap.get(expectedLike.getReceiverId());
+            assertThat(likeView.profileImageUrl()).isEqualTo(expectedUrl);
+
+            var receiverProfile = receiverProfileMap.get(expectedLike.getReceiverId());
             assertThat(likeView.nickname()).isEqualTo(receiverProfile.getNickname().getValue());
             assertThat(likeView.city()).isEqualTo(receiverProfile.getRegion().getCity().toString());
             assertThat(likeView.yearOfBirth()).isEqualTo(receiverProfile.getYearOfBirth().getValue());
+
+            boolean expectedMutual = expectedLike.getSenderId() % 2 != 0;
+            assertThat(likeView.isMutualLike()).isEqualTo(expectedMutual);
         }
     }
 
     @Test
-    @DisplayName("보낸 좋아요 목록을 no offset paging으로 조회한다.")
-    void findSentLikesWithNoOffsetPaging() {
+    @DisplayName("받은 좋아요 목록을 조회한다.")
+    void findReceivedLikes() {
+        // given
+        var receiverId = receivers.getFirst().getId();
+        var expectedLikes = likes.stream()
+            .filter(like -> like.getReceiverId().equals(receiverId))
+            .sorted(Comparator.comparing(Like::getId).reversed())
+            .limit(PAGE_SIZE)
+            .toList();
+
+        var profileImageUrlMap = senderProfileImages.stream()
+            .collect(Collectors.toMap(ProfileImage::getMemberId, ProfileImage::getUrl));
+        var senderProfileMap = senders.stream()
+            .collect(Collectors.toMap(Member::getId, Member::getProfile));
+
         // when
-        List<LikeView> firstPage = likeQueryRepository.findSentLikes(sender.getId(), null);
-        List<LikeView> secondPage = likeQueryRepository.findSentLikes(sender.getId(), firstPage.getLast().id());
-        List<LikeView> thirdPage = likeQueryRepository.findSentLikes(sender.getId(), secondPage.getLast().id());
+        var firstPage = likeQueryRepository.findReceivedLikes(receiverId, null);
 
         // then
-        assertThat(firstPage).hasSize(PAGE_SIZE);
-        assertThat(secondPage).hasSize(PAGE_SIZE);
-        assertThat(thirdPage).hasSize(1);
+        assertThat(firstPage).hasSize(expectedLikes.size());
 
-        assertThat(firstPage.getFirst().id()).isGreaterThan(firstPage.getLast().id());
-        assertThat(secondPage.getFirst().id()).isGreaterThan(secondPage.getLast().id());
+        for (int i = 0; i < expectedLikes.size(); i++) {
+            var likeView = firstPage.get(i);
+            var expectedLike = expectedLikes.get(i);
 
-        assertThat(firstPage.getLast().id()).isGreaterThan(secondPage.getFirst().id());
-        assertThat(secondPage.getLast().id()).isGreaterThan(thirdPage.getFirst().id());
+            assertThat(likeView.likeId()).isEqualTo(expectedLike.getId());
+            assertThat(likeView.opponentId()).isEqualTo(expectedLike.getSenderId());
+
+            var expectedUrl = profileImageUrlMap.get(expectedLike.getSenderId());
+            assertThat(likeView.profileImageUrl()).isEqualTo(expectedUrl);
+
+            var senderProfile = senderProfileMap.get(expectedLike.getSenderId());
+            assertThat(likeView.nickname()).isEqualTo(senderProfile.getNickname().getValue());
+            assertThat(likeView.city()).isEqualTo(senderProfile.getRegion().getCity().toString());
+            assertThat(likeView.yearOfBirth()).isEqualTo(senderProfile.getYearOfBirth().getValue());
+
+            boolean expectedMutual = expectedLike.getSenderId() % 2 != 0;
+            assertThat(likeView.isMutualLike()).isEqualTo(expectedMutual);
+        }
+    }
+
+    private void createSenders() {
+        senders = new ArrayList<>();
+        for (int i = 0; i < NUMBER_OF_PEOPLE; i++) {
+            var sender = createMember(String.format("010%04d1234", i), "sender" + i, District.GWANAK_GU);
+            senders.add(sender);
+            em.persist(sender);
+        }
+    }
+
+    private void createSenderProfileImages() {
+        senderProfileImages = new ArrayList<>();
+        for (int i = 0; i < NUMBER_OF_PEOPLE; i++) {
+            if (i % 2 == 0) {
+                continue;
+            }
+            var senderImage = createProfileImage(senders.get(i).getId(), "/sender" + i + ".jpg");
+            senderProfileImages.add(senderImage);
+            em.persist(senderImage);
+        }
     }
 
 
-    @Test
-    @DisplayName("받은 좋아요 목록을 최초 조회한다.")
-    void findReceivedLikes() {
-        // given
-        var receiver = receivers.getFirst();
+    private void createReceivers() {
+        receivers = new ArrayList<>();
+        for (int i = 0; i < NUMBER_OF_PEOPLE; i++) {
+            var receiver = createMember(String.format("0101234%04d", i), "receiver" + i, District.GANGNAM_GU);
+            receivers.add(receiver);
+            em.persist(receiver);
+        }
+    }
 
-        // when
-        var result = likeQueryRepository.findReceivedLikes(receiver.getId(), null);
+    private void createReceiverProfileImages() {
+        receiverProfileImages = new ArrayList<>();
+        for (int i = 0; i < NUMBER_OF_PEOPLE; i++) {
+            if (i % 2 == 1) {
+                continue;
+            }
+            var receiverImage = createProfileImage(receivers.get(i).getId(), "/receiver" + i + ".jpg");
+            receiverProfileImages.add(receiverImage);
+            em.persist(receiverImage);
+        }
+    }
 
-        // then
-        assertThat(result).hasSize(1);
+    private void createSenderToReceiverLikes() {
+        likes = new ArrayList<>();
+        for (final Member sender : senders) {
+            for (final Member receiver : receivers) {
+                var like = Like.of(sender.getId(), receiver.getId(), LikeLevel.INTERESTED);
+                likes.add(like);
+                em.persist(like);
+            }
+        }
+    }
 
-        var likeView = result.getFirst();
-        assertThat(likeView.id()).isEqualTo(likes.getLast().getId());
-        assertThat(likeView.profileImageUrl()).isEqualTo(senderImage.getUrl());
-        assertThat(likeView.nickname()).isEqualTo(sender.getProfile().getNickname().getValue());
-        assertThat(likeView.city()).isEqualTo(sender.getProfile().getRegion().getCity().toString());
-        assertThat(likeView.yearOfBirth()).isEqualTo(sender.getProfile().getYearOfBirth().getValue());
+    private void createReceiverToSenderLikes() {
+        for (final Member receiver : receivers) {
+            for (final Member sender : senders) {
+                if (sender.getId() % 2 == 0) {
+                    continue;
+                }
+                var like = Like.of(receiver.getId(), sender.getId(), LikeLevel.HIGHLY_INTERESTED);
+                likes.add(like);
+                em.persist(like);
+            }
+        }
     }
 
     private Member createMember(String phone, String nickname, District district) {
@@ -150,7 +221,7 @@ class LikeQueryRepositoryTest {
         return member;
     }
 
-    private ProfileImage createProfileImage(Long memberId, String url) {
+    private ProfileImage createProfileImage(long memberId, String url) {
         return ProfileImage.builder()
             .memberId(memberId)
             .imageUrl(ImageUrl.from(url))

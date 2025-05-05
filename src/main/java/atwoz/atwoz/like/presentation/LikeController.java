@@ -37,7 +37,7 @@ public class LikeController {
         @ModelAttribute LikeListRequest request,
         @AuthPrincipal AuthContext authContext
     ) {
-        final var sentLikes = likeQueryRepository.findSentLikes(authContext.getId(), request.lastId());
+        final var sentLikes = likeQueryRepository.findSentLikes(authContext.getId(), request.lastLikeId());
         return ResponseEntity.ok(BaseResponse.of(OK, sentLikes));
     }
 
@@ -46,7 +46,7 @@ public class LikeController {
         @ModelAttribute LikeListRequest request,
         @AuthPrincipal AuthContext authContext
     ) {
-        final var receivedLikes = likeQueryRepository.findReceivedLikes(authContext.getId(), request.lastId());
+        final var receivedLikes = likeQueryRepository.findReceivedLikes(authContext.getId(), request.lastLikeId());
         return ResponseEntity.ok(BaseResponse.of(OK, receivedLikes));
     }
 }

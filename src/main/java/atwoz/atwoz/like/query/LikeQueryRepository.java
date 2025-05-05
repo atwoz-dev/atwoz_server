@@ -1,6 +1,8 @@
 package atwoz.atwoz.like.query;
 
+import atwoz.atwoz.like.command.domain.QLike;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -17,53 +19,69 @@ public class LikeQueryRepository {
     private static final int PAGE_SIZE = 12;
     private final JPAQueryFactory queryFactory;
 
-    public List<LikeView> findSentLikes(long memberId, Long lastId) {
+    public List<LikeView> findSentLikes(long senderId, Long lastLikeId) {
+        QLike mutual = new QLike("mutual");
+
         return queryFactory
             .select(new QLikeView(
                 like.id,
+                like.receiverId,
                 profileImage.imageUrl.value,
                 member.profile.nickname.value,
                 member.profile.region.city.stringValue(),
                 member.profile.yearOfBirth.value,
+                JPAExpressions
+                    .selectOne()
+                    .from(mutual)
+                    .where(mutual.senderId.eq(like.receiverId), mutual.receiverId.eq(senderId))
+                    .exists(),
                 like.createdAt
             ))
             .from(like)
             .join(member).on(member.id.eq(like.receiverId))
-            .join(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
-            .where(eqSender(memberId), ltLikeId(lastId))
+            .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
+            .where(eqSender(senderId), ltLikeId(lastLikeId))
             .orderBy(like.createdAt.desc())
             .limit(PAGE_SIZE)
             .fetch();
     }
 
-    public List<LikeView> findReceivedLikes(long memberId, Long lastId) {
+    public List<LikeView> findReceivedLikes(long receiverId, Long lastLikeId) {
+        QLike mutual = new QLike("mutual");
+
         return queryFactory
             .select(new QLikeView(
                 like.id,
+                like.senderId,
                 profileImage.imageUrl.value,
                 member.profile.nickname.value,
                 member.profile.region.city.stringValue(),
                 member.profile.yearOfBirth.value,
+                JPAExpressions
+                    .selectOne()
+                    .from(mutual)
+                    .where(mutual.senderId.eq(receiverId), mutual.receiverId.eq(like.senderId))
+                    .exists(),
                 like.createdAt
             ))
             .from(like)
             .join(member).on(member.id.eq(like.senderId))
-            .join(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
-            .where(eqReceiver(memberId), ltLikeId(lastId))
+            .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
+            .where(eqReceiver(receiverId), ltLikeId(lastLikeId))
             .orderBy(like.createdAt.desc())
             .limit(PAGE_SIZE)
             .fetch();
     }
 
-    private BooleanExpression eqSender(long memberId) {
-        return like.senderId.eq(memberId);
+    private BooleanExpression eqSender(long senderId) {
+        return like.senderId.eq(senderId);
     }
 
-    private BooleanExpression eqReceiver(long memberId) {
-        return like.receiverId.eq(memberId);
+    private BooleanExpression eqReceiver(long receiverId) {
+        return like.receiverId.eq(receiverId);
     }
 
-    private BooleanExpression ltLikeId(Long lastId) {
-        return lastId != null ? like.id.lt(lastId) : null;
+    private BooleanExpression ltLikeId(Long lastLikeId) {
+        return lastLikeId != null ? like.id.lt(lastLikeId) : null;
     }
 }
