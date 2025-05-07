@@ -32,16 +32,12 @@ public class Match {
 
     @Getter
     @Embedded
-    @AttributeOverrides({
-        @AttributeOverride(name = "value", column = @Column(name = "request_message"))
-    })
+    @AttributeOverride(name = "value", column = @Column(name = "request_message"))
     private Message requestMessage;
 
     @Getter
     @Embedded
-    @AttributeOverrides({
-        @AttributeOverride(name = "value", column = @Column(name = "response_message"))
-    })
+    @AttributeOverride(name = "value", column = @Column(name = "response_message"))
     private Message responseMessage;
 
     @Getter
