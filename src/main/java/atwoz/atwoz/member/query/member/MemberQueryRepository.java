@@ -29,35 +29,39 @@ import static com.querydsl.core.types.dsl.Expressions.enumPath;
 public class MemberQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public Optional<MemberProfileView> findProfileByMemberId(Long memberId) {
+    public Optional<MemberInfoView> findInfoByMemberId(Long memberId) {
         EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
 
-        MemberProfileView memberProfileView = queryFactory
+        MemberInfoView memberInfoView = queryFactory
             .from(member)
             .leftJoin(member.profile.hobbies, hobby)
+            .leftJoin(interviewAnswer).on(member.id.eq(interviewAnswer.memberId))
+            .leftJoin(interviewQuestion).on(interviewQuestion.id.eq(interviewAnswer.questionId))
             .where(member.id.eq(memberId))
+            .where(interviewQuestion.isPublic.eq(true))
             .transform(
                 groupBy(member.id).as(
-                    new QMemberProfileView(
-                        member.profile.nickname.value,
-                        member.profile.yearOfBirth.value,
-                        member.profile.gender.stringValue(),
-                        member.profile.height,
-                        member.profile.job.stringValue(),
-                        set(hobby.stringValue()),
-                        member.profile.mbti.stringValue(),
-                        member.profile.region.city.stringValue(),
+                    new QMemberInfoView(
+                        member.activityStatus.stringValue(), member.isVip.isTrue(),
+                        member.primaryContactType.stringValue(),
+                        member.profile.nickname.value.stringValue(),
+                        member.profile.gender.stringValue(), member.kakaoId.value, member.profile.yearOfBirth.value,
+                        member.profile.height, member.phoneNumber.value, member.profile.job.stringValue(),
+                        member.profile.highestEducation.stringValue(), member.profile.region.city.stringValue(),
                         member.profile.region.district.stringValue(),
-                        member.profile.smokingStatus.stringValue(),
+                        member.profile.mbti.stringValue(), member.profile.smokingStatus.stringValue(),
                         member.profile.drinkingStatus.stringValue(),
-                        member.profile.highestEducation.stringValue(),
-                        member.profile.religion.stringValue()
-                    )
-                )
+                        member.profile.religion.stringValue(), set(hobby.stringValue()),
+                        set(
+                            (new QInterviewInfoView(
+                                interviewQuestion.content,
+                                interviewAnswer.content
+                            ))
+                        )
+                    ))
             ).get(memberId);
 
-
-        return Optional.ofNullable(memberProfileView);
+        return Optional.ofNullable(memberInfoView);
     }
 
     public Optional<MemberContactView> findContactsByMemberId(Long memberId) {
@@ -74,33 +78,6 @@ public class MemberQueryRepository {
         return Optional.ofNullable(memberContactView);
     }
 
-    public Optional<MemberInfoView> findInfoByMemberId(Long memberId) {
-        EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
-
-        MemberInfoView memberInfoView = queryFactory
-            .from(member)
-            .leftJoin(member.profile.hobbies, hobby)
-            .leftJoin(interviewAnswer).on(getInterviewAnswerJoinCondition(memberId))
-            .leftJoin(interviewQuestion).on(interviewQuestion.id.eq(interviewAnswer.id))
-            .where(member.id.eq(memberId))
-            .transform(
-                groupBy(member.id).as(
-                    new QMemberInfoView(
-                        member.activityStatus.stringValue(), member.isVip.isTrue(),
-                        member.profile.nickname.value.stringValue(),
-                        member.profile.gender.stringValue(), member.kakaoId.value, member.profile.yearOfBirth.value,
-                        member.profile.height, member.phoneNumber.value, member.profile.job.stringValue(),
-                        member.profile.highestEducation.stringValue(), member.profile.region.city.stringValue(),
-                        member.profile.region.district.stringValue(),
-                        member.profile.mbti.stringValue(), member.profile.smokingStatus.stringValue(),
-                        member.profile.drinkingStatus.stringValue(),
-                        member.profile.religion.stringValue(), set(hobby.stringValue())
-                    )
-                )
-            ).get(memberId);
-
-        return Optional.ofNullable(memberInfoView);
-    }
 
     public Optional<OtherMemberProfileView> findOtherProfileByMemberId(Long memberId, Long otherMemberId) {
         EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");

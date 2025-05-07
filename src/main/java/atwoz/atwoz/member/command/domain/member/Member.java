@@ -43,6 +43,7 @@ public class Member extends SoftDeleteBaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
+    @Getter
     private ActivityStatus activityStatus;
 
     @Enumerated(EnumType.STRING)
@@ -60,7 +61,7 @@ public class Member extends SoftDeleteBaseEntity {
             .activityStatus(ActivityStatus.ACTIVE)
             .heartBalance(HeartBalance.init())
             .isVip(false)
-            .primaryContactType(PrimaryContactType.PHONE_NUMBER)
+            .primaryContactType(PrimaryContactType.NONE)
             .build();
     }
 

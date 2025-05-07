@@ -115,11 +115,10 @@ public class MatchTest {
             Match match;
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
                 match = Match.request(requesterId, responderId, requestMessage);
+
+                // When
+                match.approve(responseMessage);
             }
-
-
-            // When
-            match.approve(responseMessage);
 
             // Then
             Assertions.assertThat(match.getStatus()).isEqualTo(MatchStatus.MATCHED);
