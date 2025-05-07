@@ -35,10 +35,11 @@ public class MemberQueryRepository {
         MemberInfoView memberInfoView = queryFactory
             .from(member)
             .leftJoin(member.profile.hobbies, hobby)
-            .leftJoin(interviewAnswer).on(member.id.eq(interviewAnswer.memberId))
-            .leftJoin(interviewQuestion).on(interviewQuestion.id.eq(interviewAnswer.questionId))
+            .leftJoin(interviewAnswer)
+            .on(member.id.eq(interviewAnswer.memberId))
+            .leftJoin(interviewQuestion)
+            .on(interviewQuestion.id.eq(interviewAnswer.questionId).and(interviewQuestion.isPublic.eq(true)))
             .where(member.id.eq(memberId))
-            .where(interviewQuestion.isPublic.eq(true))
             .transform(
                 groupBy(member.id).as(
                     new QMemberInfoView(
@@ -59,7 +60,8 @@ public class MemberQueryRepository {
                             ))
                         )
                     ))
-            ).get(memberId);
+            )
+            .get(memberId);
 
         return Optional.ofNullable(memberInfoView);
     }
