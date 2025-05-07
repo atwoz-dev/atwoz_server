@@ -20,6 +20,6 @@ public class MatchEventHandler {
 
     @EventListener(value = MatchRespondedEvent.class)
     public void handle(MatchRespondedEvent event) {
-        memberProfileService.validatePrimaryContactTypeSetting(event.getRequesterId());
+        memberProfileService.validatePrimaryContactTypeSetting(event.getResponderId());
     }
 }
