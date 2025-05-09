@@ -32,8 +32,8 @@ public class MemberController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<BaseResponse<MemberProfileView>> getMyProfile(@AuthPrincipal AuthContext authContext) {
-        MemberProfileView response = memberQueryRepository.findProfileByMemberId(authContext.getId()).orElse(null);
+    public ResponseEntity<BaseResponse<MemberInfoView>> getMyProfile(@AuthPrincipal AuthContext authContext) {
+        MemberInfoView response = memberQueryRepository.findInfoByMemberId(authContext.getId()).orElse(null);
         if (response == null) {
             return ResponseEntity.status(404)
                 .body(BaseResponse.from(StatusType.NOT_FOUND));

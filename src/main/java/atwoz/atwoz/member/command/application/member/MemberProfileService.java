@@ -2,8 +2,10 @@ package atwoz.atwoz.member.command.application.member;
 
 
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
+import atwoz.atwoz.member.command.application.member.exception.PrimaryContactTypeSettingNeededException;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
+import atwoz.atwoz.member.command.domain.member.PrimaryContactType;
 import atwoz.atwoz.member.presentation.member.MemberMapper;
 import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,13 @@ public class MemberProfileService {
     @Transactional
     public void changeToDormant(Long memberId) {
         getMemberById(memberId).changeToDormant();
+    }
+
+    @Transactional
+    public void validatePrimaryContactTypeSetting(Long memberId) {
+        if (getMemberById(memberId).getPrimaryContactType() == PrimaryContactType.NONE) {
+            throw new PrimaryContactTypeSettingNeededException();
+        }
     }
 
     private Member getMemberById(Long memberId) {

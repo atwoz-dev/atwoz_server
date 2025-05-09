@@ -86,32 +86,82 @@ class MemberQueryRepositoryTest {
             entityManager.persist(member);
             entityManager.flush();
 
+            InterviewQuestion interviewQuestion1 = InterviewQuestion.of("인터뷰 질문 내용1", InterviewCategory.PERSONAL, true);
+            InterviewQuestion interviewQuestion2 = InterviewQuestion.of("인터뷰 질문 내용2", InterviewCategory.ROMANTIC, true);
+            InterviewQuestion interviewQuestion3 = InterviewQuestion.of("인터뷰 질문 내용3", InterviewCategory.PERSONAL, true);
+            InterviewQuestion interviewQuestion4 = InterviewQuestion.of("인터뷰 질문 내용4", InterviewCategory.PERSONAL,
+                false);
+
+            entityManager.persist(interviewQuestion1);
+            entityManager.persist(interviewQuestion2);
+            entityManager.persist(interviewQuestion3);
+            entityManager.persist(interviewQuestion4);
+            entityManager.flush();
+
+            InterviewAnswer interviewAnswer1 = InterviewAnswer.of(interviewQuestion1.getId(), member.getId(),
+                "인터뷰 질문 답변1");
+            InterviewAnswer interviewAnswer2 = InterviewAnswer.of(interviewQuestion2.getId(), member.getId(),
+                "인터뷰 질문 답변2");
+            InterviewAnswer interviewAnswer4 = InterviewAnswer.of(interviewQuestion2.getId(), member.getId(),
+                "인터뷰 질문 답변4");
+
+            entityManager.persist(interviewAnswer1);
+            entityManager.persist(interviewAnswer2);
+            entityManager.persist(interviewAnswer4);
+            entityManager.flush();
+
+            List<InterviewAnswer> interviewAnswers = List.of(interviewAnswer1, interviewAnswer2, interviewAnswer4);
+
+
             // When
-            MemberProfileView memberProfileView = memberQueryRepository.findProfileByMemberId(member.getId())
+            MemberInfoView memberInfoView = memberQueryRepository.findInfoByMemberId(member.getId())
                 .orElse(null);
 
             // Then
-            MemberProfile savedMemberProfile = member.getProfile();
-            assertThat(memberProfileView).isNotNull();
-            assertThat(memberProfileView.yearOfBirth())
-                .isEqualTo(savedMemberProfile.getYearOfBirth().getValue());
-            assertThat(memberProfileView.height()).isEqualTo(savedMemberProfile.getHeight());
-            assertThat(memberProfileView.drinkingStatus())
-                .isEqualTo(savedMemberProfile.getDrinkingStatus().toString());
-            assertThat(memberProfileView.job()).isEqualTo(job.name());
-            assertThat(memberProfileView.hobbies()).hasSameSizeAs(savedMemberProfile.getHobbies());
-            assertThat(memberProfileView.nickname()).isEqualTo(savedMemberProfile.getNickname().getValue());
-            assertThat(memberProfileView.city())
-                .isEqualTo(savedMemberProfile.getRegion().getCity().toString());
-            assertThat(memberProfileView.district())
-                .isEqualTo(savedMemberProfile.getRegion().getDistrict().toString());
-            assertThat(memberProfileView.gender()).isEqualTo(savedMemberProfile.getGender().toString());
-            assertThat(memberProfileView.smokingStatus())
-                .isEqualTo(savedMemberProfile.getSmokingStatus().toString());
-            assertThat(memberProfileView.mbti()).isEqualTo(savedMemberProfile.getMbti().toString());
-            assertThat(memberProfileView.drinkingStatus())
-                .isEqualTo(savedMemberProfile.getDrinkingStatus().toString());
-            assertThat(memberProfileView.religion()).isEqualTo(savedMemberProfile.getReligion().toString());
+            assertBasicInfo(memberInfoView.basicInfo(), member);
+            assertStatusInfo(memberInfoView.statusInfo(), member);
+            assertProfileInfo(memberInfoView.profileInfo(), member);
+            assertInterviewInfo(memberInfoView.interviewInfoView(), interviewAnswers);
+
+            System.out.println(memberInfoView.interviewInfoView());
+        }
+
+        private void assertBasicInfo(BasicInfo basicInfo, Member member) {
+            assertThat(basicInfo.nickname()).isEqualTo(member.getProfile().getNickname().getValue());
+            assertThat(basicInfo.gender()).isEqualTo(member.getGender().toString());
+            assertThat(basicInfo.kakaoId()).isEqualTo(member.getKakaoId());
+            assertThat(basicInfo.yearOfBirth()).isEqualTo(member.getProfile().getYearOfBirth().getValue());
+            assertThat(basicInfo.height()).isEqualTo(member.getProfile().getHeight());
+            assertThat(basicInfo.phoneNumber()).isEqualTo(member.getPhoneNumber());
+        }
+
+        private void assertStatusInfo(StatusInfo statusInfo, Member member) {
+            assertThat(statusInfo.activityStatus()).isEqualTo(member.getActivityStatus().toString());
+            assertThat(statusInfo.isVip()).isEqualTo(member.isVip());
+            assertThat(statusInfo.primaryContactType()).isEqualTo(member.getPrimaryContactType().toString());
+        }
+
+        private void assertProfileInfo(ProfileInfo profileInfo, Member member) {
+            assertThat(profileInfo.drinkingStatus())
+                .isEqualTo(member.getProfile().getDrinkingStatus().toString());
+            assertThat(profileInfo.job()).isEqualTo(member.getProfile().getJob().name());
+            for (Hobby hobby : member.getProfile().getHobbies()) {
+                assertThat(profileInfo.hobbies()).contains(hobby.name());
+            }
+            assertThat(profileInfo.city()).isEqualTo(member.getProfile().getRegion().getCity().toString());
+            assertThat(profileInfo.district())
+                .isEqualTo(member.getProfile().getRegion().getDistrict().toString());
+            assertThat(profileInfo.smokingStatus())
+                .isEqualTo(member.getProfile().getSmokingStatus().toString());
+            assertThat(profileInfo.mbti()).isEqualTo(member.getProfile().getMbti().toString());
+            assertThat(profileInfo.religion()).isEqualTo(member.getProfile().getReligion().toString());
+            assertThat(profileInfo.highestEducation())
+                .isEqualTo(member.getProfile().getHighestEducation().toString());
+        }
+
+        private void assertInterviewInfo(Set<InterviewInfoView> interviewInfoView,
+            List<InterviewAnswer> interviewAnswers) {
+            assertThat(interviewInfoView.size()).isEqualTo(interviewAnswers.size());
         }
     }
 
@@ -442,6 +492,7 @@ class MemberQueryRepositoryTest {
             assertThat(matchInfo.requestMessage()).isEqualTo(match.getRequestMessage().getValue());
             assertThat(matchInfo.responseMessage())
                 .isEqualTo(match.getResponseMessage() == null ? null : match.getResponseMessage().getValue());
+
             assertThat(matchInfo.matchStatus()).isEqualTo(match.getStatus().toString());
             assertThat(matchInfo.contactType()).isEqualTo(otherMember.getPrimaryContactType().toString());
 
