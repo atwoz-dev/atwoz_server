@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static atwoz.atwoz.like.command.application.LikeMapper.toLikeLevel;
+
 @Service
 @RequiredArgsConstructor
 public class LikeSendService {
@@ -20,7 +22,7 @@ public class LikeSendService {
             throw new LikeAlreadyExistsException(senderId, receiverId);
         }
 
-        var like = Like.of(senderId, receiverId, request.likeLevel());
+        var like = Like.of(senderId, receiverId, toLikeLevel(request.likeLevel()));
         likeCommandRepository.save(like);
     }
 }

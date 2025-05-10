@@ -2,7 +2,7 @@ package atwoz.atwoz.like.command.application;
 
 import atwoz.atwoz.like.command.domain.Like;
 import atwoz.atwoz.like.command.domain.LikeCommandRepository;
-import atwoz.atwoz.like.command.domain.LikeLevel;
+import atwoz.atwoz.like.presentation.LikeLevelRequest;
 import atwoz.atwoz.like.presentation.LikeSendRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class LikeSendServiceTest {
         // given
         var senderId = 1L;
         var receiverId = 2L;
-        var likeLevel = LikeLevel.INTERESTED;
+        var likeLevel = LikeLevelRequest.INTERESTED;
         var request = new LikeSendRequest(receiverId, likeLevel);
 
         given(likeCommandRepository.existsBySenderIdAndReceiverId(senderId, receiverId)).willReturn(false);
@@ -49,7 +49,7 @@ class LikeSendServiceTest {
         // given
         var senderId = 1L;
         var receiverId = 2L;
-        var likeLevel = LikeLevel.INTERESTED;
+        var likeLevel = LikeLevelRequest.INTERESTED;
         var request = new LikeSendRequest(receiverId, likeLevel);
 
         given(likeCommandRepository.existsBySenderIdAndReceiverId(senderId, receiverId)).willReturn(true);

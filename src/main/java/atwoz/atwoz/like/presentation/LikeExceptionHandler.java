@@ -2,6 +2,7 @@ package atwoz.atwoz.like.presentation;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
+import atwoz.atwoz.like.command.application.InvalidLikeLevelException;
 import atwoz.atwoz.like.command.application.LikeAlreadyExistsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -20,5 +21,12 @@ public class LikeExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest().body(BaseResponse.from(StatusType.INVALID_DUPLICATE_VALUE));
+    }
+
+    @ExceptionHandler(InvalidLikeLevelException.class)
+    public ResponseEntity<BaseResponse<Void>> handleInvalidLikeLevelException(InvalidLikeLevelException e) {
+        log.warn(e.getMessage());
+
+        return ResponseEntity.badRequest().body(BaseResponse.from(StatusType.INVALID_ENUM_VALUE));
     }
 }
