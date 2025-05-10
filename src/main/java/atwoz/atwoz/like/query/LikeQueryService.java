@@ -13,31 +13,26 @@ public class LikeQueryService {
 
     public List<LikeView> findSentLikes(long senderId, Long lastLikeId) {
         return likeQueryRepository.findSentLikes(senderId, lastLikeId).stream()
-            .map(raw -> new LikeView(
-                raw.likeId(),
-                raw.opponentId(),
-                raw.profileImageUrl(),
-                raw.nickname(),
-                raw.city(),
-                LocalDate.now().getYear() - raw.yearOfBirth(),
-                raw.isMutualLike(),
-                raw.createdAt()
-            ))
+            .map(this::toLikeView)
             .toList();
     }
 
     public List<LikeView> findReceivedLikes(long receiverId, Long lastLikeId) {
         return likeQueryRepository.findReceivedLikes(receiverId, lastLikeId).stream()
-            .map(raw -> new LikeView(
-                raw.likeId(),
-                raw.opponentId(),
-                raw.profileImageUrl(),
-                raw.nickname(),
-                raw.city(),
-                LocalDate.now().getYear() - raw.yearOfBirth(),
-                raw.isMutualLike(),
-                raw.createdAt()
-            ))
+            .map(this::toLikeView)
             .toList();
+    }
+
+    private LikeView toLikeView(RawLikeView raw) {
+        return new LikeView(
+            raw.likeId(),
+            raw.opponentId(),
+            raw.profileImageUrl(),
+            raw.nickname(),
+            raw.city(),
+            LocalDate.now().getYear() - raw.yearOfBirth(),
+            raw.isMutualLike(),
+            raw.createdAt()
+        );
     }
 }
