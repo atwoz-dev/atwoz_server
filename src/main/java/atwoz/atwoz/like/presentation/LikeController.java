@@ -4,7 +4,7 @@ import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.like.command.application.LikeSendService;
-import atwoz.atwoz.like.query.LikeQueryRepository;
+import atwoz.atwoz.like.query.LikeQueryService;
 import atwoz.atwoz.like.query.LikeView;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import static atwoz.atwoz.common.enums.StatusType.OK;
 @RequiredArgsConstructor
 public class LikeController {
     private final LikeSendService likeSendService;
-    private final LikeQueryRepository likeQueryRepository;
+    private final LikeQueryService likeQueryService;
 
     @PostMapping
     public ResponseEntity<BaseResponse<Void>> send(
@@ -37,7 +37,7 @@ public class LikeController {
         @ModelAttribute LikeListRequest request,
         @AuthPrincipal AuthContext authContext
     ) {
-        final var sentLikes = likeQueryRepository.findSentLikes(authContext.getId(), request.lastLikeId());
+        final var sentLikes = likeQueryService.findSentLikes(authContext.getId(), request.lastLikeId());
         return ResponseEntity.ok(BaseResponse.of(OK, sentLikes));
     }
 
@@ -46,7 +46,7 @@ public class LikeController {
         @ModelAttribute LikeListRequest request,
         @AuthPrincipal AuthContext authContext
     ) {
-        final var receivedLikes = likeQueryRepository.findReceivedLikes(authContext.getId(), request.lastLikeId());
+        final var receivedLikes = likeQueryService.findReceivedLikes(authContext.getId(), request.lastLikeId());
         return ResponseEntity.ok(BaseResponse.of(OK, receivedLikes));
     }
 }

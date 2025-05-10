@@ -1,15 +1,20 @@
 package atwoz.atwoz.like.query;
 
+import com.querydsl.core.annotations.QueryProjection;
+
 import java.time.LocalDateTime;
 
-public record LikeView(
+public record RawLikeView(
     long likeId,
     long opponentId,
     String profileImageUrl,
     String nickname,
     String city,
-    int age,
+    int yearOfBirth,
     boolean isMutualLike,
     LocalDateTime createdAt
 ) {
+    @QueryProjection
+    public RawLikeView {
+    }
 }
