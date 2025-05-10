@@ -24,7 +24,7 @@ public class LikeExceptionHandler {
     }
 
     @ExceptionHandler(InvalidLikeLevelException.class)
-    public ResponseEntity<BaseResponse<Void>> handleLInvalidLikeLevelException(InvalidLikeLevelException e) {
+    public ResponseEntity<BaseResponse<Void>> handleInvalidLikeLevelException(InvalidLikeLevelException e) {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest().body(BaseResponse.from(StatusType.INVALID_ENUM_VALUE));
