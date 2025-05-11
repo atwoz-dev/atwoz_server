@@ -2,10 +2,12 @@ package atwoz.atwoz.community.command.domain.selfintroduction;
 
 import atwoz.atwoz.community.command.domain.selfintroduction.exception.InvalidSelfIntroductionContentException;
 import atwoz.atwoz.community.command.domain.selfintroduction.exception.InvalidSelfIntroductionTitleException;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class SelfIntroductionTest {
 
@@ -21,9 +23,9 @@ public class SelfIntroductionTest {
         SelfIntroduction selfIntroduction = SelfIntroduction.write(memberId, title, content);
 
         // Then
-        Assertions.assertThat(selfIntroduction).isNotNull();
-        Assertions.assertThat(selfIntroduction.getMemberId()).isEqualTo(memberId);
-        Assertions.assertThat(selfIntroduction.getContent()).isEqualTo(content);
+        assertThat(selfIntroduction).isNotNull();
+        assertThat(selfIntroduction.getMemberId()).isEqualTo(memberId);
+        assertThat(selfIntroduction.getContent()).isEqualTo(content);
     }
 
     @Nested
@@ -38,7 +40,7 @@ public class SelfIntroductionTest {
             String content = "셀프 소개 내용.";
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> SelfIntroduction.write(memberId, title, content))
+            assertThatThrownBy(() -> SelfIntroduction.write(memberId, title, content))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -51,7 +53,7 @@ public class SelfIntroductionTest {
             String content = "셀프 소개 내용.";
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> SelfIntroduction.write(memberId, title, content))
+            assertThatThrownBy(() -> SelfIntroduction.write(memberId, title, content))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -64,7 +66,7 @@ public class SelfIntroductionTest {
             String content = "셀프 소개 내용.";
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> SelfIntroduction.write(memberId, title, content))
+            assertThatThrownBy(() -> SelfIntroduction.write(memberId, title, content))
                 .isInstanceOf(InvalidSelfIntroductionTitleException.class);
         }
 
@@ -77,7 +79,7 @@ public class SelfIntroductionTest {
             String content = null;
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> SelfIntroduction.write(memberId, title, content))
+            assertThatThrownBy(() -> SelfIntroduction.write(memberId, title, content))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -90,8 +92,28 @@ public class SelfIntroductionTest {
             String content = "30자 이하.";
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> SelfIntroduction.write(memberId, title, content))
+            assertThatThrownBy(() -> SelfIntroduction.write(memberId, title, content))
                 .isInstanceOf(InvalidSelfIntroductionContentException.class);
+        }
+    }
+
+    @DisplayName("셀프 소개의 공개 여부 변경 테스트")
+    @Nested
+    class Update {
+        @Test
+        @DisplayName("셀프 소개를 비공개로 변경한다.")
+        void updateClose() {
+            // Given
+            Long memberId = 1L;
+            String title = "셀프 소개 제목";
+            String content = "셀프 소개 내용이 공백 포함하여 최소 30자 이상이어야 합니다.";
+            SelfIntroduction selfIntroduction = SelfIntroduction.write(memberId, title, content);
+
+            // When
+            selfIntroduction.close();
+
+            // Then
+            assertThat(selfIntroduction.isOpened()).isFalse();
         }
     }
 }

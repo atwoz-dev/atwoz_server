@@ -32,6 +32,7 @@ public class SelfIntroduction extends SoftDeleteBaseEntity {
     @Getter
     private String content;
 
+    @Getter
     private boolean isOpened = Boolean.TRUE;
 
     private SelfIntroduction(@NonNull Long memberId, @NonNull String title, @NonNull String content) {
