@@ -15,7 +15,7 @@ import static atwoz.atwoz.member.command.domain.profileImage.QProfileImage.profi
 @Repository
 @RequiredArgsConstructor
 public class LikeQueryRepository {
-    private static final int PAGE_SIZE = 12;
+    private static final int PAGE_SIZE = 13;
     private final JPAQueryFactory queryFactory;
 
     public List<RawLikeView> findSentLikes(long senderId, Long lastLikeId) {

@@ -10,6 +10,7 @@ public record LikeView(
     String city,
     int age,
     boolean isMutualLike,
-    LocalDateTime createdAt
+    LocalDateTime createdAt,
+    boolean hasMore
 ) {
 }
