@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Import({QueryDslConfig.class, SelfIntroductionQueryRepository.class})
-public class SelfIntroductionQueryRepositoryTest {
+public class AdminSelfIntroductionQueryRepositoryTest {
 
     @Autowired
     private SelfIntroductionQueryRepository selfIntroductionQueryRepository;
