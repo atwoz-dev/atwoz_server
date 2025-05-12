@@ -33,16 +33,17 @@ public class SelfIntroduction extends SoftDeleteBaseEntity {
     private String content;
 
     @Getter
-    private boolean isOpened = Boolean.TRUE;
+    private boolean isOpened;
 
-    private SelfIntroduction(@NonNull Long memberId, @NonNull String title, @NonNull String content) {
+    private SelfIntroduction(@NonNull Long memberId, @NonNull String title, @NonNull String content, boolean isOpened) {
+        this.isOpened = isOpened;
         this.memberId = memberId;
         setTitle(title);
         setContent(content);
     }
 
     public static SelfIntroduction write(Long memberId, String title, String content) {
-        return new SelfIntroduction(memberId, title, content);
+        return new SelfIntroduction(memberId, title, content, true);
     }
 
     public void update(String title, String content) {

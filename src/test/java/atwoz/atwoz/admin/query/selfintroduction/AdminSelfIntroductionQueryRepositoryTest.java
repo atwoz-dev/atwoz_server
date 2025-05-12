@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +26,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
 @Import({QueryDslConfig.class, AdminSelfIntroductionQueryRepository.class})
-public class AdminSelfIntroductionQueryRepositoryTest {
+class AdminSelfIntroductionQueryRepositoryTest {
 
     private static final int PAGE_SIZE = 5;
     Member manMember;
@@ -181,6 +183,9 @@ public class AdminSelfIntroductionQueryRepositoryTest {
             assertThat(view.selfIntroductionId()).isEqualTo(selfIntroductionByWoman.getId());
             assertThat(view.gender()).isEqualTo(womanMember.getProfile().getGender().name());
             assertThat(view.content()).isEqualTo(selfIntroductionByWoman.getContent());
+            assertThat(view.createdDate()).isEqualTo(toDate(selfIntroductionByWoman.getCreatedAt()));
+            assertThat(view.updatedDate()).isEqualTo(toDate(selfIntroductionByWoman.getUpdatedAt()));
+            assertThat(view.deletedDate()).isEqualTo(toDate(selfIntroductionByWoman.getDeletedAt()));
         }
     }
 
@@ -203,5 +208,9 @@ public class AdminSelfIntroductionQueryRepositoryTest {
 
         // Then
         assertThat(selfIntroductionViews.getTotalElements()).isEqualTo(PAGE_SIZE);
+    }
+
+    private String toDate(LocalDateTime localDateTime) {
+        return localDateTime != null ? DateTimeFormatter.ofPattern("yyyy/MM/dd").format(localDateTime) : null;
     }
 }

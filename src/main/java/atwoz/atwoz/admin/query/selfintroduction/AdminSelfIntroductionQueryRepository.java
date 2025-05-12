@@ -30,9 +30,9 @@ public class AdminSelfIntroductionQueryRepository {
                     member.profile.gender.stringValue(),
                     selfIntroduction.isOpened,
                     selfIntroduction.content,
-                    selfIntroduction.createdAt.stringValue(),
-                    selfIntroduction.updatedAt.stringValue(),
-                    selfIntroduction.deletedAt.stringValue()
+                    selfIntroduction.createdAt,
+                    selfIntroduction.updatedAt,
+                    selfIntroduction.deletedAt
                 )
             )
             .from(selfIntroduction)
