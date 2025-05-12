@@ -5,6 +5,7 @@ import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.payment.command.application.order.exception.InvalidOrderException;
 import atwoz.atwoz.payment.command.application.order.exception.OrderAlreadyExistsException;
 import atwoz.atwoz.payment.command.infra.order.exception.AppStoreClientException;
+import atwoz.atwoz.payment.command.infra.order.exception.InvalidAppReceiptException;
 import atwoz.atwoz.payment.command.infra.order.exception.InvalidTransactionIdException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -28,6 +29,14 @@ public class PaymentExceptionHandler {
     @ExceptionHandler(OrderAlreadyExistsException.class)
     public ResponseEntity<BaseResponse<Void>> handleOrderAlreadyExistsException(OrderAlreadyExistsException e) {
         log.warn("이미 처리된 주문입니다. {}", e.getMessage());
+
+        return ResponseEntity.status(400)
+            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(InvalidAppReceiptException.class)
+    public ResponseEntity<BaseResponse<Void>> handleInvalidAppReceiptException(InvalidAppReceiptException e) {
+        log.warn("잘못된 앱 영수증입니다. {}", e.getMessage());
 
         return ResponseEntity.status(400)
             .body(BaseResponse.from(StatusType.BAD_REQUEST));
