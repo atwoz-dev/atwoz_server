@@ -6,10 +6,15 @@ import atwoz.atwoz.payment.command.infra.order.exception.InvalidTransactionIdExc
 import com.apple.itunes.storekit.client.APIException;
 import com.apple.itunes.storekit.client.AppStoreServerAPIClient;
 import com.apple.itunes.storekit.migration.ReceiptUtility;
+import com.apple.itunes.storekit.model.JWSTransactionDecodedPayload;
 import com.apple.itunes.storekit.model.TransactionInfoResponse;
+import com.apple.itunes.storekit.verification.SignedDataVerifier;
+import com.apple.itunes.storekit.verification.VerificationException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
@@ -17,15 +22,17 @@ public class AppStoreClient {
 
     private final AppStoreServerAPIClient client;
     private final ReceiptUtility receiptUtil;
+    private final SignedDataVerifier signedDataVerifier;
 
-    public TransactionInfoResponse getTransactionInfo(@NonNull String appReceipt) {
+    public JWSTransactionDecodedPayload getTransactionDecodedPayload(@NonNull String appReceipt) {
         try {
             String transactionId = getTransactionId(appReceipt);
-            return client.getTransactionInfo(transactionId);
+            TransactionInfoResponse transactionInfoResponse = client.getTransactionInfo(transactionId);
+            return getPayload(transactionInfoResponse);
         } catch (APIException e) {
             handleAPIException(e);
             throw new AppStoreClientException(e);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new AppStoreClientException(e);
         }
     }
@@ -33,10 +40,22 @@ public class AppStoreClient {
     private String getTransactionId(String appReceipt) {
         try {
             return receiptUtil.extractTransactionIdFromAppReceipt(appReceipt);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             throw new InvalidAppReceiptException(e);
+        } catch (IOException e) {
+            throw new AppStoreClientException(e);
         }
     }
+
+    private JWSTransactionDecodedPayload getPayload(TransactionInfoResponse transactionInfoResponse) {
+        String signedTransactionInfo = transactionInfoResponse.getSignedTransactionInfo();
+        try {
+            return signedDataVerifier.verifyAndDecodeTransaction(signedTransactionInfo);
+        } catch (VerificationException e) {
+            throw new AppStoreClientException(e);
+        }
+    }
+
 
     private void handleAPIException(APIException e) {
         int statusCode = e.getHttpStatusCode();

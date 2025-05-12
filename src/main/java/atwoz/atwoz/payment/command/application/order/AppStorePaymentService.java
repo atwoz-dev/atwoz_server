@@ -8,10 +8,8 @@ import atwoz.atwoz.payment.command.domain.heartpurchaseoption.HeartPurchaseOptio
 import atwoz.atwoz.payment.command.domain.order.Order;
 import atwoz.atwoz.payment.command.domain.order.OrderCommandRepository;
 import atwoz.atwoz.payment.command.domain.order.PaymentMethod;
-import atwoz.atwoz.payment.command.domain.order.TokenParser;
 import atwoz.atwoz.payment.command.infra.order.AppStoreClient;
-import atwoz.atwoz.payment.command.infra.order.TransactionInfo;
-import com.apple.itunes.storekit.model.TransactionInfoResponse;
+import com.apple.itunes.storekit.model.JWSTransactionDecodedPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,36 +18,33 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AppStorePaymentService {
     private final AppStoreClient appStoreClient;
-    private final TokenParser tokenParser;
     private final OrderCommandRepository orderCommandRepository;
     private final HeartPurchaseOptionCommandRepository heartPurchaseOptionCommandRepository;
 
     @Transactional
-    public void verifyReceipt(String receiptToken, Long memberId) {
-        TransactionInfo transactionInfo = getTransactionInfo(receiptToken);
-        verifyTransactionInfo(transactionInfo);
-        createOrder(memberId, transactionInfo);
-        purchaseHeart(memberId, transactionInfo.getProductId(), transactionInfo.getQuantity());
+    public void verifyReceipt(String appReceipt, Long memberId) {
+        JWSTransactionDecodedPayload decodedPayload = getTransactionDecodedPayload(appReceipt);
+        verifyTransactionInfo(decodedPayload);
+        createOrder(memberId, decodedPayload);
+        purchaseHeart(memberId, decodedPayload.getProductId(), decodedPayload.getQuantity());
     }
 
-    private TransactionInfo getTransactionInfo(String receiptToken) {
-        TransactionInfoResponse transactionInfoResponse = appStoreClient.getTransactionInfo(receiptToken);
-        String signedTransactionInfo = transactionInfoResponse.getSignedTransactionInfo();
-        return tokenParser.parseToTransactionInfo(signedTransactionInfo);
+    private JWSTransactionDecodedPayload getTransactionDecodedPayload(String appReceipt) {
+        return appStoreClient.getTransactionDecodedPayload(appReceipt);
     }
 
-    private void verifyTransactionInfo(TransactionInfo transactionInfo) {
-        if (transactionInfo.isRevoked()) {
+    private void verifyTransactionInfo(JWSTransactionDecodedPayload decodedPayload) {
+        if (decodedPayload.getRevocationDate() != null) {
             throw new InvalidOrderException();
         }
-        if (orderCommandRepository.existsByTransactionIdAndPaymentMethod(transactionInfo.getTransactionId(),
+        if (orderCommandRepository.existsByTransactionIdAndPaymentMethod(decodedPayload.getTransactionId(),
             PaymentMethod.APP_STORE)) {
             throw new OrderAlreadyExistsException();
         }
     }
 
-    private void createOrder(Long memberId, TransactionInfo transactionInfo) {
-        Order order = Order.of(memberId, transactionInfo.getTransactionId(), PaymentMethod.APP_STORE);
+    private void createOrder(Long memberId, JWSTransactionDecodedPayload decodedPayload) {
+        Order order = Order.of(memberId, decodedPayload.getTransactionId(), PaymentMethod.APP_STORE);
         orderCommandRepository.save(order);
     }
 
