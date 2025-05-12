@@ -1,10 +1,10 @@
 package atwoz.atwoz.like.query;
 
+import atwoz.atwoz.like.presentation.LikeViews;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -12,27 +12,31 @@ public class LikeQueryService {
     private static final int CLIENT_PAGE_SIZE = 12;
     private final LikeQueryRepository likeQueryRepository;
 
-    public List<LikeView> findSentLikes(long senderId, Long lastLikeId) {
-        List<RawLikeView> likes = likeQueryRepository.findSentLikes(senderId, lastLikeId);
-        boolean hasMore = likes.size() > CLIENT_PAGE_SIZE;
+    public LikeViews findSentLikes(long senderId, Long lastLikeId) {
+        var rawLikes = likeQueryRepository.findSentLikes(senderId, lastLikeId);
+        boolean hasMore = rawLikes.size() > CLIENT_PAGE_SIZE;
 
-        return likes.stream()
+        var likes = rawLikes.stream()
             .limit(CLIENT_PAGE_SIZE)
-            .map(raw -> toLikeView(raw, hasMore))
+            .map(this::toLikeView)
             .toList();
+
+        return new LikeViews(likes, hasMore);
     }
 
-    public List<LikeView> findReceivedLikes(long receiverId, Long lastLikeId) {
-        List<RawLikeView> likes = likeQueryRepository.findReceivedLikes(receiverId, lastLikeId);
-        boolean hasMore = likes.size() > CLIENT_PAGE_SIZE;
+    public LikeViews findReceivedLikes(long receiverId, Long lastLikeId) {
+        var rawLikes = likeQueryRepository.findReceivedLikes(receiverId, lastLikeId);
+        boolean hasMore = rawLikes.size() > CLIENT_PAGE_SIZE;
 
-        return likes.stream()
+        var likes = rawLikes.stream()
             .limit(CLIENT_PAGE_SIZE)
-            .map(raw -> toLikeView(raw, hasMore))
+            .map(this::toLikeView)
             .toList();
+
+        return new LikeViews(likes, hasMore);
     }
 
-    private LikeView toLikeView(RawLikeView raw, boolean hasMore) {
+    private LikeView toLikeView(RawLikeView raw) {
         return new LikeView(
             raw.likeId(),
             raw.opponentId(),
@@ -41,8 +45,7 @@ public class LikeQueryService {
             raw.city(),
             LocalDate.now().getYear() - raw.yearOfBirth(),
             raw.isMutualLike(),
-            raw.createdAt(),
-            hasMore
+            raw.createdAt()
         );
     }
 }
