@@ -1,6 +1,7 @@
 package atwoz.atwoz.payment.command.infra.order;
 
 import com.apple.itunes.storekit.client.AppStoreServerAPIClient;
+import com.apple.itunes.storekit.migration.ReceiptUtility;
 import com.apple.itunes.storekit.model.Environment;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,5 +23,10 @@ public class AppStoreClientConfig {
         byte[] decodedBytes = Base64.getDecoder().decode(privateKeyString);
         String decodedPrivateKeyString = new String(decodedBytes);
         return new AppStoreServerAPIClient(decodedPrivateKeyString, keyId, issuerId, bundleId, environment);
+    }
+
+    @Bean
+    public ReceiptUtility receiptUtility() {
+        return new ReceiptUtility();
     }
 }
