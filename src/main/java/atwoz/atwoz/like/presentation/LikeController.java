@@ -5,13 +5,10 @@ import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.like.command.application.LikeSendService;
 import atwoz.atwoz.like.query.LikeQueryService;
-import atwoz.atwoz.like.query.LikeView;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static atwoz.atwoz.common.enums.StatusType.OK;
 
@@ -33,7 +30,7 @@ public class LikeController {
     }
 
     @GetMapping("/sent")
-    public ResponseEntity<BaseResponse<List<LikeView>>> getSentLikes(
+    public ResponseEntity<BaseResponse<LikeViews>> getSentLikes(
         @ModelAttribute LikeListRequest request,
         @AuthPrincipal AuthContext authContext
     ) {
@@ -42,7 +39,7 @@ public class LikeController {
     }
 
     @GetMapping("/received")
-    public ResponseEntity<BaseResponse<List<LikeView>>> getReceivedLikes(
+    public ResponseEntity<BaseResponse<LikeViews>> getReceivedLikes(
         @ModelAttribute LikeListRequest request,
         @AuthPrincipal AuthContext authContext
     ) {

@@ -40,6 +40,7 @@ public class ScreeningQueryRepository {
                 startDateGoe(condition.startDate()),
                 loeEndDate(condition.endDate())
             )
+            .orderBy(screening.createdAt.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();

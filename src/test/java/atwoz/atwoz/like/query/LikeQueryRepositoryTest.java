@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Import({QueryDslConfig.class, LikeQueryRepository.class})
 class LikeQueryRepositoryTest {
     private static final int NUMBER_OF_PEOPLE = 30;
-    private static final int PAGE_SIZE = 12;
+    private static final int PAGE_SIZE = 13;
 
     @Autowired
     private LikeQueryRepository likeQueryRepository;

@@ -1,26 +1,39 @@
 package atwoz.atwoz.like.query;
 
+import atwoz.atwoz.like.presentation.LikeViews;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class LikeQueryService {
+    private static final int CLIENT_PAGE_SIZE = 12;
     private final LikeQueryRepository likeQueryRepository;
 
-    public List<LikeView> findSentLikes(long senderId, Long lastLikeId) {
-        return likeQueryRepository.findSentLikes(senderId, lastLikeId).stream()
+    public LikeViews findSentLikes(long senderId, Long lastLikeId) {
+        var rawLikes = likeQueryRepository.findSentLikes(senderId, lastLikeId);
+        boolean hasMore = rawLikes.size() > CLIENT_PAGE_SIZE;
+
+        var likes = rawLikes.stream()
+            .limit(CLIENT_PAGE_SIZE)
             .map(this::toLikeView)
             .toList();
+
+        return new LikeViews(likes, hasMore);
     }
 
-    public List<LikeView> findReceivedLikes(long receiverId, Long lastLikeId) {
-        return likeQueryRepository.findReceivedLikes(receiverId, lastLikeId).stream()
+    public LikeViews findReceivedLikes(long receiverId, Long lastLikeId) {
+        var rawLikes = likeQueryRepository.findReceivedLikes(receiverId, lastLikeId);
+        boolean hasMore = rawLikes.size() > CLIENT_PAGE_SIZE;
+
+        var likes = rawLikes.stream()
+            .limit(CLIENT_PAGE_SIZE)
             .map(this::toLikeView)
             .toList();
+
+        return new LikeViews(likes, hasMore);
     }
 
     private LikeView toLikeView(RawLikeView raw) {

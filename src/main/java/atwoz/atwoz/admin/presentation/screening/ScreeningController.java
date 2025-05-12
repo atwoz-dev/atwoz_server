@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,7 @@ public class ScreeningController {
     @GetMapping
     public ResponseEntity<BaseResponse<Page<ScreeningView>>> getScreenings(
         @Valid @ModelAttribute ScreeningSearchCondition condition,
-        Pageable pageable
+        @PageableDefault(size = 100) Pageable pageable
     ) {
         return ResponseEntity.ok(BaseResponse.of(OK, screeningQueryRepository.findScreenings(condition, pageable)));
     }
