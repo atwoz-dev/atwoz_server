@@ -76,3 +76,5 @@ payment:
     issuer-id: ${APP_STORE_ISSUER_ID:issuer-id}
     environment: ${APP_STORE_ENVIRONMENT:Sandbox}
     bundle-id: ${APP_STORE_BUNDLE_ID:bundle-id}
+    app-apple-id: ${APP_STORE_APP_APPLE_ID:0000000000}
+    root-ca-paths: ${APP_STORE_ROOT_CA_G2_PATH:/etc/certs/appstore/AppleRootCA-G2.pem}, ${APP_STORE_ROOT_CA_G3_PATH:/etc/certs/appstore/AppleRootCA-G3.pem}
