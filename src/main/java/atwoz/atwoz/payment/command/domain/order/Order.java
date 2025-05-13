@@ -21,10 +21,13 @@ public class Order extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
     private Long memberId;
 
+    @Getter
     private String transactionId;
 
+    @Getter
     @Enumerated
     @Column(columnDefinition = "varchar(50)")
     private PaymentMethod paymentMethod;
