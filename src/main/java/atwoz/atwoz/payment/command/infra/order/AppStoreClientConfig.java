@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Set;
@@ -57,6 +54,18 @@ public class AppStoreClientConfig {
         if (environment.equals(Environment.SANDBOX)) {
             appAppleId = null;
         }
-        return new SignedDataVerifier(rootCAs, bundleId, appAppleId, environment, true);
+        SignedDataVerifier verifier;
+        try {
+            verifier = new SignedDataVerifier(rootCAs, bundleId, null, environment, true);
+        } finally {
+            rootCAs.forEach(is -> {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            });
+        }
+        return verifier;
     }
 }
