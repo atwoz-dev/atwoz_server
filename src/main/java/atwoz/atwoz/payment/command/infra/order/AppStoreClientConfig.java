@@ -54,18 +54,14 @@ public class AppStoreClientConfig {
         if (environment.equals(Environment.SANDBOX)) {
             appAppleId = null;
         }
-        SignedDataVerifier verifier;
-        try {
-            verifier = new SignedDataVerifier(rootCAs, bundleId, null, environment, true);
-        } finally {
-            rootCAs.forEach(is -> {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-            });
-        }
+        SignedDataVerifier verifier = new SignedDataVerifier(rootCAs, bundleId, appAppleId, environment, true);
+        rootCAs.forEach(is -> {
+            try {
+                is.close();
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        });
         return verifier;
     }
 }
