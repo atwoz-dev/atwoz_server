@@ -1,6 +1,6 @@
 package atwoz.atwoz.community.command.domain.selfintroduction;
 
-import atwoz.atwoz.common.entity.BaseEntity;
+import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
 import atwoz.atwoz.community.command.domain.selfintroduction.exception.InvalidSelfIntroductionContentException;
 import atwoz.atwoz.community.command.domain.selfintroduction.exception.InvalidSelfIntroductionTitleException;
 import jakarta.persistence.*;
@@ -8,13 +8,15 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.hibernate.annotations.SQLDelete;
 
 @Entity
 @Table(name = "self_introductions",
     indexes = @Index(name = "idx_member_id", columnList = "memberId")
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SelfIntroduction extends BaseEntity {
+@SQLDelete(sql = "UPDATE self_introductions SET deleted_at = now() WHERE id = ?")
+public class SelfIntroduction extends SoftDeleteBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,19 +32,27 @@ public class SelfIntroduction extends BaseEntity {
     @Getter
     private String content;
 
-    private SelfIntroduction(@NonNull Long memberId, @NonNull String title, @NonNull String content) {
+    @Getter
+    private boolean isOpened;
+
+    private SelfIntroduction(@NonNull Long memberId, @NonNull String title, @NonNull String content, boolean isOpened) {
+        this.isOpened = isOpened;
         this.memberId = memberId;
         setTitle(title);
         setContent(content);
     }
 
     public static SelfIntroduction write(Long memberId, String title, String content) {
-        return new SelfIntroduction(memberId, title, content);
+        return new SelfIntroduction(memberId, title, content, true);
     }
 
     public void update(String title, String content) {
         setTitle(title);
         setContent(content);
+    }
+
+    public void close() {
+        isOpened = Boolean.FALSE;
     }
 
     private void setTitle(@NonNull String title) {
