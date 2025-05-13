@@ -82,7 +82,7 @@ public class SelfIntroductionQueryRepository {
     private BooleanExpression getSearchCondition(SelfIntroductionSearchCondition searchCondition, Long lastId) {
         BooleanExpression condition = selfIntroduction.deletedAt.isNull();
         if (lastId != null) {
-            condition = selfIntroduction.id.lt(lastId);
+            condition = condition.and(selfIntroduction.id.lt(lastId));
         }
         condition = addYearOfBirthCondition(condition, searchCondition);
         condition = addGenderCondition(condition, searchCondition);
