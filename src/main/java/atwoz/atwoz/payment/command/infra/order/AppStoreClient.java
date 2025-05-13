@@ -39,7 +39,11 @@ public class AppStoreClient {
 
     private String getTransactionId(String appReceipt) {
         try {
-            return receiptUtil.extractTransactionIdFromAppReceipt(appReceipt);
+            final String transactionId = receiptUtil.extractTransactionIdFromAppReceipt(appReceipt);
+            if (transactionId == null) {
+                throw new InvalidAppReceiptException("앱 영수증에 TransactionId가 없습니다.");
+            }
+            return transactionId;
         } catch (IllegalArgumentException e) {
             throw new InvalidAppReceiptException(e);
         } catch (IOException e) {

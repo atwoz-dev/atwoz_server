@@ -97,6 +97,22 @@ class AppStoreClientTest {
     }
 
     @Test
+    @DisplayName("app receipt에서 추출한 transactionId가 null이면 InvalidAppReceiptException을 던진다")
+    void testGetTransactionDecodedPayloadFailureWhenExtractTransactionIdFromAppReceiptIsNull()
+        throws Exception {
+        // given
+        String appReceipt = "appReceipt";
+
+        when(receiptUtil.extractTransactionIdFromAppReceipt(appReceipt)).thenReturn(null);
+
+        // when && then
+        assertThatThrownBy(() -> appStoreClient.getTransactionDecodedPayload(appReceipt))
+            .isInstanceOf(InvalidAppReceiptException.class);
+
+        verify(appStoreServerAPIClient, never()).getTransactionInfo(any());
+    }
+
+    @Test
     @DisplayName("API 요청이 400으로 실패하면 InvalidTransactionIdException 던진다")
     void testGetTransactionDecodedPayloadFailure() throws Exception {
         // given
