@@ -47,7 +47,7 @@ public class AppStoreClientConfig {
                 try {
                     return new FileInputStream(path);
                 } catch (FileNotFoundException e) {
-                    throw new UncheckedIOException(e);
+                    throw new UncheckedIOException("인증서 파일을 찾을 수 없습니다: " + path, e);
                 }
             })
             .collect(Collectors.toSet());
