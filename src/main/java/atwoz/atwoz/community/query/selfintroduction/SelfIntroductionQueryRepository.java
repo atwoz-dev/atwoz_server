@@ -57,7 +57,7 @@ public class SelfIntroductionQueryRepository {
             .leftJoin(like).on(like.senderId.eq(memberId).and(like.receiverId.eq(member.id)))
             .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
             .leftJoin(member.profile.hobbies, hobby)
-            .where(selfIntroduction.id.eq(id))
+            .where(selfIntroduction.id.eq(id).and(selfIntroduction.deletedAt.isNull()))
             .transform(
                 groupBy(member.id).as(
                     new QSelfIntroductionView(
@@ -80,7 +80,7 @@ public class SelfIntroductionQueryRepository {
     }
 
     private BooleanExpression getSearchCondition(SelfIntroductionSearchCondition searchCondition, Long lastId) {
-        BooleanExpression condition = null;
+        BooleanExpression condition = selfIntroduction.deletedAt.isNull();
         if (lastId != null) {
             condition = selfIntroduction.id.lt(lastId);
         }
