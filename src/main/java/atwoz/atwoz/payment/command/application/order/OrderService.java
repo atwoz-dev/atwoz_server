@@ -37,7 +37,8 @@ public class OrderService {
     }
 
     private void purchaseHeart(Long memberId, String productId, Integer quantity) {
-        HeartPurchaseOption heartPurchaseOption = heartPurchaseOptionCommandRepository.findByProductId(productId)
+        HeartPurchaseOption heartPurchaseOption = heartPurchaseOptionCommandRepository.findByProductIdAndDeletedAtIsNull(
+                productId)
             .orElseThrow(
                 () -> new HeartPurchaseOptionNotFoundException("하트 구매 옵션이 존재하지 않습니다. product id:" + productId));
         heartPurchaseOption.purchase(memberId, quantity);
