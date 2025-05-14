@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/heartpurchaseoption")
+@RequestMapping("/admin/heart-purchase-options")
 public class AdminHeartPurchaseOptionController {
     private final HeartPurchaseOptionService heartPurchaseOptionService;
     private final HeartPurchaseOptionQueryRepository heartPurchaseOptionQueryRepository;
