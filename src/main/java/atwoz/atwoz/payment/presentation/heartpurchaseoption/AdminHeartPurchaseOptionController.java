@@ -7,10 +7,7 @@ import atwoz.atwoz.payment.presentation.heartpurchaseoption.dto.HeartPurchaseOpt
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +18,13 @@ public class AdminHeartPurchaseOptionController {
     @PostMapping
     public ResponseEntity<BaseResponse<Void>> create(@Valid @RequestBody HeartPurchaseOptionCreateRequest request) {
         heartPurchaseOptionService.create(request);
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<BaseResponse<Void>> delete(@PathVariable Long id) {
+        heartPurchaseOptionService.delete(id);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 }
