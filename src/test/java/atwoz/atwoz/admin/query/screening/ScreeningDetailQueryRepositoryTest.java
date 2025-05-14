@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.query;
+package atwoz.atwoz.admin.query.screening;
 
 import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.admin.command.domain.screening.Screening;

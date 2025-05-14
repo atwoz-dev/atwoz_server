@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.query;
+package atwoz.atwoz.admin.query.screening;
 
 import java.util.List;
 

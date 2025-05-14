@@ -1,5 +1,6 @@
-package atwoz.atwoz.admin.query;
+package atwoz.atwoz.admin.query.screening;
 
+import atwoz.atwoz.admin.query.QScreeningView;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;

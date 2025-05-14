@@ -1,7 +1,7 @@
 package atwoz.atwoz.admin.presentation.screening;
 
 import atwoz.atwoz.admin.command.application.screening.ScreeningService;
-import atwoz.atwoz.admin.query.*;
+import atwoz.atwoz.admin.query.screening.*;
 import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.response.BaseResponse;

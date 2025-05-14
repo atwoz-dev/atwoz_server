@@ -1,5 +1,8 @@
-package atwoz.atwoz.admin.query;
+package atwoz.atwoz.admin.query.screening;
 
+import atwoz.atwoz.admin.query.QScreeningDetailInterviewView;
+import atwoz.atwoz.admin.query.QScreeningDetailProfileImageView;
+import atwoz.atwoz.admin.query.QScreeningDetailProfileView;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
