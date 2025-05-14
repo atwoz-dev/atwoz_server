@@ -29,14 +29,15 @@ public class HeartPurchaseOption extends SoftDeleteBaseEntity {
 
     private String productId;
 
-    private HeartPurchaseOption(HeartPurchaseAmount amount, Price price, String name) {
+    private HeartPurchaseOption(HeartPurchaseAmount amount, Price price, String productId, String name) {
         setAmount(amount);
         setPrice(price);
+        setProductId(productId);
         setName(name);
     }
 
-    public static HeartPurchaseOption of(HeartPurchaseAmount amount, Price price, String name) {
-        return new HeartPurchaseOption(amount, price, name);
+    public static HeartPurchaseOption of(HeartPurchaseAmount amount, Price price, String productId, String name) {
+        return new HeartPurchaseOption(amount, price, productId, name);
     }
 
     public Long getHeartAmount() {
@@ -54,6 +55,13 @@ public class HeartPurchaseOption extends SoftDeleteBaseEntity {
 
     private void setPrice(@NonNull Price price) {
         this.price = price;
+    }
+
+    private void setProductId(@NonNull String productId) {
+        if (productId.isBlank()) {
+            throw new InvalidHeartPurchaseOptionException("productId 값이 비어있습니다.");
+        }
+        this.productId = productId;
     }
 
     private void setName(@NonNull String name) {
