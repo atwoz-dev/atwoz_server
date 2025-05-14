@@ -3,6 +3,7 @@ package atwoz.atwoz.payment.presentation.heartpurchaseoption;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.payment.command.application.heartpurchaseoption.exception.HeartPurchaseOptionAlreadyExistsException;
+import atwoz.atwoz.payment.command.application.order.exception.HeartPurchaseOptionNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -22,5 +23,14 @@ public class HeartPurchaseOptionExceptionHandler {
 
         return ResponseEntity.badRequest()
             .body(BaseResponse.from(StatusType.INVALID_DUPLICATE_VALUE));
+    }
+
+    @ExceptionHandler(HeartPurchaseOptionNotFoundException.class)
+    public ResponseEntity<BaseResponse<Void>> handleHeartPurchaseOptionNotFoundException(
+        HeartPurchaseOptionNotFoundException e) {
+        log.warn(e.getMessage());
+
+        return ResponseEntity.status(404)
+            .body(BaseResponse.from(StatusType.NOT_FOUND));
     }
 }
