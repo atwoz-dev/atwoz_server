@@ -70,8 +70,8 @@ class HeartPurchaseOptionQueryRepositoryTest {
     }
 
     @Test
-    @DisplayName("하트 구매 옵션 페이지 조회 name condition 테스트")
-    void findPageWithNameCondition() {
+    @DisplayName("하트 구매 옵션 페이지 조회 productId condition 테스트")
+    void findPageWithProductIdCondition() {
         // given
         HeartPurchaseOptionSearchCondition condition = new HeartPurchaseOptionSearchCondition(
             "Id1",
@@ -111,8 +111,8 @@ class HeartPurchaseOptionQueryRepositoryTest {
     }
 
     @Test
-    @DisplayName("하트 구매 옵션 페이지 조회 productId condition 테스트")
-    void findPageWithProductIdCondition() {
+    @DisplayName("하트 구매 옵션 페이지 조회 name condition 테스트")
+    void findPageWithNameCondition() {
         // given
         HeartPurchaseOptionSearchCondition condition = new HeartPurchaseOptionSearchCondition(
             null,
