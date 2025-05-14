@@ -1,7 +1,7 @@
 package atwoz.atwoz.payment.command.application.heartpurchaseoption;
 
-import atwoz.atwoz.heart.command.application.heartusagepolicy.exception.HeartUsagePolicyNotFoundException;
 import atwoz.atwoz.payment.command.application.heartpurchaseoption.exception.HeartPurchaseOptionAlreadyExistsException;
+import atwoz.atwoz.payment.command.application.order.exception.HeartPurchaseOptionNotFoundException;
 import atwoz.atwoz.payment.command.domain.heartpurchaseoption.HeartPurchaseAmount;
 import atwoz.atwoz.payment.command.domain.heartpurchaseoption.HeartPurchaseOption;
 import atwoz.atwoz.payment.command.domain.heartpurchaseoption.HeartPurchaseOptionCommandRepository;
@@ -48,7 +48,7 @@ public class HeartPurchaseOptionService {
 
     private void validateDeleteRequest(Long id) {
         if (!heartPurchaseOptionCommandRepository.existsById(id)) {
-            throw new HeartUsagePolicyNotFoundException();
+            throw new HeartPurchaseOptionNotFoundException("해당 하트 구매 옵션이 존재하지 않습니다. id: " + id);
         }
     }
 }
