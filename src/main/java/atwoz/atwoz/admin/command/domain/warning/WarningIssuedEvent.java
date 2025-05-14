@@ -8,15 +8,15 @@ import lombok.NonNull;
 public class WarningIssuedEvent extends Event {
     private final long adminId;
     private final long memberId;
-    private final String reason;
+    private final String reasonType;
 
-    private WarningIssuedEvent(long adminId, long memberId, @NonNull String reason) {
+    private WarningIssuedEvent(long adminId, long memberId, @NonNull String reasonType) {
         this.adminId = adminId;
         this.memberId = memberId;
-        this.reason = reason;
+        this.reasonType = reasonType;
     }
 
-    public static WarningIssuedEvent of(long adminId, long memberId, String reason) {
-        return new WarningIssuedEvent(adminId, memberId, reason);
+    public static WarningIssuedEvent of(long adminId, long memberId, String reasonType) {
+        return new WarningIssuedEvent(adminId, memberId, reasonType);
     }
 }

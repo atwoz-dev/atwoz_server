@@ -27,16 +27,16 @@ public class Warning {
 
     @Enumerated(STRING)
     @Column(columnDefinition = "varchar(50)")
-    private WarningReasonType reason;
+    private WarningReasonType reasonType;
 
-    private Warning(long adminId, long memberId, @NonNull WarningReasonType reason) {
+    private Warning(long adminId, long memberId, @NonNull WarningReasonType reasonType) {
         this.adminId = adminId;
         this.memberId = memberId;
-        this.reason = reason;
+        this.reasonType = reasonType;
     }
 
-    public static Warning of(long adminId, long memberId, WarningReasonType reason) {
-        Events.raise(WarningIssuedEvent.of(adminId, memberId, reason.toString()));
-        return new Warning(adminId, memberId, reason);
+    public static Warning of(long adminId, long memberId, WarningReasonType reasonType) {
+        Events.raise(WarningIssuedEvent.of(adminId, memberId, reasonType.toString()));
+        return new Warning(adminId, memberId, reasonType);
     }
 }
