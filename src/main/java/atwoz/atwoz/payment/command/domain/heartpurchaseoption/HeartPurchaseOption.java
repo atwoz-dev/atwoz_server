@@ -25,10 +25,13 @@ public class HeartPurchaseOption extends SoftDeleteBaseEntity {
     private HeartPurchaseAmount amount;
 
     @Embedded
+    @Getter
     private Price price;
 
+    @Getter
     private String name;
 
+    @Getter
     private String productId;
 
     private HeartPurchaseOption(HeartPurchaseAmount amount, Price price, String productId, String name) {
