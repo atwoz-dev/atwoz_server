@@ -47,8 +47,11 @@ public class HeartPurchaseOptionService {
     }
 
     private void validateDeleteRequest(Long id) {
-        if (!heartPurchaseOptionCommandRepository.existsById(id)) {
-            throw new HeartPurchaseOptionNotFoundException("해당 하트 구매 옵션이 존재하지 않습니다. id: " + id);
+        final HeartPurchaseOption heartPurchaseOption = heartPurchaseOptionCommandRepository.findById(id).orElseThrow(
+            () -> new HeartPurchaseOptionNotFoundException("해당 id의 하트 구매 옵션이 존재하지 않습니다." + id)
+        );
+        if (heartPurchaseOption.isDeleted()) {
+            throw new HeartPurchaseOptionNotFoundException("이미 삭제된 하트 구매 옵션입니다." + id);
         }
     }
 }
