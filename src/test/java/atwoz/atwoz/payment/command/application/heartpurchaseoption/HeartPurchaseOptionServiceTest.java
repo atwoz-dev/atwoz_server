@@ -46,7 +46,8 @@ class HeartPurchaseOptionServiceTest {
                 productId,
                 name
             );
-            when(heartPurchaseOptionCommandRepository.existsByProductId(request.productId())).thenReturn(true);
+            when(heartPurchaseOptionCommandRepository.existsByProductIdAndDeletedAtIsNull(
+                request.productId())).thenReturn(true);
 
             // When & Then
             assertThatThrownBy(() -> heartPurchaseOptionService.create(request))
@@ -64,7 +65,8 @@ class HeartPurchaseOptionServiceTest {
                 productId,
                 name
             );
-            when(heartPurchaseOptionCommandRepository.existsByProductId(request.productId())).thenReturn(false);
+            when(heartPurchaseOptionCommandRepository.existsByProductIdAndDeletedAtIsNull(
+                request.productId())).thenReturn(false);
 
             // When
             heartPurchaseOptionService.create(request);

@@ -7,7 +7,7 @@ import java.util.Optional;
 public interface HeartPurchaseOptionCommandRepository extends JpaRepository<HeartPurchaseOption, Long> {
     Optional<HeartPurchaseOption> findById(Long id);
 
-    Optional<HeartPurchaseOption> findByProductId(String productId);
+    Optional<HeartPurchaseOption> findByProductIdAndDeletedAtIsNull(String productId);
 
-    boolean existsByProductId(String productId);
+    boolean existsByProductIdAndDeletedAtIsNull(String productId);
 }

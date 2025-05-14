@@ -29,7 +29,7 @@ public class HeartPurchaseOptionService {
     }
 
     private void validateCreateRequest(HeartPurchaseOptionCreateRequest request) {
-        if (heartPurchaseOptionCommandRepository.existsByProductId(request.productId())) {
+        if (heartPurchaseOptionCommandRepository.existsByProductIdAndDeletedAtIsNull(request.productId())) {
             throw new HeartPurchaseOptionAlreadyExistsException(request.productId());
         }
     }
