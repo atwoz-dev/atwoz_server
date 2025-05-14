@@ -5,6 +5,8 @@ import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.payment.command.application.order.AppStorePaymentService;
+import atwoz.atwoz.payment.presentation.order.dto.VerifyReceiptRequest;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +22,9 @@ public class PaymentController {
     private final AppStorePaymentService appStorePaymentService;
 
     @PostMapping("/app-store/verify-receipt")
-    public ResponseEntity<BaseResponse<Void>> verifyReceipt(@RequestBody String receiptToken,
+    public ResponseEntity<BaseResponse<Void>> verifyReceipt(@Valid @RequestBody VerifyReceiptRequest request,
         @AuthPrincipal AuthContext authContext) {
-        appStorePaymentService.verifyReceipt(receiptToken, authContext.getId());
+        appStorePaymentService.verifyReceipt(request.appReceipt(), authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 }

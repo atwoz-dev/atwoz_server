@@ -13,6 +13,7 @@ services:
     volumes:
       - .:/app
       - ./secrets:/etc/credentials:ro
+      - ./certs:/etc/certs:ro
     depends_on:
       - db
       - redis
