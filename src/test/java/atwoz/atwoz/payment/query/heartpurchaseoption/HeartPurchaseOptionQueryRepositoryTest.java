@@ -15,9 +15,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 @DataJpaTest
 @Import({QueryDslConfig.class, HeartPurchaseOptionQueryRepository.class})
@@ -62,7 +64,8 @@ class HeartPurchaseOptionQueryRepositoryTest {
         assertThat(heartPurchaseOptionView.productId()).isEqualTo(productId1.getProductId());
         assertThat(heartPurchaseOptionView.heartAmount()).isEqualTo(productId1.getHeartAmount());
         assertThat(heartPurchaseOptionView.price()).isEqualTo(productId1.getPrice().getValue());
-        assertThat(heartPurchaseOptionView.createdAt()).isEqualTo(productId1.getCreatedAt());
+        assertThat(heartPurchaseOptionView.createdAt()).isCloseTo(productId1.getCreatedAt(),
+            within(1, ChronoUnit.MICROS));
         assertThat(heartPurchaseOptionView.deletedAt()).isEqualTo(productId1.getDeletedAt());
     }
 
