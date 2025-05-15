@@ -28,6 +28,7 @@ public class HeartTransactionQueryRepository {
     public Page<HeartTransactionView> findPage(HeartTransactionSearchCondition condition, Pageable pageable) {
         Set<Long> memberIds = getMemberIds(condition.nickname(), condition.phoneNumber());
         if (memberIds != null && memberIds.isEmpty()) {
+            // nickname과 phoneNumber 검색 결과 대상 멤버가 없는 경우 빈 페이지를 반환합니다.
             return new PageImpl<>(List.of(), pageable, 0);
         }
 
@@ -66,6 +67,7 @@ public class HeartTransactionQueryRepository {
 
     private Set<Long> getMemberIds(String nickname, String phoneNumber) {
         if (nickname == null && phoneNumber == null) {
+            // nickname과 phoneNumber가 모두 null인 경우 null을 반환하여 memberId 조건을 무시합니다.
             return null;
         }
 
