@@ -18,6 +18,7 @@ public class HeartTransaction extends BaseEntity {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
+    @Getter
     private Long id;
 
     @Getter
