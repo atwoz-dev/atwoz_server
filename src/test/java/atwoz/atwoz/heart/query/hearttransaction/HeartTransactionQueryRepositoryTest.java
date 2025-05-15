@@ -145,6 +145,54 @@ class HeartTransactionQueryRepositoryTest {
     }
 
     @Test
+    @DisplayName("하트 거래 내역 페이지 조회 nickname and phoneNumber condition 테스트")
+    void findPageWithNicknameAndPhoneNumberCondition() {
+        // given
+        HeartTransactionSearchCondition condition1 = new HeartTransactionSearchCondition(
+            "name1",
+            "01000000000",
+            null,
+            null
+        );
+        HeartTransactionSearchCondition condition2 = new HeartTransactionSearchCondition(
+            "name1",
+            "01011111111",
+            null,
+            null
+        );
+        PageRequest pageRequest = PageRequest.of(0, 10);
+
+        Member member1 = createMember("01000000000", "nickname1");
+        Member member2 = createMember("01011111111", "nickname2");
+
+        entityManager.persist(member1);
+        entityManager.persist(member2);
+        entityManager.flush();
+
+        HeartTransaction heartTransaction1 = createHeartTransaction(member1.getId());
+        HeartTransaction heartTransaction2 = createHeartTransaction(member2.getId());
+
+        entityManager.persist(heartTransaction1);
+        entityManager.persist(heartTransaction2);
+        entityManager.flush();
+
+        // when
+        final Page<HeartTransactionView> result1 = heartTransactionQueryRepository.findPage(condition1,
+            pageRequest);
+        final Page<HeartTransactionView> result2 = heartTransactionQueryRepository.findPage(condition2,
+            pageRequest);
+
+        // then
+        assertThat(result1).isNotNull();
+        List<HeartTransactionView> heartTransactionViews = result1.getContent();
+        assertThat(heartTransactionViews).hasSize(1);
+        HeartTransactionView heartTransactionView = heartTransactionViews.get(0);
+        assertThat(heartTransactionView.id()).isEqualTo(heartTransaction1.getId());
+
+        assertThat(result2).isEmpty();
+    }
+
+    @Test
     @DisplayName("하트 거래 내역 페이지 조회 createdDateGoe condition 테스트")
     void findPageWithCreatedDateGoeCondition() {
         // given
