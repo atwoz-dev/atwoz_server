@@ -286,6 +286,7 @@ class HeartTransactionQueryRepositoryTest {
         return HeartTransaction.of(
             memberId,
             TransactionType.PURCHASE,
+            TransactionType.PURCHASE.getDescription(),
             HeartAmount.from(100L),
             HeartBalance.of(100L, 200L)
         );

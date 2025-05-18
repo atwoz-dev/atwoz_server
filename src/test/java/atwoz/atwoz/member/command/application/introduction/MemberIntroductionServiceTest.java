@@ -4,6 +4,7 @@ package atwoz.atwoz.member.command.application.introduction;
 import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotActiveException;
 import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotFoundException;
 import atwoz.atwoz.member.command.application.introduction.exception.MemberIntroductionAlreadyExistsException;
+import atwoz.atwoz.member.command.domain.introduction.IntroductionType;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroductionCommandRepository;
 import atwoz.atwoz.member.command.domain.member.Member;
@@ -43,7 +44,7 @@ class MemberIntroductionServiceTest {
         when(memberCommandRepository.findById(introducedMemberId)).thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> memberIntroductionService.create(memberId, introducedMemberId))
+        assertThatThrownBy(() -> memberIntroductionService.createGradeIntroduction(memberId, introducedMemberId))
             .isInstanceOf(IntroducedMemberNotFoundException.class);
     }
 
@@ -59,7 +60,7 @@ class MemberIntroductionServiceTest {
         when(memberCommandRepository.findById(introducedMemberId)).thenReturn(Optional.of(introducedMember));
 
         // when & then
-        assertThatThrownBy(() -> memberIntroductionService.create(memberId, introducedMemberId))
+        assertThatThrownBy(() -> memberIntroductionService.createGradeIntroduction(memberId, introducedMemberId))
             .isInstanceOf(IntroducedMemberNotActiveException.class);
     }
 
@@ -78,7 +79,7 @@ class MemberIntroductionServiceTest {
             introducedMemberId)).thenReturn(true);
 
         // when & then
-        assertThatThrownBy(() -> memberIntroductionService.create(memberId, introducedMemberId))
+        assertThatThrownBy(() -> memberIntroductionService.createGradeIntroduction(memberId, introducedMemberId))
             .isInstanceOf(MemberIntroductionAlreadyExistsException.class);
     }
 
@@ -98,9 +99,10 @@ class MemberIntroductionServiceTest {
         // when
         try (MockedStatic<MemberIntroduction> memberIntroductionMock = mockStatic(MemberIntroduction.class)) {
             MemberIntroduction memberIntroduction = mock(MemberIntroduction.class);
-            memberIntroductionMock.when(() -> MemberIntroduction.of(memberId, introducedMemberId))
+            memberIntroductionMock.when(() -> MemberIntroduction.of(memberId, introducedMemberId,
+                    IntroductionType.DIAMOND_GRADE.getDescription()))
                 .thenReturn(memberIntroduction);
-            memberIntroductionService.create(memberId, introducedMemberId);
+            memberIntroductionService.createGradeIntroduction(memberId, introducedMemberId);
 
             // then
             verify(memberIntroductionCommandRepository).save(memberIntroduction);
