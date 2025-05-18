@@ -2,6 +2,7 @@ package atwoz.atwoz.report.command.application;
 
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
+import atwoz.atwoz.report.command.application.exception.ReportAlreadyExistsException;
 import atwoz.atwoz.report.command.domain.Report;
 import atwoz.atwoz.report.command.domain.ReportCommandRepository;
 import atwoz.atwoz.report.command.domain.ReportReasonType;
@@ -18,15 +19,18 @@ public class ReportService {
 
     @Transactional
     public void report(ReportRequest request, long reporterId) {
-        validateRequest(request);
+        validateRequest(request, reporterId);
         ReportReasonType reportReasonType = ReportReasonType.from(request.reason());
         Report report = Report.of(reporterId, request.reporteeId(), reportReasonType, request.content());
         reportCommandRepository.save(report);
     }
 
-    private void validateRequest(ReportRequest request) {
+    private void validateRequest(ReportRequest request, long reporterId) {
         if (!memberCommandRepository.existsById(request.reporteeId())) {
             throw new MemberNotFoundException();
+        }
+        if (reportCommandRepository.existsByReporterIdAndReporteeId(reporterId, request.reporteeId())) {
+            throw new ReportAlreadyExistsException();
         }
     }
 }

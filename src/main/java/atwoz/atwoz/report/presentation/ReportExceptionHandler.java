@@ -2,6 +2,7 @@ package atwoz.atwoz.report.presentation;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
+import atwoz.atwoz.report.command.application.exception.ReportAlreadyExistsException;
 import atwoz.atwoz.report.command.domain.exception.InvalidReportReasonTypeException;
 import atwoz.atwoz.report.command.domain.exception.InvalidReportResultException;
 import lombok.extern.slf4j.Slf4j;
@@ -29,5 +30,13 @@ public class ReportExceptionHandler {
         log.warn("신고 결과가 잘못되었습니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest().body(BaseResponse.from(StatusType.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(ReportAlreadyExistsException.class)
+    public ResponseEntity<BaseResponse<Void>> handleReportAlreadyExistsException(
+        ReportAlreadyExistsException e) {
+        log.warn("이미 신고한 멤버입니다. {}", e.getMessage());
+
+        return ResponseEntity.badRequest().body(BaseResponse.from(StatusType.INVALID_DUPLICATE_VALUE));
     }
 }
