@@ -23,7 +23,7 @@ public class Report extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
-    private ReasonType reason;
+    private ReportReasonType reason;
 
     private String content;
 
@@ -31,7 +31,7 @@ public class Report extends BaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private ReportResult result;
 
-    private Report(long reporterId, long reporteeId, Long adminId, ReasonType reason, String content,
+    private Report(long reporterId, long reporteeId, Long adminId, ReportReasonType reason, String content,
         ReportResult status) {
         setReporterId(reporterId);
         setReporteeId(reporteeId);
@@ -41,7 +41,7 @@ public class Report extends BaseEntity {
         setStatus(status);
     }
 
-    public static Report of(long reporterId, long reporteeId, ReasonType reason, String content) {
+    public static Report of(long reporterId, long reporteeId, ReportReasonType reason, String content) {
         return new Report(reporterId, reporteeId, null, reason, content, ReportResult.PENDING);
     }
 
@@ -75,7 +75,7 @@ public class Report extends BaseEntity {
         this.adminId = adminId;
     }
 
-    private void setReason(@NonNull ReasonType reason) {
+    private void setReason(@NonNull ReportReasonType reason) {
         this.reason = reason;
     }
 
