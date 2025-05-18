@@ -1,7 +1,7 @@
 package atwoz.atwoz.report.command.domain;
 
 import atwoz.atwoz.common.event.Events;
-import atwoz.atwoz.report.command.domain.event.ReportAppovedEvent;
+import atwoz.atwoz.report.command.domain.event.ReportApprovedEvent;
 import atwoz.atwoz.report.command.domain.event.ReportCreatedEvent;
 import atwoz.atwoz.report.command.domain.exception.InvalidReportResultException;
 import org.junit.jupiter.api.DisplayName;
@@ -126,8 +126,8 @@ class ReportTest {
 
                 // then
                 eventsMockedStatic.verify(() -> Events.raise(argThat(
-                    event -> event instanceof ReportAppovedEvent
-                        && ((ReportAppovedEvent) event).getReporteeId() == report.getReporteeId()
+                    event -> event instanceof ReportApprovedEvent
+                        && ((ReportApprovedEvent) event).getReporteeId() == report.getReporteeId()
                 )), times(1));
                 assertThat(report.getResult()).isEqualTo(ReportResult.BANNED);
             }

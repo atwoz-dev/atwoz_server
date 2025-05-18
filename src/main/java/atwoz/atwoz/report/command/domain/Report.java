@@ -2,7 +2,7 @@ package atwoz.atwoz.report.command.domain;
 
 import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.common.event.Events;
-import atwoz.atwoz.report.command.domain.event.ReportAppovedEvent;
+import atwoz.atwoz.report.command.domain.event.ReportApprovedEvent;
 import atwoz.atwoz.report.command.domain.event.ReportCreatedEvent;
 import atwoz.atwoz.report.command.domain.exception.InvalidReportResultException;
 import jakarta.persistence.*;
@@ -68,7 +68,7 @@ public class Report extends BaseEntity {
         validateResult();
         setAdminId(adminId);
         setResult(ReportResult.BANNED);
-        Events.raise(new ReportAppovedEvent(reporteeId));
+        Events.raise(new ReportApprovedEvent(reporteeId));
     }
 
     private void validateReport(long reporterId, long reporteeId) {

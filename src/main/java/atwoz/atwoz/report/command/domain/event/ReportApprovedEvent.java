@@ -6,10 +6,10 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class ReportAppovedEvent extends Event {
+public class ReportApprovedEvent extends Event {
     private final long reporteeId;
 
-    public static ReportAppovedEvent from(long reporteeId) {
-        return new ReportAppovedEvent(reporteeId);
+    public static ReportApprovedEvent from(long reporteeId) {
+        return new ReportApprovedEvent(reporteeId);
     }
 }
