@@ -49,7 +49,7 @@ public class Report extends BaseEntity {
         setAdminId(adminId);
         setReason(reason);
         setContent(content);
-        setStatus(status);
+        setResult(status);
     }
 
     public static Report of(long reporterId, long reporteeId, ReportReasonType reason, String content) {
@@ -61,13 +61,13 @@ public class Report extends BaseEntity {
     public void reject(long adminId) {
         validateResult();
         setAdminId(adminId);
-        setStatus(ReportResult.REJECTED);
+        setResult(ReportResult.REJECTED);
     }
 
     public void approve(long adminId) {
         validateResult();
         setAdminId(adminId);
-        setStatus(ReportResult.BANNED);
+        setResult(ReportResult.BANNED);
         Events.raise(new ReportAppovedEvent(reporteeId));
     }
 
@@ -103,7 +103,7 @@ public class Report extends BaseEntity {
         this.content = content;
     }
 
-    private void setStatus(@NonNull ReportResult result) {
+    private void setResult(@NonNull ReportResult result) {
         this.result = result;
     }
 }
