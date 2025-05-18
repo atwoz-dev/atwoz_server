@@ -60,6 +60,7 @@ class HeartTransactionQueryRepositoryTest {
         HeartTransactionView heartTransactionView = heartTransactionViews.get(0);
         assertThat(heartTransactionView.id()).isEqualTo(heartTransaction1.getId());
         assertThat(heartTransactionView.transactionType()).isEqualTo(heartTransaction1.getTransactionType().name());
+        assertThat(heartTransactionView.content()).isEqualTo(heartTransaction1.getContent());
         assertThat(heartTransactionView.heartAmount()).isEqualTo(heartTransaction1.getHeartAmount().getAmount());
         Long heartBalance = heartTransaction1.getHeartBalance().getMissionHeartBalance() +
             heartTransaction1.getHeartBalance().getPurchaseHeartBalance();

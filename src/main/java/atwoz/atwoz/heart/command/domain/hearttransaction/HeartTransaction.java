@@ -30,6 +30,7 @@ public class HeartTransaction extends BaseEntity {
     @Getter
     private TransactionType transactionType;
 
+    @Getter
     private String content;
 
     @Embedded
