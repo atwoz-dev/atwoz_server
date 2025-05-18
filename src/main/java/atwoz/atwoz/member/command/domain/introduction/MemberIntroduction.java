@@ -28,9 +28,9 @@ public class MemberIntroduction extends BaseEntity {
         this.introducedMemberId = introducedMemberId;
     }
 
-    public static MemberIntroduction of(Long memberId, Long introducedMemberId) {
+    public static MemberIntroduction of(Long memberId, Long introducedMemberId, String content) {
         MemberIntroduction memberIntroduction = new MemberIntroduction(memberId, introducedMemberId);
-        Events.raise(MemberIntroducedEvent.of(memberId));
+        Events.raise(MemberIntroducedEvent.of(memberId, content));
         return memberIntroduction;
     }
 }
