@@ -6,6 +6,7 @@ import atwoz.atwoz.report.command.domain.Report;
 import atwoz.atwoz.report.command.domain.ReportCommandRepository;
 import atwoz.atwoz.report.command.domain.ReportReasonType;
 import atwoz.atwoz.report.presentation.dto.ReportRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ public class ReportService {
     private final ReportCommandRepository reportCommandRepository;
     private final MemberCommandRepository memberCommandRepository;
 
+    @Transactional
     public void report(ReportRequest request, long reporterId) {
         validateRequest(request);
         ReportReasonType reportReasonType = ReportReasonType.from(request.reason());
