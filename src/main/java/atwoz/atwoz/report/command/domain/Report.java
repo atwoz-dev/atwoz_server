@@ -1,6 +1,8 @@
 package atwoz.atwoz.report.command.domain;
 
 import atwoz.atwoz.common.entity.BaseEntity;
+import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.report.command.domain.event.ReportCreatedEvent;
 import atwoz.atwoz.report.command.domain.exception.InvalidReportResultException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -49,7 +51,9 @@ public class Report extends BaseEntity {
     }
 
     public static Report of(long reporterId, long reporteeId, ReportReasonType reason, String content) {
-        return new Report(reporterId, reporteeId, null, reason, content, ReportResult.PENDING);
+        Report report = new Report(reporterId, reporteeId, null, reason, content, ReportResult.PENDING);
+        Events.raise(new ReportCreatedEvent(reporterId, reporteeId));
+        return report;
     }
 
     public void reject(long adminId) {
