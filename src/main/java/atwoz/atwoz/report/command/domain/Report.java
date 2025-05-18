@@ -43,6 +43,7 @@ public class Report extends BaseEntity {
 
     private Report(long reporterId, long reporteeId, Long adminId, ReportReasonType reason, String content,
         ReportResult status) {
+        validateReport(reporterId, reporteeId);
         setReporterId(reporterId);
         setReporteeId(reporteeId);
         setAdminId(adminId);
@@ -68,6 +69,12 @@ public class Report extends BaseEntity {
         setAdminId(adminId);
         setStatus(ReportResult.BANNED);
         Events.raise(new ReportAppovedEvent(reporteeId));
+    }
+
+    private void validateReport(long reporterId, long reporteeId) {
+        if (reporterId == reporteeId) {
+            throw new InvalidReportException("자기 자신을 신고할 수 없습니다.");
+        }
     }
 
     private void validateResult() {
