@@ -11,21 +11,21 @@ reviews:
   profile: chill
   request_changes_workflow: false
   high_level_summary: true
-  high_level_summary_placeholder: '@coderabbitai 요약'
+  high_level_summary_placeholder: '@coderabbitai summary'
   high_level_summary_in_walkthrough: false
   auto_title_placeholder: '@coderabbitai'
   review_status: true
   commit_status: true
   fail_commit_status: false
   collapse_walkthrough: false
-  changed_files_summary: true
+  changed_files_summary: false
   sequence_diagrams: true
-  related_issues: true
-  related_prs: true
-  suggested_labels: true
+  related_issues: false
+  related_prs: false
+  suggested_labels: false
   auto_apply_labels: false
-  suggested_reviewers: true
-  auto_assign_reviewers: true
+  suggested_reviewers: false
+  auto_assign_reviewers: false
   poem: false
   labeling_instructions: [ ]
   path_filters: [ ]
