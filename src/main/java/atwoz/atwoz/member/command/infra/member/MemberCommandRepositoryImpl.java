@@ -39,4 +39,9 @@ public class MemberCommandRepositoryImpl implements MemberCommandRepository {
     public boolean existsByKakaoIdAndIdNot(String kakaoId, Long id) {
         return memberCommandJpaRepository.existsByKakaoIdAndIdNot(KakaoId.from(kakaoId), id);
     }
+
+    @Override
+    public boolean existsById(Long id) {
+        return memberCommandJpaRepository.existsById(id);
+    }
 }

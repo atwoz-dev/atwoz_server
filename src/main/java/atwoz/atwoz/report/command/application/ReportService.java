@@ -23,7 +23,7 @@ public class ReportService {
     }
 
     private void validateRequest(ReportRequest request) {
-        if (memberCommandRepository.existsById(request.reporteeId())) {
+        if (!memberCommandRepository.existsById(request.reporteeId())) {
             throw new MemberNotFoundException();
         }
     }
