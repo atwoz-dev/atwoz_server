@@ -1,0 +1,89 @@
+package atwoz.atwoz.report.command.domain;
+
+import atwoz.atwoz.common.entity.BaseEntity;
+import atwoz.atwoz.report.command.domain.exception.InvalidReportResultException;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+
+@Entity
+@Table(name = "reports")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Report extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private Long reporterId;
+
+    private Long reporteeId;
+
+    private Long adminId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(50)")
+    private ReasonType reason;
+
+    private String content;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(50)")
+    private ReportResult result;
+
+    private Report(long reporterId, long reporteeId, Long adminId, ReasonType reason, String content,
+        ReportResult status) {
+        setReporterId(reporterId);
+        setReporteeId(reporteeId);
+        setAdminId(adminId);
+        setReason(reason);
+        setContent(content);
+        setStatus(status);
+    }
+
+    public static Report of(long reporterId, long reporteeId, ReasonType reason, String content) {
+        return new Report(reporterId, reporteeId, null, reason, content, ReportResult.PENDING);
+    }
+
+    public void reject(long adminId) {
+        validateResult();
+        setAdminId(adminId);
+        setStatus(ReportResult.REJECTED);
+    }
+
+    public void approve(long adminId) {
+        validateResult();
+        setAdminId(adminId);
+        setStatus(ReportResult.BANNED);
+    }
+
+    private void validateResult() {
+        if (this.result != ReportResult.PENDING) {
+            throw new InvalidReportResultException("이미 처리된 신고입니다.");
+        }
+    }
+
+    private void setReporterId(long reporterId) {
+        this.reporterId = reporterId;
+    }
+
+    private void setReporteeId(long reporteeId) {
+        this.reporteeId = reporteeId;
+    }
+
+    private void setAdminId(Long adminId) {
+        this.adminId = adminId;
+    }
+
+    private void setReason(@NonNull ReasonType reason) {
+        this.reason = reason;
+    }
+
+    private void setContent(@NonNull String content) {
+        this.content = content;
+    }
+
+    private void setStatus(@NonNull ReportResult result) {
+        this.result = result;
+    }
+}
