@@ -4,6 +4,7 @@ import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.report.command.domain.exception.InvalidReportResultException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
@@ -15,18 +16,24 @@ public class Report extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
     private Long reporterId;
 
+    @Getter
     private Long reporteeId;
 
+    @Getter
     private Long adminId;
 
+    @Getter
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
     private ReportReasonType reason;
 
+    @Getter
     private String content;
 
+    @Getter
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
     private ReportResult result;
