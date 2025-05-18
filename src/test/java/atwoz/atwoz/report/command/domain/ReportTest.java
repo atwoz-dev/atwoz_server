@@ -38,6 +38,20 @@ class ReportTest {
         }
 
         @Test
+        @DisplayName("reporterId와 reporteeId가 같으면 예외를 던진다.")
+        void throwsExceptionWhenReporterIdAndReporteeIdAreEqual() {
+            // given
+            Long reporterId = 1L;
+            Long reporteeId = 1L;
+            ReportReasonType reason = ReportReasonType.ETC;
+            String content = "content";
+
+            // when, then
+            assertThatThrownBy(() -> Report.of(reporterId, reporteeId, reason, content)).isInstanceOf(
+                InvalidReportException.class);
+        }
+
+        @Test
         @DisplayName("of 메서드의 필드 값이 정상적이면 객체를 생성하고 이벤트를 발행한다.")
         void createsObjectAndRaiseEventWhenFieldValueIsValid() {
             // given
