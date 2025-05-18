@@ -13,4 +13,6 @@ public interface MemberCommandRepository {
     boolean existsByPhoneNumberAndIdNot(String phoneNumber, Long id);
 
     boolean existsByKakaoIdAndIdNot(String kakaoId, Long id);
+
+    boolean existsById(Long id);
 }
