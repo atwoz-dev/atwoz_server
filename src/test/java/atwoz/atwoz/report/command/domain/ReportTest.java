@@ -1,14 +1,21 @@
 package atwoz.atwoz.report.command.domain;
 
+import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.report.command.domain.event.ReportAppovedEvent;
+import atwoz.atwoz.report.command.domain.event.ReportCreatedEvent;
 import atwoz.atwoz.report.command.domain.exception.InvalidReportResultException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.MockedStatic;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
 
 class ReportTest {
 
@@ -31,8 +38,8 @@ class ReportTest {
         }
 
         @Test
-        @DisplayName("of 메서드의 필드 값이 정상적이면 객체를 생성한다.")
-        void createsObjectWhenFieldValueIsValid() {
+        @DisplayName("of 메서드의 필드 값이 정상적이면 객체를 생성하고 이벤트를 발행한다.")
+        void createsObjectAndRaiseEventWhenFieldValueIsValid() {
             // given
             Long reporterId = 1L;
             Long reporteeId = 2L;
@@ -40,15 +47,24 @@ class ReportTest {
             String content = "content";
 
             // when
-            Report report = Report.of(reporterId, reporteeId, reason, content);
+            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
+                // when
+                Report report = Report.of(reporterId, reporteeId, reason, content);
 
-            // then
-            assertThat(report).isNotNull();
-            assertThat(report.getReporterId()).isEqualTo(reporterId);
-            assertThat(report.getReporteeId()).isEqualTo(reporteeId);
-            assertThat(report.getReason()).isEqualTo(reason);
-            assertThat(report.getContent()).isEqualTo(content);
-            assertThat(report.getResult()).isEqualTo(ReportResult.PENDING);
+                // then
+                eventsMockedStatic.verify(() -> Events.raise(argThat(
+                    event -> event instanceof ReportCreatedEvent
+                        && ((ReportCreatedEvent) event).getReporterId() == reporterId
+                        && ((ReportCreatedEvent) event).getReporteeId() == reporteeId
+                )), times(1));
+
+                assertThat(report).isNotNull();
+                assertThat(report.getReporterId()).isEqualTo(reporterId);
+                assertThat(report.getReporteeId()).isEqualTo(reporteeId);
+                assertThat(report.getReason()).isEqualTo(reason);
+                assertThat(report.getContent()).isEqualTo(content);
+                assertThat(report.getResult()).isEqualTo(ReportResult.PENDING);
+            }
         }
     }
 
@@ -97,17 +113,24 @@ class ReportTest {
     @DisplayName("approve 메서드 테스트")
     class ApproveTest {
         @Test
-        @DisplayName("Pending 상태의 report로 approve 메서드를 호출하면 ReportResult가 BANNED로 변경된다.")
+        @DisplayName("Pending 상태의 report로 approve 메서드를 호출하면 ReportResult가 BANNED로 변경되고 이벤트를 발행한다.")
         void changesReportResultToApproved() {
             // given
             Long adminId = 1L;
             Report report = Report.of(1L, 2L, ReportReasonType.ETC, "content");
 
             // when
-            report.approve(adminId);
+            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
+                // when
+                report.approve(adminId);
 
-            // then
-            assertThat(report.getResult()).isEqualTo(ReportResult.BANNED);
+                // then
+                eventsMockedStatic.verify(() -> Events.raise(argThat(
+                    event -> event instanceof ReportAppovedEvent
+                        && ((ReportAppovedEvent) event).getReporteeId() == report.getReporteeId()
+                )), times(1));
+                assertThat(report.getResult()).isEqualTo(ReportResult.BANNED);
+            }
         }
 
         @Test
