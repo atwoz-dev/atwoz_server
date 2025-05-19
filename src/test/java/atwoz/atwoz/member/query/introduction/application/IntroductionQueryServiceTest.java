@@ -139,7 +139,7 @@ class IntroductionQueryServiceTest {
     }
 
     @Test
-    @DisplayName("findSameRegionIntroductions 메서드 테스트")
+    @DisplayName("findSameCityIntroductions 메서드 테스트")
     void findSameCityIntroductionsTest() {
         // given
         long memberId = 1L;
