@@ -65,7 +65,7 @@ class MemberIdealQueryRepositoryTest {
         assertThat(memberIdealView.maxAge()).isEqualTo(ageRange.getMaxAge());
         assertThat(memberIdealView.hobbies()).containsExactlyInAnyOrder(
             hobbies.stream().map(Hobby::name).toArray(String[]::new));
-        assertThat(memberIdealView.regions()).containsExactlyInAnyOrder(
+        assertThat(memberIdealView.cities()).containsExactlyInAnyOrder(
             cities.stream().map(City::name).toArray(String[]::new));
         assertThat(memberIdealView.religion()).isEqualTo(religion.name());
         assertThat(memberIdealView.smokingStatus()).isEqualTo(smokingStatus.name());
