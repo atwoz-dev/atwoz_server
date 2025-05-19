@@ -2,6 +2,7 @@ package atwoz.atwoz.heart.command.domain.hearttransaction;
 
 import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.heart.command.domain.hearttransaction.exception.InvalidHeartAmountException;
+import atwoz.atwoz.heart.command.domain.hearttransaction.exception.InvalidHeartTransactionContentException;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartBalance;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.TransactionType;
@@ -29,6 +30,9 @@ public class HeartTransaction extends BaseEntity {
     @Getter
     private TransactionType transactionType;
 
+    @Getter
+    private String content;
+
     @Embedded
     @Getter
     private HeartAmount heartAmount;
@@ -37,18 +41,19 @@ public class HeartTransaction extends BaseEntity {
     @Getter
     private HeartBalance heartBalance;
 
-    private HeartTransaction(Long memberId, TransactionType transactionType, HeartAmount heartAmount,
+    private HeartTransaction(Long memberId, TransactionType transactionType, String content, HeartAmount heartAmount,
         HeartBalance heartBalance) {
         setMemberId(memberId);
         setTransactionType(transactionType);
+        setContent(content);
         setHeartAmount(heartAmount);
         setHeartBalance(heartBalance);
         validateHeartTransaction(transactionType, heartAmount);
     }
 
-    public static HeartTransaction of(Long memberId, TransactionType transactionType, HeartAmount heartAmount,
-        HeartBalance heartBalance) {
-        return new HeartTransaction(memberId, transactionType, heartAmount, heartBalance);
+    public static HeartTransaction of(Long memberId, TransactionType transactionType, String content,
+        HeartAmount heartAmount, HeartBalance heartBalance) {
+        return new HeartTransaction(memberId, transactionType, content, heartAmount, heartBalance);
     }
 
     private void setMemberId(@NonNull Long memberId) {
@@ -57,6 +62,13 @@ public class HeartTransaction extends BaseEntity {
 
     private void setTransactionType(@NonNull TransactionType transactionType) {
         this.transactionType = transactionType;
+    }
+
+    private void setContent(@NonNull String content) {
+        if (content.isBlank()) {
+            throw new InvalidHeartTransactionContentException("content는 비어있을 수 없습니다.");
+        }
+        this.content = content;
     }
 
     private void setHeartAmount(@NonNull HeartAmount heartAmount) {

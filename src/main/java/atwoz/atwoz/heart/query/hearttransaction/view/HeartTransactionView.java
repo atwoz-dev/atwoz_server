@@ -8,6 +8,7 @@ public record HeartTransactionView(
     Long id,
     LocalDateTime createdAt,
     String transactionType,
+    String content,
     Long heartAmount,
     Long heartBalance
 ) {

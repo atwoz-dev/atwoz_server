@@ -38,6 +38,7 @@ public class HeartTransactionQueryRepository {
                     heartTransaction.id,
                     heartTransaction.createdAt,
                     heartTransaction.transactionType.stringValue(),
+                    heartTransaction.content,
                     heartTransaction.heartAmount.amount,
                     getHeartBalance()
                 ))

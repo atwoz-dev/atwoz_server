@@ -24,7 +24,8 @@ public class HeartTransactionService {
         TransactionType transactionType) {
         HeartBalance heartBalance = HeartBalance.of(missionHeartBalance, purchaseHeartBalance);
         HeartAmount heartAmount = HeartAmount.from(amount);
-        HeartTransaction heartTransaction = HeartTransaction.of(memberId, transactionType, heartAmount, heartBalance);
+        HeartTransaction heartTransaction = HeartTransaction.of(memberId, transactionType,
+            transactionType.getDescription(), heartAmount, heartBalance);
         heartTransactionCommandRepository.save(heartTransaction);
     }
 }

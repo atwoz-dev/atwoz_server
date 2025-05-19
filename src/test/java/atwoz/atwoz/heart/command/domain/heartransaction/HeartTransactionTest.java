@@ -27,11 +27,13 @@ class HeartTransactionTest {
             Long memberId = fieldName.equals("memberId is null") ? null : 1L;
             TransactionType transactionType =
                 fieldName.equals("transactionType is null") ? null : TransactionType.MISSION;
+            String content = fieldName.equals("content is null") ? null : TransactionType.MISSION.getDescription();
             HeartAmount heartAmount = fieldName.equals("heartAmount is null") ? null : HeartAmount.from(10L);
             HeartBalance heartBalance = fieldName.equals("heartBalance is null") ? null : HeartBalance.init();
 
             // when & then
-            assertThatThrownBy(() -> HeartTransaction.of(memberId, transactionType, heartAmount, heartBalance))
+            assertThatThrownBy(
+                () -> HeartTransaction.of(memberId, transactionType, content, heartAmount, heartBalance))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -45,8 +47,8 @@ class HeartTransactionTest {
             HeartBalance heartBalance = HeartBalance.init();
 
             // when
-            HeartTransaction heartTransaction = HeartTransaction.of(memberId, transactionType, heartAmount,
-                heartBalance);
+            HeartTransaction heartTransaction = HeartTransaction.of(memberId, transactionType,
+                transactionType.getDescription(), heartAmount, heartBalance);
 
             // then
             assertThat(heartTransaction).isNotNull();
@@ -62,8 +64,8 @@ class HeartTransactionTest {
             HeartBalance heartBalance = HeartBalance.init();
 
             // when
-            HeartTransaction heartTransaction = HeartTransaction.of(memberId, transactionType, heartAmount,
-                heartBalance);
+            HeartTransaction heartTransaction = HeartTransaction.of(memberId, transactionType,
+                transactionType.getDescription(), heartAmount, heartBalance);
 
             // then
             assertThat(heartTransaction).isNotNull();
@@ -75,12 +77,15 @@ class HeartTransactionTest {
             // given
             Long memberId = 1L;
             TransactionType transactionType = TransactionType.MESSAGE;
+            String content = transactionType.getDescription();
             HeartAmount heartAmount = HeartAmount.from(10L);
             HeartBalance heartBalance = HeartBalance.init();
 
             // when
             // then
-            assertThatThrownBy(() -> HeartTransaction.of(memberId, transactionType, heartAmount, heartBalance))
+            assertThatThrownBy(
+                () -> HeartTransaction.of(memberId, transactionType, content, heartAmount,
+                    heartBalance))
                 .isInstanceOf(InvalidHeartAmountException.class);
         }
 
@@ -90,12 +95,15 @@ class HeartTransactionTest {
             // given
             Long memberId = 1L;
             TransactionType transactionType = TransactionType.MISSION;
+            String content = transactionType.getDescription();
             HeartAmount heartAmount = HeartAmount.from(-10L);
             HeartBalance heartBalance = HeartBalance.init();
 
             // when
             // then
-            assertThatThrownBy(() -> HeartTransaction.of(memberId, transactionType, heartAmount, heartBalance))
+            assertThatThrownBy(
+                () -> HeartTransaction.of(memberId, transactionType, content, heartAmount,
+                    heartBalance))
                 .isInstanceOf(InvalidHeartAmountException.class);
         }
     }

@@ -67,11 +67,48 @@ public class MemberIntroductionController {
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, introductionProfileViews));
     }
 
-    @PostMapping
-    public ResponseEntity<BaseResponse<Void>> create(@Valid @RequestBody MemberIntroductionCreateRequest request,
+    @PostMapping("/grade")
+    public ResponseEntity<BaseResponse<Void>> createGradeIntroduction(
+        @Valid @RequestBody MemberIntroductionCreateRequest request,
         @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
-        memberintroductionService.create(memberId, request.introducedMemberId());
+        memberintroductionService.createGradeIntroduction(memberId, request.introducedMemberId());
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
+
+    @PostMapping("/hobby")
+    public ResponseEntity<BaseResponse<Void>> createHobbyIntroduction(
+        @Valid @RequestBody MemberIntroductionCreateRequest request,
+        @AuthPrincipal AuthContext authContext) {
+        long memberId = authContext.getId();
+        memberintroductionService.createHobbyIntroduction(memberId, request.introducedMemberId());
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
+
+    @PostMapping("/religion")
+    public ResponseEntity<BaseResponse<Void>> createReligionIntroduction(
+        @Valid @RequestBody MemberIntroductionCreateRequest request,
+        @AuthPrincipal AuthContext authContext) {
+        long memberId = authContext.getId();
+        memberintroductionService.createReligionIntroduction(memberId, request.introducedMemberId());
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
+
+    @PostMapping("/region")
+    public ResponseEntity<BaseResponse<Void>> createRegionIntroduction(
+        @Valid @RequestBody MemberIntroductionCreateRequest request,
+        @AuthPrincipal AuthContext authContext) {
+        long memberId = authContext.getId();
+        memberintroductionService.createRegionIntroduction(memberId, request.introducedMemberId());
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
+
+    @PostMapping("/recent")
+    public ResponseEntity<BaseResponse<Void>> createRecentIntroduction(
+        @Valid @RequestBody MemberIntroductionCreateRequest request,
+        @AuthPrincipal AuthContext authContext) {
+        long memberId = authContext.getId();
+        memberintroductionService.createRecentIntroduction(memberId, request.introducedMemberId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 }
