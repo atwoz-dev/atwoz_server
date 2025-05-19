@@ -3,6 +3,7 @@ package atwoz.atwoz.report.presentation;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.report.command.application.exception.ReportAlreadyExistsException;
+import atwoz.atwoz.report.command.application.exception.ReportNotFoundException;
 import atwoz.atwoz.report.command.domain.InvalidReportException;
 import atwoz.atwoz.report.command.domain.exception.InvalidReportReasonTypeException;
 import atwoz.atwoz.report.command.domain.exception.InvalidReportResultException;
@@ -46,5 +47,12 @@ public class ReportExceptionHandler {
         log.warn("잘못된 신고입니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest().body(BaseResponse.from(StatusType.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(ReportNotFoundException.class)
+    public ResponseEntity<BaseResponse<Void>> handleReportNotFoundException(ReportNotFoundException e) {
+        log.warn("해당 신고가 존재하지 않습니다. {}", e.getMessage());
+
+        return ResponseEntity.status(404).body(BaseResponse.from(StatusType.NOT_FOUND));
     }
 }
