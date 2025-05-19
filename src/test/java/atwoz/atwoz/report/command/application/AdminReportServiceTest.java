@@ -43,7 +43,6 @@ class AdminReportServiceTest {
             ReportApproveRequest request = new ReportApproveRequest(0L);
             when(reportCommandRepository.findById(reportId)).thenReturn(Optional.empty());
 
-
             // when & then
             assertThatThrownBy(() -> adminReportService.approve(reportId, request, 100L))
                 .isInstanceOf(ReportNotFoundException.class);
