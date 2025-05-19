@@ -1,9 +1,7 @@
-## 노트
-
-
-<br>
+## 요약
+@coderabbitai summary
 
 ## 참고 자료
 - 
 
-<br>
+## 노트
