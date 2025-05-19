@@ -41,6 +41,9 @@ public class Report extends BaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private ReportResult result;
 
+    @Version
+    private Long version;
+
     private Report(long reporterId, long reporteeId, Long adminId, ReportReasonType reason, String content,
         ReportResult status) {
         validateReport(reporterId, reporteeId);
@@ -71,6 +74,10 @@ public class Report extends BaseEntity {
         Events.raise(new ReportApprovedEvent(reporteeId));
     }
 
+    public boolean hasVersionConflict(long version) {
+        return this.version != version;
+    }
+    
     private void validateReport(long reporterId, long reporteeId) {
         if (reporterId == reporteeId) {
             throw new InvalidReportException("자기 자신을 신고할 수 없습니다.");
