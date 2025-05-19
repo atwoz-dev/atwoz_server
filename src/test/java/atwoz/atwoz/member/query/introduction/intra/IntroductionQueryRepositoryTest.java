@@ -4,6 +4,7 @@ import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.like.command.domain.Like;
 import atwoz.atwoz.like.command.domain.LikeLevel;
+import atwoz.atwoz.member.command.domain.introduction.IntroductionType;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
 import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
@@ -220,15 +221,17 @@ class IntroductionQueryRepositoryTest {
             entityManager.persist(like);
             entityManager.flush();
 
+            String content = IntroductionType.DIAMOND_GRADE.getDescription();
+
             if (fieldName.equals("introduced")) {
                 MemberIntroduction memberIntroduction = MemberIntroduction.of(me.getId(),
-                    introductionTargetMember.getId());
+                    introductionTargetMember.getId(), content);
                 entityManager.persist(memberIntroduction);
                 entityManager.flush();
             }
             if (fieldName.equals("notIntroduced1")) {
                 MemberIntroduction memberIntroduction = MemberIntroduction.of(introductionTargetMember.getId(),
-                    me.getId());
+                    me.getId(), content);
                 entityManager.persist(memberIntroduction);
                 entityManager.flush();
             }

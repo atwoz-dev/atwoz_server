@@ -17,15 +17,16 @@ import static org.mockito.Mockito.mockStatic;
 class MemberIntroductionTest {
 
     @ParameterizedTest
-    @ValueSource(strings = {"memberId", "introducedMemberId"})
+    @ValueSource(strings = {"memberId", "introducedMemberId", "content"})
     @DisplayName("null 값을 가지고 생성하면 예외를 던진다.")
     void throwsExceptionWhenNullValue(String nullParam) {
         // given
         Long memberId = nullParam.equals("memberId") ? null : 1L;
         Long introducedMemberId = nullParam.equals("introducedMemberId") ? null : 2L;
+        String content = nullParam.equals("content") ? null : IntroductionType.DIAMOND_GRADE.getDescription();
 
         // when & then
-        assertThatThrownBy(() -> MemberIntroduction.of(memberId, introducedMemberId))
+        assertThatThrownBy(() -> MemberIntroduction.of(memberId, introducedMemberId, content))
             .isInstanceOf(NullPointerException.class);
     }
 
@@ -35,16 +36,18 @@ class MemberIntroductionTest {
         // given
         long memberId = 1L;
         long introducedMemberId = 2L;
+        String content = IntroductionType.DIAMOND_GRADE.getDescription();
 
 
         try (MockedStatic<Events> eventsMock = mockStatic(Events.class);
             MockedStatic<MemberIntroducedEvent> memberIntroducedEventMock = mockStatic(MemberIntroducedEvent.class)
         ) {
             MemberIntroducedEvent memberIntroducedEvent = mock(MemberIntroducedEvent.class);
-            memberIntroducedEventMock.when(() -> MemberIntroducedEvent.of(memberId)).thenReturn(memberIntroducedEvent);
+            memberIntroducedEventMock.when(() -> MemberIntroducedEvent.of(memberId, content))
+                .thenReturn(memberIntroducedEvent);
 
             // when
-            MemberIntroduction memberIntroduction = MemberIntroduction.of(memberId, introducedMemberId);
+            MemberIntroduction memberIntroduction = MemberIntroduction.of(memberId, introducedMemberId, content);
 
             // then
             eventsMock.verify(() -> Events.raise(memberIntroducedEvent));

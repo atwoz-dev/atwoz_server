@@ -74,6 +74,4 @@ public class HeartPurchaseOptionQueryRepository {
         return createdDateLoe != null ? heartPurchaseOption.createdAt.loe(
             createdDateLoe.plusDays(1).atStartOfDay().minusSeconds(1)) : null;
     }
-
-
 }

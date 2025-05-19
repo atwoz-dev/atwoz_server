@@ -3,6 +3,7 @@ package atwoz.atwoz.member.command.application.introduction;
 import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotActiveException;
 import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotFoundException;
 import atwoz.atwoz.member.command.application.introduction.exception.MemberIntroductionAlreadyExistsException;
+import atwoz.atwoz.member.command.domain.introduction.IntroductionType;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroductionCommandRepository;
 import atwoz.atwoz.member.command.domain.member.Member;
@@ -18,9 +19,34 @@ public class MemberIntroductionService {
     private final MemberIntroductionCommandRepository memberIntroductionCommandRepository;
 
     @Transactional
-    public void create(long memberId, long introducedMemberId) {
+    public void createGradeIntroduction(long memberId, long introducedMemberId) {
+        createIntroduction(memberId, introducedMemberId, IntroductionType.DIAMOND_GRADE);
+    }
+
+    @Transactional
+    public void createHobbyIntroduction(long memberId, long introducedMemberId) {
+        createIntroduction(memberId, introducedMemberId, IntroductionType.SAME_HOBBY);
+    }
+
+    @Transactional
+    public void createReligionIntroduction(long memberId, long introducedMemberId) {
+        createIntroduction(memberId, introducedMemberId, IntroductionType.SAME_RELIGION);
+    }
+
+    @Transactional
+    public void createRegionIntroduction(long memberId, long introducedMemberId) {
+        createIntroduction(memberId, introducedMemberId, IntroductionType.SAME_REGION);
+    }
+
+    @Transactional
+    public void createRecentIntroduction(long memberId, long introducedMemberId) {
+        createIntroduction(memberId, introducedMemberId, IntroductionType.RECENTLY_JOINED);
+    }
+
+    private void createIntroduction(long memberId, long introducedMemberId, IntroductionType introductionType) {
         validateIntroduction(memberId, introducedMemberId);
-        MemberIntroduction memberIntroduction = MemberIntroduction.of(memberId, introducedMemberId);
+        MemberIntroduction memberIntroduction = MemberIntroduction.of(memberId, introducedMemberId,
+            introductionType.getDescription());
         memberIntroductionCommandRepository.save(memberIntroduction);
     }
 

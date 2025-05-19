@@ -23,24 +23,23 @@ public class HeartUsagePolicyService {
     private final MemberCommandRepository memberCommandRepository;
 
     @Transactional
-    public HeartTransaction useHeart(long memberId, TransactionType transactionType) {
+    public HeartTransaction useHeart(long memberId, TransactionType transactionType, String content) {
         Member member = getMember(memberId);
         HeartAmount heartAmount = getHeartAmount(member, transactionType);
         HeartBalance balanceAfterUsingHeart = deductHeartBalance(member, heartAmount);
-        return createHeartTransaction(member, transactionType, heartAmount, balanceAfterUsingHeart);
+        return createHeartTransaction(member, transactionType, content, heartAmount, balanceAfterUsingHeart);
     }
 
     private Member getMember(long memberId) {
         return memberCommandRepository.findById(memberId)
-            .orElseThrow(() -> new MemberNotFoundException());
+            .orElseThrow(MemberNotFoundException::new);
     }
 
     private HeartAmount getHeartAmount(Member member, TransactionType transactionType) {
         HeartUsagePolicy heartUsagePolicy = heartUsagePolicyCommandRepository.findByGenderAndTransactionType(
                 member.getGender(), transactionType)
-            .orElseThrow(() -> new HeartUsagePolicyNotFoundException());
-        HeartAmount heartAmount = HeartAmount.from(heartUsagePolicy.getAmount(member.isVip()));
-        return heartAmount;
+            .orElseThrow(HeartUsagePolicyNotFoundException::new);
+        return HeartAmount.from(heartUsagePolicy.getAmount(member.isVip()));
     }
 
     private HeartBalance deductHeartBalance(Member member, HeartAmount heartAmount) {
@@ -49,9 +48,9 @@ public class HeartUsagePolicyService {
         return balanceAfterUsingHeart;
     }
 
-    private HeartTransaction createHeartTransaction(Member member, TransactionType transactionType,
+    private HeartTransaction createHeartTransaction(Member member, TransactionType transactionType, String content,
         HeartAmount heartAmount, HeartBalance balanceAfterUsingHeart) {
-        HeartTransaction heartTransaction = HeartTransaction.of(member.getId(), transactionType, heartAmount,
+        HeartTransaction heartTransaction = HeartTransaction.of(member.getId(), transactionType, content, heartAmount,
             balanceAfterUsingHeart);
         return heartTransactionCommandRepository.save(heartTransaction);
     }
