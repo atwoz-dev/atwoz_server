@@ -5,10 +5,12 @@ import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.report.command.application.AdminReportService;
+import atwoz.atwoz.report.command.application.exception.ReportNotFoundException;
 import atwoz.atwoz.report.presentation.dto.ReportApproveRequest;
 import atwoz.atwoz.report.presentation.dto.ReportRejectRequest;
 import atwoz.atwoz.report.query.ReportQueryRepository;
 import atwoz.atwoz.report.query.condition.ReportSearchCondition;
+import atwoz.atwoz.report.query.view.ReportDetailView;
 import atwoz.atwoz.report.query.view.ReportView;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -49,5 +51,12 @@ public class AdminReportController {
     ) {
         Page<ReportView> page = reportQueryRepository.getPage(condition, pageable);
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, page));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BaseResponse<ReportDetailView>> getReport(@PathVariable long id) {
+        ReportDetailView view = reportQueryRepository.findReportDetailView(id)
+            .orElseThrow(ReportNotFoundException::new);
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, view));
     }
 }
