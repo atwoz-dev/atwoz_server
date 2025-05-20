@@ -6,8 +6,7 @@ import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.report.command.application.AdminReportService;
 import atwoz.atwoz.report.command.application.exception.ReportNotFoundException;
-import atwoz.atwoz.report.presentation.dto.ReportApproveRequest;
-import atwoz.atwoz.report.presentation.dto.ReportRejectRequest;
+import atwoz.atwoz.report.presentation.dto.ReportResultUpdateRequest;
 import atwoz.atwoz.report.query.ReportQueryRepository;
 import atwoz.atwoz.report.query.condition.ReportSearchCondition;
 import atwoz.atwoz.report.query.view.ReportDetailView;
@@ -27,21 +26,14 @@ public class AdminReportController {
     private final AdminReportService adminReportService;
     private final ReportQueryRepository reportQueryRepository;
 
-    @PatchMapping("/{id}/approve")
-    public void approve(
+    @PatchMapping("/{id}/result")
+    public ResponseEntity<BaseResponse<Void>> updateResult(
         @PathVariable long id,
-        @Valid @RequestBody ReportApproveRequest request,
+        @Valid @RequestBody ReportResultUpdateRequest request,
         @AuthPrincipal AuthContext authContext
     ) {
-        adminReportService.approve(id, request, authContext.getId());
-    }
-
-    @PatchMapping("/{id}/reject")
-    public void reject(@PathVariable long id,
-        @Valid @RequestBody ReportRejectRequest request,
-        @AuthPrincipal AuthContext authContext
-    ) {
-        adminReportService.reject(id, request, authContext.getId());
+        adminReportService.updateResult(id, request, authContext.getId());
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
     @GetMapping
