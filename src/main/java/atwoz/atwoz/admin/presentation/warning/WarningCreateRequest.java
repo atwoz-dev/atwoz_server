@@ -1,7 +1,11 @@
 package atwoz.atwoz.admin.presentation.warning;
 
-public record WarningCreatedRequest(
+import jakarta.validation.constraints.NotNull;
+
+public record WarningCreateRequest(
     long memberId,
+
+    @NotNull
     WarningReasonRequest reasonType
 ) {
 }
