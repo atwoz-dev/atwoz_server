@@ -43,6 +43,7 @@ public class Report extends BaseEntity {
     private ReportResult result;
 
     @Version
+    @Getter
     private Long version;
 
     private Report(long reporterId, long reporteeId, Long adminId, ReportReasonType reason, String content,
