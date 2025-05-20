@@ -41,7 +41,7 @@ public class ReportQueryRepository {
             .where(
                 resultEq(condition.result()),
                 createdAtGoe(condition.createdAtGoe()),
-                createdAtLoe(condition.createdAtGoe())
+                createdAtLoe(condition.createdAtLoe())
             )
             .leftJoin(reporterMember).on(report.reporterId.eq(reporterMember.id))
             .leftJoin(reporteeMember).on(report.reporteeId.eq(reporteeMember.id))
@@ -56,7 +56,7 @@ public class ReportQueryRepository {
             .where(
                 resultEq(condition.result()),
                 createdAtGoe(condition.createdAtGoe()),
-                createdAtLoe(condition.createdAtGoe())
+                createdAtLoe(condition.createdAtLoe())
             )
             .leftJoin(reporterMember).on(report.reporterId.eq(reporterMember.id))
             .leftJoin(reporteeMember).on(report.reporteeId.eq(reporteeMember.id))
