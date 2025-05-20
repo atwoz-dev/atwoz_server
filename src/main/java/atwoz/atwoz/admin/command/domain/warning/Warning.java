@@ -17,6 +17,9 @@ import static jakarta.persistence.EnumType.STRING;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Warning {
+
+    private static final int BAN_THRESHOLD = 2;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,8 +38,14 @@ public class Warning {
         this.reasonType = reasonType;
     }
 
-    public static Warning of(long adminId, long memberId, WarningReasonType reasonType) {
+    public static Warning issue(long adminId, long memberId, WarningReasonType reasonType) {
         Events.raise(WarningIssuedEvent.of(adminId, memberId, reasonType.toString()));
         return new Warning(adminId, memberId, reasonType);
+    }
+
+    public void checkIfThresholdExceeded(long totalWarnings) {
+        if (totalWarnings >= BAN_THRESHOLD) {
+            Events.raise(WarningThresholdExceededEvent.of(memberId));
+        }
     }
 }
