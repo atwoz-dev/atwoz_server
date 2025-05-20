@@ -1,8 +1,15 @@
 package atwoz.atwoz.report.command.domain;
 
 import atwoz.atwoz.report.command.domain.exception.InvalidReportResultException;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.NonNull;
 
+@Schema(
+    name = "ReportResult",
+    description = "신고 결과",
+    type = "string",
+    example = "PENDING"
+)
 public enum ReportResult {
     PENDING("대기"),
     REJECTED("기각"),

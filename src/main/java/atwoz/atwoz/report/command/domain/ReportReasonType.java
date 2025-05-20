@@ -1,7 +1,14 @@
 package atwoz.atwoz.report.command.domain;
 
 import atwoz.atwoz.report.command.domain.exception.InvalidReportReasonTypeException;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(
+    name = "ReportReasonType",
+    description = "신고 사유",
+    type = "string",
+    example = "STOLEN_IMAGE"
+)
 public enum ReportReasonType {
     STOLEN_IMAGE("사진 도용"),
     INAPPROPRIATE_IMAGE("부적절한 사진"),
