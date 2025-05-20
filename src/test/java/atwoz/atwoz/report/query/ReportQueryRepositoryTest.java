@@ -50,10 +50,12 @@ class ReportQueryRepositoryTest {
 
     private Report createReport(Member reporter, Member reportee, ReportReasonType reason, ReportResult result) {
         Report report = Report.of(reporter.getId(), reportee.getId(), reason, "test content");
-        if (result == ReportResult.BANNED) {
-            report.approve(1L);
+        if (result == ReportResult.SUSPENDED) {
+            report.suspend(1L);
         } else if (result == ReportResult.REJECTED) {
             report.reject(1L);
+        } else if (result == ReportResult.WARNED) {
+            report.warn(1L);
         }
         entityManager.persist(report);
         return report;
@@ -102,7 +104,7 @@ class ReportQueryRepositoryTest {
             Member reporter = createMember("01000000001", "Reporter1");
             Member reportee = createMember("01000000002", "Reportee1");
             createReport(reporter, reportee, ReportReasonType.INAPPROPRIATE_IMAGE, ReportResult.PENDING);
-            createReport(reporter, reportee, ReportReasonType.INAPPROPRIATE_IMAGE, ReportResult.BANNED);
+            createReport(reporter, reportee, ReportReasonType.INAPPROPRIATE_IMAGE, ReportResult.SUSPENDED);
             entityManager.flush();
 
             ReportSearchCondition condition = new ReportSearchCondition(
@@ -128,7 +130,7 @@ class ReportQueryRepositoryTest {
             Member reporter = createMember("01000000001", "Reporter1");
             Member reportee = createMember("01000000002", "Reportee1");
             createReport(reporter, reportee, ReportReasonType.OFFENSIVE_LANGUAGE, ReportResult.REJECTED);
-            createReport(reporter, reportee, ReportReasonType.OFFENSIVE_LANGUAGE, ReportResult.BANNED);
+            createReport(reporter, reportee, ReportReasonType.OFFENSIVE_LANGUAGE, ReportResult.SUSPENDED);
             entityManager.flush();
 
             ReportSearchCondition condition = new ReportSearchCondition(
