@@ -17,6 +17,7 @@ import lombok.NonNull;
 public class Report extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long id;
 
     @Getter
@@ -77,7 +78,7 @@ public class Report extends BaseEntity {
     public boolean hasVersionConflict(long version) {
         return this.version != version;
     }
-    
+
     private void validateReport(long reporterId, long reporteeId) {
         if (reporterId == reporteeId) {
             throw new InvalidReportException("자기 자신을 신고할 수 없습니다.");
