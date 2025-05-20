@@ -5,22 +5,34 @@ import atwoz.atwoz.report.command.domain.event.ReportCreatedEvent;
 import atwoz.atwoz.report.command.domain.event.ReportSuspendedEvent;
 import atwoz.atwoz.report.command.domain.event.ReportWarnedEvent;
 import atwoz.atwoz.report.command.domain.exception.InvalidReportResultException;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 
 class ReportTest {
+
+    private static MockedStatic<Events> eventsMockedStatic;
+
+    @BeforeEach
+    void setUp() {
+        eventsMockedStatic = Mockito.mockStatic(Events.class);
+        eventsMockedStatic.when(() -> Events.raise(Mockito.any()))
+            .thenAnswer(invocation -> null);
+    }
+
+    @AfterEach
+    void tearDown() {
+        eventsMockedStatic.close();
+    }
 
     @Nested
     @DisplayName("of 메서드 테스트")
@@ -64,24 +76,21 @@ class ReportTest {
             String content = "content";
 
             // when
-            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                // when
-                Report report = Report.of(reporterId, reporteeId, reason, content);
+            Report report = Report.of(reporterId, reporteeId, reason, content);
 
-                // then
-                eventsMockedStatic.verify(() -> Events.raise(argThat(
-                    event -> event instanceof ReportCreatedEvent
-                        && ((ReportCreatedEvent) event).getReporterId() == reporterId
-                        && ((ReportCreatedEvent) event).getReporteeId() == reporteeId
-                )), times(1));
+            // then
+            eventsMockedStatic.verify(() -> Events.raise(argThat(
+                event -> event instanceof ReportCreatedEvent
+                    && ((ReportCreatedEvent) event).getReporterId() == reporterId
+                    && ((ReportCreatedEvent) event).getReporteeId() == reporteeId
+            )), times(1));
 
-                assertThat(report).isNotNull();
-                assertThat(report.getReporterId()).isEqualTo(reporterId);
-                assertThat(report.getReporteeId()).isEqualTo(reporteeId);
-                assertThat(report.getReason()).isEqualTo(reason);
-                assertThat(report.getContent()).isEqualTo(content);
-                assertThat(report.getResult()).isEqualTo(ReportResult.PENDING);
-            }
+            assertThat(report).isNotNull();
+            assertThat(report.getReporterId()).isEqualTo(reporterId);
+            assertThat(report.getReporteeId()).isEqualTo(reporteeId);
+            assertThat(report.getReason()).isEqualTo(reason);
+            assertThat(report.getContent()).isEqualTo(content);
+            assertThat(report.getResult()).isEqualTo(ReportResult.PENDING);
         }
     }
 
@@ -137,16 +146,14 @@ class ReportTest {
             Report report = Report.of(1L, 2L, ReportReasonType.ETC, "content");
 
             // when
-            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                report.suspend(adminId);
+            report.suspend(adminId);
 
-                // then
-                eventsMockedStatic.verify(() -> Events.raise(argThat(
-                    event -> event instanceof ReportSuspendedEvent
-                        && ((ReportSuspendedEvent) event).getReporteeId() == report.getReporteeId()
-                )), times(1));
-                assertThat(report.getResult()).isEqualTo(ReportResult.SUSPENDED);
-            }
+            // then
+            eventsMockedStatic.verify(() -> Events.raise(argThat(
+                event -> event instanceof ReportSuspendedEvent
+                    && ((ReportSuspendedEvent) event).getReporteeId() == report.getReporteeId()
+            )), times(1));
+            assertThat(report.getResult()).isEqualTo(ReportResult.SUSPENDED);
         }
 
         @Test
@@ -231,17 +238,15 @@ class ReportTest {
             Report report = Report.of(1L, 2L, ReportReasonType.ETC, "content");
 
             // when
-            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                report.warn(adminId);
+            report.warn(adminId);
 
-                // then
-                eventsMockedStatic.verify(() -> Events.raise(argThat(
-                    event -> event instanceof ReportWarnedEvent
-                        && ((ReportWarnedEvent) event).getReporteeId() == report.getReporteeId()
-                        && ((ReportWarnedEvent) event).getReportReason().equals(report.getReason().name())
-                )), times(1));
-                assertThat(report.getResult()).isEqualTo(ReportResult.WARNED);
-            }
+            // then
+            eventsMockedStatic.verify(() -> Events.raise(argThat(
+                event -> event instanceof ReportWarnedEvent
+                    && ((ReportWarnedEvent) event).getReporteeId() == report.getReporteeId()
+                    && ((ReportWarnedEvent) event).getReportReason().equals(report.getReason().name())
+            )), times(1));
+            assertThat(report.getResult()).isEqualTo(ReportResult.WARNED);
         }
 
         @Test

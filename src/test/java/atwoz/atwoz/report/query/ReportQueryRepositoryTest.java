@@ -1,6 +1,7 @@
 package atwoz.atwoz.report.query;
 
 import atwoz.atwoz.QuerydslConfig;
+import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;
@@ -10,9 +11,9 @@ import atwoz.atwoz.report.command.domain.ReportResult;
 import atwoz.atwoz.report.query.condition.ReportSearchCondition;
 import atwoz.atwoz.report.query.view.ReportDetailView;
 import atwoz.atwoz.report.query.view.ReportView;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -32,11 +33,23 @@ import static org.assertj.core.api.Assertions.within;
 @Import({QuerydslConfig.class, ReportQueryRepository.class})
 class ReportQueryRepositoryTest {
 
+    private static MockedStatic<Events> eventsMockedStatic;
     @Autowired
     private TestEntityManager entityManager;
-
     @Autowired
     private ReportQueryRepository reportQueryRepository;
+
+    @BeforeEach
+    void setUp() {
+        eventsMockedStatic = Mockito.mockStatic(Events.class);
+        eventsMockedStatic.when(() -> Events.raise(Mockito.any()))
+            .thenAnswer(invocation -> null);
+    }
+
+    @AfterEach
+    void tearDown() {
+        eventsMockedStatic.close();
+    }
 
     private Member createMember(String phoneNumber, String nickname) {
         Member member = Member.fromPhoneNumber(phoneNumber);
