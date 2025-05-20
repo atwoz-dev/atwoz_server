@@ -5,13 +5,16 @@ import lombok.Getter;
 
 @Getter
 public class WarningThresholdExceededEvent extends Event {
+
+    private final long adminId;
     private final long memberId;
 
-    private WarningThresholdExceededEvent(long memberId) {
+    private WarningThresholdExceededEvent(long adminId, long memberId) {
+        this.adminId = adminId;
         this.memberId = memberId;
     }
 
-    public static WarningThresholdExceededEvent of(long memberId) {
-        return new WarningThresholdExceededEvent(memberId);
+    public static WarningThresholdExceededEvent of(long adminId, long memberId) {
+        return new WarningThresholdExceededEvent(adminId, memberId);
     }
 }

@@ -45,7 +45,7 @@ public class Warning {
 
     public void checkIfThresholdExceeded(long totalWarnings) {
         if (totalWarnings >= BAN_THRESHOLD) {
-            Events.raise(WarningThresholdExceededEvent.of(memberId));
+            Events.raise(WarningThresholdExceededEvent.of(adminId, memberId));
         }
     }
 }
