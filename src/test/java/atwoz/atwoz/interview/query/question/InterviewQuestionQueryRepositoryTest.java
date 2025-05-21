@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -71,7 +72,7 @@ class InterviewQuestionQueryRepositoryTest {
             assertThat(view.questionContent()).isEqualTo(question.getContent());
             assertThat(view.answerContent()).isEqualTo(answer.getContent());
             assertThat(view.answerId()).isEqualTo(answer.getId());
-            assertThat(view.isAnswered()).isEqualTo(true);
+            assertThat(view.isAnswered()).isTrue();
         }
 
         @Test
@@ -94,7 +95,7 @@ class InterviewQuestionQueryRepositoryTest {
             assertThat(view.questionContent()).isEqualTo(question.getContent());
             assertThat(view.answerContent()).isNull();
             assertThat(view.answerId()).isNull();
-            assertThat(view.isAnswered()).isEqualTo(false);
+            assertThat(view.isAnswered()).isFalse();
         }
 
         @Test
@@ -118,7 +119,7 @@ class InterviewQuestionQueryRepositoryTest {
         void findAllQuestionByCategoryWithMemberIdWithDifferentCategory() {
             // given
             Member member = createMember("01012345678");
-            InterviewQuestion question = createInterviewQuestion("질문1", InterviewCategory.PERSONAL, true);
+            createInterviewQuestion("질문1", InterviewCategory.PERSONAL, true);
             entityManager.flush();
 
             // when
@@ -130,4 +131,119 @@ class InterviewQuestionQueryRepositoryTest {
         }
     }
 
+    @Nested
+    @DisplayName("인터뷰 질문 단건 조회 테스트")
+    class FindQuestionByIdWithMemberIdTest {
+
+        @Test
+        @DisplayName("인터뷰 질문 조회 시 모든 필드가 정확히 매핑되어 DTO 반환")
+        void findQuestionByIdWithMemberId() {
+            // given
+            Member member = createMember("01012345678");
+            InterviewQuestion question = createInterviewQuestion("질문1", InterviewCategory.PERSONAL, true);
+            InterviewAnswer answer = createInterviewAnswer(question.getId(), member.getId(), "답변1");
+            entityManager.flush();
+
+            // when
+            InterviewQuestionView view = interviewQuestionQueryRepository.findQuestionByIdWithMemberId(
+                question.getId(), member.getId()).orElseThrow();
+
+            // then
+            assertThat(view.questionId()).isEqualTo(question.getId());
+            assertThat(view.category()).isEqualTo(question.getCategory().name());
+            assertThat(view.questionContent()).isEqualTo(question.getContent());
+            assertThat(view.answerContent()).isEqualTo(answer.getContent());
+            assertThat(view.answerId()).isEqualTo(answer.getId());
+            assertThat(view.isAnswered()).isTrue();
+        }
+
+        @Test
+        @DisplayName("답변 안한 질문 단건 조회 테스트")
+        void findQuestionByIdWithMemberIdWithoutAnswer() {
+            // given
+            Member member = createMember("01012345678");
+            InterviewQuestion question = createInterviewQuestion("질문1", InterviewCategory.PERSONAL, true);
+            entityManager.flush();
+
+            // when
+            InterviewQuestionView view = interviewQuestionQueryRepository.findQuestionByIdWithMemberId(
+                question.getId(), member.getId()).orElseThrow();
+
+            // then
+            assertThat(view.questionId()).isEqualTo(question.getId());
+            assertThat(view.category()).isEqualTo(question.getCategory().name());
+            assertThat(view.questionContent()).isEqualTo(question.getContent());
+            assertThat(view.answerContent()).isNull();
+            assertThat(view.answerId()).isNull();
+            assertThat(view.isAnswered()).isFalse();
+        }
+
+        @Test
+        @DisplayName("다른 멤버의 답변 조회 테스트")
+        void findQuestionByIdWithMemberIdWithDifferentMember() {
+            // given
+            Member member1 = createMember("01012345678");
+            Member member2 = createMember("01087654321");
+            InterviewQuestion question = createInterviewQuestion("질문1", InterviewCategory.PERSONAL, true);
+            createInterviewAnswer(question.getId(), member1.getId(), "답변1");
+            entityManager.flush();
+
+            // when
+            InterviewQuestionView view = interviewQuestionQueryRepository.findQuestionByIdWithMemberId(
+                question.getId(), member2.getId()).orElseThrow();
+
+            // then
+            assertThat(view.questionId()).isEqualTo(question.getId());
+            assertThat(view.isAnswered()).isFalse();
+        }
+
+        @Test
+        @DisplayName("isPublic이 false인 질문 단건 조회 테스트")
+        void findQuestionByIdWithMemberIdWithoutPublic() {
+            // given
+            Member member = createMember("01012345678");
+            InterviewQuestion question = createInterviewQuestion("질문1", InterviewCategory.PERSONAL, false);
+            entityManager.flush();
+
+            // when
+            Optional<InterviewQuestionView> optionalView = interviewQuestionQueryRepository.findQuestionByIdWithMemberId(
+                question.getId(), member.getId());
+
+            // then
+            assertThat(optionalView).isEmpty();
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 질문 단건 조회 테스트")
+        void findQuestionByIdWithMemberIdNotFound() {
+            // given
+            Member member = createMember("01012345678");
+            InterviewQuestion question = createInterviewQuestion("질문1", InterviewCategory.PERSONAL, true);
+            entityManager.flush();
+
+            // when
+            InterviewQuestionView view = interviewQuestionQueryRepository.findQuestionByIdWithMemberId(
+                question.getId() + 1L, member.getId()).orElse(null);
+
+            // then
+            assertThat(view).isNull();
+        }
+
+        @Test
+        @DisplayName("id가 일치하는 질문 단건 조회 테스트")
+        void findQuestionByIdWithMemberIdWithSameId() {
+            // given
+            Member member = createMember("01012345678");
+            InterviewQuestion question1 = createInterviewQuestion("질문1", InterviewCategory.PERSONAL, true);
+            InterviewQuestion question2 = createInterviewQuestion("질문2", InterviewCategory.PERSONAL, true);
+            entityManager.flush();
+
+            // when
+            InterviewQuestionView view = interviewQuestionQueryRepository.findQuestionByIdWithMemberId(
+                question1.getId(), member.getId()).orElseThrow();
+
+            // then
+            assertThat(view.questionId()).isEqualTo(question1.getId());
+        }
+    }
 }
