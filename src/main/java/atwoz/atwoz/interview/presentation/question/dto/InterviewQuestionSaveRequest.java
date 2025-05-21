@@ -1,5 +1,6 @@
 package atwoz.atwoz.interview.presentation.question.dto;
 
+import atwoz.atwoz.interview.command.domain.question.InterviewCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,11 +13,7 @@ public record InterviewQuestionSaveRequest(
     @NotBlank(message = "인터뷰 질문 내용은 필수입니다.")
     String questionContent,
 
-    @Schema(
-        description = "인터뷰 질문 카테고리",
-        allowableValues = {"PERSONAL", "SOCIAL", "ROMANTIC"},
-        example = "PERSONAL"
-    )
+    @Schema(implementation = InterviewCategory.class)
     @NotBlank(message = "인터뷰 질문 카테고리는 필수입니다.")
     String category,
 
