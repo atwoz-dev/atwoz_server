@@ -20,7 +20,7 @@ class InterviewAnswerTest {
 
     @Nested
     @DisplayName("of 메서드 테스트")
-    class ofMethodTest {
+    class OfMethodTest {
 
         @ParameterizedTest
         @ValueSource(strings = {"content is null", "questionId is null", "memberId is null"})
@@ -67,7 +67,7 @@ class InterviewAnswerTest {
 
     @Nested
     @DisplayName("submitFirstInterviewAnswer 메서드 테스트")
-    class submitFirstInterviewAnswerMethodTest {
+    class SubmitFirstInterviewAnswerMethodTest {
 
         @Test
         @DisplayName("첫 번째 면접 답변을 제출하면 FirstInterviewSubmittedEvent를 발생시킨다.")
