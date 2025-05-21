@@ -60,7 +60,7 @@ public class Report extends BaseEntity {
 
     public static Report of(long reporterId, long reporteeId, ReportReasonType reason, String content) {
         Report report = new Report(reporterId, reporteeId, null, reason, content, ReportResult.PENDING);
-        Events.raise(new ReportCreatedEvent(reporterId, reporteeId));
+        Events.raise(ReportCreatedEvent.of(reporterId, reporteeId));
         return report;
     }
 
@@ -74,14 +74,14 @@ public class Report extends BaseEntity {
         validateResult();
         setAdminId(adminId);
         setResult(ReportResult.WARNED);
-        Events.raise(new ReportWarnedEvent(reporteeId, reason.name()));
+        Events.raise(ReportWarnedEvent.of(reporteeId, reason.name()));
     }
 
     public void suspend(long adminId) {
         validateResult();
         setAdminId(adminId);
         setResult(ReportResult.SUSPENDED);
-        Events.raise(new ReportSuspendedEvent(this.reporteeId));
+        Events.raise(ReportSuspendedEvent.from(this.reporteeId));
     }
 
 
