@@ -5,6 +5,7 @@ import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionNotFoundException;
+import atwoz.atwoz.interview.query.condition.InterviewQuestionSearchCondition;
 import atwoz.atwoz.interview.query.question.InterviewQuestionQueryRepository;
 import atwoz.atwoz.interview.query.question.view.InterviewQuestionView;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +22,11 @@ public class InterviewQuestionController {
 
     @GetMapping
     public ResponseEntity<BaseResponse<List<InterviewQuestionView>>> getQuestionAllByCategory(
-        @RequestParam String category,
+        @ModelAttribute InterviewQuestionSearchCondition condition,
         @AuthPrincipal AuthContext authContext
     ) {
         List<InterviewQuestionView> views = interviewQuestionQueryRepository.findAllQuestionByCategoryWithMemberId(
-            category, authContext.getId());
+            condition.category(), authContext.getId());
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, views));
     }
 
