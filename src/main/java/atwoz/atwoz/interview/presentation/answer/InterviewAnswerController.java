@@ -20,7 +20,8 @@ public class InterviewAnswerController {
     private final InterviewAnswerService interviewAnswerService;
 
     @PostMapping
-    public ResponseEntity<BaseResponse<Void>> saveAnswer(@Valid @RequestBody InterviewAnswerSaveRequest request,
+    public ResponseEntity<BaseResponse<Void>> saveAnswer(
+        @Valid @RequestBody InterviewAnswerSaveRequest request,
         @AuthPrincipal AuthContext authContext
     ) {
         interviewAnswerService.saveAnswer(request, authContext.getId());
