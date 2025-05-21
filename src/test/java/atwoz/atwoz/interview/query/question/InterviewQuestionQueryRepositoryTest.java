@@ -28,6 +28,24 @@ class InterviewQuestionQueryRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
 
+    private Member createMember(String phoneNumber) {
+        Member member = Member.fromPhoneNumber(phoneNumber);
+        entityManager.persist(member);
+        return member;
+    }
+
+    private InterviewQuestion createInterviewQuestion(String content, InterviewCategory category, boolean isPublic) {
+        InterviewQuestion question = InterviewQuestion.of(content, category, isPublic);
+        entityManager.persist(question);
+        return question;
+    }
+
+    private InterviewAnswer createInterviewAnswer(Long questionId, Long memberId, String content) {
+        InterviewAnswer answer = InterviewAnswer.of(questionId, memberId, content);
+        entityManager.persist(answer);
+        return answer;
+    }
+
     @Nested
     @DisplayName("멤버 인터뷰 질문 조회 테스트")
     class MemberInterviewQuestionTest {
@@ -36,13 +54,9 @@ class InterviewQuestionQueryRepositoryTest {
         @DisplayName("멤버 인터뷰 질문 조회 파라미터 테스트")
         void findAllQuestionByCategoryWithMemberId() {
             // given
-            Member member = Member.fromPhoneNumber("01012345678");
-            entityManager.persist(member);
-            InterviewQuestion question = InterviewQuestion.of("질문1", InterviewCategory.PERSONAL, true);
-            entityManager.persist(question);
-            entityManager.flush();
-            InterviewAnswer answer = InterviewAnswer.of(question.getId(), member.getId(), "답변1");
-            entityManager.persist(answer);
+            Member member = createMember("01012345678");
+            InterviewQuestion question = createInterviewQuestion("질문1", InterviewCategory.PERSONAL, true);
+            InterviewAnswer answer = createInterviewAnswer(question.getId(), member.getId(), "답변1");
             entityManager.flush();
 
             // when
@@ -64,10 +78,8 @@ class InterviewQuestionQueryRepositoryTest {
         @DisplayName("답변 안한 질문 조회 테스트")
         void findAllQuestionByCategoryWithMemberIdWithoutAnswer() {
             // given
-            Member member = Member.fromPhoneNumber("01012345678");
-            entityManager.persist(member);
-            InterviewQuestion question = InterviewQuestion.of("질문1", InterviewCategory.PERSONAL, true);
-            entityManager.persist(question);
+            Member member = createMember("01012345678");
+            InterviewQuestion question = createInterviewQuestion("질문1", InterviewCategory.PERSONAL, true);
             entityManager.flush();
 
             // when
@@ -89,10 +101,8 @@ class InterviewQuestionQueryRepositoryTest {
         @DisplayName("isPublic이 false인 질문 조회 테스트")
         void findAllQuestionByCategoryWithMemberIdWithoutPublic() {
             // given
-            Member member = Member.fromPhoneNumber("01012345678");
-            entityManager.persist(member);
-            InterviewQuestion question = InterviewQuestion.of("질문1", InterviewCategory.PERSONAL, false);
-            entityManager.persist(question);
+            Member member = createMember("01012345678");
+            InterviewQuestion question = createInterviewQuestion("질문1", InterviewCategory.PERSONAL, false);
             entityManager.flush();
 
             // when
@@ -107,10 +117,8 @@ class InterviewQuestionQueryRepositoryTest {
         @DisplayName("다른 카테고리 조회 테스트")
         void findAllQuestionByCategoryWithMemberIdWithDifferentCategory() {
             // given
-            Member member = Member.fromPhoneNumber("01012345678");
-            entityManager.persist(member);
-            InterviewQuestion question = InterviewQuestion.of("질문1", InterviewCategory.PERSONAL, true);
-            entityManager.persist(question);
+            Member member = createMember("01012345678");
+            InterviewQuestion question = createInterviewQuestion("질문1", InterviewCategory.PERSONAL, true);
             entityManager.flush();
 
             // when
