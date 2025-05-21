@@ -36,8 +36,16 @@ public class InterviewAnswer extends BaseEntity {
         return new InterviewAnswer(questionId, memberId, content);
     }
 
+    public void updateContent(String content) {
+        setContent(content);
+    }
+
     public void submitFirstInterviewAnswer() {
         Events.raise(new FirstInterviewSubmittedEvent(memberId));
+    }
+
+    public boolean isAnsweredBy(final long memberId) {
+        return this.memberId.equals(memberId);
     }
 
     private void setQuestionId(@NonNull Long questionId) {
