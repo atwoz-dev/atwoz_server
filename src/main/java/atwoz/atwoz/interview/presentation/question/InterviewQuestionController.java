@@ -4,14 +4,12 @@ import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
+import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionNotFoundException;
 import atwoz.atwoz.interview.query.question.InterviewQuestionQueryRepository;
 import atwoz.atwoz.interview.query.question.view.InterviewQuestionView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,5 +27,16 @@ public class InterviewQuestionController {
         List<InterviewQuestionView> views = interviewQuestionQueryRepository.findAllQuestionByCategoryWithMemberId(
             category, authContext.getId());
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, views));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BaseResponse<InterviewQuestionView>> getQuestionById(
+        @PathVariable Long id,
+        @AuthPrincipal AuthContext authContext
+    ) {
+        InterviewQuestionView view = interviewQuestionQueryRepository
+            .findQuestionByIdWithMemberId(id, authContext.getId())
+            .orElseThrow(InterviewQuestionNotFoundException::new);
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, view));
     }
 }
