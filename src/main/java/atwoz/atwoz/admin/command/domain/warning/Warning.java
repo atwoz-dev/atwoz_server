@@ -18,7 +18,7 @@ import static jakarta.persistence.EnumType.STRING;
 @Getter
 public class Warning {
 
-    private static final int BAN_THRESHOLD = 2;
+    private static final int THRESHOLD = 2;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,7 +44,7 @@ public class Warning {
     }
 
     public void checkIfThresholdExceeded(long totalWarnings) {
-        if (totalWarnings >= BAN_THRESHOLD) {
+        if (totalWarnings >= THRESHOLD) {
             Events.raise(WarningThresholdExceededEvent.of(adminId, memberId));
         }
     }
