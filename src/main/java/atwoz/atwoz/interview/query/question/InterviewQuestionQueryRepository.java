@@ -1,6 +1,7 @@
 package atwoz.atwoz.interview.query.question;
 
 import atwoz.atwoz.interview.command.domain.question.InterviewCategory;
+import atwoz.atwoz.interview.query.condition.InterviewQuestionSearchCondition;
 import atwoz.atwoz.interview.query.question.view.InterviewQuestionView;
 import atwoz.atwoz.interview.query.question.view.QInterviewQuestionView;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -20,7 +21,7 @@ public class InterviewQuestionQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     public List<InterviewQuestionView> findAllQuestionByCategoryWithMemberId(
-        String category,
+        InterviewQuestionSearchCondition condition,
         Long memberId
     ) {
         return queryFactory
@@ -36,7 +37,7 @@ public class InterviewQuestionQueryRepository {
             .leftJoin(interviewAnswer)
             .on(interviewAnswer.questionId.eq(interviewQuestion.id).and(interviewAnswer.memberId.eq(memberId)))
             .where(
-                categoryEq(category),
+                categoryEq(condition.category()),
                 isPublic()
             )
             .fetch();

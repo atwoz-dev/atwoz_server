@@ -4,6 +4,7 @@ import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.interview.command.domain.answer.InterviewAnswer;
 import atwoz.atwoz.interview.command.domain.question.InterviewCategory;
 import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;
+import atwoz.atwoz.interview.query.condition.InterviewQuestionSearchCondition;
 import atwoz.atwoz.interview.query.question.view.InterviewQuestionView;
 import atwoz.atwoz.member.command.domain.member.Member;
 import org.junit.jupiter.api.DisplayName;
@@ -60,9 +61,12 @@ class InterviewQuestionQueryRepositoryTest {
             InterviewAnswer answer = createInterviewAnswer(question.getId(), member.getId(), "답변1");
             entityManager.flush();
 
+            InterviewQuestionSearchCondition condition = new InterviewQuestionSearchCondition(
+                question.getCategory().name());
+
             // when
             List<InterviewQuestionView> views = interviewQuestionQueryRepository.findAllQuestionByCategoryWithMemberId(
-                question.getCategory().name(), member.getId());
+                condition, member.getId());
 
             // then
             assertThat(views).hasSize(1);
@@ -83,9 +87,12 @@ class InterviewQuestionQueryRepositoryTest {
             InterviewQuestion question = createInterviewQuestion("질문1", InterviewCategory.PERSONAL, true);
             entityManager.flush();
 
+            InterviewQuestionSearchCondition condition = new InterviewQuestionSearchCondition(
+                question.getCategory().name());
+
             // when
             List<InterviewQuestionView> views = interviewQuestionQueryRepository.findAllQuestionByCategoryWithMemberId(
-                question.getCategory().name(), member.getId());
+                condition, member.getId());
 
             // then
             assertThat(views).hasSize(1);
@@ -106,9 +113,12 @@ class InterviewQuestionQueryRepositoryTest {
             InterviewQuestion question = createInterviewQuestion("질문1", InterviewCategory.PERSONAL, false);
             entityManager.flush();
 
+            InterviewQuestionSearchCondition condition = new InterviewQuestionSearchCondition(
+                question.getCategory().name());
+
             // when
             List<InterviewQuestionView> views = interviewQuestionQueryRepository.findAllQuestionByCategoryWithMemberId(
-                question.getCategory().name(), member.getId());
+                condition, member.getId());
 
             // then
             assertThat(views).isEmpty();
@@ -122,9 +132,12 @@ class InterviewQuestionQueryRepositoryTest {
             createInterviewQuestion("질문1", InterviewCategory.PERSONAL, true);
             entityManager.flush();
 
+            InterviewQuestionSearchCondition condition = new InterviewQuestionSearchCondition(
+                InterviewCategory.SOCIAL.name());
+
             // when
             List<InterviewQuestionView> views = interviewQuestionQueryRepository.findAllQuestionByCategoryWithMemberId(
-                InterviewCategory.SOCIAL.name(), member.getId());
+                condition, member.getId());
 
             // then
             assertThat(views).isEmpty();

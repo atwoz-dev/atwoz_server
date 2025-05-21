@@ -22,11 +22,11 @@ public class InterviewQuestionController {
 
     @GetMapping
     public ResponseEntity<BaseResponse<List<InterviewQuestionView>>> getQuestionAllByCategory(
-        @ModelAttribute InterviewQuestionSearchCondition condition,
+        @ModelAttribute InterviewQuestionSearchCondition interviewQuestionSearchCondition,
         @AuthPrincipal AuthContext authContext
     ) {
         List<InterviewQuestionView> views = interviewQuestionQueryRepository.findAllQuestionByCategoryWithMemberId(
-            condition.category(), authContext.getId());
+            interviewQuestionSearchCondition, authContext.getId());
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, views));
     }
 
