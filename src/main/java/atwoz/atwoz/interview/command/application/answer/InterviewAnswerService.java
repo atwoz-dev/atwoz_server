@@ -64,7 +64,7 @@ public class InterviewAnswerService {
     }
 
     private void validateAnswer(InterviewAnswer interviewAnswer, Long memberId) {
-        if (interviewAnswer.isAnsweredBy(memberId)) {
+        if (!interviewAnswer.isAnsweredBy(memberId)) {
             throw new InterviewAnswerAccessDeniedException();
         }
     }
