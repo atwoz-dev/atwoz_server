@@ -1,11 +1,14 @@
 package atwoz.atwoz.admin.presentation.warning;
 
-import jakarta.validation.constraints.NotNull;
+import atwoz.atwoz.admin.command.domain.warning.WarningReasonType;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 
 public record WarningCreateRequest(
     long memberId,
 
-    @NotNull
-    WarningReasonRequest reasonType
+    @Schema(implementation = WarningReasonType.class)
+    @NotBlank
+    String reasonType
 ) {
 }

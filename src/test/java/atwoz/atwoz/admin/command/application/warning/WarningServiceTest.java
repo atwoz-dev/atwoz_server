@@ -3,7 +3,6 @@ package atwoz.atwoz.admin.command.application.warning;
 import atwoz.atwoz.admin.command.domain.warning.Warning;
 import atwoz.atwoz.admin.command.domain.warning.WarningCommandRepository;
 import atwoz.atwoz.admin.presentation.warning.WarningCreateRequest;
-import atwoz.atwoz.admin.presentation.warning.WarningReasonRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +27,7 @@ class WarningServiceTest {
         // given
         long adminId = 1L;
         long memberId = 2L;
-        var request = new WarningCreateRequest(memberId, WarningReasonRequest.INAPPROPRIATE_CONTENT);
+        var request = new WarningCreateRequest(memberId, "INAPPROPRIATE_CONTENT");
 
         when(warningCommandRepository.countByMemberId(memberId)).thenReturn(1L);
 
