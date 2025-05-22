@@ -6,7 +6,6 @@ import atwoz.atwoz.member.query.introduction.intra.MemberIntroductionProfileQuer
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -26,7 +25,7 @@ class MemberIntroductionProfileViewMapperTest {
     @DisplayName("mapWithDefaultTag 메서드 테스트")
     void mapWithDefaultTagTest() {
         // given
-        List<String> expectedHobbies = new ArrayList<>(hobbies);
+        List<String> expectedHobbies = hobbies.stream().toList();
         String expectedReligion = religion;
         String expectedMbti = mbti;
 
@@ -64,7 +63,7 @@ class MemberIntroductionProfileViewMapperTest {
     @DisplayName("mapWithSameReligionTag 메서드 테스트")
     void mapWithSameReligionTagTest() {
         // given
-        List<String> expectedHobbies = new ArrayList<>(hobbies);
+        List<String> expectedHobbies = hobbies.stream().toList();
         String expectedReligion = null;
         String expectedMbti = mbti;
 

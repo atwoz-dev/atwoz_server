@@ -59,7 +59,7 @@ public class MemberIntroductionProfileViewMapper {
             .map(result -> new MemberIntroductionProfileView(
                 result.memberId(),
                 result.profileImageUrl(),
-                List.of(),
+                result.hobbies().stream().toList(),
                 result.mbti(),
                 null,
                 interviewAnswerMap.get(result.memberId()),
