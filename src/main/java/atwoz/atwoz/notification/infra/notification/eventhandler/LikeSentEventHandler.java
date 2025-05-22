@@ -1,7 +1,7 @@
 package atwoz.atwoz.notification.infra.notification.eventhandler;
 
 import atwoz.atwoz.like.command.domain.LikeSentEvent;
-import atwoz.atwoz.notification.command.application.notification.NotificationSendService;
+import atwoz.atwoz.notification.command.application.NotificationSendService;
 import atwoz.atwoz.notification.infra.notification.NotificationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -22,7 +22,7 @@ public class LikeSentEventHandler {
             event.getSenderId(),
             "MEMBER",
             event.getReceiverId(),
-            "LIKE_SENT"
+            "LIKE_SEND"
         );
         notificationSendService.send(request);
     }

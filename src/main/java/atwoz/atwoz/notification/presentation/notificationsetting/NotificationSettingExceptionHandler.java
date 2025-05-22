@@ -2,7 +2,7 @@ package atwoz.atwoz.notification.presentation.notificationsetting;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
-import atwoz.atwoz.notification.command.application.notificationsetting.NotificationSettingNotFoundException;
+import atwoz.atwoz.notification.command.application.NotificationSettingNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;

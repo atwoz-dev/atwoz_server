@@ -1,5 +1,8 @@
 package atwoz.atwoz.notification.command.domain.notification;
 
+import atwoz.atwoz.notification.command.domain.Notification;
+import atwoz.atwoz.notification.command.domain.NotificationType;
+import atwoz.atwoz.notification.command.domain.SenderType;
 import atwoz.atwoz.notification.command.domain.notification.message.DefaultMessageTemplate;
 import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplate;
 import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplateParameters;
@@ -7,14 +10,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static atwoz.atwoz.notification.command.domain.notification.NotificationType.*;
+import static atwoz.atwoz.notification.command.domain.NotificationType.INAPPROPRIATE_CONTENT;
+import static atwoz.atwoz.notification.command.domain.NotificationType.MATCH_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Notification 테스트")
 class NotificationTest {
 
     private Notification createNotification(NotificationType type) {
-        return Notification.of(1L, SenderType.MEMBER, 2L, type);
+        return Notification.create(1L, SenderType.MEMBER, 2L, type);
     }
 
     @Nested
@@ -25,7 +29,7 @@ class NotificationTest {
         @DisplayName("Social 유형을 가진 경우 true를 반환한다.")
         void isSocialTypeReturnsTrue() {
             // given
-            Notification notification = createNotification(MATCH_REQUESTED);
+            Notification notification = createNotification(MATCH_REQUEST);
 
             // when
             boolean result = notification.isSocialType();
@@ -69,7 +73,7 @@ class NotificationTest {
 
             // then
             assertThat(notification.getTitle()).isEqualTo("제목");
-            assertThat(notification.getContent()).isEqualTo("내용");
+            assertThat(notification.getMessage()).isEqualTo("내용");
         }
     }
 
@@ -81,13 +85,13 @@ class NotificationTest {
         @DisplayName("markAsRead()를 호출하면 isRead가 true로 변경된다.")
         void markAsReadSetsIsReadToTrue() {
             // given
-            Notification notification = createNotification(MATCH_REQUESTED);
+            Notification notification = createNotification(MATCH_REQUEST);
 
             // when
             notification.markAsRead();
 
             // then
-            assertThat(notification.getIsRead()).isTrue();
+            assertThat(notification.getReadAt()).isTrue();
         }
     }
 }

@@ -1,7 +1,7 @@
 package atwoz.atwoz.notification.infra.notification.eventhandler;
 
 import atwoz.atwoz.admin.command.domain.warning.WarningIssuedEvent;
-import atwoz.atwoz.notification.command.application.notification.NotificationSendService;
+import atwoz.atwoz.notification.command.application.NotificationSendService;
 import atwoz.atwoz.notification.infra.notification.NotificationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -22,7 +22,7 @@ public class WarningEventHandler {
             event.getAdminId(),
             "ADMIN",
             event.getMemberId(),
-            "WARNING_ISSUED"
+            "WARNING_SEND"
         );
         notificationSendService.send(request);
     }

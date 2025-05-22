@@ -1,8 +1,8 @@
-package atwoz.atwoz.notification.command.application.notification;
+package atwoz.atwoz.notification.command.application;
 
-import atwoz.atwoz.notification.command.domain.notification.Notification;
-import atwoz.atwoz.notification.command.domain.notification.NotificationType;
-import atwoz.atwoz.notification.command.domain.notification.SenderType;
+import atwoz.atwoz.notification.command.domain.Notification;
+import atwoz.atwoz.notification.command.domain.NotificationType;
+import atwoz.atwoz.notification.command.domain.SenderType;
 import atwoz.atwoz.notification.infra.notification.NotificationRequest;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import static lombok.AccessLevel.PRIVATE;
 public class NotificationMapper {
 
     public static Notification toNotification(NotificationRequest request) {
-        return Notification.of(
+        return Notification.create(
             request.senderId(),
             toSenderType(request.senderType()),
             request.receiverId(),

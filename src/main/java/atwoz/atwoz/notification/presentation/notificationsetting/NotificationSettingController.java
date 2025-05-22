@@ -3,7 +3,7 @@ package atwoz.atwoz.notification.presentation.notificationsetting;
 import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.response.BaseResponse;
-import atwoz.atwoz.notification.command.application.notificationsetting.NotificationSettingService;
+import atwoz.atwoz.notification.command.application.NotificationSettingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;

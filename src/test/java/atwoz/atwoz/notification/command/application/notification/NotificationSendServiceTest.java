@@ -1,10 +1,8 @@
 package atwoz.atwoz.notification.command.application.notification;
 
-import atwoz.atwoz.notification.command.domain.notification.Notification;
-import atwoz.atwoz.notification.command.domain.notification.NotificationCommandRepository;
-import atwoz.atwoz.notification.command.domain.notification.NotificationSendDomainService;
-import atwoz.atwoz.notification.command.domain.notificationsetting.NotificationSetting;
-import atwoz.atwoz.notification.command.domain.notificationsetting.NotificationSettingCommandRepository;
+import atwoz.atwoz.notification.command.application.NotificationSendService;
+import atwoz.atwoz.notification.command.application.ReceiverNotificationSettingNotFoundException;
+import atwoz.atwoz.notification.command.domain.*;
 import atwoz.atwoz.notification.infra.notification.NotificationRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +25,7 @@ class NotificationSendServiceTest {
     private NotificationCommandRepository notificationCommandRepository;
 
     @Mock
-    private NotificationSettingCommandRepository notificationSettingCommandRepository;
+    private NotificationPreferenceCommandRepository notificationPreferenceCommandRepository;
 
     @Mock
     private NotificationSendDomainService notificationSendDomainService;
@@ -41,9 +39,9 @@ class NotificationSendServiceTest {
         // given
         long receiverId = 2L;
         NotificationRequest request = new NotificationRequest(1L, "MEMBER", receiverId, "MATCH_REQUESTED");
-        NotificationSetting setting = mock(NotificationSetting.class);
+        NotificationPreference setting = mock(NotificationPreference.class);
 
-        when(notificationSettingCommandRepository.findByMemberId(receiverId)).thenReturn(Optional.of(setting));
+        when(notificationPreferenceCommandRepository.findByMemberId(receiverId)).thenReturn(Optional.of(setting));
 
         // when
         notificationSendService.send(request);
@@ -60,7 +58,7 @@ class NotificationSendServiceTest {
         long receiverId = 2L;
         NotificationRequest request = new NotificationRequest(1L, "MEMBER", receiverId, "MATCH_REQUESTED");
 
-        when(notificationSettingCommandRepository.findByMemberId(receiverId)).thenReturn(Optional.empty());
+        when(notificationPreferenceCommandRepository.findByMemberId(receiverId)).thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> notificationSendService.send(request))

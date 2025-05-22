@@ -1,4 +1,4 @@
-package atwoz.atwoz.notification.command.application.notification;
+package atwoz.atwoz.notification.command.application;
 
 public class ReceiverNotificationSettingNotFoundException extends RuntimeException {
     public ReceiverNotificationSettingNotFoundException(long receiverId) {

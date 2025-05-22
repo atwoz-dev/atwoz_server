@@ -1,4 +1,4 @@
-package atwoz.atwoz.notification.command.domain.notification;
+package atwoz.atwoz.notification.command.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

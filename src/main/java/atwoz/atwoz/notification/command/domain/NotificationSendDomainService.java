@@ -1,9 +1,8 @@
-package atwoz.atwoz.notification.command.domain.notification;
+package atwoz.atwoz.notification.command.domain;
 
 import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplate;
 import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplateFactory;
 import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplateParameters;
-import atwoz.atwoz.notification.command.domain.notificationsetting.NotificationSetting;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +13,9 @@ public class NotificationSendDomainService {
     private final MessageTemplateFactory messageTemplateFactory;
     private final NotificationSender notificationSender;
 
-    public void send(Notification notification, NotificationSetting receiverNotificationSetting) {
+    public void send(Notification notification, NotificationPreference receiverNotificationPreference) {
         createMessage(notification);
-        sendIfOptedIn(notification, receiverNotificationSetting);
+        sendIfOptedIn(notification, receiverNotificationPreference);
     }
 
     private void createMessage(Notification notification) {
@@ -25,9 +24,9 @@ public class NotificationSendDomainService {
         notification.setMessage(template, parameters);
     }
 
-    private void sendIfOptedIn(Notification notification, NotificationSetting receiverNotificationSetting) {
-        if (receiverNotificationSetting.isOptedIn()) {
-            notificationSender.send(notification, receiverNotificationSetting.getDeviceToken());
+    private void sendIfOptedIn(Notification notification, NotificationPreference receiverNotificationPreference) {
+        if (receiverNotificationPreference.isOptedIn()) {
+            notificationSender.send(notification, receiverNotificationPreference.getDeviceToken());
         }
     }
 }

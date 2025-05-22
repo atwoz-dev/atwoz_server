@@ -1,9 +1,9 @@
 package atwoz.atwoz.notification.query;
 
 import atwoz.atwoz.QuerydslConfig;
-import atwoz.atwoz.notification.command.domain.notification.Notification;
-import atwoz.atwoz.notification.command.domain.notification.NotificationType;
-import atwoz.atwoz.notification.command.domain.notification.SenderType;
+import atwoz.atwoz.notification.command.domain.Notification;
+import atwoz.atwoz.notification.command.domain.NotificationType;
+import atwoz.atwoz.notification.command.domain.SenderType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,8 @@ import org.springframework.context.annotation.Import;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import static atwoz.atwoz.notification.command.domain.notification.NotificationType.*;
+import static atwoz.atwoz.notification.command.domain.NotificationType.MATCH_REJECT;
+import static atwoz.atwoz.notification.command.domain.NotificationType.MATCH_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -33,9 +34,9 @@ class NotificationQueryRepositoryTest {
         // given
         long senderId = 123L;
         long receiverId = 100L;
-        Notification notification1 = createNotification(senderId, receiverId, MATCH_REQUESTED, "Title 1", "Content 1",
+        Notification notification1 = createNotification(senderId, receiverId, MATCH_REQUEST, "Title 1", "Content 1",
             true);
-        Notification notification2 = createNotification(senderId, receiverId, MATCH_REJECTED, "Title 2", "Content 2",
+        Notification notification2 = createNotification(senderId, receiverId, MATCH_REJECT, "Title 2", "Content 2",
             false);
         Notification notification3 = createNotification(200L, receiverId, INAPPROPRIATE_CONTENT, "Title 3", "Content 3",
             false);
@@ -63,9 +64,9 @@ class NotificationQueryRepositoryTest {
         // given
         long senderId = 123L;
         long receiverId = 100L;
-        Notification notification1 = createNotification(senderId, receiverId, MATCH_REQUESTED, "Title 1", "Content 1",
+        Notification notification1 = createNotification(senderId, receiverId, MATCH_REQUEST, "Title 1", "Content 1",
             false);
-        Notification notification2 = createNotification(senderId, receiverId, MATCH_REJECTED, "Title 2", "Content 2",
+        Notification notification2 = createNotification(senderId, receiverId, MATCH_REJECT, "Title 2", "Content 2",
             false);
         Notification notification3 = createNotification(senderId, 200L, INAPPROPRIATE_CONTENT, "Title 3", "Content 3",
             false);
@@ -82,7 +83,7 @@ class NotificationQueryRepositoryTest {
         // then
         assertThat(result).hasSize(2);
         assertThat(result).extracting("notificationType")
-            .containsExactlyInAnyOrder("MATCH_REQUESTED", "MATCH_REJECTED");
+            .containsExactlyInAnyOrder("MATCH_REQUESTED", "MATCH_REJECT");
         assertThat(result).extracting("title").containsExactlyInAnyOrder("Title 1", "Title 2");
         assertThat(result).extracting("content").containsExactlyInAnyOrder("Content 1", "Content 2");
     }
@@ -95,7 +96,7 @@ class NotificationQueryRepositoryTest {
         String content,
         boolean isRead
     ) throws NoSuchFieldException, IllegalAccessException {
-        Notification notification = Notification.of(senderId, SenderType.MEMBER, receiverId, type);
+        Notification notification = Notification.create(senderId, SenderType.MEMBER, receiverId, type);
 
         Field titleField = Notification.class.getDeclaredField("title");
         titleField.setAccessible(true);

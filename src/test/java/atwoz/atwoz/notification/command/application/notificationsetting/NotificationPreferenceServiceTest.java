@@ -1,7 +1,10 @@
 package atwoz.atwoz.notification.command.application.notificationsetting;
 
-import atwoz.atwoz.notification.command.domain.notificationsetting.NotificationSetting;
-import atwoz.atwoz.notification.command.domain.notificationsetting.NotificationSettingCommandRepository;
+import atwoz.atwoz.notification.command.application.DuplicateNotificationSettingException;
+import atwoz.atwoz.notification.command.application.NotificationSettingNotFoundException;
+import atwoz.atwoz.notification.command.application.NotificationSettingService;
+import atwoz.atwoz.notification.command.domain.NotificationPreference;
+import atwoz.atwoz.notification.command.domain.NotificationPreferenceCommandRepository;
 import atwoz.atwoz.notification.presentation.notificationsetting.DeviceTokenUpdateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -13,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -21,10 +23,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("NotificationSettingService 테스트")
-class NotificationSettingServiceTest {
+class NotificationPreferenceServiceTest {
 
     @Mock
-    private NotificationSettingCommandRepository notificationSettingRepository;
+    private NotificationPreferenceCommandRepository notificationSettingRepository;
 
     @InjectMocks
     private NotificationSettingService notificationSettingService;
@@ -44,7 +46,7 @@ class NotificationSettingServiceTest {
             notificationSettingService.create(memberId);
 
             // then
-            verify(notificationSettingRepository).save(any(NotificationSetting.class));
+            verify(notificationSettingRepository).save(any(NotificationPreference.class));
         }
 
         @Test
@@ -71,7 +73,7 @@ class NotificationSettingServiceTest {
             long memberId = 1L;
             String newToken = "new_device_token";
             DeviceTokenUpdateRequest request = new DeviceTokenUpdateRequest(newToken);
-            NotificationSetting setting = NotificationSetting.of(memberId);
+            NotificationPreference setting = NotificationPreference.of(memberId);
             when(notificationSettingRepository.findByMemberId(memberId)).thenReturn(Optional.of(setting));
 
             // when
@@ -105,7 +107,7 @@ class NotificationSettingServiceTest {
         void optInSuccess() {
             // given
             long memberId = 1L;
-            NotificationSetting setting = NotificationSetting.of(memberId);
+            NotificationPreference setting = NotificationPreference.of(memberId);
             when(notificationSettingRepository.findByMemberId(memberId)).thenReturn(Optional.of(setting));
 
             // when
@@ -137,7 +139,7 @@ class NotificationSettingServiceTest {
         void optOutSuccess() {
             // given
             long memberId = 1L;
-            NotificationSetting setting = NotificationSetting.of(memberId);
+            NotificationPreference setting = NotificationPreference.of(memberId);
             // 먼저 optIn을 호출하여 true 상태로 만든 후 optOut 테스트
             setting.optIn();
             when(notificationSettingRepository.findByMemberId(memberId)).thenReturn(Optional.of(setting));

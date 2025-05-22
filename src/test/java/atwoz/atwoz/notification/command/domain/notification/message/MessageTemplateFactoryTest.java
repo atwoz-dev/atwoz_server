@@ -1,6 +1,6 @@
 package atwoz.atwoz.notification.command.domain.notification.message;
 
-import atwoz.atwoz.notification.command.domain.notification.NotificationType;
+import atwoz.atwoz.notification.command.domain.NotificationType;
 import atwoz.atwoz.notification.command.domain.notification.message.admin.InappropriateContentMessageTemplate;
 import atwoz.atwoz.notification.command.domain.notification.message.social.MatchRequestedMessageTemplate;
 import org.junit.jupiter.api.DisplayName;
@@ -12,7 +12,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,11 +27,11 @@ class MessageTemplateFactoryTest {
         void getByNotificationType_Returns_MatchRequestedTemplate() {
             // given
             MessageTemplate matchRequestedTemplate = Mockito.mock(MatchRequestedMessageTemplate.class);
-            when(matchRequestedTemplate.getNotificationType()).thenReturn(NotificationType.MATCH_REQUESTED);
+            when(matchRequestedTemplate.getNotificationType()).thenReturn(NotificationType.MATCH_REQUEST);
             MessageTemplateFactory factory = new MessageTemplateFactory(List.of(matchRequestedTemplate));
 
             // when
-            MessageTemplate result = factory.getByNotificationType(NotificationType.MATCH_REQUESTED);
+            MessageTemplate result = factory.getByNotificationType(NotificationType.MATCH_REQUEST);
 
             // then
             assertThat(result).isEqualTo(matchRequestedTemplate);
@@ -60,7 +59,7 @@ class MessageTemplateFactoryTest {
             MessageTemplateFactory factory = new MessageTemplateFactory(List.of());
 
             // when
-            MessageTemplate result = factory.getByNotificationType(NotificationType.MATCH_REQUESTED);
+            MessageTemplate result = factory.getByNotificationType(NotificationType.MATCH_REQUEST);
 
             // then
             assertThat(result).isInstanceOf(DefaultMessageTemplate.class);

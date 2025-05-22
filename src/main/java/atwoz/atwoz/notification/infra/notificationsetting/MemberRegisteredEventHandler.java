@@ -1,8 +1,8 @@
 package atwoz.atwoz.notification.infra.notificationsetting;
 
 import atwoz.atwoz.member.command.domain.member.event.MemberRegisteredEvent;
-import atwoz.atwoz.notification.command.application.notificationsetting.DuplicateNotificationSettingException;
-import atwoz.atwoz.notification.command.application.notificationsetting.NotificationSettingService;
+import atwoz.atwoz.notification.command.application.DuplicateNotificationSettingException;
+import atwoz.atwoz.notification.command.application.NotificationSettingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -25,7 +25,7 @@ public class MemberRegisteredEventHandler {
         } catch (DuplicateNotificationSettingException e) {
             log.warn(e.getMessage());
         } catch (Exception e) {
-            log.error("Member(memberId: {})의 NotificationSetting 생성 중 예외가 발생습니다.", event.getMemberId(), e);
+            log.error("Member(memberId: {})의 NotificationPreference 생성 중 예외가 발생습니다.", event.getMemberId(), e);
         }
     }
 }

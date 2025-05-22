@@ -1,5 +1,6 @@
 package atwoz.atwoz.notification.command.domain.notificationsetting;
 
+import atwoz.atwoz.notification.command.domain.NotificationPreference;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -7,20 +8,20 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@DisplayName("NotificationSetting 테스트")
-class NotificationSettingTest {
+@DisplayName("NotificationPreference 테스트")
+class NotificationPreferenceTest {
 
     @Nested
     @DisplayName("of() 메서드 테스트")
     class OfMethodTest {
         @Test
-        @DisplayName("주어진 memberId로 of() 호출 시, deviceToken은 null이고 optInStatus는 false인 NotificationSetting 생성됩니다.")
+        @DisplayName("주어진 memberId로 of() 호출 시, deviceToken은 null이고 optInStatus는 false인 NotificationPreference 생성됩니다.")
         void createNotificationSetting() {
             // given
             long memberId = 1L;
 
             // when
-            NotificationSetting setting = NotificationSetting.of(memberId);
+            NotificationPreference setting = NotificationPreference.of(memberId);
 
             // then
             assertThat(setting.getMemberId()).isEqualTo(memberId);
@@ -36,7 +37,7 @@ class NotificationSettingTest {
         @DisplayName("유효한 deviceToken 값으로 업데이트 시 정상적으로 변경됩니다.")
         void updateDeviceToken() {
             // given
-            NotificationSetting setting = NotificationSetting.of(1L);
+            NotificationPreference setting = NotificationPreference.of(1L);
             String token = "device_token_123";
 
             // when
@@ -50,7 +51,7 @@ class NotificationSettingTest {
         @DisplayName("null deviceToken 전달 시 NullPointerException이 발생합니다.")
         void updateDeviceTokenWithNullThrowsException() {
             // given
-            NotificationSetting setting = NotificationSetting.of(1L);
+            NotificationPreference setting = NotificationPreference.of(1L);
 
             // when & then
             assertThatThrownBy(() -> setting.updateDeviceToken(null))
@@ -65,7 +66,7 @@ class NotificationSettingTest {
         @DisplayName("optIn() 호출 시 optInStatus가 true로 변경됩니다.")
         void optInChangesStatus() {
             // given
-            NotificationSetting setting = NotificationSetting.of(1L);
+            NotificationPreference setting = NotificationPreference.of(1L);
 
             // when
             setting.optIn();
@@ -82,7 +83,7 @@ class NotificationSettingTest {
         @DisplayName("optOut() 호출 시 optInStatus가 false로 변경됩니다.")
         void optOutChangesStatus() {
             // given
-            NotificationSetting setting = NotificationSetting.of(1L);
+            NotificationPreference setting = NotificationPreference.of(1L);
             setting.optIn();
 
             // when

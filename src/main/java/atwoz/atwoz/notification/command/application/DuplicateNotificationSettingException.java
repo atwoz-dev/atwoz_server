@@ -1,4 +1,4 @@
-package atwoz.atwoz.notification.command.application.notificationsetting;
+package atwoz.atwoz.notification.command.application;
 
 public class DuplicateNotificationSettingException extends RuntimeException {
     public DuplicateNotificationSettingException(long memberId) {

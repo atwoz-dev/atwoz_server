@@ -1,8 +1,8 @@
 package atwoz.atwoz.notification.command.domain.notification;
 
+import atwoz.atwoz.notification.command.domain.*;
 import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplate;
 import atwoz.atwoz.notification.command.domain.notification.message.MessageTemplateFactory;
-import atwoz.atwoz.notification.command.domain.notificationsetting.NotificationSetting;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +32,7 @@ class NotificationSendDomainServiceTest {
         // given
         String receiverDeviceToken = "receiverDeviceToken";
         Notification notification = createNotification();
-        NotificationSetting setting = createNotificationSetting(true, receiverDeviceToken);
+        NotificationPreference setting = createNotificationSetting(true, receiverDeviceToken);
 
         MessageTemplate template = mock(MessageTemplate.class);
         when(template.getTitle(any())).thenReturn("title");
@@ -53,7 +53,7 @@ class NotificationSendDomainServiceTest {
         // given
         String receiverDeviceToken = "receiverDeviceToken";
         Notification notification = createNotification();
-        NotificationSetting setting = createNotificationSetting(false, receiverDeviceToken);
+        NotificationPreference setting = createNotificationSetting(false, receiverDeviceToken);
 
         MessageTemplate template = mock(MessageTemplate.class);
         when(template.getTitle(any())).thenReturn("title");
@@ -69,15 +69,15 @@ class NotificationSendDomainServiceTest {
     }
 
     private Notification createNotification() {
-        return Notification.of(1L, SenderType.MEMBER, 2L, NotificationType.MATCH_REQUESTED);
+        return Notification.create(1L, SenderType.MEMBER, 2L, NotificationType.MATCH_REQUEST);
     }
 
-    private NotificationSetting createNotificationSetting(boolean optedIn, String deviceToken) {
-        NotificationSetting notificationSetting = NotificationSetting.of(2L);
+    private NotificationPreference createNotificationSetting(boolean optedIn, String deviceToken) {
+        NotificationPreference notificationPreference = NotificationPreference.of(2L);
         if (optedIn) {
-            notificationSetting.optIn();
+            notificationPreference.optIn();
         }
-        notificationSetting.updateDeviceToken(deviceToken);
-        return notificationSetting;
+        notificationPreference.updateDeviceToken(deviceToken);
+        return notificationPreference;
     }
 }

@@ -1,7 +1,7 @@
 package atwoz.atwoz.notification.infra.notification.eventhandler;
 
 import atwoz.atwoz.match.command.domain.match.event.MatchRequestedEvent;
-import atwoz.atwoz.notification.command.application.notification.NotificationSendService;
+import atwoz.atwoz.notification.command.application.NotificationSendService;
 import atwoz.atwoz.notification.infra.notification.NotificationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;

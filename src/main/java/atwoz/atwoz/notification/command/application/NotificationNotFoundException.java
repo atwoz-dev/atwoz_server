@@ -1,4 +1,4 @@
-package atwoz.atwoz.notification.command.application.notification;
+package atwoz.atwoz.notification.command.application;
 
 public class NotificationNotFoundException extends RuntimeException {
     public NotificationNotFoundException(long notificationId) {

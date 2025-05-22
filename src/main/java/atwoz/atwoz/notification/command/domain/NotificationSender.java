@@ -1,4 +1,4 @@
-package atwoz.atwoz.notification.command.domain.notification;
+package atwoz.atwoz.notification.command.domain;
 
 public interface NotificationSender {
 

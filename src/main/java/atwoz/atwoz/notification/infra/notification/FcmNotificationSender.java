@@ -1,7 +1,7 @@
 package atwoz.atwoz.notification.infra.notification;
 
-import atwoz.atwoz.notification.command.domain.notification.Notification;
-import atwoz.atwoz.notification.command.domain.notification.NotificationSender;
+import atwoz.atwoz.notification.command.domain.Notification;
+import atwoz.atwoz.notification.command.domain.NotificationSender;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
@@ -23,7 +23,7 @@ public class FcmNotificationSender implements NotificationSender {
                 .putData("receiverId", String.valueOf(notification.getReceiverId()))
                 .putData("notificationType", notification.getType().toString())
                 .putData("title", notification.getTitle())
-                .putData("content", notification.getContent())
+                .putData("content", notification.getMessage())
                 .setToken(receiverDeviceToken)
                 .build();
 
