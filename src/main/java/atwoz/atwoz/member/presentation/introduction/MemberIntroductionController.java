@@ -8,6 +8,8 @@ import atwoz.atwoz.member.command.application.introduction.MemberIntroductionSer
 import atwoz.atwoz.member.presentation.introduction.dto.MemberIntroductionCreateRequest;
 import atwoz.atwoz.member.query.introduction.application.IntroductionQueryService;
 import atwoz.atwoz.member.query.introduction.application.MemberIntroductionProfileView;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "소개받고 싶은 이성 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member/introduction")
@@ -22,6 +25,7 @@ public class MemberIntroductionController {
     private final IntroductionQueryService introductionQueryService;
     private final MemberIntroductionService memberintroductionService;
 
+    @Operation(summary = "다이아 등급 이성 조회")
     @GetMapping("/grade")
     public ResponseEntity<BaseResponse<List<MemberIntroductionProfileView>>> findDiamondGradeIntroductions(
         @AuthPrincipal AuthContext authContext) {
@@ -31,6 +35,7 @@ public class MemberIntroductionController {
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, introductionProfileViews));
     }
 
+    @Operation(summary = "취미가 같은 이성 조회")
     @GetMapping("/hobby")
     public ResponseEntity<BaseResponse<List<MemberIntroductionProfileView>>> findSameHobbyIntroductions(
         @AuthPrincipal AuthContext authContext) {
@@ -40,6 +45,7 @@ public class MemberIntroductionController {
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, introductionProfileViews));
     }
 
+    @Operation(summary = "종교가 같은 이성 조회")
     @GetMapping("/religion")
     public ResponseEntity<BaseResponse<List<MemberIntroductionProfileView>>> findSameReligionIntroductions(
         @AuthPrincipal AuthContext authContext) {
@@ -49,6 +55,7 @@ public class MemberIntroductionController {
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, introductionProfileViews));
     }
 
+    @Operation(summary = "지역이 같은 이성 조회")
     @GetMapping("/region")
     public ResponseEntity<BaseResponse<List<MemberIntroductionProfileView>>> findSameRegionIntroductions(
         @AuthPrincipal AuthContext authContext) {
@@ -58,6 +65,7 @@ public class MemberIntroductionController {
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, introductionProfileViews));
     }
 
+    @Operation(summary = "최근에 가입한 이성 조회")
     @GetMapping("/recent")
     public ResponseEntity<BaseResponse<List<MemberIntroductionProfileView>>> findRecentlyJoinedIntroductions(
         @AuthPrincipal AuthContext authContext) {
@@ -67,6 +75,7 @@ public class MemberIntroductionController {
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, introductionProfileViews));
     }
 
+    @Operation(summary = "다이아 등급 이성 프로필 블러 해제")
     @PostMapping("/grade")
     public ResponseEntity<BaseResponse<Void>> createGradeIntroduction(
         @Valid @RequestBody MemberIntroductionCreateRequest request,
@@ -76,6 +85,7 @@ public class MemberIntroductionController {
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
+    @Operation(summary = "취미가 같은 이성 프로필 블러 해제")
     @PostMapping("/hobby")
     public ResponseEntity<BaseResponse<Void>> createHobbyIntroduction(
         @Valid @RequestBody MemberIntroductionCreateRequest request,
@@ -85,6 +95,7 @@ public class MemberIntroductionController {
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
+    @Operation(summary = "종교가 같은 이성 프로필 블러 해제")
     @PostMapping("/religion")
     public ResponseEntity<BaseResponse<Void>> createReligionIntroduction(
         @Valid @RequestBody MemberIntroductionCreateRequest request,
@@ -94,6 +105,7 @@ public class MemberIntroductionController {
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
+    @Operation(summary = "지역이 같은 이성 프로필 블러 해제")
     @PostMapping("/region")
     public ResponseEntity<BaseResponse<Void>> createRegionIntroduction(
         @Valid @RequestBody MemberIntroductionCreateRequest request,
@@ -103,6 +115,7 @@ public class MemberIntroductionController {
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
+    @Operation(summary = "최근에 가입한 이성 프로필 블러 해제")
     @PostMapping("/recent")
     public ResponseEntity<BaseResponse<Void>> createRecentIntroduction(
         @Valid @RequestBody MemberIntroductionCreateRequest request,
