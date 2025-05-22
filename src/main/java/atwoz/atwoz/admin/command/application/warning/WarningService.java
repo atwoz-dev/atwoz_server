@@ -20,12 +20,13 @@ public class WarningService {
     @Transactional
     public void issue(long adminId, WarningCreateRequest request) {
         final long memberId = request.memberId();
-
-        var warning = Warning.issue(adminId, memberId, toWarningReasonType(request.reasonType()));
-        warningCommandRepository.saveAndFlush(warning);
-        log.info("멤버 id: {}에 대한 경고 발행(id: {})", memberId, warning.getId());
-
-        long totalWarnings = warningCommandRepository.countByMemberId(memberId);
-        warning.checkIfThresholdExceeded(totalWarnings);
+        var warning = Warning.issue(
+            adminId,
+            memberId,
+            warningCommandRepository.countByMemberId(memberId) + 1,
+            toWarningReasonType(request.reasonType())
+        );
+        warningCommandRepository.save(warning);
+        log.info("멤버(id: {})에 경고(id: {}) 발행", memberId, warning.getId());
     }
 }

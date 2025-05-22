@@ -1,7 +1,6 @@
 package atwoz.atwoz.notification.infra.notification.eventhandler;
 
 import atwoz.atwoz.admin.command.domain.warning.WarningIssuedEvent;
-import atwoz.atwoz.admin.command.domain.warning.WarningThresholdExceededEvent;
 import atwoz.atwoz.notification.command.application.notification.NotificationSendService;
 import atwoz.atwoz.notification.infra.notification.NotificationRequest;
 import lombok.RequiredArgsConstructor;
@@ -24,18 +23,6 @@ public class WarningEventHandler {
             "ADMIN",
             event.getMemberId(),
             "WARNING_ISSUED"
-        );
-        notificationSendService.send(request);
-    }
-
-    @Async
-    @TransactionalEventListener(value = WarningThresholdExceededEvent.class, phase = TransactionPhase.AFTER_COMMIT)
-    public void handle(WarningThresholdExceededEvent event) {
-        var request = new NotificationRequest(
-            event.getAdminId(),
-            "ADMIN",
-            event.getMemberId(),
-            "WARNING_THRESHOLD_EXCEEDED"
         );
         notificationSendService.send(request);
     }

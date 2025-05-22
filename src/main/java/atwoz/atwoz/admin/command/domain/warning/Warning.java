@@ -38,14 +38,8 @@ public class Warning {
         this.reasonType = reasonType;
     }
 
-    public static Warning issue(long adminId, long memberId, WarningReasonType reasonType) {
-        Events.raise(WarningIssuedEvent.of(adminId, memberId, reasonType.toString()));
+    public static Warning issue(long adminId, long memberId, long warningCount, WarningReasonType reasonType) {
+        Events.raise(WarningIssuedEvent.of(adminId, memberId, warningCount, reasonType.toString()));
         return new Warning(adminId, memberId, reasonType);
-    }
-
-    public void checkIfThresholdExceeded(long totalWarnings) {
-        if (totalWarnings >= THRESHOLD) {
-            Events.raise(WarningThresholdExceededEvent.of(adminId, memberId));
-        }
     }
 }

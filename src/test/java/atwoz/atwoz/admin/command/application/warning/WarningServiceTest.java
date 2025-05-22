@@ -30,15 +30,13 @@ class WarningServiceTest {
         long memberId = 2L;
         var request = new WarningCreateRequest(memberId, WarningReasonRequest.INAPPROPRIATE_CONTENT);
 
-        doAnswer(invocation -> invocation.getArgument(0))
-            .when(warningCommandRepository).saveAndFlush(any(Warning.class));
         when(warningCommandRepository.countByMemberId(memberId)).thenReturn(1L);
 
         // when
         warningService.issue(adminId, request);
 
         // then
-        verify(warningCommandRepository).saveAndFlush(any(Warning.class));
         verify(warningCommandRepository).countByMemberId(memberId);
+        verify(warningCommandRepository).save(any(Warning.class));
     }
 }

@@ -18,52 +18,17 @@ class WarningTest {
             // given
             long adminId = 1L;
             long memberId = 2L;
+            long warningCount = 1;
             var reason = WarningReasonType.INAPPROPRIATE_CONTENT;
 
             // when
-            var warning = Warning.issue(adminId, memberId, reason);
+            var warning = Warning.issue(adminId, memberId, warningCount, reason);
 
             // then
             eventsMock.verify(() -> Events.raise(any(WarningIssuedEvent.class)));
             assertEquals(adminId, warning.getAdminId());
             assertEquals(memberId, warning.getMemberId());
             assertEquals(reason, warning.getReasonType());
-        }
-    }
-
-    @Test
-    @DisplayName("checkIfThresholdExceeded() 호출 시 임계치 미만이면 이벤트가 발생하지 않는다")
-    void checkIfThresholdExceededWhenBelowThresholdShouldNotRaiseEvent() {
-        try (MockedStatic<Events> eventsMock = mockStatic(Events.class)) {
-            // given
-            long adminId = 1L;
-            long memberId = 2L;
-            var warning = Warning.issue(adminId, memberId, WarningReasonType.INAPPROPRIATE_CONTENT);
-            eventsMock.clearInvocations();
-
-            // when
-            warning.checkIfThresholdExceeded(1);
-
-            // then
-            eventsMock.verifyNoInteractions();
-        }
-    }
-
-    @Test
-    @DisplayName("checkIfThresholdExceeded() 호출 시 임계치 도달 또는 초과하면 WarningThresholdExceededEvent가 발생한다")
-    void checkIfThresholdExceededWhenAtOrAboveThresholdShouldRaiseThresholdExceededEvent() {
-        try (MockedStatic<Events> eventsMock = mockStatic(Events.class)) {
-            // given
-            long adminId = 1L;
-            long memberId = 2L;
-            var warning = Warning.issue(adminId, memberId, WarningReasonType.INAPPROPRIATE_CONTENT);
-            eventsMock.clearInvocations();
-
-            // when
-            warning.checkIfThresholdExceeded(2);
-
-            // then
-            eventsMock.verify(() -> Events.raise(any(WarningThresholdExceededEvent.class)));
         }
     }
 }
