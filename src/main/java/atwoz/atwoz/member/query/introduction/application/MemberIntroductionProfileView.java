@@ -5,7 +5,9 @@ import java.util.List;
 public record MemberIntroductionProfileView(
     long memberId,
     String profileImageUrl,
-    List<String> tags,
+    List<String> hobbies,
+    String mbti,
+    String religion,
     String interviewAnswerContent,
     String likeLevel,
     boolean isIntroduced
