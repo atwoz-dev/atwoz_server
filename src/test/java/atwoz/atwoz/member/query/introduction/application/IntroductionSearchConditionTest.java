@@ -106,20 +106,20 @@ class IntroductionSearchConditionTest {
     }
 
     @Test
-    @DisplayName("ofRegion 메서드 테스트")
-    void ofRegionTest() {
+    @DisplayName("ofCity 메서드 테스트")
+    void ofCityTest() {
         // given
         MemberIdeal ideal = getMockedMemberIdeal();
-        City memberRegion = City.DAEJEON;
+        City memberCity = City.DAEJEON;
 
         // when
         IntroductionSearchCondition condition = IntroductionSearchCondition.ofCity(excludedIds, ideal, gender,
-            memberRegion);
+            memberCity);
 
         // then
         assertCommonFields(condition);
         assertThat(condition.getHobbies()).isEqualTo(hobbies.stream().map(Hobby::name).collect(Collectors.toSet()));
-        assertThat(condition.getCities()).isEqualTo(Set.of(memberRegion.name()));
+        assertThat(condition.getCities()).isEqualTo(Set.of(memberCity.name()));
         assertThat(condition.getReligion()).isEqualTo(religion.name());
         assertThat(condition.getMemberGrade()).isNull();
         assertThat(condition.getJoinedAfter()).isNull();

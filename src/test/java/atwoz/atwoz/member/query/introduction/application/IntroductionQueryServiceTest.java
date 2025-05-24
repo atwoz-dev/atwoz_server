@@ -139,14 +139,14 @@ class IntroductionQueryServiceTest {
     }
 
     @Test
-    @DisplayName("findSameRegionIntroductions 메서드 테스트")
-    void findSameRegionIntroductionsTest() {
+    @DisplayName("findSameCityIntroductions 메서드 테스트")
+    void findSameCityIntroductionsTest() {
         // given
         long memberId = 1L;
         Set<Long> introductionMemberIds = Set.of(2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L);
         when(introductionMemberIdFetcher.fetch(
             eq(memberId),
-            eq(IntroductionCacheKeyPrefix.SAME_REGION),
+            eq(IntroductionCacheKeyPrefix.SAME_CITY),
             isNull(),
             ArgumentMatchers.<IntroductionMemberIdFetcher.IntroductionConditionSupplier<City>>any()
         )).thenReturn(introductionMemberIds);
@@ -166,7 +166,7 @@ class IntroductionQueryServiceTest {
                     () -> MemberIntroductionProfileViewMapper.mapWithDefaultTag(memberIntroductionProfileQueryResults,
                         interviewAnswerQueryResults))
                 .thenReturn(expectedResult);
-            List<MemberIntroductionProfileView> result = introductionQueryService.findSameRegionIntroductions(memberId);
+            List<MemberIntroductionProfileView> result = introductionQueryService.findSameCityIntroductions(memberId);
             assertThat(result).isEqualTo(expectedResult);
         }
     }

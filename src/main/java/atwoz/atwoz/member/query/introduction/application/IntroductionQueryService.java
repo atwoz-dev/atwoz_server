@@ -51,8 +51,8 @@ public class IntroductionQueryService {
             memberIntroductionProfileQueryResults, interviewAnswerQueryResults);
     }
 
-    public List<MemberIntroductionProfileView> findSameRegionIntroductions(long memberId) {
-        Set<Long> introductionMemberIds = getSameRegionIntroductionMemberIds(memberId);
+    public List<MemberIntroductionProfileView> findSameCityIntroductions(long memberId) {
+        Set<Long> introductionMemberIds = getSameCityIntroductionMemberIds(memberId);
         List<MemberIntroductionProfileQueryResult> memberIntroductionProfileQueryResults =
             introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId,
                 introductionMemberIds);
@@ -105,10 +105,10 @@ public class IntroductionQueryService {
         );
     }
 
-    private Set<Long> getSameRegionIntroductionMemberIds(long memberId) {
+    private Set<Long> getSameCityIntroductionMemberIds(long memberId) {
         return introductionMemberIdFetcher.fetch(
             memberId,
-            IntroductionCacheKeyPrefix.SAME_REGION,
+            IntroductionCacheKeyPrefix.SAME_CITY,
             null,
             (excluded, ideal, member, unused) ->
                 IntroductionSearchCondition.ofCity(excluded, ideal, member.getGender().getOpposite(),

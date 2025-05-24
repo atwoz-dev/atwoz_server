@@ -8,7 +8,7 @@ public record MemberIdealView(
     Integer minAge,
     Integer maxAge,
     Set<String> hobbies,
-    Set<String> regions,
+    Set<String> cities,
     String religion,
     String smokingStatus,
     String drinkingStatus
