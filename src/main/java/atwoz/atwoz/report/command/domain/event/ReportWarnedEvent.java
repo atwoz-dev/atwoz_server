@@ -7,11 +7,11 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ReportCreatedEvent extends Event {
-    private final long reporterId;
+public class ReportWarnedEvent extends Event {
     private final long reporteeId;
+    private final String reportReason;
 
-    public static ReportCreatedEvent of(long reporterId, long reporteeId) {
-        return new ReportCreatedEvent(reporterId, reporteeId);
+    public static ReportWarnedEvent of(long reporteeId, String reportReason) {
+        return new ReportWarnedEvent(reporteeId, reportReason);
     }
 }

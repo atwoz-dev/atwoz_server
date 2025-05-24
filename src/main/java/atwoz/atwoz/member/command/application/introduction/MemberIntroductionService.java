@@ -34,8 +34,8 @@ public class MemberIntroductionService {
     }
 
     @Transactional
-    public void createRegionIntroduction(long memberId, long introducedMemberId) {
-        createIntroduction(memberId, introducedMemberId, IntroductionType.SAME_REGION);
+    public void createCityIntroduction(long memberId, long introducedMemberId) {
+        createIntroduction(memberId, introducedMemberId, IntroductionType.SAME_CITY);
     }
 
     @Transactional

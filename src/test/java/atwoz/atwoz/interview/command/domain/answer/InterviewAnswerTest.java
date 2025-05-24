@@ -20,7 +20,7 @@ class InterviewAnswerTest {
 
     @Nested
     @DisplayName("of 메서드 테스트")
-    class ofMethodTest {
+    class OfMethodTest {
 
         @ParameterizedTest
         @ValueSource(strings = {"content is null", "questionId is null", "memberId is null"})
@@ -67,7 +67,7 @@ class InterviewAnswerTest {
 
     @Nested
     @DisplayName("submitFirstInterviewAnswer 메서드 테스트")
-    class submitFirstInterviewAnswerMethodTest {
+    class SubmitFirstInterviewAnswerMethodTest {
 
         @Test
         @DisplayName("첫 번째 면접 답변을 제출하면 FirstInterviewSubmittedEvent를 발생시킨다.")
@@ -87,6 +87,103 @@ class InterviewAnswerTest {
                         event.getMemberId().equals(memberId)
                     )), times(1));
             }
+        }
+    }
+
+    @Nested
+    @DisplayName("updateContent 메서드 테스트")
+    class UpdateContentMethodTest {
+
+        @Test
+        @DisplayName("updateContent 메서드에서 content가 null이면 예외를 던집니다.")
+        void throwsExceptionWhenContentIsNull() {
+            // given
+            Long questionId = 1L;
+            Long memberId = 2L;
+            InterviewAnswer interviewAnswer = InterviewAnswer.of(questionId, memberId, "content");
+
+            // when & then
+            assertThatThrownBy(() -> interviewAnswer.updateContent(null))
+                .isInstanceOf(NullPointerException.class);
+        }
+
+        @Test
+        @DisplayName("updateContent 메서드에서 content가 blank이면 예외를 던집니다.")
+        void throwsExceptionWhenContentIsBlank() {
+            // given
+            Long questionId = 1L;
+            Long memberId = 2L;
+            InterviewAnswer interviewAnswer = InterviewAnswer.of(questionId, memberId, "content");
+
+            // when & then
+            assertThatThrownBy(() -> interviewAnswer.updateContent(" "))
+                .isInstanceOf(InvalidInterviewAnswerContentException.class);
+        }
+
+        @Test
+        @DisplayName("updateContent 메서드에서 content가 정상이면 content를 업데이트합니다.")
+        void updateContentWhenContentIsValid() {
+            // given
+            Long questionId = 1L;
+            Long memberId = 2L;
+            String prevContent = "content";
+            InterviewAnswer interviewAnswer = InterviewAnswer.of(questionId, memberId, prevContent);
+
+            // when
+            String updatedContent = "updated content";
+            interviewAnswer.updateContent(updatedContent);
+
+            // then
+            assertThat(interviewAnswer.getContent()).isEqualTo(updatedContent);
+        }
+    }
+
+    @Nested
+    @DisplayName("isAnsweredBy 메서드 테스트")
+    class IsAnsweredByMethodTest {
+
+        @Test
+        @DisplayName("isAnsweredBy 메서드에서 memberId가 null이면 예외를 던집니다.")
+        void throwsExceptionWhenMemberIdIsNull() {
+            // given
+            Long questionId = 1L;
+            Long memberId = 2L;
+            InterviewAnswer interviewAnswer = InterviewAnswer.of(questionId, memberId, "content");
+
+            // when & then
+            Long nullMemberId = null;
+            assertThatThrownBy(() -> interviewAnswer.isAnsweredBy(nullMemberId))
+                .isInstanceOf(NullPointerException.class);
+        }
+
+        @Test
+        @DisplayName("isAnsweredBy 메서드에서 memberId가 interviewAnswer.memberId와 일치하면 true를 반환합니다.")
+        void returnTrueWhenMemberIdIsValid() {
+            // given
+            Long questionId = 1L;
+            Long memberId = 2L;
+            InterviewAnswer interviewAnswer = InterviewAnswer.of(questionId, memberId, "content");
+
+            // when
+            boolean result = interviewAnswer.isAnsweredBy(memberId);
+
+            // then
+            assertThat(result).isTrue();
+        }
+
+        @Test
+        @DisplayName("isAnsweredBy 메서드에서 memberId가 interviewAnswer.memberId와 일치하지 않으면 false를 반환합니다.")
+        void returnFalseWhenMemberIdIsInvalid() {
+            // given
+            Long questionId = 1L;
+            Long memberId = 2L;
+            InterviewAnswer interviewAnswer = InterviewAnswer.of(questionId, memberId, "content");
+
+            // when
+            boolean result = interviewAnswer.isAnsweredBy(3L);
+
+            // then
+            assertThat(result).isFalse();
         }
     }
 }

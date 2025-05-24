@@ -56,11 +56,11 @@ public class MemberIntroductionController {
     }
 
     @Operation(summary = "지역이 같은 이성 조회")
-    @GetMapping("/region")
-    public ResponseEntity<BaseResponse<List<MemberIntroductionProfileView>>> findSameRegionIntroductions(
+    @GetMapping("/city")
+    public ResponseEntity<BaseResponse<List<MemberIntroductionProfileView>>> findSameCityIntroductions(
         @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
-        List<MemberIntroductionProfileView> introductionProfileViews = introductionQueryService.findSameRegionIntroductions(
+        List<MemberIntroductionProfileView> introductionProfileViews = introductionQueryService.findSameCityIntroductions(
             memberId);
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, introductionProfileViews));
     }
@@ -106,12 +106,12 @@ public class MemberIntroductionController {
     }
 
     @Operation(summary = "지역이 같은 이성 프로필 블러 해제")
-    @PostMapping("/region")
-    public ResponseEntity<BaseResponse<Void>> createRegionIntroduction(
+    @PostMapping("/city")
+    public ResponseEntity<BaseResponse<Void>> createCityIntroduction(
         @Valid @RequestBody MemberIntroductionCreateRequest request,
         @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
-        memberintroductionService.createRegionIntroduction(memberId, request.introducedMemberId());
+        memberintroductionService.createCityIntroduction(memberId, request.introducedMemberId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
