@@ -254,5 +254,65 @@ public class SelfIntroductionServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("셀프 소개 공개 여부 변경")
+    class UpdateSelfIntroduction {
+        @Test
+        @DisplayName("변경하고자 하는 셀프 소개가 존재하지 않는 경우, 예외 발생")
+        void throwExceptionWhenSelfIntroductionNotFound() {
+            // Given
+            Long selfIntroductionId = 1L;
+            Mockito.when(selfIntroductionCommandRepository.findById(selfIntroductionId))
+                .thenReturn(Optional.empty());
 
+            // When & Then
+            Assertions.assertThatThrownBy(() -> selfIntroductionService.changeOpenStatus(selfIntroductionId, false))
+                .isInstanceOf(SelfIntroductionNotFoundException.class);
+        }
+
+        @Test
+        @DisplayName("셀프 소개를 공개로 변경한다.")
+        void changeToOpen() {
+            // Given
+            Long selfIntroductionId = 1L;
+            Long memberId = 2L;
+            SelfIntroduction selfIntroduction = SelfIntroduction.write(
+                memberId,
+                "셀프 소개 제목",
+                "셀프 소개 내용입니다. 최소 내용이 30자 이상입니다~!!! (30자 이상)"
+            );
+            selfIntroduction.close();
+
+            Mockito.when(selfIntroductionCommandRepository.findById(selfIntroductionId))
+                .thenReturn(Optional.of(selfIntroduction));
+
+            // When
+            selfIntroductionService.changeOpenStatus(selfIntroductionId, true);
+
+            // Then
+            Assertions.assertThat(selfIntroduction.isOpened()).isTrue();
+        }
+
+        @Test
+        @DisplayName("셀프 소개를 비공개로 변경한다.")
+        void changeToClose() {
+            // Given
+            Long selfIntroductionId = 1L;
+            Long memberId = 2L;
+            SelfIntroduction selfIntroduction = SelfIntroduction.write(
+                memberId,
+                "셀프 소개 제목",
+                "셀프 소개 내용입니다. 최소 내용이 30자 이상입니다~!!! (30자 이상)"
+            );
+
+            Mockito.when(selfIntroductionCommandRepository.findById(selfIntroductionId))
+                .thenReturn(Optional.of(selfIntroduction));
+
+            // When
+            selfIntroductionService.changeOpenStatus(selfIntroductionId, false);
+
+            // Then
+            Assertions.assertThat(selfIntroduction.isOpened()).isFalse();
+        }
+    }
 }
