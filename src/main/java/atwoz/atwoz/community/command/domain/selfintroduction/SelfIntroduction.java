@@ -52,7 +52,11 @@ public class SelfIntroduction extends SoftDeleteBaseEntity {
     }
 
     public void close() {
-        isOpened = Boolean.FALSE;
+        isOpened = false;
+    }
+
+    public void open() {
+        isOpened = true;
     }
 
     private void setTitle(@NonNull String title) {

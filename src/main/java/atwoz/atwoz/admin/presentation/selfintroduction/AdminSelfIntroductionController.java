@@ -1,5 +1,6 @@
 package atwoz.atwoz.admin.presentation.selfintroduction;
 
+import atwoz.atwoz.admin.command.application.selfintroduction.AdminSelfIntroductionCommandService;
 import atwoz.atwoz.admin.query.selfintroduction.AdminSelfIntroductionQueryRepository;
 import atwoz.atwoz.admin.query.selfintroduction.AdminSelfIntroductionSearchCondition;
 import atwoz.atwoz.admin.query.selfintroduction.AdminSelfIntroductionView;
@@ -10,10 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin/selfintroduction")
@@ -21,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminSelfIntroductionController {
 
     private final AdminSelfIntroductionQueryRepository adminSelfIntroductionQueryRepository;
+    private final AdminSelfIntroductionCommandService adminSelfIntroductionCommandService;
 
     @GetMapping
     public ResponseEntity<BaseResponse<Page<AdminSelfIntroductionView>>> getSelfIntroductions(
@@ -31,4 +30,15 @@ public class AdminSelfIntroductionController {
             adminSelfIntroductionQueryRepository.findSelfIntroductions(condition, pageable)));
     }
 
+    @PatchMapping("/{id}/open")
+    public ResponseEntity<BaseResponse<Void>> updateSelfIntroductionToOpen(@PathVariable Long id) {
+        adminSelfIntroductionCommandService.convertToOpen(id);
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
+
+    @PatchMapping("/{id}/close")
+    public ResponseEntity<BaseResponse<Void>> updateSelfIntroductionToClose(@PathVariable Long id) {
+        adminSelfIntroductionCommandService.convertToClose(id);
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
 }
