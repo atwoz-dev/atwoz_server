@@ -2,8 +2,9 @@ package atwoz.atwoz.report.command.domain;
 
 import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.common.event.Events;
-import atwoz.atwoz.report.command.domain.event.ReportApprovedEvent;
 import atwoz.atwoz.report.command.domain.event.ReportCreatedEvent;
+import atwoz.atwoz.report.command.domain.event.ReportSuspendedEvent;
+import atwoz.atwoz.report.command.domain.event.ReportWarnedEvent;
 import atwoz.atwoz.report.command.domain.exception.InvalidReportResultException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -17,6 +18,7 @@ import lombok.NonNull;
 public class Report extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long id;
 
     @Getter
@@ -41,6 +43,10 @@ public class Report extends BaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private ReportResult result;
 
+    @Version
+    @Getter
+    private Long version;
+
     private Report(long reporterId, long reporteeId, Long adminId, ReportReasonType reason, String content,
         ReportResult status) {
         validateReport(reporterId, reporteeId);
@@ -54,7 +60,7 @@ public class Report extends BaseEntity {
 
     public static Report of(long reporterId, long reporteeId, ReportReasonType reason, String content) {
         Report report = new Report(reporterId, reporteeId, null, reason, content, ReportResult.PENDING);
-        Events.raise(new ReportCreatedEvent(reporterId, reporteeId));
+        Events.raise(ReportCreatedEvent.of(reporterId, reporteeId));
         return report;
     }
 
@@ -64,11 +70,23 @@ public class Report extends BaseEntity {
         setResult(ReportResult.REJECTED);
     }
 
-    public void approve(long adminId) {
+    public void warn(long adminId) {
         validateResult();
         setAdminId(adminId);
-        setResult(ReportResult.BANNED);
-        Events.raise(new ReportApprovedEvent(reporteeId));
+        setResult(ReportResult.WARNED);
+        Events.raise(ReportWarnedEvent.of(reporteeId, reason.name()));
+    }
+
+    public void suspend(long adminId) {
+        validateResult();
+        setAdminId(adminId);
+        setResult(ReportResult.SUSPENDED);
+        Events.raise(ReportSuspendedEvent.from(this.reporteeId));
+    }
+
+
+    public boolean hasVersionConflict(long version) {
+        return this.version != version;
     }
 
     private void validateReport(long reporterId, long reporteeId) {

@@ -6,7 +6,7 @@ import atwoz.atwoz.report.command.application.exception.ReportAlreadyExistsExcep
 import atwoz.atwoz.report.command.domain.Report;
 import atwoz.atwoz.report.command.domain.ReportCommandRepository;
 import atwoz.atwoz.report.command.domain.ReportReasonType;
-import atwoz.atwoz.report.presentation.dto.ReportRequest;
+import atwoz.atwoz.report.presentation.dto.ReportCreateRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,14 +18,14 @@ public class ReportService {
     private final MemberCommandRepository memberCommandRepository;
 
     @Transactional
-    public void report(ReportRequest request, long reporterId) {
+    public void report(ReportCreateRequest request, long reporterId) {
         validateRequest(request, reporterId);
         ReportReasonType reportReasonType = ReportReasonType.from(request.reason());
         Report report = Report.of(reporterId, request.reporteeId(), reportReasonType, request.content());
         reportCommandRepository.save(report);
     }
 
-    private void validateRequest(ReportRequest request, long reporterId) {
+    private void validateRequest(ReportCreateRequest request, long reporterId) {
         if (!memberCommandRepository.existsById(request.reporteeId())) {
             throw new MemberNotFoundException();
         }

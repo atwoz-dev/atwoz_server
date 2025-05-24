@@ -6,7 +6,7 @@ import atwoz.atwoz.report.command.application.exception.ReportAlreadyExistsExcep
 import atwoz.atwoz.report.command.domain.ReportCommandRepository;
 import atwoz.atwoz.report.command.domain.ReportReasonType;
 import atwoz.atwoz.report.command.domain.exception.InvalidReportReasonTypeException;
-import atwoz.atwoz.report.presentation.dto.ReportRequest;
+import atwoz.atwoz.report.presentation.dto.ReportCreateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +36,7 @@ class ReportServiceTest {
         long reporteeId = 1L;
         long reporterId = 2L;
         ReportReasonType reportReasonType = ReportReasonType.ETC;
-        ReportRequest request = new ReportRequest(reporteeId, reportReasonType.name(), "content");
+        ReportCreateRequest request = new ReportCreateRequest(reporteeId, reportReasonType.name(), "content");
 
         // when, then
         assertThatThrownBy(() -> reportService.report(request, reporterId))
@@ -52,7 +52,7 @@ class ReportServiceTest {
         long reporteeId = 1L;
         long reporterId = 2L;
         ReportReasonType reportReasonType = ReportReasonType.ETC;
-        ReportRequest request = new ReportRequest(reporteeId, reportReasonType.name(), "content");
+        ReportCreateRequest request = new ReportCreateRequest(reporteeId, reportReasonType.name(), "content");
 
         when(memberCommandRepository.existsById(reporteeId)).thenReturn(true);
         when(reportCommandRepository.existsByReporterIdAndReporteeId(reporterId, reporteeId)).thenReturn(true);
@@ -71,7 +71,7 @@ class ReportServiceTest {
         long reporteeId = 1L;
         long reporterId = 2L;
         String invalidReason = "INVALID_REASON";
-        ReportRequest request = new ReportRequest(reporteeId, invalidReason, "content");
+        ReportCreateRequest request = new ReportCreateRequest(reporteeId, invalidReason, "content");
 
         when(memberCommandRepository.existsById(reporteeId)).thenReturn(true);
 
@@ -89,7 +89,7 @@ class ReportServiceTest {
         long reporteeId = 1L;
         long reporterId = 2L;
         ReportReasonType reportReasonType = ReportReasonType.ETC;
-        ReportRequest request = new ReportRequest(reporteeId, reportReasonType.name(), "content");
+        ReportCreateRequest request = new ReportCreateRequest(reporteeId, reportReasonType.name(), "content");
 
         when(memberCommandRepository.existsById(reporteeId)).thenReturn(true);
 

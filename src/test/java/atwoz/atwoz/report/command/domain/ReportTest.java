@@ -1,23 +1,38 @@
 package atwoz.atwoz.report.command.domain;
 
 import atwoz.atwoz.common.event.Events;
-import atwoz.atwoz.report.command.domain.event.ReportApprovedEvent;
 import atwoz.atwoz.report.command.domain.event.ReportCreatedEvent;
+import atwoz.atwoz.report.command.domain.event.ReportSuspendedEvent;
+import atwoz.atwoz.report.command.domain.event.ReportWarnedEvent;
 import atwoz.atwoz.report.command.domain.exception.InvalidReportResultException;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+
+import java.lang.reflect.Field;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 
 class ReportTest {
+
+    private static MockedStatic<Events> eventsMockedStatic;
+
+    @BeforeEach
+    void setUp() {
+        eventsMockedStatic = Mockito.mockStatic(Events.class);
+        eventsMockedStatic.when(() -> Events.raise(Mockito.any()))
+            .thenAnswer(invocation -> null);
+    }
+
+    @AfterEach
+    void tearDown() {
+        eventsMockedStatic.close();
+    }
 
     @Nested
     @DisplayName("of 메서드 테스트")
@@ -61,24 +76,21 @@ class ReportTest {
             String content = "content";
 
             // when
-            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                // when
-                Report report = Report.of(reporterId, reporteeId, reason, content);
+            Report report = Report.of(reporterId, reporteeId, reason, content);
 
-                // then
-                eventsMockedStatic.verify(() -> Events.raise(argThat(
-                    event -> event instanceof ReportCreatedEvent
-                        && ((ReportCreatedEvent) event).getReporterId() == reporterId
-                        && ((ReportCreatedEvent) event).getReporteeId() == reporteeId
-                )), times(1));
+            // then
+            eventsMockedStatic.verify(() -> Events.raise(argThat(
+                event -> event instanceof ReportCreatedEvent
+                    && ((ReportCreatedEvent) event).getReporterId() == reporterId
+                    && ((ReportCreatedEvent) event).getReporteeId() == reporteeId
+            )), times(1));
 
-                assertThat(report).isNotNull();
-                assertThat(report.getReporterId()).isEqualTo(reporterId);
-                assertThat(report.getReporteeId()).isEqualTo(reporteeId);
-                assertThat(report.getReason()).isEqualTo(reason);
-                assertThat(report.getContent()).isEqualTo(content);
-                assertThat(report.getResult()).isEqualTo(ReportResult.PENDING);
-            }
+            assertThat(report).isNotNull();
+            assertThat(report.getReporterId()).isEqualTo(reporterId);
+            assertThat(report.getReporteeId()).isEqualTo(reporteeId);
+            assertThat(report.getReason()).isEqualTo(reason);
+            assertThat(report.getContent()).isEqualTo(content);
+            assertThat(report.getResult()).isEqualTo(ReportResult.PENDING);
         }
     }
 
@@ -125,26 +137,23 @@ class ReportTest {
 
     @Nested
     @DisplayName("approve 메서드 테스트")
-    class ApproveTest {
+    class SuspendTest {
         @Test
-        @DisplayName("Pending 상태의 report로 approve 메서드를 호출하면 ReportResult가 BANNED로 변경되고 이벤트를 발행한다.")
-        void changesReportResultToApproved() {
+        @DisplayName("Pending 상태의 report로 approve 호출 시 결과가 BANNED로 변경되고 이벤트를 발행한다.")
+        void shouldChangeResultToBannedAndRaiseEvent() {
             // given
             Long adminId = 1L;
             Report report = Report.of(1L, 2L, ReportReasonType.ETC, "content");
 
             // when
-            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                // when
-                report.approve(adminId);
+            report.suspend(adminId);
 
-                // then
-                eventsMockedStatic.verify(() -> Events.raise(argThat(
-                    event -> event instanceof ReportApprovedEvent
-                        && ((ReportApprovedEvent) event).getReporteeId() == report.getReporteeId()
-                )), times(1));
-                assertThat(report.getResult()).isEqualTo(ReportResult.BANNED);
-            }
+            // then
+            eventsMockedStatic.verify(() -> Events.raise(argThat(
+                event -> event instanceof ReportSuspendedEvent
+                    && ((ReportSuspendedEvent) event).getReporteeId() == report.getReporteeId()
+            )), times(1));
+            assertThat(report.getResult()).isEqualTo(ReportResult.SUSPENDED);
         }
 
         @Test
@@ -153,21 +162,114 @@ class ReportTest {
             // given
             Long adminId = 1L;
             Report report = Report.of(1L, 2L, ReportReasonType.ETC, "content");
-            report.approve(adminId); // 상태를 APPROVED로 변경
+            report.suspend(adminId);
 
             // when, then
-            assertThatThrownBy(() -> report.approve(adminId)).isInstanceOf(InvalidReportResultException.class);
+            assertThatThrownBy(() -> report.suspend(adminId)).isInstanceOf(InvalidReportResultException.class);
         }
 
         @Test
-        @DisplayName("adminId가 null으로 approve 메서드를 호출하면 예외가 발생한다.")
+        @DisplayName("adminId가 null인 경우 approve 호출 시 예외가 발생한다.")
         void throwsExceptionWhenAdminIdIsNull() {
             // given
             Long adminId = null;
             Report report = Report.of(1L, 2L, ReportReasonType.ETC, "content");
 
             // when, then
-            assertThatThrownBy(() -> report.approve(adminId)).isInstanceOf(NullPointerException.class);
+            assertThatThrownBy(() -> report.suspend(adminId)).isInstanceOf(NullPointerException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("hasVersionConflict 메서드 테스트")
+    class HasVersionConflictTests {
+        @Test
+        @DisplayName("version이 null인 경우 hasVersionConflict가 NullPointerException을 던진다.")
+        void throwsExceptionWhenVersionIsNull() {
+            // given
+            Report report = Report.of(1L, 2L, ReportReasonType.ETC, "content");
+
+            // when, then
+            assertThatThrownBy(() -> report.hasVersionConflict(1L))
+                .isInstanceOf(NullPointerException.class);
+        }
+
+        @Test
+        @DisplayName("같은 version을 입력하면 false를 반환한다.")
+        void shouldReturnFalseWhenVersionMatches() throws Exception {
+            // given
+            Report report = Report.of(1L, 2L, ReportReasonType.ETC, "content");
+            Field versionField = Report.class.getDeclaredField("version");
+            versionField.setAccessible(true);
+            versionField.set(report, 5L);
+
+            // when
+            boolean result = report.hasVersionConflict(5L);
+
+            // then
+            assertThat(result).isFalse();
+        }
+
+        @Test
+        @DisplayName("다른 version을 입력하면 true를 반환한다.")
+        void shouldReturnTrueWhenVersionDiffers() throws Exception {
+            // given
+            Report report = Report.of(1L, 2L, ReportReasonType.ETC, "content");
+            Field versionField = Report.class.getDeclaredField("version");
+            versionField.setAccessible(true);
+            versionField.set(report, 5L);
+
+            // when
+            boolean result = report.hasVersionConflict(3L);
+
+            // then
+            assertThat(result).isTrue();
+        }
+    }
+
+    @Nested
+    @DisplayName("warn 메서드 테스트")
+    class WarnTest {
+        @Test
+        @DisplayName("Pending 상태의 report로 warn 호출 시 결과가 WARNED로 변경되고 이벤트를 발행한다.")
+        void shouldChangeResultToWarnedAndRaiseEvent() {
+            // given
+            Long adminId = 1L;
+            Report report = Report.of(1L, 2L, ReportReasonType.ETC, "content");
+
+            // when
+            report.warn(adminId);
+
+            // then
+            eventsMockedStatic.verify(() -> Events.raise(argThat(
+                event -> event instanceof ReportWarnedEvent
+                    && ((ReportWarnedEvent) event).getReporteeId() == report.getReporteeId()
+                    && ((ReportWarnedEvent) event).getReportReason().equals(report.getReason().name())
+            )), times(1));
+            assertThat(report.getResult()).isEqualTo(ReportResult.WARNED);
+        }
+
+        @Test
+        @DisplayName("ReportResult가 PENDING이 아닌 경우 warn 메서드를 호출하면 예외가 발생한다.")
+        void throwsExceptionWhenReportResultIsNotPending() {
+            // given
+            Long adminId = 1L;
+            Report report = Report.of(1L, 2L, ReportReasonType.ETC, "content");
+            report.warn(adminId);
+
+            // when, then
+            assertThatThrownBy(() -> report.warn(adminId)).isInstanceOf(InvalidReportResultException.class);
+        }
+
+        @Test
+        @DisplayName("adminId가 null인 경우 warn 호출 시 예외가 발생한다.")
+        void throwsExceptionWhenAdminIdIsNull() {
+            // given
+            Long adminId = null;
+            Report report = Report.of(1L, 2L, ReportReasonType.ETC, "content");
+
+            // when, then
+            assertThatThrownBy(() -> report.warn(adminId)).isInstanceOf(NullPointerException.class);
         }
     }
 }
