@@ -10,11 +10,11 @@ public class AdminSelfIntroductionCommandService {
 
     @Transactional
     public void convertToClose(Long selfIntroductionId) {
-        Events.raise(SelfIntroductionOpenStatusChangeEvent.of(selfIntroductionId, true));
+        Events.raise(SelfIntroductionOpenStatusChangeEvent.of(selfIntroductionId, false));
     }
 
     @Transactional
     public void convertToOpen(Long selfIntroductionId) {
-        Events.raise(SelfIntroductionOpenStatusChangeEvent.of(selfIntroductionId, false));
+        Events.raise(SelfIntroductionOpenStatusChangeEvent.of(selfIntroductionId, true));
     }
 }
