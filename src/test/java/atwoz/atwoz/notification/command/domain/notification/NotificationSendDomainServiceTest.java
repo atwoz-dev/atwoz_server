@@ -36,7 +36,7 @@ class NotificationSendDomainServiceTest {
 
         MessageTemplate template = mock(MessageTemplate.class);
         when(template.getTitle(any())).thenReturn("title");
-        when(template.getContent(any())).thenReturn("content");
+        when(template.getContent(any())).thenReturn("body");
 
         when(messageTemplateFactory.getByNotificationType(any(NotificationType.class))).thenReturn(template);
 
@@ -57,7 +57,7 @@ class NotificationSendDomainServiceTest {
 
         MessageTemplate template = mock(MessageTemplate.class);
         when(template.getTitle(any())).thenReturn("title");
-        when(template.getContent(any())).thenReturn("content");
+        when(template.getContent(any())).thenReturn("body");
 
         when(messageTemplateFactory.getByNotificationType(any(NotificationType.class))).thenReturn(template);
 

@@ -37,7 +37,7 @@ class InterviewQuestionServiceTest {
         @DisplayName("인터뷰 질문 내용이 이미 존재하면 예외를 던진다.")
         void throwsExceptionWhenInterviewQuestionContentAlreadyExists() {
             // given
-            String content = "content";
+            String content = "body";
             String category = InterviewCategory.PERSONAL.name();
             boolean isPublic = true;
             InterviewQuestionSaveRequest request = new InterviewQuestionSaveRequest(content, category, isPublic);
@@ -53,7 +53,7 @@ class InterviewQuestionServiceTest {
         @DisplayName("인터뷰 카테고리가 존재하지 않으면 예외를 던진다.")
         void throwsExceptionWhenInterviewCategoryDoesNotExist() {
             // given
-            String content = "content";
+            String content = "body";
             String category = "notExist";
             boolean isPublic = true;
             InterviewQuestionSaveRequest request = new InterviewQuestionSaveRequest(content, category, isPublic);
@@ -69,7 +69,7 @@ class InterviewQuestionServiceTest {
         @DisplayName("인터뷰 질문을 생성한다.")
         void createInterviewQuestion() {
             // given
-            String content = "content";
+            String content = "body";
             String category = InterviewCategory.PERSONAL.name();
             boolean isPublic = true;
             InterviewQuestionSaveRequest request = new InterviewQuestionSaveRequest(content, category, isPublic);
@@ -93,7 +93,7 @@ class InterviewQuestionServiceTest {
         void throwsExceptionWhenInterviewQuestionDoesNotExist() {
             // given
             Long questionId = 1L;
-            String content = "content";
+            String content = "body";
             String category = InterviewCategory.PERSONAL.name();
             boolean isPublic = true;
             InterviewQuestionSaveRequest request = new InterviewQuestionSaveRequest(content, category, isPublic);
@@ -112,7 +112,7 @@ class InterviewQuestionServiceTest {
             Long questionId = 1L;
             InterviewQuestion interviewQuestion = mock(InterviewQuestion.class);
 
-            String updatedContent = "updated content";
+            String updatedContent = "updated body";
             String updatedCategory = "notExist";
             boolean updatedIsPublic = false;
             InterviewQuestionSaveRequest request = new InterviewQuestionSaveRequest(updatedContent, updatedCategory,
@@ -130,11 +130,11 @@ class InterviewQuestionServiceTest {
         void throwsExceptionWhenInterviewQuestionContentAlreadyExists() {
             // given
             Long questionId = 1L;
-            String content = "content";
+            String content = "body";
             InterviewQuestion interviewQuestion = mock(InterviewQuestion.class);
             when(interviewQuestion.getContent()).thenReturn(content);
 
-            String updatedContent = "updated content";
+            String updatedContent = "updated body";
             String updatedCategory = InterviewCategory.SOCIAL.name();
             boolean updatedIsPublic = false;
             InterviewQuestionSaveRequest request = new InterviewQuestionSaveRequest(updatedContent, updatedCategory,
@@ -153,11 +153,11 @@ class InterviewQuestionServiceTest {
         void updateInterviewQuestion() {
             // given
             Long questionId = 1L;
-            String content = "content";
+            String content = "body";
             InterviewQuestion interviewQuestion = mock(InterviewQuestion.class);
             when(interviewQuestion.getContent()).thenReturn(content);
 
-            String updatedContent = "updated content";
+            String updatedContent = "updated body";
             String updatedCategory = InterviewCategory.SOCIAL.name();
             boolean updatedIsPublic = false;
             InterviewQuestionSaveRequest request = new InterviewQuestionSaveRequest(updatedContent, updatedCategory,
@@ -178,11 +178,11 @@ class InterviewQuestionServiceTest {
         void updateInterviewQuestionWhenContentIsSame() {
             // given
             Long questionId = 1L;
-            String content = "content";
+            String content = "body";
             InterviewQuestion interviewQuestion = mock(InterviewQuestion.class);
             when(interviewQuestion.getContent()).thenReturn(content);
 
-            String updatedContent = "content";
+            String updatedContent = "body";
             String updatedCategory = InterviewCategory.SOCIAL.name();
             boolean updatedIsPublic = false;
             InterviewQuestionSaveRequest request = new InterviewQuestionSaveRequest(updatedContent, updatedCategory,

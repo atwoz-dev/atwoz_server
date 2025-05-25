@@ -16,11 +16,11 @@ class InterviewQuestionTest {
     @DisplayName("of 메서드 테스트")
     class ofMethodTest {
         @ParameterizedTest
-        @ValueSource(strings = {"content is null", "interviewCategory is null"})
+        @ValueSource(strings = {"body is null", "interviewCategory is null"})
         @DisplayName("of 메서드에서 필드 값이 null이면 예외를 던집니다.")
         void throwsExceptionWhenFieldValueIsNull(String fieldName) {
             // given
-            String content = fieldName.equals("content is null") ? null : "content";
+            String content = fieldName.equals("body is null") ? null : "body";
             InterviewCategory interviewCategory =
                 fieldName.equals("interviewCategory is null") ? null : InterviewCategory.PERSONAL;
             boolean isPublic = true;
@@ -47,7 +47,7 @@ class InterviewQuestionTest {
         @DisplayName("of 메서드에서 필드 값이 정상이면 InterviewQuestion 객체를 생성합니다.")
         void createInterviewQuestionObjectWhenFieldValuesAreValid() {
             // given
-            String content = "content";
+            String content = "body";
             InterviewCategory interviewCategory = InterviewCategory.PERSONAL;
             boolean isPublic = true;
 
@@ -64,12 +64,12 @@ class InterviewQuestionTest {
     class updateMethodTest {
 
         @ParameterizedTest
-        @ValueSource(strings = {"content is null", "interviewCategory is null"})
+        @ValueSource(strings = {"body is null", "interviewCategory is null"})
         @DisplayName("update 메서드에서 필드 값이 null이면 예외를 던집니다.")
         void throwsExceptionWhenFieldValueIsNull(String fieldName) {
             // given
-            InterviewQuestion interviewQuestion = InterviewQuestion.of("content", InterviewCategory.PERSONAL, true);
-            String content = fieldName.equals("content is null") ? null : "updated content";
+            InterviewQuestion interviewQuestion = InterviewQuestion.of("body", InterviewCategory.PERSONAL, true);
+            String content = fieldName.equals("body is null") ? null : "updated body";
             InterviewCategory interviewCategory =
                 fieldName.equals("interviewCategory is null") ? null : InterviewCategory.SOCIAL;
             boolean isPublic = false;
@@ -83,7 +83,7 @@ class InterviewQuestionTest {
         @DisplayName("update 메서드에서 content가 blank이면 예외를 던집니다.")
         void throwsExceptionWhenContentIsBlank() {
             // given
-            InterviewQuestion interviewQuestion = InterviewQuestion.of("content", InterviewCategory.PERSONAL, true);
+            InterviewQuestion interviewQuestion = InterviewQuestion.of("body", InterviewCategory.PERSONAL, true);
             String content = " ";
             InterviewCategory interviewCategory = InterviewCategory.SOCIAL;
             boolean isPublic = false;
@@ -97,8 +97,8 @@ class InterviewQuestionTest {
         @DisplayName("update 메서드에서 필드 값이 정상이면 InterviewQuestion 객체를 업데이트 합니다.")
         void updateInterviewQuestionObjectWhenFieldValuesAreValid() {
             // given
-            InterviewQuestion interviewQuestion = InterviewQuestion.of("content", InterviewCategory.PERSONAL, true);
-            String content = "updated content";
+            InterviewQuestion interviewQuestion = InterviewQuestion.of("body", InterviewCategory.PERSONAL, true);
+            String content = "updated body";
             InterviewCategory interviewCategory = InterviewCategory.SOCIAL;
             boolean isPublic = false;
 

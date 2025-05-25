@@ -55,7 +55,7 @@ class NotificationQueryRepositoryTest {
         assertThat(result.getFirst().senderId()).isEqualTo(senderId);
         assertThat(result.getFirst().notificationType()).isEqualTo("MATCH_REQUESTED");
         assertThat(result.getFirst().title()).isEqualTo("Title 1");
-        assertThat(result.getFirst().content()).isEqualTo("Content 1");
+        assertThat(result.getFirst().body()).isEqualTo("Content 1");
     }
 
     @Test
@@ -85,7 +85,7 @@ class NotificationQueryRepositoryTest {
         assertThat(result).extracting("notificationType")
             .containsExactlyInAnyOrder("MATCH_REQUESTED", "MATCH_REJECT");
         assertThat(result).extracting("title").containsExactlyInAnyOrder("Title 1", "Title 2");
-        assertThat(result).extracting("content").containsExactlyInAnyOrder("Content 1", "Content 2");
+        assertThat(result).extracting("body").containsExactlyInAnyOrder("Content 1", "Content 2");
     }
 
     private Notification createNotification(
@@ -102,7 +102,7 @@ class NotificationQueryRepositoryTest {
         titleField.setAccessible(true);
         titleField.set(notification, title);
 
-        Field contentField = Notification.class.getDeclaredField("content");
+        Field contentField = Notification.class.getDeclaredField("body");
         contentField.setAccessible(true);
         contentField.set(notification, content);
 

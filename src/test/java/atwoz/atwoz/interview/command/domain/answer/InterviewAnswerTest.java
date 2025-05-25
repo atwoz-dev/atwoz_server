@@ -23,13 +23,13 @@ class InterviewAnswerTest {
     class ofMethodTest {
 
         @ParameterizedTest
-        @ValueSource(strings = {"content is null", "questionId is null", "memberId is null"})
+        @ValueSource(strings = {"body is null", "questionId is null", "memberId is null"})
         @DisplayName("of 메서드에서 필드 값이 null이면 예외를 던집니다.")
         void throwsExceptionWhenFieldValueIsNull(String fieldName) {
             // given
             Long questionId = fieldName.equals("questionId is null") ? null : 1L;
             Long memberId = fieldName.equals("memberId is null") ? null : 2L;
-            String content = fieldName.equals("content is null") ? null : "content";
+            String content = fieldName.equals("body is null") ? null : "body";
 
             // when & then
             assertThatThrownBy(() -> InterviewAnswer.of(questionId, memberId, content))
@@ -55,7 +55,7 @@ class InterviewAnswerTest {
             // given
             Long questionId = 1L;
             Long memberId = 2L;
-            String content = "content";
+            String content = "body";
 
             // when
             InterviewAnswer interviewAnswer = InterviewAnswer.of(questionId, memberId, content);
@@ -75,7 +75,7 @@ class InterviewAnswerTest {
             // given
             Long questionId = 1L;
             Long memberId = 2L;
-            InterviewAnswer interviewAnswer = InterviewAnswer.of(questionId, memberId, "content");
+            InterviewAnswer interviewAnswer = InterviewAnswer.of(questionId, memberId, "body");
 
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
                 // When

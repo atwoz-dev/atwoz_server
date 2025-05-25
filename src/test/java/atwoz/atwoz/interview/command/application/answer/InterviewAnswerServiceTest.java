@@ -37,7 +37,7 @@ class InterviewAnswerServiceTest {
     void throwsExceptionWhenInterviewQuestionDoesNotExist() {
         // given
         Long interviewQuestionId = 1L;
-        String answerContent = "content";
+        String answerContent = "body";
         InterviewAnswerSaveRequest request = new InterviewAnswerSaveRequest(interviewQuestionId, answerContent);
         Long memberId = 2L;
 
@@ -53,7 +53,7 @@ class InterviewAnswerServiceTest {
     void throwsExceptionWhenInterviewQuestionIsNotPublic() {
         // given
         Long interviewQuestionId = 1L;
-        String answerContent = "content";
+        String answerContent = "body";
         InterviewAnswerSaveRequest request = new InterviewAnswerSaveRequest(interviewQuestionId, answerContent);
         Long memberId = 2L;
 
@@ -72,7 +72,7 @@ class InterviewAnswerServiceTest {
     void throwsExceptionWhenInterviewAnswerAlreadyExists() {
         // given
         Long interviewQuestionId = 1L;
-        String answerContent = "content";
+        String answerContent = "body";
         InterviewAnswerSaveRequest request = new InterviewAnswerSaveRequest(interviewQuestionId, answerContent);
         Long memberId = 2L;
 
@@ -93,7 +93,7 @@ class InterviewAnswerServiceTest {
     void callsSubmitFirstInterviewAnswerWhenOtherInterviewAnswerDoesNotExist() {
         // given
         Long interviewQuestionId = 1L;
-        String answerContent = "content";
+        String answerContent = "body";
         InterviewAnswerSaveRequest request = new InterviewAnswerSaveRequest(interviewQuestionId, answerContent);
         Long memberId = 2L;
 
@@ -125,7 +125,7 @@ class InterviewAnswerServiceTest {
     void doesNotCallSubmitFirstInterviewAnswerWhenOtherInterviewAnswerExists() {
         // given
         Long interviewQuestionId = 1L;
-        String answerContent = "content";
+        String answerContent = "body";
         InterviewAnswerSaveRequest request = new InterviewAnswerSaveRequest(interviewQuestionId, answerContent);
         Long memberId = 2L;
 
