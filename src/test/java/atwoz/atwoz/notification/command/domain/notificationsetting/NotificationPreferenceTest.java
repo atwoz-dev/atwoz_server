@@ -34,7 +34,7 @@ class NotificationPreferenceTest {
     @DisplayName("updateDeviceToken() 메서드 테스트")
     class UpdateDeviceTokenTest {
         @Test
-        @DisplayName("유효한 deviceToken 값으로 업데이트 시 정상적으로 변경됩니다.")
+        @DisplayName("유효한 registrationToken 값으로 업데이트 시 정상적으로 변경됩니다.")
         void updateDeviceToken() {
             // given
             NotificationPreference setting = NotificationPreference.of(1L);
@@ -48,7 +48,7 @@ class NotificationPreferenceTest {
         }
 
         @Test
-        @DisplayName("null deviceToken 전달 시 NullPointerException이 발생합니다.")
+        @DisplayName("null registrationToken 전달 시 NullPointerException이 발생합니다.")
         void updateDeviceTokenWithNullThrowsException() {
             // given
             NotificationPreference setting = NotificationPreference.of(1L);

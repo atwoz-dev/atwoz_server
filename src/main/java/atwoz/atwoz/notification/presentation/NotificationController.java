@@ -1,10 +1,9 @@
-package atwoz.atwoz.notification.presentation.notification;
+package atwoz.atwoz.notification.presentation;
 
 import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.notification.command.application.NotificationReadService;
-import atwoz.atwoz.notification.command.application.NotificationSendService;
 import atwoz.atwoz.notification.query.NotificationQueryRepository;
 import atwoz.atwoz.notification.query.NotificationView;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,6 @@ import static atwoz.atwoz.common.enums.StatusType.OK;
 @RequiredArgsConstructor
 public class NotificationController {
 
-    private final NotificationSendService notificationSendService;
     private final NotificationReadService notificationReadService;
     private final NotificationQueryRepository notificationQueryRepository;
 

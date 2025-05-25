@@ -5,7 +5,6 @@ import atwoz.atwoz.notification.command.application.NotificationPreferenceNotFou
 import atwoz.atwoz.notification.command.application.NotificationPreferenceService;
 import atwoz.atwoz.notification.command.domain.NotificationPreference;
 import atwoz.atwoz.notification.command.domain.NotificationPreferenceCommandRepository;
-import atwoz.atwoz.notification.presentation.notificationsetting.DeviceTokenUpdateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

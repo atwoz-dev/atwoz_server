@@ -6,7 +6,6 @@ import lombok.NonNull;
 
 @Getter
 public class WarningIssuedEvent extends Event {
-
     private final long adminId;
     private final long memberId;
     private final long warningCount;

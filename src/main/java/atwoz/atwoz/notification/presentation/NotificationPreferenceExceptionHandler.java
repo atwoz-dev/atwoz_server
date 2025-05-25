@@ -1,4 +1,4 @@
-package atwoz.atwoz.notification.presentation.notificationsetting;
+package atwoz.atwoz.notification.presentation;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
@@ -13,11 +13,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class NotificationSettingExceptionHandler {
+public class NotificationPreferenceExceptionHandler {
 
     @ExceptionHandler(NotificationPreferenceNotFoundException.class)
-    public ResponseEntity<BaseResponse<Void>> handleNotificationSettingNotFoundException(
-        NotificationPreferenceNotFoundException e) {
+    public ResponseEntity<BaseResponse<Void>> handleNotificationPreferenceNotFoundException(
+        NotificationPreferenceNotFoundException e
+    ) {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)

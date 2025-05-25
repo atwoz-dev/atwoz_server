@@ -4,14 +4,16 @@ import atwoz.atwoz.common.event.Event;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MatchRequestedEvent extends Event {
-    private final Long requesterId;
-    private final Long responderId;
+    private final long requesterId;
+    private final String requesterName;
+    private final long responderId;
 
-    public static MatchRequestedEvent of(Long requesterId, Long responderId) {
-        return new MatchRequestedEvent(requesterId, responderId);
+    public static MatchRequestedEvent of(long requesterId, @NonNull String requesterName, Long responderId) {
+        return new MatchRequestedEvent(requesterId, requesterName, responderId);
     }
 }
