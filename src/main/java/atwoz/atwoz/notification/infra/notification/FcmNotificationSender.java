@@ -1,37 +1,50 @@
 package atwoz.atwoz.notification.infra.notification;
 
+import atwoz.atwoz.notification.command.application.NotificationSendFailureException;
+import atwoz.atwoz.notification.command.domain.ChannelType;
+import atwoz.atwoz.notification.command.domain.DeviceRegistration;
 import atwoz.atwoz.notification.command.domain.Notification;
 import atwoz.atwoz.notification.command.domain.NotificationSender;
+import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.MulticastMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
 @Service
 public class FcmNotificationSender implements NotificationSender {
 
     @Override
-    @Async
-    public void send(Notification notification, String receiverDeviceToken) {
-        try {
-            Message message = Message.builder()
-                .putData("senderId", String.valueOf(notification.getSenderId()))
-                .putData("senderType", notification.getSenderType().toString())
-                .putData("receiverId", String.valueOf(notification.getReceiverId()))
-                .putData("notificationType", notification.getType().toString())
-                .putData("title", notification.getTitle())
-                .putData("content", notification.getMessage())
-                .setToken(receiverDeviceToken)
-                .build();
+    public ChannelType channel() {
+        return ChannelType.PUSH;
+    }
 
-            String response = FirebaseMessaging.getInstance().send(message);
-            log.info("FCM 메시지 전송 성공, response: {}", response);
+    @Override
+    public void send(Notification notification, List<DeviceRegistration> devices) {
+        var message = MulticastMessage.builder()
+            .addAllTokens(devices.stream().map(DeviceRegistration::getRegistrationToken).toList())
+            .setNotification(
+                com.google.firebase.messaging.Notification.builder()
+                    .setTitle(notification.getTitle())
+                    .setBody(notification.getBody())
+                    .build()
+            )
+            .putData("senderId", String.valueOf(notification.getSenderId()))
+            .putData("senderType", notification.getSenderType().toString())
+            .putData("receiverId", String.valueOf(notification.getReceiverId()))
+            .putData("notificationType", notification.getType().toString())
+            .build();
+
+        try {
+            BatchResponse response = FirebaseMessaging.getInstance().sendEachForMulticast(message);
+            log.info("{}개의 FCM 알림 전송 성공", response.getSuccessCount());
         } catch (FirebaseMessagingException e) {
-            log.error("FCM 메시지 전송 실패: {}", e.getMessage(), e);
-            // TODO: 재시도 등
+            log.error("FCM 알림 전송 실패: {}", e.getMessage(), e);
+            throw new NotificationSendFailureException();
         }
     }
 }

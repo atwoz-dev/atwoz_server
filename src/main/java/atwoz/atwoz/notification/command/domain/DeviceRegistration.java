@@ -18,6 +18,7 @@ public class DeviceRegistration {
 
     private String deviceId;
 
+    @Getter
     private String registrationToken;
 
     @Getter
