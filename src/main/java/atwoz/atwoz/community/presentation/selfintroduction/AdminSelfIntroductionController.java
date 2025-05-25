@@ -4,7 +4,7 @@ import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.community.command.application.selfintroduction.SelfIntroductionService;
 import atwoz.atwoz.community.presentation.selfintroduction.dto.AdminSelfIntroductionSearchCondition;
-import atwoz.atwoz.community.query.selfintroduction.SelfIntroductionQueryRepository;
+import atwoz.atwoz.community.query.selfintroduction.AdminSelfIntroductionQueryRepository;
 import atwoz.atwoz.community.query.selfintroduction.view.AdminSelfIntroductionView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AdminSelfIntroductionController {
 
-    private final SelfIntroductionQueryRepository selfIntroductionQueryRepository;
+    private final AdminSelfIntroductionQueryRepository adminSelfIntroductionQueryRepository;
     private final SelfIntroductionService selfIntroductionService;
 
     @Operation(summary = "셀프 소개 목록 조회 API")
@@ -31,7 +31,7 @@ public class AdminSelfIntroductionController {
         @PageableDefault(size = 100) Pageable pageable
     ) {
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK,
-            selfIntroductionQueryRepository.findSelfIntroductions(condition, pageable)));
+            adminSelfIntroductionQueryRepository.findSelfIntroductions(condition, pageable)));
     }
 
     @Operation(summary = "셀프 소개 공개 전환 API")
