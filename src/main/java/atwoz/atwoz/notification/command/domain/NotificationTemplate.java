@@ -6,9 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static jakarta.persistence.EnumType.STRING;
 
@@ -17,6 +17,8 @@ import static jakarta.persistence.EnumType.STRING;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class NotificationTemplate {
+
+    private static final Pattern TEMPLATE_PARAM_PATTERN = Pattern.compile("\\{(\\w+)}");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,22 +44,12 @@ public class NotificationTemplate {
         return new NotificationTemplate(type, titleTemplate, bodyTemplate);
     }
 
-    public void validateBodyParams(Map<String, String> rawParams) {
-        Set<String> keys = new HashSet<>();
-        int idx = 0;
-        while ((idx = bodyTemplate.indexOf('{', idx)) != -1) {
-            int end = bodyTemplate.indexOf('}', idx);
-            keys.add(bodyTemplate.substring(idx + 1, end));
-            idx = end + 1;
-        }
-        if (!rawParams.keySet().containsAll(keys)) {
-            throw new IllegalArgumentException("Missing template parameters: " + keys);
-        }
+    public String generateTitle(Map<String, String> params) {
+        return applyTemplate(titleTemplate, params);
     }
 
-    public void updateTemplate(@NonNull String titleTemplate, @NonNull String bodyTemplate) {
-        this.titleTemplate = titleTemplate;
-        this.bodyTemplate = bodyTemplate;
+    public String generateBody(Map<String, String> params) {
+        return applyTemplate(bodyTemplate, params);
     }
 
     public void updateTitleTemplate(@NonNull String titleTemplate) {
@@ -74,5 +66,19 @@ public class NotificationTemplate {
 
     public void deactivate() {
         isActive = false;
+    }
+
+    private String applyTemplate(String template, Map<String, String> params) {
+        StringBuilder result = new StringBuilder();
+        Matcher matcher = TEMPLATE_PARAM_PATTERN.matcher(template);
+
+        while (matcher.find()) {
+            String key = matcher.group(1);
+            String replacement = params.getOrDefault(key, "{error}");
+            matcher.appendReplacement(result, Matcher.quoteReplacement(replacement));
+        }
+
+        matcher.appendTail(result);
+        return result.toString();
     }
 }

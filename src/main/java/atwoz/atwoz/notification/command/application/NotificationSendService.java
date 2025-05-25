@@ -1,13 +1,10 @@
 package atwoz.atwoz.notification.command.application;
 
 import atwoz.atwoz.notification.command.domain.*;
-import atwoz.atwoz.notification.infra.notification.NotificationRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static atwoz.atwoz.notification.command.application.NotificationMapper.toNotification;
 
 @Slf4j
 @Service
@@ -16,19 +13,56 @@ public class NotificationSendService {
 
     private final NotificationCommandRepository notificationCommandRepository;
     private final NotificationPreferenceCommandRepository notificationPreferenceCommandRepository;
-    private final NotificationSendDomainService notificationSendDomainService;
+    private final NotificationTemplateCommandRepository notificationTemplateCommandRepository;
+    private final DeviceRegistrationCommandRepository deviceRegistrationCommandRepository;
+    private final NotificationSenderResolver notificationSenderResolver;
 
     @Transactional
-    public void send(NotificationRequest request) {
-        Notification notification = toNotification(request);
-        NotificationPreference receiverNotificationPreference = getNotificationSetting(notification.getReceiverId());
-        notificationSendDomainService.send(notification, receiverNotificationPreference);
-        log.info("알림 발송 완료. receiverId={}, notificationType={}", notification.getReceiverId(), notification.getType());
+    public void send(NotificationSendRequest request) {
+        var template = getTemplate(request.notificationType());
+        String title = template.generateTitle(request.params());
+        String body = template.generateBody(request.params());
+        var notification = Notification.create(
+            request.senderType(),
+            request.senderId(),
+            request.receiverId(),
+            request.notificationType(),
+            title,
+            body
+        );
+
+        var preference = getPreference(request.receiverId());
+        if (!preference.canReceive(notification.getType())) {
+            return;
+        }
+
+        var devices = deviceRegistrationCommandRepository.findByMemberIdAndActiveTrue(request.receiverId());
+        notificationSenderResolver.resolve(request.channelType())
+            .ifPresentOrElse(
+                sender -> {
+                    try {
+                        sender.send(notification, devices);
+                        notification.markAsSent();
+                    } catch (NotificationSendFailureException e) {
+                        log.error("receiverId={}에게 {}알림 전송 실패", request.receiverId(), notification.getType(), e);
+                        notification.markAsFailedDueToException();
+                    }
+                },
+                () -> {
+                    log.warn("{}는 지원하지 않는 채널입니다. receiverId={}", request.channelType(), request.receiverId());
+                    notification.markAsFailedDueToUnsupportedChannel();
+                }
+            );
 
         notificationCommandRepository.save(notification);
     }
 
-    private NotificationPreference getNotificationSetting(long receiverId) {
+    private NotificationTemplate getTemplate(NotificationType type) {
+        return notificationTemplateCommandRepository.findByType(type)
+            .orElseThrow(() -> new InvalidNotificationTypeException(type.toString()));
+    }
+
+    private NotificationPreference getPreference(long receiverId) {
         return notificationPreferenceCommandRepository.findByMemberId(receiverId)
             .orElseThrow(() -> new ReceiverNotificationSettingNotFoundException(receiverId));
     }

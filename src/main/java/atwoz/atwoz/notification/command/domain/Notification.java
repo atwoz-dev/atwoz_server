@@ -39,6 +39,10 @@ public class Notification extends SoftDeleteBaseEntity {
 
     private LocalDateTime readAt = null;
 
+    @Enumerated(STRING)
+    @Column(columnDefinition = "varchar(50)")
+    private NotificationStatus status;
+
     private Notification(
         SenderType senderType,
         Long senderId,
@@ -75,5 +79,17 @@ public class Notification extends SoftDeleteBaseEntity {
             return;
         }
         readAt = LocalDateTime.now();
+    }
+
+    public void markAsSent() {
+        status = NotificationStatus.SENT;
+    }
+
+    public void markAsFailedDueToUnsupportedChannel() {
+        status = NotificationStatus.FAILED_UNSUPPORTED_CHANNEL;
+    }
+
+    public void markAsFailedDueToException() {
+        status = NotificationStatus.FAILED_EXCEPTION;
     }
 }

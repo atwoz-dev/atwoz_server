@@ -24,19 +24,18 @@ public class NotificationPreference extends SoftDeleteBaseEntity {
     @Getter
     private Long memberId;
 
-    @Getter
-    private boolean enabledGlobally = true;
+    private boolean isEnabledGlobally = true;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "notification_types", joinColumns = @JoinColumn(name = "member_id"))
     @MapKeyEnumerated(STRING)
     @MapKeyColumn(name = "notification_type")
     @Column(name = "enabled")
-    private Map<NotificationType, Boolean> enabledByNotificationType = new EnumMap<>(NotificationType.class);
+    private Map<NotificationType, Boolean> isEnabledByNotificationType = new EnumMap<>(NotificationType.class);
 
-    private NotificationPreference(Long memberId, Map<NotificationType, Boolean> enabledByNotificationType) {
+    private NotificationPreference(Long memberId, Map<NotificationType, Boolean> isEnabledByNotificationType) {
         this.memberId = memberId;
-        this.enabledByNotificationType = new EnumMap<>(enabledByNotificationType);
+        this.isEnabledByNotificationType = new EnumMap<>(isEnabledByNotificationType);
     }
 
     public static NotificationPreference of(long memberId) {
@@ -47,27 +46,27 @@ public class NotificationPreference extends SoftDeleteBaseEntity {
         return new NotificationPreference(memberId, defaults);
     }
 
+    public boolean canReceive(NotificationType type) {
+        return isEnabledGlobally && isEnabledByNotificationType.getOrDefault(type, false);
+    }
+
     public void enableGlobally() {
-        enabledGlobally = true;
+        isEnabledGlobally = true;
     }
 
     public void disableGlobally() {
-        enabledGlobally = false;
-    }
-
-    public boolean isEnabledForType(NotificationType type) {
-        return enabledByNotificationType.getOrDefault(type, true);
-    }
-
-    public void enableForNotificationType(NotificationType type) {
-        enabledByNotificationType.put(type, true);
+        isEnabledGlobally = false;
     }
 
     public boolean isDisabledForType(NotificationType type) {
-        return enabledByNotificationType.getOrDefault(type, false);
+        return isEnabledByNotificationType.getOrDefault(type, false);
+    }
+
+    public void enableForNotificationType(NotificationType type) {
+        isEnabledByNotificationType.put(type, true);
     }
 
     public void disableForNotificationType(NotificationType type) {
-        enabledByNotificationType.put(type, false);
+        isEnabledByNotificationType.put(type, false);
     }
 }

@@ -1,8 +1,8 @@
 package atwoz.atwoz.notification.command.application.notificationsetting;
 
-import atwoz.atwoz.notification.command.application.DuplicateNotificationSettingException;
-import atwoz.atwoz.notification.command.application.NotificationSettingNotFoundException;
-import atwoz.atwoz.notification.command.application.NotificationSettingService;
+import atwoz.atwoz.notification.command.application.DuplicateNotificationPreferenceException;
+import atwoz.atwoz.notification.command.application.NotificationPreferenceNotFoundException;
+import atwoz.atwoz.notification.command.application.NotificationPreferenceService;
 import atwoz.atwoz.notification.command.domain.NotificationPreference;
 import atwoz.atwoz.notification.command.domain.NotificationPreferenceCommandRepository;
 import atwoz.atwoz.notification.presentation.notificationsetting.DeviceTokenUpdateRequest;
@@ -22,14 +22,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("NotificationSettingService 테스트")
+@DisplayName("NotificationPreferenceService 테스트")
 class NotificationPreferenceServiceTest {
 
     @Mock
     private NotificationPreferenceCommandRepository notificationSettingRepository;
 
     @InjectMocks
-    private NotificationSettingService notificationSettingService;
+    private NotificationPreferenceService notificationPreferenceService;
 
     @Nested
     @DisplayName("create() 메서드 테스트")
@@ -43,7 +43,7 @@ class NotificationPreferenceServiceTest {
             when(notificationSettingRepository.existsByMemberId(memberId)).thenReturn(false);
 
             // when
-            notificationSettingService.create(memberId);
+            notificationPreferenceService.create(memberId);
 
             // then
             verify(notificationSettingRepository).save(any(NotificationPreference.class));
@@ -57,8 +57,8 @@ class NotificationPreferenceServiceTest {
             when(notificationSettingRepository.existsByMemberId(memberId)).thenReturn(true);
 
             // when & then
-            assertThatThrownBy(() -> notificationSettingService.create(memberId))
-                .isInstanceOf(DuplicateNotificationSettingException.class);
+            assertThatThrownBy(() -> notificationPreferenceService.create(memberId))
+                .isInstanceOf(DuplicateNotificationPreferenceException.class);
         }
     }
 
@@ -77,7 +77,7 @@ class NotificationPreferenceServiceTest {
             when(notificationSettingRepository.findByMemberId(memberId)).thenReturn(Optional.of(setting));
 
             // when
-            notificationSettingService.updateDeviceToken(request, memberId);
+            notificationPreferenceService.updateDeviceToken(request, memberId);
 
             // then
             assertThat(setting.getDeviceToken()).isEqualTo(newToken);
@@ -93,8 +93,8 @@ class NotificationPreferenceServiceTest {
             when(notificationSettingRepository.findByMemberId(memberId)).thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> notificationSettingService.updateDeviceToken(request, memberId))
-                .isInstanceOf(NotificationSettingNotFoundException.class);
+            assertThatThrownBy(() -> notificationPreferenceService.updateDeviceToken(request, memberId))
+                .isInstanceOf(NotificationPreferenceNotFoundException.class);
         }
     }
 
@@ -111,7 +111,7 @@ class NotificationPreferenceServiceTest {
             when(notificationSettingRepository.findByMemberId(memberId)).thenReturn(Optional.of(setting));
 
             // when
-            notificationSettingService.optIn(memberId);
+            notificationPreferenceService.enableGlobally(memberId);
 
             // then
             assertThat(setting.isOptedIn()).isTrue();
@@ -125,8 +125,8 @@ class NotificationPreferenceServiceTest {
             when(notificationSettingRepository.findByMemberId(memberId)).thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> notificationSettingService.optIn(memberId))
-                .isInstanceOf(NotificationSettingNotFoundException.class);
+            assertThatThrownBy(() -> notificationPreferenceService.enableGlobally(memberId))
+                .isInstanceOf(NotificationPreferenceNotFoundException.class);
         }
     }
 
@@ -145,7 +145,7 @@ class NotificationPreferenceServiceTest {
             when(notificationSettingRepository.findByMemberId(memberId)).thenReturn(Optional.of(setting));
 
             // when
-            notificationSettingService.optOut(memberId);
+            notificationPreferenceService.disableGlobally(memberId);
 
             // then
             assertThat(setting.isOptedIn()).isFalse();
@@ -159,8 +159,8 @@ class NotificationPreferenceServiceTest {
             when(notificationSettingRepository.findByMemberId(memberId)).thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> notificationSettingService.optOut(memberId))
-                .isInstanceOf(NotificationSettingNotFoundException.class);
+            assertThatThrownBy(() -> notificationPreferenceService.disableGlobally(memberId))
+                .isInstanceOf(NotificationPreferenceNotFoundException.class);
         }
     }
 }

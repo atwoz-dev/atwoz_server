@@ -1,9 +1,12 @@
 package atwoz.atwoz.notification.command.application.notification;
 
+import atwoz.atwoz.notification.command.application.NotificationSendRequest;
 import atwoz.atwoz.notification.command.application.NotificationSendService;
 import atwoz.atwoz.notification.command.application.ReceiverNotificationSettingNotFoundException;
-import atwoz.atwoz.notification.command.domain.*;
-import atwoz.atwoz.notification.infra.notification.NotificationRequest;
+import atwoz.atwoz.notification.command.domain.Notification;
+import atwoz.atwoz.notification.command.domain.NotificationCommandRepository;
+import atwoz.atwoz.notification.command.domain.NotificationPreference;
+import atwoz.atwoz.notification.command.domain.NotificationPreferenceCommandRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +41,7 @@ class NotificationSendServiceTest {
     void sendNotificationSuccessfully() {
         // given
         long receiverId = 2L;
-        NotificationRequest request = new NotificationRequest(1L, "MEMBER", receiverId, "MATCH_REQUESTED");
+        NotificationSendRequest request = new NotificationSendRequest(1L, "MEMBER", receiverId, "MATCH_REQUESTED");
         NotificationPreference setting = mock(NotificationPreference.class);
 
         when(notificationPreferenceCommandRepository.findByMemberId(receiverId)).thenReturn(Optional.of(setting));
@@ -56,7 +59,7 @@ class NotificationSendServiceTest {
     void sendNotificationThrowsWhenNoSetting() {
         // given
         long receiverId = 2L;
-        NotificationRequest request = new NotificationRequest(1L, "MEMBER", receiverId, "MATCH_REQUESTED");
+        NotificationSendRequest request = new NotificationSendRequest(1L, "MEMBER", receiverId, "MATCH_REQUESTED");
 
         when(notificationPreferenceCommandRepository.findByMemberId(receiverId)).thenReturn(Optional.empty());
 

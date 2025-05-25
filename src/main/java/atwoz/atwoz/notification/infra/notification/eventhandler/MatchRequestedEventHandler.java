@@ -1,8 +1,8 @@
 package atwoz.atwoz.notification.infra.notification.eventhandler;
 
 import atwoz.atwoz.match.command.domain.match.event.MatchRequestedEvent;
+import atwoz.atwoz.notification.command.application.NotificationSendRequest;
 import atwoz.atwoz.notification.command.application.NotificationSendService;
-import atwoz.atwoz.notification.infra.notification.NotificationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class MatchRequestedEventHandler {
     @Async
     @TransactionalEventListener(value = MatchRequestedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handle(MatchRequestedEvent event) {
-        NotificationRequest request = new NotificationRequest(
+        NotificationSendRequest request = new NotificationSendRequest(
             event.getRequesterId(),
             "MEMBER",
             event.getResponderId(),

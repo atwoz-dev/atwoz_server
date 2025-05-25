@@ -1,6 +1,9 @@
 package atwoz.atwoz.notification.command.domain;
 
-public interface NotificationSender {
+import java.util.List;
 
-    void send(Notification notification, String receiverDeviceToken);
+public interface NotificationSender {
+    ChannelType channel();
+
+    void send(Notification notification, List<DeviceRegistration> devices);
 }

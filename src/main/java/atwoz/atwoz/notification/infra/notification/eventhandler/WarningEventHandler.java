@@ -1,8 +1,8 @@
 package atwoz.atwoz.notification.infra.notification.eventhandler;
 
 import atwoz.atwoz.admin.command.domain.warning.WarningIssuedEvent;
+import atwoz.atwoz.notification.command.application.NotificationSendRequest;
 import atwoz.atwoz.notification.command.application.NotificationSendService;
-import atwoz.atwoz.notification.infra.notification.NotificationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class WarningEventHandler {
     @Async
     @TransactionalEventListener(value = WarningIssuedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handle(WarningIssuedEvent event) {
-        var request = new NotificationRequest(
+        var request = new NotificationSendRequest(
             event.getAdminId(),
             "ADMIN",
             event.getMemberId(),

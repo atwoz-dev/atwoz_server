@@ -1,8 +1,8 @@
 package atwoz.atwoz.notification.infra.notification.eventhandler;
 
 import atwoz.atwoz.like.command.domain.LikeSentEvent;
+import atwoz.atwoz.notification.command.application.NotificationSendRequest;
 import atwoz.atwoz.notification.command.application.NotificationSendService;
-import atwoz.atwoz.notification.infra.notification.NotificationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class LikeSentEventHandler {
     @Async
     @TransactionalEventListener(value = LikeSentEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handle(LikeSentEvent event) {
-        var request = new NotificationRequest(
+        var request = new NotificationSendRequest(
             event.getSenderId(),
             "MEMBER",
             event.getReceiverId(),

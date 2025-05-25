@@ -2,7 +2,7 @@ package atwoz.atwoz.notification.presentation.notificationsetting;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
-import atwoz.atwoz.notification.command.application.NotificationSettingNotFoundException;
+import atwoz.atwoz.notification.command.application.NotificationPreferenceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class NotificationSettingExceptionHandler {
 
-    @ExceptionHandler(NotificationSettingNotFoundException.class)
+    @ExceptionHandler(NotificationPreferenceNotFoundException.class)
     public ResponseEntity<BaseResponse<Void>> handleNotificationSettingNotFoundException(
-        NotificationSettingNotFoundException e) {
+        NotificationPreferenceNotFoundException e) {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
