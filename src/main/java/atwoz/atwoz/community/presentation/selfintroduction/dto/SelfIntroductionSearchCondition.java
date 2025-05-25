@@ -1,4 +1,4 @@
-package atwoz.atwoz.community.query.selfintroduction;
+package atwoz.atwoz.community.presentation.selfintroduction.dto;
 
 import atwoz.atwoz.member.command.domain.member.City;
 import atwoz.atwoz.member.command.domain.member.Gender;
