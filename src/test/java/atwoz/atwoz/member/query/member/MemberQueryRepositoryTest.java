@@ -176,7 +176,7 @@ class MemberQueryRepositoryTest {
             Long notExistMemberId = 10L;
 
             // When & Then
-            assertThat(memberQueryRepository.findContactsByMemberId(notExistMemberId)).isEmpty();
+            assertThat(memberQueryRepository.findProfileByMemberId(notExistMemberId)).isEmpty();
         }
 
         @Test
