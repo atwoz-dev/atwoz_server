@@ -54,7 +54,6 @@ public class MemberController {
             return ResponseEntity.status(404)
                 .body(BaseResponse.from(StatusType.NOT_FOUND));
         }
-
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, response));
     }
 

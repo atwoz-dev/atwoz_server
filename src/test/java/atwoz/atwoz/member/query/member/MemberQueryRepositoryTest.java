@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Import;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -119,6 +118,7 @@ class MemberQueryRepositoryTest {
                 .orElse(null);
 
             // Then
+            assertThat(memberInfoView).isNotNull();
             assertBasicInfo(memberInfoView.basicInfo(), member);
             assertStatusInfo(memberInfoView.statusInfo(), member);
             assertProfileInfo(memberInfoView.profileInfo(), member);
@@ -162,7 +162,7 @@ class MemberQueryRepositoryTest {
 
         private void assertInterviewInfo(Set<InterviewInfoView> interviewInfoView,
             List<InterviewAnswer> interviewAnswers) {
-            assertThat(interviewInfoView.size()).isEqualTo(interviewAnswers.size());
+            assertThat(interviewInfoView).hasSameSizeAs(interviewAnswers);
         }
     }
 
@@ -218,7 +218,7 @@ class MemberQueryRepositoryTest {
             assertThat(memberProfileView.job()).isEqualTo(memberProfile.getJob().name());
             assertThat(memberProfileView.hobbies()).containsAll(memberProfile.getHobbies().stream()
                 .map(Hobby::name)
-                .collect(Collectors.toList()));
+                .toList());
             assertThat(memberProfileView.mbti()).isEqualTo(memberProfile.getMbti().toString());
             assertThat(memberProfileView.city()).isEqualTo(memberProfile.getRegion().getCity().toString());
             assertThat(memberProfileView.district()).isEqualTo(memberProfile.getRegion().getDistrict().toString());
@@ -368,12 +368,12 @@ class MemberQueryRepositoryTest {
                     otherMember.getId())
                 .orElse(null);
 
-            BasicMemberInfo basicMemberInfo = memberProfileView.basicMemberInfo();
-            MemberProfile otherMemberProfile = otherMember.getProfile();
-
             // Then
             assertThat(memberProfileView).isNotNull();
             assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
+
+            BasicMemberInfo basicMemberInfo = memberProfileView.basicMemberInfo();
+            MemberProfile otherMemberProfile = otherMember.getProfile();
 
             // BasicInfo.
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
@@ -396,12 +396,12 @@ class MemberQueryRepositoryTest {
                     otherMember.getId())
                 .orElse(null);
 
-            BasicMemberInfo basicMemberInfo = memberProfileView.basicMemberInfo();
-            MemberProfile otherMemberProfile = otherMember.getProfile();
-
             // Then
             assertThat(memberProfileView).isNotNull();
             assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
+
+            BasicMemberInfo basicMemberInfo = memberProfileView.basicMemberInfo();
+            MemberProfile otherMemberProfile = otherMember.getProfile();
 
             // BasicInfo.
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
@@ -426,12 +426,13 @@ class MemberQueryRepositoryTest {
                     otherMember.getId())
                 .orElse(null);
 
-            BasicMemberInfo basicMemberInfo = memberProfileView.basicMemberInfo();
-            MemberProfile otherMemberProfile = otherMember.getProfile();
 
             // Then
             assertThat(memberProfileView).isNotNull();
             assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
+
+            BasicMemberInfo basicMemberInfo = memberProfileView.basicMemberInfo();
+            MemberProfile otherMemberProfile = otherMember.getProfile();
 
             // BasicInfo.
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
@@ -454,12 +455,13 @@ class MemberQueryRepositoryTest {
                     otherMember.getId())
                 .orElse(null);
 
-            BasicMemberInfo basicMemberInfo = memberProfileView.basicMemberInfo();
-            MemberProfile otherMemberProfile = otherMember.getProfile();
 
             // Then
             assertThat(memberProfileView).isNotNull();
             assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
+
+            BasicMemberInfo basicMemberInfo = memberProfileView.basicMemberInfo();
+            MemberProfile otherMemberProfile = otherMember.getProfile();
 
             // BasicInfo.
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
@@ -484,12 +486,13 @@ class MemberQueryRepositoryTest {
                     otherMember.getId())
                 .orElse(null);
 
-            BasicMemberInfo basicMemberInfo = memberProfileView.basicMemberInfo();
-            MemberProfile otherMemberProfile = otherMember.getProfile();
 
             // Then
             assertThat(memberProfileView).isNotNull();
             assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
+
+            BasicMemberInfo basicMemberInfo = memberProfileView.basicMemberInfo();
+            MemberProfile otherMemberProfile = otherMember.getProfile();
 
             // BasicInfo.
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
@@ -514,12 +517,13 @@ class MemberQueryRepositoryTest {
                     otherMember.getId())
                 .orElse(null);
 
-            BasicMemberInfo basicMemberInfo = memberProfileView.basicMemberInfo();
-            MemberProfile otherMemberProfile = otherMember.getProfile();
 
             // Then
             assertThat(memberProfileView).isNotNull();
             assertThat(memberProfileView.basicMemberInfo().id()).isEqualTo(otherMember.getId());
+
+            BasicMemberInfo basicMemberInfo = memberProfileView.basicMemberInfo();
+            MemberProfile otherMemberProfile = otherMember.getProfile();
 
             // BasicInfo.
             assertionsBasicInfo(basicMemberInfo, otherMemberProfile);
