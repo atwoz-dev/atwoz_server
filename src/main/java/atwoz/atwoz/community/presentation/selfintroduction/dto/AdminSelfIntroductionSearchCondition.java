@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.query.selfintroduction;
+package atwoz.atwoz.community.presentation.selfintroduction.dto;
 
 import java.time.LocalDate;
 

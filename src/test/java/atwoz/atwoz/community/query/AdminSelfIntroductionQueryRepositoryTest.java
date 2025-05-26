@@ -1,11 +1,15 @@
-package atwoz.atwoz.admin.query.selfintroduction;
+package atwoz.atwoz.community.query;
 
 import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.community.command.domain.selfintroduction.SelfIntroduction;
+import atwoz.atwoz.community.presentation.selfintroduction.dto.AdminSelfIntroductionSearchCondition;
+import atwoz.atwoz.community.query.selfintroduction.AdminSelfIntroductionQueryRepository;
+import atwoz.atwoz.community.query.selfintroduction.view.AdminSelfIntroductionView;
 import atwoz.atwoz.member.command.domain.member.Gender;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,11 +26,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
 @DataJpaTest
 @Import({QueryDslConfig.class, AdminSelfIntroductionQueryRepository.class})
-class AdminSelfIntroductionQueryRepositoryTest {
+public class AdminSelfIntroductionQueryRepositoryTest {
 
     private static final int PAGE_SIZE = 5;
     Member manMember;
@@ -34,9 +36,9 @@ class AdminSelfIntroductionQueryRepositoryTest {
     List<SelfIntroduction> selfIntroductionsByMan;
     List<SelfIntroduction> selfIntroductionsByWoman;
     @Autowired
-    private TestEntityManager entityManager;
-    @Autowired
     private AdminSelfIntroductionQueryRepository adminSelfIntroductionQueryRepository;
+    @Autowired
+    private TestEntityManager entityManager;
 
     @BeforeEach
     void setUp() {
@@ -87,8 +89,8 @@ class AdminSelfIntroductionQueryRepositoryTest {
         entityManager.clear();
     }
 
-    @Test
     @DisplayName("모든 셀프 소개를 조회합니다.")
+    @Test
     void findAllSelfIntroductions() {
         // Given
         AdminSelfIntroductionSearchCondition condition = new AdminSelfIntroductionSearchCondition(
@@ -105,7 +107,7 @@ class AdminSelfIntroductionQueryRepositoryTest {
             condition, pageRequest);
 
         // Then
-        assertThat(selfIntroductionViews.getTotalElements()).isEqualTo(
+        AssertionsForClassTypes.assertThat(selfIntroductionViews.getTotalElements()).isEqualTo(
             selfIntroductionsByWoman.size() + selfIntroductionsByMan.size());
     }
 
@@ -128,7 +130,7 @@ class AdminSelfIntroductionQueryRepositoryTest {
 
         // Then
         for (AdminSelfIntroductionView view : selfIntroductionViews.getContent()) {
-            assertThat(view.isOpened()).isTrue();
+            AssertionsForClassTypes.assertThat(view.isOpened()).isTrue();
         }
     }
 
@@ -150,9 +152,11 @@ class AdminSelfIntroductionQueryRepositoryTest {
             condition, pageRequest);
 
         // Then
-        assertThat(selfIntroductionViews.getTotalElements()).isEqualTo(selfIntroductionsByMan.size());
+        AssertionsForClassTypes.assertThat(selfIntroductionViews.getTotalElements())
+            .isEqualTo(selfIntroductionsByMan.size());
         for (AdminSelfIntroductionView view : selfIntroductionViews.getContent()) {
-            assertThat(view.nickname()).isEqualTo(manMember.getProfile().getNickname().getValue());
+            AssertionsForClassTypes.assertThat(view.nickname())
+                .isEqualTo(manMember.getProfile().getNickname().getValue());
         }
     }
 
@@ -174,18 +178,24 @@ class AdminSelfIntroductionQueryRepositoryTest {
             condition, pageRequest);
 
         // Then
-        assertThat(selfIntroductionViews.getTotalElements()).isEqualTo(PAGE_SIZE);
+        AssertionsForClassTypes.assertThat(selfIntroductionViews.getTotalElements()).isEqualTo(PAGE_SIZE);
 
         for (int i = 0; i < PAGE_SIZE; i++) {
             SelfIntroduction selfIntroductionByWoman = selfIntroductionsByWoman.get(i);
             AdminSelfIntroductionView view = selfIntroductionViews.getContent().get(i);
-            assertThat(view.nickname()).isEqualTo(womanMember.getProfile().getNickname().getValue());
-            assertThat(view.selfIntroductionId()).isEqualTo(selfIntroductionByWoman.getId());
-            assertThat(view.gender()).isEqualTo(womanMember.getProfile().getGender().name());
-            assertThat(view.content()).isEqualTo(selfIntroductionByWoman.getContent());
-            assertThat(view.createdDate()).isEqualTo(toDate(selfIntroductionByWoman.getCreatedAt()));
-            assertThat(view.updatedDate()).isEqualTo(toDate(selfIntroductionByWoman.getUpdatedAt()));
-            assertThat(view.deletedDate()).isEqualTo(toDate(selfIntroductionByWoman.getDeletedAt()));
+            AssertionsForClassTypes.assertThat(view.nickname())
+                .isEqualTo(womanMember.getProfile().getNickname().getValue());
+            AssertionsForClassTypes.assertThat(view.selfIntroductionId())
+                .isEqualTo(selfIntroductionByWoman.getId());
+            AssertionsForClassTypes.assertThat(view.gender())
+                .isEqualTo(womanMember.getProfile().getGender().name());
+            AssertionsForClassTypes.assertThat(view.content()).isEqualTo(selfIntroductionByWoman.getContent());
+            AssertionsForClassTypes.assertThat(view.createdDate())
+                .isEqualTo(toDate(selfIntroductionByWoman.getCreatedAt()));
+            AssertionsForClassTypes.assertThat(view.updatedDate())
+                .isEqualTo(toDate(selfIntroductionByWoman.getUpdatedAt()));
+            AssertionsForClassTypes.assertThat(view.deletedDate())
+                .isEqualTo(toDate(selfIntroductionByWoman.getDeletedAt()));
         }
     }
 
@@ -207,10 +217,12 @@ class AdminSelfIntroductionQueryRepositoryTest {
             condition, pageRequest);
 
         // Then
-        assertThat(selfIntroductionViews.getTotalElements()).isEqualTo(PAGE_SIZE);
+        AssertionsForClassTypes.assertThat(selfIntroductionViews.getTotalElements()).isEqualTo(PAGE_SIZE);
     }
 
     private String toDate(LocalDateTime localDateTime) {
         return localDateTime != null ? DateTimeFormatter.ofPattern("yyyy/MM/dd").format(localDateTime) : null;
     }
+
+
 }

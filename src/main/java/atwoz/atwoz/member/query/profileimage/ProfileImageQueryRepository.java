@@ -2,7 +2,7 @@ package atwoz.atwoz.member.query.profileimage;
 
 import atwoz.atwoz.member.query.profileimage.view.ProfileImageView;
 import atwoz.atwoz.member.query.profileimage.view.QProfileImageView;
-import com.querydsl.jpa.JPQLQueryFactory;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +13,7 @@ import static atwoz.atwoz.member.command.domain.profileImage.QProfileImage.profi
 @Repository
 @RequiredArgsConstructor
 public class ProfileImageQueryRepository {
-    private final JPQLQueryFactory queryFactory;
+    private final JPAQueryFactory queryFactory;
 
     public List<ProfileImageView> findByMemberId(Long memberId) {
         return queryFactory

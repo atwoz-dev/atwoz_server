@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.query.selfintroduction;
+package atwoz.atwoz.community.query.selfintroduction.view;
 
 import com.querydsl.core.annotations.QueryProjection;
 

@@ -1,6 +1,10 @@
-package atwoz.atwoz.admin.query.selfintroduction;
+package atwoz.atwoz.community.query.selfintroduction;
 
+import atwoz.atwoz.community.presentation.selfintroduction.dto.AdminSelfIntroductionSearchCondition;
+import atwoz.atwoz.community.query.selfintroduction.view.AdminSelfIntroductionView;
+import atwoz.atwoz.community.query.selfintroduction.view.QAdminSelfIntroductionView;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,10 +22,14 @@ import static atwoz.atwoz.member.command.domain.member.QMember.member;
 @Repository
 @RequiredArgsConstructor
 public class AdminSelfIntroductionQueryRepository {
+
     private final JPAQueryFactory queryFactory;
 
     public Page<AdminSelfIntroductionView> findSelfIntroductions(AdminSelfIntroductionSearchCondition condition,
         Pageable pageable) {
+
+        BooleanExpression searchCondition = buildAdminSearchCondition(condition);
+
         List<AdminSelfIntroductionView> content = queryFactory
             .select(
                 new QAdminSelfIntroductionView(
@@ -37,13 +45,7 @@ public class AdminSelfIntroductionQueryRepository {
             )
             .from(selfIntroduction)
             .join(member).on(member.id.eq(selfIntroduction.memberId))
-            .where(
-                nicknameEq(condition.nickname()),
-                isOpenedEq(condition.isOpened()),
-                startDateGoe(condition.startDate()),
-                loeEndDate(condition.endDate()),
-                phoneNumberEq(condition.phoneNumber())
-            )
+            .where(searchCondition)
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
@@ -53,17 +55,21 @@ public class AdminSelfIntroductionQueryRepository {
                 .select(selfIntroduction.count())
                 .from(selfIntroduction)
                 .join(member).on(member.id.eq(selfIntroduction.memberId))
-                .where(
-                    nicknameEq(condition.nickname()),
-                    isOpenedEq(condition.isOpened()),
-                    startDateGoe(condition.startDate()),
-                    loeEndDate(condition.endDate()),
-                    phoneNumberEq(condition.phoneNumber())
-                )
+                .where(searchCondition)
                 .fetchOne()
         ).orElse(0L);
 
         return new PageImpl<>(content, pageable, totalCount);
+    }
+
+    private BooleanExpression buildAdminSearchCondition(AdminSelfIntroductionSearchCondition condition) {
+        return Expressions.allOf(
+            nicknameEq(condition.nickname()),
+            isOpenedEq(condition.isOpened()),
+            startDateGoe(condition.startDate()),
+            loeEndDate(condition.endDate()),
+            phoneNumberEq(condition.phoneNumber())
+        );
     }
 
     private BooleanExpression nicknameEq(String nickname) {
@@ -91,7 +97,7 @@ public class AdminSelfIntroductionQueryRepository {
         if (endDate == null) {
             return null;
         }
-        return selfIntroduction.createdAt.loe(endDate.plusDays(1).atStartOfDay().minusSeconds(1));
+        return selfIntroduction.createdAt.lt(endDate.plusDays(1).atStartOfDay());
     }
 
     private BooleanExpression phoneNumberEq(String phoneNumber) {

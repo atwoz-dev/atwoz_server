@@ -40,6 +40,16 @@ public class SelfIntroductionService {
         selfIntroductionCommandRepository.deleteById(id);
     }
 
+    @Transactional
+    public void changeOpenStatus(Long id, boolean open) {
+        SelfIntroduction selfIntroduction = getSelfIntroductionById(id);
+        if (open) {
+            selfIntroduction.open();
+        } else {
+            selfIntroduction.close();
+        }
+    }
+
     private void validateSelfIntroductionAuthor(Long memberIdFromSelfIntroduction, Long memberId) {
         if (memberIdFromSelfIntroduction != memberId) {
             throw new NotSelfIntroductionAuthorException();

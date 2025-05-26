@@ -115,5 +115,21 @@ public class SelfIntroductionTest {
             // Then
             assertThat(selfIntroduction.isOpened()).isFalse();
         }
+
+        @Test
+        @DisplayName("셀프 소개를 공개로 변경한다.")
+        void updateOpen() {
+            // Given
+            Long memberId = 1L;
+            String title = "셀프 소개 제목";
+            String content = "셀프 소개 내용이 공백 포함하여 최소 30자 이상이어야 합니다.";
+            SelfIntroduction selfIntroduction = SelfIntroduction.write(memberId, title, content);
+
+            // When
+            selfIntroduction.open();
+
+            // Then
+            assertThat(selfIntroduction.isOpened()).isTrue();
+        }
     }
 }
