@@ -2,7 +2,6 @@ package atwoz.atwoz.member.query.member.view;
 
 import atwoz.atwoz.member.command.domain.member.*;
 import com.querydsl.core.annotations.QueryProjection;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Set;
@@ -15,10 +14,7 @@ public record MemberProfileView(
     Integer height,
     @Schema(implementation = Job.class)
     String job,
-    @ArraySchema(
-        arraySchema = @Schema(implementation = Hobby.class),
-        schema = @Schema(implementation = String.class)
-    )
+    @Schema(implementation = Hobby.class)
     Set<String> hobbies,
     @Schema(implementation = Mbti.class)
     String mbti,
