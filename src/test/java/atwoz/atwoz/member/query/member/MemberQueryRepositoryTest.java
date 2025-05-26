@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Import;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,8 +46,8 @@ class MemberQueryRepositoryTest {
     private TestEntityManager entityManager;
 
     @Nested
-    @DisplayName("프로필 조회 테스트")
-    class ProfileQueryTest {
+    @DisplayName("프로필 조회 테스트 (캐싱)")
+    class CacheQueryTest {
 
         @Test
         @DisplayName("존재하지 않은 아이디인 경우, 프로필 빈 값 반환.")
@@ -162,6 +163,70 @@ class MemberQueryRepositoryTest {
         private void assertInterviewInfo(Set<InterviewInfoView> interviewInfoView,
             List<InterviewAnswer> interviewAnswers) {
             assertThat(interviewInfoView.size()).isEqualTo(interviewAnswers.size());
+        }
+    }
+
+    @Nested
+    @DisplayName("프로필 조회 테스트")
+    class MyProfileQueryTest {
+        @Test
+        @DisplayName("존재하지 않은 아이디인 경우, 프로필 빈 값 반환.")
+        void isNullWhenMemberIsNotExists() {
+            // Given
+            Long notExistMemberId = 10L;
+
+            // When & Then
+            assertThat(memberQueryRepository.findContactsByMemberId(notExistMemberId)).isEmpty();
+        }
+
+        @Test
+        @DisplayName("존재하는 경우, 프로필 정보 조회")
+        void getProfileWhenMemberIdExists() {
+            // Given
+            Member member = Member.fromPhoneNumber("01012345678");
+
+            MemberProfile memberProfile = MemberProfile.builder()
+                .nickname(Nickname.from("nickname"))
+                .yearOfBirth(1998)
+                .gender(Gender.MALE)
+                .height(175)
+                .job(Job.JOB_SEARCHING)
+                .hobbies(Set.of(Hobby.BOARD_GAMES, Hobby.ANIMATION))
+                .mbti(Mbti.ISTJ)
+                .region(Region.of(District.ANSAN_SI))
+                .smokingStatus(SmokingStatus.DAILY)
+                .drinkingStatus(DrinkingStatus.NONE)
+                .highestEducation(HighestEducation.ASSOCIATE)
+                .religion(Religion.BUDDHIST)
+                .build();
+
+            member.updateProfile(memberProfile);
+
+            entityManager.persist(member);
+            entityManager.flush();
+
+            // When
+            MemberProfileView memberProfileView = memberQueryRepository.findProfileByMemberId(member.getId())
+                .orElse(null);
+
+            // Then
+            assertThat(memberProfileView).isNotNull();
+            assertThat(memberProfileView.nickname()).isEqualTo(memberProfile.getNickname().getValue());
+            assertThat(memberProfileView.yearOfBirth()).isEqualTo(memberProfile.getYearOfBirth().getValue());
+            assertThat(memberProfileView.gender()).isEqualTo(memberProfile.getGender().toString());
+            assertThat(memberProfileView.height()).isEqualTo(memberProfile.getHeight());
+            assertThat(memberProfileView.job()).isEqualTo(memberProfile.getJob().name());
+            assertThat(memberProfileView.hobbies()).containsAll(memberProfile.getHobbies().stream()
+                .map(Hobby::name)
+                .collect(Collectors.toList()));
+            assertThat(memberProfileView.mbti()).isEqualTo(memberProfile.getMbti().toString());
+            assertThat(memberProfileView.city()).isEqualTo(memberProfile.getRegion().getCity().toString());
+            assertThat(memberProfileView.district()).isEqualTo(memberProfile.getRegion().getDistrict().toString());
+            assertThat(memberProfileView.smokingStatus()).isEqualTo(memberProfile.getSmokingStatus().toString());
+            assertThat(memberProfileView.highestEducation()).isEqualTo(memberProfile.getHighestEducation().toString());
+            assertThat(memberProfileView.religion()).isEqualTo(memberProfile.getReligion().toString());
+
+
         }
     }
 
