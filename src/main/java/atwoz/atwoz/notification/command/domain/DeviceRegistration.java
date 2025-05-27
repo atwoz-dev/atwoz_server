@@ -6,8 +6,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "device_registrations")
+@Table(
+    name = "device_registrations",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"memberId", "deviceId"}),
+    indexes = {
+        @Index(name = "idx_member_id_active", columnList = "memberId, isActive"),
+        @Index(name = "idx_device_id", columnList = "deviceId")
+    }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class DeviceRegistration {
 
     @Id
@@ -18,10 +26,8 @@ public class DeviceRegistration {
 
     private String deviceId;
 
-    @Getter
     private String registrationToken;
 
-    @Getter
     private boolean isActive = true;
 
     private DeviceRegistration(Long memberId, String deviceId, String registrationToken) {
@@ -30,8 +36,8 @@ public class DeviceRegistration {
         this.registrationToken = registrationToken;
     }
 
-    public static DeviceRegistration of(long userId, String deviceId, String registrationToken) {
-        return new DeviceRegistration(userId, deviceId, registrationToken);
+    public static DeviceRegistration of(long memberId, String deviceId, String registrationToken) {
+        return new DeviceRegistration(memberId, deviceId, registrationToken);
     }
 
     public void activate() {
