@@ -1,7 +1,5 @@
-package atwoz.atwoz.notification.command.application.notification;
+package atwoz.atwoz.notification.command.application;
 
-import atwoz.atwoz.notification.command.application.NotificationNotFoundException;
-import atwoz.atwoz.notification.command.application.NotificationReadService;
 import atwoz.atwoz.notification.command.domain.Notification;
 import atwoz.atwoz.notification.command.domain.NotificationCommandRepository;
 import org.junit.jupiter.api.DisplayName;

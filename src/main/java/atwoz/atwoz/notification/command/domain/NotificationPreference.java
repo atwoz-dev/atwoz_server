@@ -24,6 +24,7 @@ public class NotificationPreference extends SoftDeleteBaseEntity {
     @Getter
     private Long memberId;
 
+    @Getter
     private boolean isEnabledGlobally = true;
 
     @ElementCollection(fetch = FetchType.EAGER)
