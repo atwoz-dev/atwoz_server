@@ -4,7 +4,7 @@ import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.notification.command.application.NotificationNotFoundException;
-import atwoz.atwoz.notification.command.application.ReceiverNotificationSettingNotFoundException;
+import atwoz.atwoz.notification.command.application.ReceiverNotificationPreferenceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class NotificationExceptionHandler {
 
-    @ExceptionHandler(ReceiverNotificationSettingNotFoundException.class)
+    @ExceptionHandler(ReceiverNotificationPreferenceNotFoundException.class)
     public ResponseEntity<BaseResponse<Void>> handleReceiverNotificationSettingNotFoundException(
-        ReceiverNotificationSettingNotFoundException e) {
+        ReceiverNotificationPreferenceNotFoundException e) {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)

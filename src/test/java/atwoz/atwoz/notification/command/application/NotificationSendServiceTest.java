@@ -61,7 +61,7 @@ class NotificationSendServiceTest {
 
         // when && then
         assertThatThrownBy(() -> service.send(req))
-            .isInstanceOf(ReceiverNotificationSettingNotFoundException.class);
+            .isInstanceOf(ReceiverNotificationPreferenceNotFoundException.class);
     }
 
     @Test

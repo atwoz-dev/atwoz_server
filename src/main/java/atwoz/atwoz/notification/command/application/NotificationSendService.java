@@ -64,6 +64,6 @@ public class NotificationSendService {
 
     private NotificationPreference getPreference(long receiverId) {
         return notificationPreferenceCommandRepository.findByMemberId(receiverId)
-            .orElseThrow(() -> new ReceiverNotificationSettingNotFoundException(receiverId));
+            .orElseThrow(() -> new ReceiverNotificationPreferenceNotFoundException(receiverId));
     }
 }
