@@ -2,6 +2,7 @@ package atwoz.atwoz.community.command.domain.profileexchange;
 
 
 import atwoz.atwoz.common.entity.BaseEntity;
+import atwoz.atwoz.community.command.domain.profileexchange.exception.SelfProfileExchangeException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -28,12 +29,19 @@ public class ProfileExchange extends BaseEntity {
     private ProfileExchangeStatus status;
 
     private ProfileExchange(long requesterId, long responderId, @NonNull ProfileExchangeStatus status) {
+        validateRequesterIdAndResponderId(requesterId, responderId);
         this.requesterId = requesterId;
         this.responderId = responderId;
         this.status = status;
     }
 
-    static ProfileExchange request(long requesterId, long responderId) {
+    public static ProfileExchange request(long requesterId, long responderId) {
         return new ProfileExchange(requesterId, responderId, ProfileExchangeStatus.WAITING);
+    }
+
+    private void validateRequesterIdAndResponderId(long requesterId, long responderId) {
+        if (requesterId == responderId) {
+            throw new SelfProfileExchangeException();
+        }
     }
 }

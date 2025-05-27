@@ -1,11 +1,25 @@
 package atwoz.atwoz.community.command.domain.profileexchange;
 
+import atwoz.atwoz.community.command.domain.profileexchange.exception.SelfProfileExchangeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ProfileExchangeTest {
+
+    @Test
+    @DisplayName("")
+    void throwExceptionWhenRequesterIdIsNullAndResponderIdIsNull() {
+        // Given
+        long requestId = 1L;
+
+        // When & Then
+        assertThatThrownBy(() -> ProfileExchange.request(requestId, requestId))
+            .isInstanceOf(SelfProfileExchangeException.class);
+    }
+
     @Test
     @DisplayName("프로필 교환을 신청할 경우, 신청 대기 상태로 생성한다.")
     void createProfileExchangeWithWaitingStatus() {
