@@ -11,7 +11,7 @@ class ProfileExchangeTest {
 
     @Test
     @DisplayName("")
-    void throwExceptionWhenRequesterIdIsNullAndResponderIdIsNull() {
+    void throwExceptionWhenRequesterIdIsEqualToResponderId() {
         // Given
         long requestId = 1L;
 
