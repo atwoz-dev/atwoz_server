@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface DeviceRegistrationCommandRepository extends JpaRepository<DeviceRegistration, Long> {
     List<DeviceRegistration> findByMemberIdAndIsActiveTrue(long memberId);
 
-    Optional<DeviceRegistration> findByMemberIdAndDeviceId(Long memberId, String deviceId);
+    Optional<DeviceRegistration> findByMemberIdAndDeviceId(long memberId, String deviceId);
 }
