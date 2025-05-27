@@ -15,8 +15,18 @@ public class NotificationSenderResolver {
     private final List<NotificationSender> senders;
 
     public Optional<NotificationSender> resolve(ChannelType channelType) {
-        return senders.stream()
+        if (channelType == null) {
+            return Optional.empty();
+        }
+
+        var matchingSenders = senders.stream()
             .filter(sender -> sender.channel() == channelType)
-            .findFirst();
+            .toList();
+
+        if (matchingSenders.size() > 1) {
+            throw new IllegalArgumentException("ChannelType: " + channelType + "에 대해 여러 sender가 발견되었습니다.");
+        }
+
+        return matchingSenders.stream().findFirst();
     }
 }
