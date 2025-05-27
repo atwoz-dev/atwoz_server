@@ -8,9 +8,12 @@ import atwoz.atwoz.member.presentation.member.dto.BasicInfo;
 import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.query.member.AgeConverter;
 import atwoz.atwoz.member.query.member.view.BasicMemberInfo;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.stream.Collectors;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberMapper {
 
     public static MemberProfile toMemberProfile(MemberProfileUpdateRequest memberProfileUpdateRequest) {
@@ -23,7 +26,7 @@ public class MemberMapper {
             .region(Region.of(District.from(memberProfileUpdateRequest.district())))
             .smokingStatus(SmokingStatus.from(memberProfileUpdateRequest.smokingStatus()))
             .drinkingStatus(DrinkingStatus.from(memberProfileUpdateRequest.drinkingStatus()))
-            .religion(Religion.from(memberProfileUpdateRequest.religionStatus()))
+            .religion(Religion.from(memberProfileUpdateRequest.religion()))
             .highestEducation(HighestEducation.from(memberProfileUpdateRequest.highestEducation()))
             .job(Job.from(memberProfileUpdateRequest.job()))
             .hobbies(memberProfileUpdateRequest.hobbies() != null ? memberProfileUpdateRequest.hobbies()
