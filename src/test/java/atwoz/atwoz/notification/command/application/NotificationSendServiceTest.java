@@ -93,7 +93,7 @@ class NotificationSendServiceTest {
             .thenReturn(Optional.of(NotificationTemplate.of(LIKE, "t", "b")));
         when(notificationPreferenceCommandRepository.findByMemberId(20L))
             .thenReturn(Optional.of(NotificationPreference.of(20L)));
-        when(deviceRegistrationCommandRepository.findByMemberIdAndActiveTrue(20L))
+        when(deviceRegistrationCommandRepository.findByMemberIdAndIsActiveTrue(20L))
             .thenReturn(List.of());
 
         var sender = mock(NotificationSender.class);
@@ -118,7 +118,7 @@ class NotificationSendServiceTest {
             .thenReturn(Optional.of(NotificationTemplate.of(LIKE, "t", "b")));
         when(notificationPreferenceCommandRepository.findByMemberId(20L))
             .thenReturn(Optional.of(NotificationPreference.of(20L)));
-        when(deviceRegistrationCommandRepository.findByMemberIdAndActiveTrue(20L))
+        when(deviceRegistrationCommandRepository.findByMemberIdAndIsActiveTrue(20L))
             .thenReturn(List.of());
 
         var sender = mock(NotificationSender.class);
@@ -144,7 +144,7 @@ class NotificationSendServiceTest {
             .thenReturn(Optional.of(NotificationTemplate.of(LIKE, "t", "b")));
         when(notificationPreferenceCommandRepository.findByMemberId(20L))
             .thenReturn(Optional.of(NotificationPreference.of(20L)));
-        when(deviceRegistrationCommandRepository.findByMemberIdAndActiveTrue(20L))
+        when(deviceRegistrationCommandRepository.findByMemberIdAndIsActiveTrue(20L))
             .thenReturn(List.of());
         when(notificationSenderResolver.resolve(PUSH))
             .thenReturn(Optional.empty());

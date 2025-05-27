@@ -36,7 +36,7 @@ public class NotificationSendService {
             return;
         }
 
-        var devices = deviceRegistrationCommandRepository.findByMemberIdAndActiveTrue(request.receiverId());
+        var devices = deviceRegistrationCommandRepository.findByMemberIdAndIsActiveTrue(request.receiverId());
         notificationSenderResolver.resolve(request.channelType())
             .ifPresentOrElse(
                 sender -> {
