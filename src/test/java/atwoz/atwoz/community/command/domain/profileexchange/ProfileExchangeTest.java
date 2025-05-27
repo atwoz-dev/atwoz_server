@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ProfileExchangeTest {
 
     @Test
-    @DisplayName("")
+    @DisplayName("자기 자신에게 프로필 교환 요청을 한 경우, 예외 발생")
     void throwExceptionWhenRequesterIdIsEqualToResponderId() {
         // Given
         long requestId = 1L;
