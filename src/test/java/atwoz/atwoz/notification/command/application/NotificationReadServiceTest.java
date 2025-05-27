@@ -11,43 +11,45 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static atwoz.atwoz.notification.command.domain.NotificationType.LIKE;
+import static atwoz.atwoz.notification.command.domain.SenderType.SYSTEM;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("NotificationReadService 테스트")
 class NotificationReadServiceTest {
 
     @Mock
-    private NotificationCommandRepository notificationCommandRepository;
+    NotificationCommandRepository repository;
 
     @InjectMocks
-    private NotificationReadService notificationReadService;
+    NotificationReadService service;
 
     @Test
-    @DisplayName("정상 요청 시, 알림을 조회하고 markAsRead()를 호출한다.")
-    void markAsReadSuccessfully() {
+    @DisplayName("markAsRead(): 존재하는 알림의 읽음 상태가 true로 변경")
+    void markAsReadUpdatesReadState() {
         // given
         long notificationId = 1L;
-        Notification notification = mock(Notification.class);
-        when(notificationCommandRepository.findById(notificationId)).thenReturn(Optional.of(notification));
+        var notification = Notification.create(SYSTEM, 10L, 20L, LIKE, "t", "b");
+        when(repository.findById(notificationId)).thenReturn(Optional.of(notification));
 
         // when
-        notificationReadService.markAsRead(notificationId);
+        service.markAsRead(notificationId);
 
         // then
-        verify(notification).markAsRead();
+        assertThat(notification.isRead()).isTrue();
     }
 
     @Test
-    @DisplayName("존재하지 않는 알림 id 요청 시, NotificationNotFoundException 예외가 발생한다.")
-    void markAsReadThrowsWhenNotificationNotFound() {
+    @DisplayName("markAsRead(): 알림이 없으면 NotificationNotFoundException 발생")
+    void markAsReadThrowsWhenNotFound() {
         // given
         long notificationId = 2L;
-        when(notificationCommandRepository.findById(notificationId)).thenReturn(Optional.empty());
+        when(repository.findById(notificationId)).thenReturn(Optional.empty());
 
-        // when & then
-        assertThatThrownBy(() -> notificationReadService.markAsRead(notificationId))
+        // when && then
+        assertThatThrownBy(() -> service.markAsRead(notificationId))
             .isInstanceOf(NotificationNotFoundException.class);
     }
 }
