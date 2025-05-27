@@ -107,4 +107,17 @@ class NotificationTest {
         // then
         assertThat(notification.getStatus()).isEqualTo(FAILED_EXCEPTION);
     }
+
+    @Test
+    @DisplayName("markAsRejectedByPreference 호출 시 status가 REJECTED로 변경됨")
+    void markAsRejectedByPreferenceSetsStatus() {
+        // given
+        var notification = Notification.create(MEMBER, 1L, 2L, LIKE, "t", "b");
+
+        // when
+        notification.markAsRejectedByPreference();
+
+        // then
+        assertThat(notification.getStatus()).isEqualTo(REJECTED);
+    }
 }

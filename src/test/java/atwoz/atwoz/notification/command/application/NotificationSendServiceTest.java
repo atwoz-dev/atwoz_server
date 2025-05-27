@@ -25,14 +25,19 @@ class NotificationSendServiceTest {
 
     @Mock
     NotificationCommandRepository notificationCommandRepository;
+
     @Mock
     NotificationPreferenceCommandRepository notificationPreferenceCommandRepository;
+
     @Mock
     NotificationTemplateCommandRepository notificationTemplateCommandRepository;
+
     @Mock
     DeviceRegistrationCommandRepository deviceRegistrationCommandRepository;
+
     @Mock
     NotificationSenderResolver notificationSenderResolver;
+
     @InjectMocks
     NotificationSendService service;
 
@@ -65,8 +70,8 @@ class NotificationSendServiceTest {
     }
 
     @Test
-    @DisplayName("send(): 수신 거부 시 저장 없이 반환")
-    void sendSkipsWhenCannotReceive() {
+    @DisplayName("send(): 수신 거부 시 REJECTED 상태로 저장")
+    void sendSavesRejectedNotification() {
         // given
         var req = new NotificationSendRequest(SYSTEM, 1L, 1L, LIKE, Map.of(), PUSH);
         when(notificationTemplateCommandRepository.findByType(LIKE))
@@ -81,7 +86,8 @@ class NotificationSendServiceTest {
         service.send(req);
 
         // then
-        verify(notificationCommandRepository, never()).save(any());
+        verify(notificationCommandRepository)
+            .save(argThat(n -> n.getStatus() == REJECTED));
     }
 
     @Test

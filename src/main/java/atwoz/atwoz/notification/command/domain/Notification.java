@@ -92,4 +92,8 @@ public class Notification extends SoftDeleteBaseEntity {
     public void markAsFailedDueToException() {
         status = NotificationStatus.FAILED_EXCEPTION;
     }
+
+    public void markAsRejectedByPreference() {
+        status = NotificationStatus.REJECTED;
+    }
 }
