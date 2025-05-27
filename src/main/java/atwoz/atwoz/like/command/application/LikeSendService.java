@@ -30,9 +30,8 @@ public class LikeSendService {
         var like = Like.of(senderId, receiverId, toLikeLevel(request.likeLevel()));
         likeCommandRepository.save(like);
 
-        memberCommandRepository.findById(senderId)
-            .ifPresent(member ->
-                Events.raise(LikeSentEvent.of(senderId, member.getProfile().getNickname().getValue(), receiverId))
-            );
+        var member = memberCommandRepository.findById(senderId)
+            .orElseThrow(() -> new MemberNotFoundException(senderId));
+        Events.raise(LikeSentEvent.of(senderId, member.getProfile().getNickname().getValue(), receiverId));
     }
 }
