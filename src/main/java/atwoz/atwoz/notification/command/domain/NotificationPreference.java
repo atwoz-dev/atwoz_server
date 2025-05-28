@@ -60,7 +60,7 @@ public class NotificationPreference extends SoftDeleteBaseEntity {
     }
 
     public boolean isDisabledForType(NotificationType type) {
-        return isEnabledByNotificationType.getOrDefault(type, false);
+        return !isEnabledByNotificationType.getOrDefault(type, false);
     }
 
     public void enableForNotificationType(NotificationType type) {

@@ -96,7 +96,7 @@ class NotificationPreferenceTest {
         boolean after = pref.isDisabledForType(MATCH_REQUEST);
 
         // then
-        assertThat(before).isTrue();
-        assertThat(after).isFalse();
+        assertThat(before).isFalse();
+        assertThat(after).isTrue();
     }
 }

@@ -31,8 +31,8 @@ public class NotificationPreferencesController {
         return ResponseEntity.ok(BaseResponse.from(OK));
     }
 
-    @PatchMapping("/enable/type")
     @Operation(summary = "특정 알림 타입 수신 허용")
+    @PatchMapping("/enable/type")
     public ResponseEntity<BaseResponse<Void>> enableForType(
         @AuthPrincipal AuthContext authContext,
         @Valid @ModelAttribute NotificationPreferenceToggleRequest notificationPreferenceToggleRequest
@@ -48,8 +48,8 @@ public class NotificationPreferencesController {
         return ResponseEntity.ok(BaseResponse.from(OK));
     }
 
-    @PatchMapping("/disable/type")
     @Operation(summary = "특정 알림 타입 수신 거부")
+    @PatchMapping("/disable/type")
     public ResponseEntity<BaseResponse<Void>> disableForType(
         @AuthPrincipal AuthContext authContext,
         @Valid @ModelAttribute NotificationPreferenceToggleRequest notificationPreferenceToggleRequest
