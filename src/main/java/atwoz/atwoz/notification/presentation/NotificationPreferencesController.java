@@ -25,13 +25,13 @@ public class NotificationPreferencesController {
     private final NotificationPreferenceService notificationPreferenceService;
 
     @Operation(summary = "알림 수신 전체 허용")
-    @PatchMapping("/enable")
+    @PatchMapping("/enable/global")
     public ResponseEntity<BaseResponse<Void>> enableGlobally(@AuthPrincipal AuthContext authContext) {
         notificationPreferenceService.enableGlobally(authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(OK));
     }
 
-    @PatchMapping("/enable")
+    @PatchMapping("/enable/type")
     @Operation(summary = "특정 알림 타입 수신 허용")
     public ResponseEntity<BaseResponse<Void>> enableForType(
         @AuthPrincipal AuthContext authContext,
@@ -42,13 +42,13 @@ public class NotificationPreferencesController {
     }
 
     @Operation(summary = "알림 수신 전체 거부")
-    @PatchMapping("/disable")
+    @PatchMapping("/disable/global")
     public ResponseEntity<BaseResponse<Void>> disableGlobally(@AuthPrincipal AuthContext authContext) {
         notificationPreferenceService.disableGlobally(authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(OK));
     }
 
-    @PatchMapping("/disable")
+    @PatchMapping("/disable/type")
     @Operation(summary = "특정 알림 타입 수신 거부")
     public ResponseEntity<BaseResponse<Void>> disableForType(
         @AuthPrincipal AuthContext authContext,
