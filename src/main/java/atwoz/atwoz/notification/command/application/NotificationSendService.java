@@ -40,18 +40,18 @@ public class NotificationSendService {
         save(notification);
     }
 
-    private Notification buildNotification(NotificationSendRequest req) {
-        NotificationTemplate tpl = notificationTemplateRepository.findByType(req.notificationType())
-            .orElseThrow(() -> new InvalidNotificationTypeException(req.notificationType().name()));
+    private Notification buildNotification(NotificationSendRequest request) {
+        NotificationTemplate template = notificationTemplateRepository.findByType(request.notificationType())
+            .orElseThrow(() -> new InvalidNotificationTypeException(request.notificationType().name()));
 
-        String title = tpl.generateTitle(req.params());
-        String body = tpl.generateBody(req.params());
+        String title = template.generateTitle(request.params());
+        String body = template.generateBody(request.params());
 
         return Notification.create(
-            req.senderType(),
-            req.senderId(),
-            req.receiverId(),
-            req.notificationType(),
+            request.senderType(),
+            request.senderId(),
+            request.receiverId(),
+            request.notificationType(),
             title, body
         );
     }

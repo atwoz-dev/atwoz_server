@@ -57,6 +57,7 @@ public class Notification extends SoftDeleteBaseEntity {
         this.type = type;
         this.title = title;
         this.body = body;
+        status = NotificationStatus.CREATED;
     }
 
     public static Notification create(

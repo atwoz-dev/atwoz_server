@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class NotificationTest {
 
     @Test
-    @DisplayName("정상 데이터로 생성 시 필드가 모두 설정되고 초기 상태(readAt/status)는 null")
+    @DisplayName("정상 데이터로 생성 시 필드가 모두 설정되고 readAt은 null로 설정됨")
     void createWithValidArguments() {
         // given
         var senderType = MEMBER;
@@ -36,7 +36,7 @@ class NotificationTest {
         assertThat(notification.getTitle()).isEqualTo(title);
         assertThat(notification.getBody()).isEqualTo(body);
         assertThat(notification.getReadAt()).isNull();
-        assertThat(notification.getStatus()).isNull();
+        assertThat(notification.getStatus()).isEqualTo(CREATED);
         assertThat(notification.isRead()).isFalse();
     }
 
