@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static atwoz.atwoz.common.enums.StatusType.OK;
 
-@Tag(name = "기기 id 설정 API")
+@Tag(name = "기기 설정 API")
 @RestController
 @RequestMapping("/notifications/device-registration")
 @RequiredArgsConstructor
@@ -24,9 +24,9 @@ public class DeviceRegistrationController {
 
     private final DeviceRegistrationService deviceRegistrationService;
 
-    @Operation(summary = "기기 등록")
+    @Operation(summary = "기기 등록 및 업데이트")
     @PostMapping
-    public ResponseEntity<BaseResponse<Void>> registerDevice(
+    public ResponseEntity<BaseResponse<Void>> register(
         @Valid @RequestBody DeviceRegisterRequest request,
         @AuthPrincipal AuthContext authContext
     ) {

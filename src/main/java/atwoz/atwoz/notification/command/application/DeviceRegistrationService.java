@@ -15,15 +15,12 @@ public class DeviceRegistrationService {
 
     @Transactional
     public void register(long memberId, DeviceRegisterRequest request) {
-        boolean alreadyRegistered = deviceRegistrationCommandRepository
-            .findByMemberIdAndDeviceId(memberId, request.deviceId())
-            .isPresent();
-
-        if (alreadyRegistered) {
-            throw new DuplicateDeviceRegistrationException(request.deviceId());
-        }
-
-        var registration = DeviceRegistration.of(memberId, request.deviceId(), request.registrationToken());
-        deviceRegistrationCommandRepository.save(registration);
+        deviceRegistrationCommandRepository.findByMemberIdAndDeviceId(memberId, request.deviceId())
+            .ifPresentOrElse(
+                deviceRegistration -> deviceRegistration.refreshRegistrationToken(request.registrationToken()),
+                () -> {
+                    var registration = DeviceRegistration.of(memberId, request.deviceId(), request.registrationToken());
+                    deviceRegistrationCommandRepository.save(registration);
+                });
     }
 }

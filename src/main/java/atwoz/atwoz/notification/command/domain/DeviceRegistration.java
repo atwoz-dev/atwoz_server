@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Entity
 @Table(
@@ -38,6 +39,11 @@ public class DeviceRegistration {
 
     public static DeviceRegistration of(long memberId, String deviceId, String registrationToken) {
         return new DeviceRegistration(memberId, deviceId, registrationToken);
+    }
+
+    public void refreshRegistrationToken(@NonNull String registrationToken) {
+        this.registrationToken = registrationToken;
+        isActive = true;
     }
 
     public void activate() {

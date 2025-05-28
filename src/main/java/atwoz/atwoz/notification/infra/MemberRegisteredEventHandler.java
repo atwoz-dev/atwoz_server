@@ -1,4 +1,4 @@
-package atwoz.atwoz.notification.infra.notificationpreference;
+package atwoz.atwoz.notification.infra;
 
 import atwoz.atwoz.member.command.domain.member.event.MemberRegisteredEvent;
 import atwoz.atwoz.notification.command.application.DuplicateNotificationPreferenceException;

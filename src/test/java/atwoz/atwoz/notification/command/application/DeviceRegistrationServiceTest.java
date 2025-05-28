@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
@@ -31,7 +31,8 @@ class DeviceRegistrationServiceTest {
         // given
         long memberId = 1L;
         var request = new DeviceRegisterRequest("device-123", "token-abc");
-        when(repository.findByMemberIdAndDeviceId(memberId, request.deviceId())).thenReturn(Optional.empty());
+        when(repository.findByMemberIdAndDeviceId(memberId, request.deviceId()))
+            .thenReturn(Optional.empty());
 
         // when
         service.register(memberId, request);
@@ -43,18 +44,22 @@ class DeviceRegistrationServiceTest {
     }
 
     @Test
-    @DisplayName("중복 디바이스 등록 시 예외 발생")
-    void registerThrowsWhenDuplicate() {
+    @DisplayName("중복 디바이스 등록 시 토큰 갱신 호출")
+    void registerRefreshesTokenWhenDuplicate() {
         // given
         long memberId = 2L;
-        var request = new DeviceRegisterRequest("device-xyz", "token-123");
+        var request = new DeviceRegisterRequest("device-xyz", "new-token");
+        var existing = spy(DeviceRegistration.of(memberId, request.deviceId(), "old-token"));
         when(repository.findByMemberIdAndDeviceId(memberId, request.deviceId()))
-            .thenReturn(Optional.of(DeviceRegistration.of(memberId, request.deviceId(), request.registrationToken())));
+            .thenReturn(Optional.of(existing));
 
-        // when && then
-        assertThatThrownBy(() -> service.register(memberId, request))
-            .isInstanceOf(DuplicateDeviceRegistrationException.class);
+        // when
+        service.register(memberId, request);
 
+        // then
+        verify(existing).refreshRegistrationToken(request.registrationToken());
         verify(repository, never()).save(any());
+        assertThat(existing.getRegistrationToken()).isEqualTo(request.registrationToken());
+        assertThat(existing.isActive()).isTrue();
     }
 }

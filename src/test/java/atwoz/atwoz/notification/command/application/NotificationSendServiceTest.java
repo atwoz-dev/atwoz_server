@@ -8,7 +8,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -100,7 +99,7 @@ class NotificationSendServiceTest {
         when(notificationPreferenceCommandRepository.findByMemberId(20L))
             .thenReturn(Optional.of(NotificationPreference.of(20L)));
         when(deviceRegistrationCommandRepository.findByMemberIdAndIsActiveTrue(20L))
-            .thenReturn(List.of());
+            .thenReturn(Optional.of(DeviceRegistration.of(20L, "device", "token")));
 
         var sender = mock(NotificationSender.class);
         when(notificationSenderResolver.resolve(PUSH))
@@ -110,7 +109,7 @@ class NotificationSendServiceTest {
         service.send(req);
 
         // then
-        verify(sender).send(any(Notification.class), eq(List.of()));
+        verify(sender).send(any(Notification.class), any(DeviceRegistration.class));
         verify(notificationCommandRepository)
             .save(argThat(n -> n.getStatus() == SENT));
     }
@@ -125,11 +124,11 @@ class NotificationSendServiceTest {
         when(notificationPreferenceCommandRepository.findByMemberId(20L))
             .thenReturn(Optional.of(NotificationPreference.of(20L)));
         when(deviceRegistrationCommandRepository.findByMemberIdAndIsActiveTrue(20L))
-            .thenReturn(List.of());
+            .thenReturn(Optional.of(DeviceRegistration.of(20L, "device", "token")));
 
         var sender = mock(NotificationSender.class);
-        doThrow(new NotificationSendFailureException())
-            .when(sender).send(any(Notification.class), anyList());
+        doThrow(new NotificationSendFailureException("test exception"))
+            .when(sender).send(any(Notification.class), any(DeviceRegistration.class));
         when(notificationSenderResolver.resolve(PUSH))
             .thenReturn(Optional.of(sender));
 
@@ -151,7 +150,7 @@ class NotificationSendServiceTest {
         when(notificationPreferenceCommandRepository.findByMemberId(20L))
             .thenReturn(Optional.of(NotificationPreference.of(20L)));
         when(deviceRegistrationCommandRepository.findByMemberIdAndIsActiveTrue(20L))
-            .thenReturn(List.of());
+            .thenReturn(Optional.of(DeviceRegistration.of(20L, "device", "token")));
         when(notificationSenderResolver.resolve(PUSH))
             .thenReturn(Optional.empty());
 

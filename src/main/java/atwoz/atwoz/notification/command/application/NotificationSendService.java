@@ -6,8 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -29,11 +27,11 @@ public class NotificationSendService {
             return;
         }
 
-        List<DeviceRegistration> devices = fetchActiveDevices(notification.getReceiverId());
+        var deviceRegistration = getReceiverDeviceRegistration(notification.getReceiverId());
 
         notificationSenderResolver.resolve(request.channelType())
             .ifPresentOrElse(
-                sender -> dispatch(sender, notification, devices),
+                sender -> dispatch(sender, notification, deviceRegistration),
                 () -> handleUnsupportedChannel(notification, request)
             );
 
@@ -62,13 +60,14 @@ public class NotificationSendService {
         return !pref.canReceive(notification.getType());
     }
 
-    private List<DeviceRegistration> fetchActiveDevices(long receiverId) {
-        return deviceRegistrationCommandRepository.findByMemberIdAndIsActiveTrue(receiverId);
+    private DeviceRegistration getReceiverDeviceRegistration(long receiverId) {
+        return deviceRegistrationCommandRepository.findByMemberIdAndIsActiveTrue(receiverId)
+            .orElseThrow(() -> new DeviceRegistrationNotFoundException(receiverId));
     }
 
-    private void dispatch(NotificationSender sender, Notification notification, List<DeviceRegistration> devices) {
+    private void dispatch(NotificationSender sender, Notification notification, DeviceRegistration deviceRegistration) {
         try {
-            sender.send(notification, devices);
+            sender.send(notification, deviceRegistration);
             notification.markAsSent();
         } catch (NotificationSendFailureException e) {
             log.error("receiverId={} 알림 전송 중 에러", notification.getReceiverId(), e);

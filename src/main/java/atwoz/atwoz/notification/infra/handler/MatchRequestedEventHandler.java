@@ -1,6 +1,6 @@
-package atwoz.atwoz.notification.infra.notification.handler;
+package atwoz.atwoz.notification.infra.handler;
 
-import atwoz.atwoz.like.command.domain.LikeSentEvent;
+import atwoz.atwoz.match.command.domain.match.event.MatchRequestedEvent;
 import atwoz.atwoz.notification.command.application.NotificationSendRequest;
 import atwoz.atwoz.notification.command.application.NotificationSendService;
 import atwoz.atwoz.notification.command.domain.ChannelType;
@@ -16,19 +16,19 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class LikeSentEventHandler {
+public class MatchRequestedEventHandler {
 
     private final NotificationSendService notificationSendService;
 
     @Async
-    @TransactionalEventListener(value = LikeSentEvent.class, phase = TransactionPhase.AFTER_COMMIT)
-    public void handle(LikeSentEvent event) {
-        var request = new NotificationSendRequest(
+    @TransactionalEventListener(value = MatchRequestedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
+    public void handle(MatchRequestedEvent event) {
+        NotificationSendRequest request = new NotificationSendRequest(
             SenderType.MEMBER,
-            event.getSenderId(),
-            event.getReceiverId(),
-            NotificationType.LIKE,
-            Map.of("senderName", event.getSenderName()),
+            event.getRequesterId(),
+            event.getResponderId(),
+            NotificationType.MATCH_REQUEST,
+            Map.of("senderName", event.getRequesterName()),
             ChannelType.PUSH
         );
         notificationSendService.send(request);
