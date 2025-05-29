@@ -2,8 +2,11 @@ package atwoz.atwoz.community.command.application.profileexchange;
 
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeAlreadyExists;
+import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeNotFoundException;
+import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeResponderMismatchException;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchange;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeRepository;
+import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeStatus;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,6 +15,9 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -90,6 +96,80 @@ class ProfileExchangeServiceTest {
     @Nested
     @DisplayName("프로필 교환 응답")
     class Response {
-        
+
+        @DisplayName("프로필 교환이 존재하지 않는 경우, 예외 발생.")
+        @Test
+        void throwsExceptionWhenProfileExchangeNotExists() {
+            // Given
+            long profileExchangeId = 1L;
+            long responderId = 2L;
+
+            Mockito.when(profileExchangeRepository.findById(profileExchangeId))
+                .thenReturn(Optional.empty());
+
+            // When & Then
+            assertThatThrownBy(() -> profileExchangeService.approve(profileExchangeId, responderId))
+                .isInstanceOf(ProfileExchangeNotFoundException.class);
+            assertThatThrownBy(() -> profileExchangeService.reject(profileExchangeId, responderId))
+                .isInstanceOf(ProfileExchangeNotFoundException.class);
+        }
+
+        @DisplayName("프로필 교환의 응답자와 파라미터 응답자의 아이디가 서로 다른 경우, 예외 발생.")
+        @Test
+        void throwsExceptionWhenResponderIdNotEqualResponderIdInProfileExchange() {
+            // Given
+            long profileExchangeId = 1L;
+            long requesterId = 2L;
+            long responderId = 3L;
+            long anotherResponderId = 4L;
+
+            ProfileExchange profileExchange = ProfileExchange.request(requesterId, responderId);
+            Mockito.when(profileExchangeRepository.findById(profileExchangeId))
+                .thenReturn(Optional.of(profileExchange));
+
+            // When & Then
+            assertThatThrownBy(() -> profileExchangeService.approve(profileExchangeId, anotherResponderId))
+                .isInstanceOf(ProfileExchangeResponderMismatchException.class);
+            assertThatThrownBy(() -> profileExchangeService.reject(profileExchangeId, anotherResponderId))
+                .isInstanceOf(ProfileExchangeResponderMismatchException.class);
+        }
+
+        @DisplayName("프로필 교환 신청을 수락한다.")
+        @Test
+        void approve() {
+            // Given
+            long profileExchangeId = 1L;
+            long requesterId = 2L;
+            long responderId = 3L;
+            ProfileExchange profileExchange = ProfileExchange.request(requesterId, responderId);
+
+            Mockito.when(profileExchangeRepository.findById(profileExchangeId))
+                .thenReturn(Optional.of(profileExchange));
+
+            // When
+            profileExchangeService.approve(profileExchangeId, responderId);
+
+            // Then
+            assertThat(profileExchange.getStatus()).isEqualTo(ProfileExchangeStatus.APPROVE);
+        }
+
+        @DisplayName("프로필 교환 신청을 거절한다.")
+        @Test
+        void reject() {
+            // Given
+            long profileExchangeId = 1L;
+            long requesterId = 2L;
+            long responderId = 3L;
+            ProfileExchange profileExchange = ProfileExchange.request(requesterId, responderId);
+
+            Mockito.when(profileExchangeRepository.findById(profileExchangeId))
+                .thenReturn(Optional.of(profileExchange));
+
+            // When
+            profileExchangeService.reject(profileExchangeId, responderId);
+
+            // Then
+            assertThat(profileExchange.getStatus()).isEqualTo(ProfileExchangeStatus.REJECTED);
+        }
     }
 }
