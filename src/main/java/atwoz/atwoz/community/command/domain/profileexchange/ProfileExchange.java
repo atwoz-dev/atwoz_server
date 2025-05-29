@@ -39,6 +39,14 @@ public class ProfileExchange extends BaseEntity {
         return new ProfileExchange(requesterId, responderId, ProfileExchangeStatus.WAITING);
     }
 
+    public void approve() {
+        status = ProfileExchangeStatus.APPROVE;
+    }
+
+    public void reject() {
+        status = ProfileExchangeStatus.REJECTED;
+    }
+
     private void validateRequesterIdAndResponderId(long requesterId, long responderId) {
         if (requesterId == responderId) {
             throw new SelfProfileExchangeException();

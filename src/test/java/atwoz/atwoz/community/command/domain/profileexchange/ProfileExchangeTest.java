@@ -2,6 +2,7 @@ package atwoz.atwoz.community.command.domain.profileexchange;
 
 import atwoz.atwoz.community.command.domain.profileexchange.exception.SelfProfileExchangeException;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,5 +35,35 @@ class ProfileExchangeTest {
         assertThat(profileExchange.getRequesterId()).isEqualTo(requesterId);
         assertThat(profileExchange.getResponderId()).isEqualTo(responderId);
         assertThat(profileExchange.getStatus()).isEqualTo(ProfileExchangeStatus.WAITING);
+    }
+
+    @Nested
+    @DisplayName("프로필 교환 응답")
+    class Respond {
+        @DisplayName("수락")
+        @Test
+        void approve() {
+            // Given
+            ProfileExchange profileExchange = ProfileExchange.request(1L, 2L);
+
+            // When
+            profileExchange.approve();
+
+            // Then
+            assertThat(profileExchange.getStatus()).isEqualTo(ProfileExchangeStatus.APPROVE);
+        }
+
+        @DisplayName("거절")
+        @Test
+        void reject() {
+            // Given
+            ProfileExchange profileExchange = ProfileExchange.request(1L, 2L);
+
+            // When
+            profileExchange.reject();
+
+            // Then
+            assertThat(profileExchange.getStatus()).isEqualTo(ProfileExchangeStatus.REJECTED);
+        }
     }
 }
