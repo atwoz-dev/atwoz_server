@@ -5,6 +5,8 @@ import atwoz.atwoz.community.command.application.profileexchange.exception.Profi
 import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeResponderMismatchException;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchange;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeRepository;
+import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
+import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,29 +15,38 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ProfileExchangeService {
     private final ProfileExchangeRepository profileExchangeRepository;
+    private final MemberCommandRepository memberCommandRepository;
 
     @Transactional
     public void request(Long requesterId, Long responderId) {
         String key = generateKey(requesterId, responderId);
         profileExchangeRepository.withNamedLock(key, () -> {
             validateProfileExchangeRequest(requesterId, responderId);
-            ProfileExchange profileExchange = ProfileExchange.request(requesterId, responderId);
+            String senderName = getSenderName(requesterId);
+            ProfileExchange profileExchange = ProfileExchange.request(requesterId, responderId, senderName);
             profileExchangeRepository.save(profileExchange);
         });
     }
 
     @Transactional
     public void approve(Long profileExchangeId, Long responderId) {
+        String senderName = getSenderName(responderId);
         ProfileExchange profileExchange = getProfileExchangeById(profileExchangeId);
         validateProfileExchangeResponse(profileExchange, responderId);
-        profileExchange.approve();
+        profileExchange.approve(senderName);
     }
 
     @Transactional
     public void reject(Long profileExchangeId, Long responderId) {
+        String senderName = getSenderName(responderId);
         ProfileExchange profileExchange = getProfileExchangeById(profileExchangeId);
         validateProfileExchangeResponse(profileExchange, responderId);
-        profileExchange.reject();
+        profileExchange.reject(senderName);
+    }
+
+    private String getSenderName(Long senderId) {
+        return memberCommandRepository.findById(senderId).orElseThrow(MemberNotFoundException::new)
+            .getProfile().getNickname().getValue();
     }
 
     private ProfileExchange getProfileExchangeById(Long profileExchangeId) {

@@ -7,6 +7,10 @@ import atwoz.atwoz.community.command.application.profileexchange.exception.Profi
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchange;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeRepository;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeStatus;
+import atwoz.atwoz.member.command.domain.member.Member;
+import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
+import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
+import atwoz.atwoz.member.command.domain.member.vo.Nickname;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,15 +29,22 @@ import static org.mockito.ArgumentMatchers.any;
 class ProfileExchangeServiceTest {
 
     private static MockedStatic<Events> mockedEvents;
-
+    Member sender = Member.fromPhoneNumber("01012345678");
+    @Mock
+    private MemberCommandRepository memberCommandRepository;
     @Mock
     private ProfileExchangeRepository profileExchangeRepository;
-
     @InjectMocks
     private ProfileExchangeService profileExchangeService;
 
     @BeforeEach
     void setUp() {
+        MemberProfile memberProfile = MemberProfile.builder()
+            .nickname(Nickname.from("닉네임"))
+            .build();
+
+        sender.updateProfile(memberProfile);
+
         mockedEvents = Mockito.mockStatic(Events.class);
         mockedEvents.when(() -> Events.raise(Mockito.any()))
             .thenAnswer(invocation -> null);
@@ -78,6 +89,8 @@ class ProfileExchangeServiceTest {
 
             Mockito.when(profileExchangeRepository.existsProfileExchangeBetween(requesterId, responderId))
                 .thenReturn(false);
+            Mockito.when(memberCommandRepository.findById(requesterId))
+                .thenReturn(Optional.of(sender));
 
             Mockito.doAnswer(invocation -> {
                 Runnable runnable = invocation.getArgument(1);
@@ -107,6 +120,9 @@ class ProfileExchangeServiceTest {
             Mockito.when(profileExchangeRepository.findById(profileExchangeId))
                 .thenReturn(Optional.empty());
 
+            Mockito.when(memberCommandRepository.findById(responderId))
+                .thenReturn(Optional.of(sender));
+
             // When & Then
             assertThatThrownBy(() -> profileExchangeService.approve(profileExchangeId, responderId))
                 .isInstanceOf(ProfileExchangeNotFoundException.class);
@@ -123,9 +139,13 @@ class ProfileExchangeServiceTest {
             long responderId = 3L;
             long anotherResponderId = 4L;
 
-            ProfileExchange profileExchange = ProfileExchange.request(requesterId, responderId);
+            ProfileExchange profileExchange = ProfileExchange.request(requesterId, responderId,
+                sender.getProfile().getNickname().getValue());
+
             Mockito.when(profileExchangeRepository.findById(profileExchangeId))
                 .thenReturn(Optional.of(profileExchange));
+            Mockito.when(memberCommandRepository.findById(anotherResponderId))
+                .thenReturn(Optional.of(sender));
 
             // When & Then
             assertThatThrownBy(() -> profileExchangeService.approve(profileExchangeId, anotherResponderId))
@@ -141,10 +161,13 @@ class ProfileExchangeServiceTest {
             long profileExchangeId = 1L;
             long requesterId = 2L;
             long responderId = 3L;
-            ProfileExchange profileExchange = ProfileExchange.request(requesterId, responderId);
+            ProfileExchange profileExchange = ProfileExchange.request(requesterId, responderId,
+                sender.getProfile().getNickname().getValue());
 
             Mockito.when(profileExchangeRepository.findById(profileExchangeId))
                 .thenReturn(Optional.of(profileExchange));
+            Mockito.when(memberCommandRepository.findById(responderId))
+                .thenReturn(Optional.of(sender));
 
             // When
             profileExchangeService.approve(profileExchangeId, responderId);
@@ -160,10 +183,13 @@ class ProfileExchangeServiceTest {
             long profileExchangeId = 1L;
             long requesterId = 2L;
             long responderId = 3L;
-            ProfileExchange profileExchange = ProfileExchange.request(requesterId, responderId);
+            ProfileExchange profileExchange = ProfileExchange.request(requesterId, responderId,
+                sender.getProfile().getNickname().getValue());
 
             Mockito.when(profileExchangeRepository.findById(profileExchangeId))
                 .thenReturn(Optional.of(profileExchange));
+            Mockito.when(memberCommandRepository.findById(responderId))
+                .thenReturn(Optional.of(sender));
 
             // When
             profileExchangeService.reject(profileExchangeId, responderId);

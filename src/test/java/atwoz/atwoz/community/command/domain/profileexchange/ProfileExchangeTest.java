@@ -15,9 +15,10 @@ class ProfileExchangeTest {
     void throwExceptionWhenRequesterIdIsEqualToResponderId() {
         // Given
         long requestId = 1L;
+        String senderName = "sender";
 
         // When & Then
-        assertThatThrownBy(() -> ProfileExchange.request(requestId, requestId))
+        assertThatThrownBy(() -> ProfileExchange.request(requestId, requestId, senderName))
             .isInstanceOf(SelfProfileExchangeException.class);
     }
 
@@ -27,9 +28,10 @@ class ProfileExchangeTest {
         // Given
         long requesterId = 1L;
         long responderId = 3L;
+        String senderName = "sender";
 
         // When
-        ProfileExchange profileExchange = ProfileExchange.request(requesterId, responderId);
+        ProfileExchange profileExchange = ProfileExchange.request(requesterId, responderId, senderName);
 
         // Then
         assertThat(profileExchange.getRequesterId()).isEqualTo(requesterId);
@@ -44,10 +46,12 @@ class ProfileExchangeTest {
         @Test
         void approve() {
             // Given
-            ProfileExchange profileExchange = ProfileExchange.request(1L, 2L);
+            String requesterName = "requester";
+            String responderName = "responder";
+            ProfileExchange profileExchange = ProfileExchange.request(1L, 2L, requesterName);
 
             // When
-            profileExchange.approve();
+            profileExchange.approve(responderName);
 
             // Then
             assertThat(profileExchange.getStatus()).isEqualTo(ProfileExchangeStatus.APPROVE);
@@ -57,10 +61,12 @@ class ProfileExchangeTest {
         @Test
         void reject() {
             // Given
-            ProfileExchange profileExchange = ProfileExchange.request(1L, 2L);
+            String requesterName = "requester";
+            String responderName = "responder";
+            ProfileExchange profileExchange = ProfileExchange.request(1L, 2L, requesterName);
 
             // When
-            profileExchange.reject();
+            profileExchange.reject(responderName);
 
             // Then
             assertThat(profileExchange.getStatus()).isEqualTo(ProfileExchangeStatus.REJECTED);
