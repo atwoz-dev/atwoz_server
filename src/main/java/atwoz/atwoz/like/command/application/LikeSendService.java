@@ -27,11 +27,12 @@ public class LikeSendService {
             throw new LikeAlreadyExistsException(senderId, receiverId);
         }
 
+        var member = memberCommandRepository.findById(senderId)
+            .orElseThrow(() -> new MemberNotFoundException(senderId));
+
         var like = Like.of(senderId, receiverId, toLikeLevel(request.likeLevel()));
         likeCommandRepository.save(like);
 
-        var member = memberCommandRepository.findById(senderId)
-            .orElseThrow(() -> new MemberNotFoundException(senderId));
         Events.raise(LikeSentEvent.of(senderId, member.getProfile().getNickname().getValue(), receiverId));
     }
 }

@@ -20,7 +20,7 @@ import static atwoz.atwoz.common.enums.StatusType.OK;
 @RestController
 @RequestMapping("/notifications/preferences")
 @RequiredArgsConstructor
-public class NotificationPreferencesController {
+public class NotificationPreferenceController {
 
     private final NotificationPreferenceService notificationPreferenceService;
 

@@ -21,7 +21,7 @@ public class NotificationSendService {
     public void send(NotificationSendRequest request) {
         var notification = buildNotification(request);
 
-        if (cantSendByPreference(notification)) {
+        if (!canSendByPreference(notification)) {
             notification.markAsRejectedByPreference();
             save(notification);
             return;
@@ -54,10 +54,10 @@ public class NotificationSendService {
         );
     }
 
-    private boolean cantSendByPreference(Notification notification) {
+    private boolean canSendByPreference(Notification notification) {
         NotificationPreference pref = notificationPreferenceRepository.findByMemberId(notification.getReceiverId())
             .orElseThrow(() -> new ReceiverNotificationPreferenceNotFoundException(notification.getReceiverId()));
-        return !pref.canReceive(notification.getType());
+        return pref.canReceive(notification.getType());
     }
 
     private DeviceRegistration getReceiverDeviceRegistration(long receiverId) {
