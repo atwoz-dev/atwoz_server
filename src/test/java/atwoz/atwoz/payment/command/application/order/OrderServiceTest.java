@@ -46,7 +46,7 @@ class OrderServiceTest {
         assertThatThrownBy(
             () -> orderService.processReceipt(memberId, transactionId, productId, quantity, paymentMethod))
             .isInstanceOf(OrderAlreadyExistsException.class);
-        verify(heartPurchaseOptionCommandRepository, never()).findByProductId(any());
+        verify(heartPurchaseOptionCommandRepository, never()).findByProductIdAndDeletedAtIsNull(any());
         verify(orderCommandRepository, never()).save(any());
     }
 
@@ -56,7 +56,8 @@ class OrderServiceTest {
         // given
         when(orderCommandRepository.existsByTransactionIdAndPaymentMethod(transactionId, paymentMethod)).thenReturn(
             false);
-        when(heartPurchaseOptionCommandRepository.findByProductId(productId)).thenReturn(Optional.empty());
+        when(heartPurchaseOptionCommandRepository.findByProductIdAndDeletedAtIsNull(productId)).thenReturn(
+            Optional.empty());
 
         // when & then
         assertThatThrownBy(
@@ -73,7 +74,7 @@ class OrderServiceTest {
             false);
         HeartPurchaseOption heartPurchaseOption = mock(HeartPurchaseOption.class);
 
-        when(heartPurchaseOptionCommandRepository.findByProductId(productId)).thenReturn(
+        when(heartPurchaseOptionCommandRepository.findByProductIdAndDeletedAtIsNull(productId)).thenReturn(
             Optional.of(heartPurchaseOption));
 
         // when

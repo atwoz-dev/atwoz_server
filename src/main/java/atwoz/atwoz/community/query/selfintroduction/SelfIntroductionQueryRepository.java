@@ -1,5 +1,6 @@
 package atwoz.atwoz.community.query.selfintroduction;
 
+import atwoz.atwoz.community.presentation.selfintroduction.dto.SelfIntroductionSearchCondition;
 import atwoz.atwoz.community.query.selfintroduction.view.QSelfIntroductionSummaryView;
 import atwoz.atwoz.community.query.selfintroduction.view.QSelfIntroductionView;
 import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionSummaryView;

@@ -2,52 +2,71 @@ package atwoz.atwoz.member.query.introduction.application;
 
 import atwoz.atwoz.member.query.introduction.intra.InterviewAnswerQueryResult;
 import atwoz.atwoz.member.query.introduction.intra.MemberIntroductionProfileQueryResult;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberIntroductionProfileViewMapper {
 
     public static List<MemberIntroductionProfileView> mapWithDefaultTag(
         List<MemberIntroductionProfileQueryResult> profileResults,
         List<InterviewAnswerQueryResult> interviewResults
     ) {
-        return map(profileResults, interviewResults, MemberIntroductionProfileViewMapper::toDefaultTags);
+        Map<Long, String> interviewAnswerMap = getFirstInterviewAnswerMap(interviewResults);
+        return profileResults.stream()
+            .map(result -> new MemberIntroductionProfileView(
+                result.memberId(),
+                result.profileImageUrl(),
+                result.hobbies().stream().toList(),
+                result.mbti(),
+                result.religion(),
+                interviewAnswerMap.get(result.memberId()),
+                result.likeLevel(),
+                result.isIntroduced()
+            ))
+            .toList();
     }
 
     public static List<MemberIntroductionProfileView> mapWithSameHobbyTag(
         List<MemberIntroductionProfileQueryResult> profileResults,
         List<InterviewAnswerQueryResult> interviewResults
     ) {
-        return map(profileResults, interviewResults, MemberIntroductionProfileViewMapper::toSameHobbyTags);
+        Map<Long, String> interviewAnswerMap = getFirstInterviewAnswerMap(interviewResults);
+        return profileResults.stream()
+            .map(result -> new MemberIntroductionProfileView(
+                result.memberId(),
+                result.profileImageUrl(),
+                List.of(),
+                result.mbti(),
+                result.religion(),
+                interviewAnswerMap.get(result.memberId()),
+                result.likeLevel(),
+                result.isIntroduced()
+            ))
+            .toList();
     }
 
     public static List<MemberIntroductionProfileView> mapWithSameReligionTag(
         List<MemberIntroductionProfileQueryResult> profileResults,
         List<InterviewAnswerQueryResult> interviewResults
     ) {
-        return map(profileResults, interviewResults, MemberIntroductionProfileViewMapper::toSameReligionTags);
-    }
-
-    private static List<MemberIntroductionProfileView> map(
-        List<MemberIntroductionProfileQueryResult> profileResults,
-        List<InterviewAnswerQueryResult> interviewResults,
-        Function<MemberIntroductionProfileQueryResult, List<String>> tagExtractor
-    ) {
         Map<Long, String> interviewAnswerMap = getFirstInterviewAnswerMap(interviewResults);
         return profileResults.stream()
             .map(result -> new MemberIntroductionProfileView(
                 result.memberId(),
                 result.profileImageUrl(),
-                tagExtractor.apply(result),
+                result.hobbies().stream().toList(),
+                result.mbti(),
+                null,
                 interviewAnswerMap.get(result.memberId()),
                 result.likeLevel(),
                 result.isIntroduced()
             ))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private static Map<Long, String> getFirstInterviewAnswerMap(List<InterviewAnswerQueryResult> interviewResults) {
@@ -57,27 +76,5 @@ public class MemberIntroductionProfileViewMapper {
                 InterviewAnswerQueryResult::content,
                 (existing, replacement) -> existing
             ));
-    }
-
-    private static List<String> toDefaultTags(MemberIntroductionProfileQueryResult view) {
-        List<String> tags = new ArrayList<>();
-        tags.addAll(view.hobbies());
-        tags.add(view.religion());
-        tags.add(view.mbti());
-        return tags;
-    }
-
-    private static List<String> toSameHobbyTags(MemberIntroductionProfileQueryResult view) {
-        List<String> tags = new ArrayList<>();
-        tags.add(view.religion());
-        tags.add(view.mbti());
-        return tags;
-    }
-
-    private static List<String> toSameReligionTags(MemberIntroductionProfileQueryResult view) {
-        List<String> tags = new ArrayList<>();
-        tags.addAll(view.hobbies());
-        tags.add(view.mbti());
-        return tags;
     }
 }

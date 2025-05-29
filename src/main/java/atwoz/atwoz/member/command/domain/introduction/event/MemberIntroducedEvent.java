@@ -9,8 +9,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberIntroducedEvent extends Event {
     private final Long memberId;
+    private final String content;
 
-    public static MemberIntroducedEvent of(Long memberId) {
-        return new MemberIntroducedEvent(memberId);
+    public static MemberIntroducedEvent of(Long memberId, String content) {
+        return new MemberIntroducedEvent(memberId, content);
     }
 }

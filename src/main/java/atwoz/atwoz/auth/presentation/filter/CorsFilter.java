@@ -24,7 +24,7 @@ public class CorsFilter implements Filter {
         if (origin != null) {
             httpResponse.setHeader("Access-Control-Allow-Origin", origin); // 모든 요청 Origin을 허용
         }
-        httpResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // 허용할 메소드
+        httpResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH"); // 허용할 메소드
         httpResponse.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type"); // 허용할 헤더
         httpResponse.setHeader("Access-Control-Allow-Credentials", "true"); // 쿠키 포함 요청 허용
         httpResponse.setHeader("Access-Control-Expose-Headers", "Authorization");

@@ -2,7 +2,9 @@ package atwoz.atwoz.interview.presentation.answer;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
+import atwoz.atwoz.interview.command.application.answer.exception.InterviewAnswerAccessDeniedException;
 import atwoz.atwoz.interview.command.application.answer.exception.InterviewAnswerAlreadyExistsException;
+import atwoz.atwoz.interview.command.application.answer.exception.InterviewAnswerNotFoundException;
 import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionIsNotPublicException;
 import atwoz.atwoz.interview.command.application.question.exception.InterviewQuestionNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -42,5 +44,23 @@ public class InterviewAnswerExceptionHandler {
 
         return ResponseEntity.badRequest()
             .body(BaseResponse.from(StatusType.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(InterviewAnswerNotFoundException.class)
+    public ResponseEntity<BaseResponse<Void>> handleInterviewAnswerNotFoundException(
+        InterviewAnswerNotFoundException e) {
+        log.warn(e.getMessage());
+
+        return ResponseEntity.status(404)
+            .body(BaseResponse.from(StatusType.NOT_FOUND));
+    }
+
+    @ExceptionHandler(InterviewAnswerAccessDeniedException.class)
+    public ResponseEntity<BaseResponse<Void>> handleInterviewAnswerAccessDeniedException(
+        InterviewAnswerAccessDeniedException e) {
+        log.warn(e.getMessage());
+
+        return ResponseEntity.status(403)
+            .body(BaseResponse.from(StatusType.FORBIDDEN));
     }
 }
