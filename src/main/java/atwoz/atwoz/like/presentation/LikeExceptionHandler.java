@@ -4,6 +4,7 @@ import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.like.command.application.InvalidLikeLevelException;
 import atwoz.atwoz.like.command.application.LikeAlreadyExistsException;
+import atwoz.atwoz.like.command.application.MemberNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -28,5 +29,12 @@ public class LikeExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest().body(BaseResponse.from(StatusType.INVALID_ENUM_VALUE));
+    }
+
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<BaseResponse<Void>> handleMemberNotFoundException(MemberNotFoundException e) {
+        log.warn(e.getMessage());
+
+        return ResponseEntity.status(404).body(BaseResponse.from(StatusType.NOT_FOUND));
     }
 }

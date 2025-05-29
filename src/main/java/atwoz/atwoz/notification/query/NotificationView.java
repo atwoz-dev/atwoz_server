@@ -7,7 +7,7 @@ public record NotificationView(
     long senderId,
     String notificationType,
     String title,
-    String content
+    String body
 ) {
     @QueryProjection
     public NotificationView {

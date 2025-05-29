@@ -46,7 +46,8 @@ public class Match {
     private MatchStatus status;
 
     public static Match request(long requesterId, long responderId, @NonNull Message requestMessage) {
-        Events.raise(MatchRequestedEvent.of(requesterId, responderId));
+        // TODO: requester name 추가 필요
+        Events.raise(MatchRequestedEvent.of(requesterId, "requesterName", responderId));
         Events.raise(MatchRequestCompletedEvent.of(requesterId, responderId));
 
         return Match.builder()

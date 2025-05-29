@@ -1,9 +1,7 @@
 package atwoz.atwoz.notification.query;
 
 import atwoz.atwoz.QuerydslConfig;
-import atwoz.atwoz.notification.command.domain.notification.Notification;
-import atwoz.atwoz.notification.command.domain.notification.NotificationType;
-import atwoz.atwoz.notification.command.domain.notification.SenderType;
+import atwoz.atwoz.notification.command.domain.Notification;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +9,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
-import static atwoz.atwoz.notification.command.domain.notification.NotificationType.*;
+import static atwoz.atwoz.notification.command.domain.NotificationType.LIKE;
+import static atwoz.atwoz.notification.command.domain.SenderType.SYSTEM;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -25,90 +21,49 @@ class NotificationQueryRepositoryTest {
     private TestEntityManager em;
 
     @Autowired
-    private NotificationQueryRepository notificationQueryRepository;
+    private NotificationQueryRepository repository;
 
     @Test
-    @DisplayName("읽은 상태의 알림을 조회한다.")
-    void findReadNotificationsByReceiverId() throws NoSuchFieldException, IllegalAccessException {
+    @DisplayName("findNotifications(): 읽지 않은 알림만 조회")
+    void findUnreadNotifications() {
         // given
-        long senderId = 123L;
-        long receiverId = 100L;
-        Notification notification1 = createNotification(senderId, receiverId, MATCH_REQUESTED, "Title 1", "Content 1",
-            true);
-        Notification notification2 = createNotification(senderId, receiverId, MATCH_REJECTED, "Title 2", "Content 2",
-            false);
-        Notification notification3 = createNotification(200L, receiverId, INAPPROPRIATE_CONTENT, "Title 3", "Content 3",
-            false);
-
-        em.persist(notification1);
-        em.persist(notification2);
-        em.persist(notification3);
+        var unread = Notification.create(SYSTEM, 1L, 2L, LIKE, "t1", "b1");
+        var read = Notification.create(SYSTEM, 1L, 2L, LIKE, "t2", "b2");
+        read.markAsRead();
+        em.persist(unread);
+        em.persist(read);
         em.flush();
         em.clear();
 
         // when
-        List<NotificationView> result = notificationQueryRepository.findNotifications(receiverId, true);
+        var results = repository.findNotifications(2L, false);
 
         // then
-        assertThat(result).hasSize(1);
-        assertThat(result.getFirst().senderId()).isEqualTo(senderId);
-        assertThat(result.getFirst().notificationType()).isEqualTo("MATCH_REQUESTED");
-        assertThat(result.getFirst().title()).isEqualTo("Title 1");
-        assertThat(result.getFirst().content()).isEqualTo("Content 1");
+        assertThat(results).hasSize(1);
+        assertThat(results.getFirst().title()).isEqualTo("t1");
     }
 
     @Test
-    @DisplayName("읽지 않은 상태의 알림을 조회한다.")
-    void findUnreadNotificationsByReceiverId() throws NoSuchFieldException, IllegalAccessException {
+    @DisplayName("findNotifications(): 읽은 알림만 조회")
+    void findReadNotifications() {
         // given
-        long senderId = 123L;
-        long receiverId = 100L;
-        Notification notification1 = createNotification(senderId, receiverId, MATCH_REQUESTED, "Title 1", "Content 1",
-            false);
-        Notification notification2 = createNotification(senderId, receiverId, MATCH_REJECTED, "Title 2", "Content 2",
-            false);
-        Notification notification3 = createNotification(senderId, 200L, INAPPROPRIATE_CONTENT, "Title 3", "Content 3",
-            false);
-
-        em.persist(notification1);
-        em.persist(notification2);
-        em.persist(notification3);
+        var unread = Notification.create(SYSTEM, 1L, 3L, LIKE, "t3", "b3");
+        var read1 = Notification.create(SYSTEM, 1L, 3L, LIKE, "t4", "b4");
+        var read2 = Notification.create(SYSTEM, 1L, 3L, LIKE, "t5", "b5");
+        read1.markAsRead();
+        read2.markAsRead();
+        em.persist(unread);
+        em.persist(read1);
+        em.persist(read2);
         em.flush();
         em.clear();
 
         // when
-        List<NotificationView> result = notificationQueryRepository.findNotifications(receiverId, false);
+        var results = repository.findNotifications(3L, true);
 
         // then
-        assertThat(result).hasSize(2);
-        assertThat(result).extracting("notificationType")
-            .containsExactlyInAnyOrder("MATCH_REQUESTED", "MATCH_REJECTED");
-        assertThat(result).extracting("title").containsExactlyInAnyOrder("Title 1", "Title 2");
-        assertThat(result).extracting("content").containsExactlyInAnyOrder("Content 1", "Content 2");
-    }
-
-    private Notification createNotification(
-        long senderId,
-        long receiverId,
-        NotificationType type,
-        String title,
-        String content,
-        boolean isRead
-    ) throws NoSuchFieldException, IllegalAccessException {
-        Notification notification = Notification.of(senderId, SenderType.MEMBER, receiverId, type);
-
-        Field titleField = Notification.class.getDeclaredField("title");
-        titleField.setAccessible(true);
-        titleField.set(notification, title);
-
-        Field contentField = Notification.class.getDeclaredField("content");
-        contentField.setAccessible(true);
-        contentField.set(notification, content);
-
-        Field isReadField = Notification.class.getDeclaredField("isRead");
-        isReadField.setAccessible(true);
-        isReadField.set(notification, isRead);
-
-        return notification;
+        assertThat(results).hasSize(2);
+        assertThat(results).extracting("title")
+            .containsExactlyInAnyOrder("t4", "t5");
     }
 }
