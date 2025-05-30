@@ -17,7 +17,7 @@ public class LockRepository {
             getLock(key, LOCK_WAITING_TIME);
             action.run();
         } catch (DataAccessException e) {
-            throw new CannotGetLockException();
+            throw new CannotGetLockException(e);
         } finally {
             releaseLock(key);
         }

@@ -22,7 +22,7 @@ public class ProfileExchangeController {
     @Operation(summary = "프로필 교환 신청 API")
     @PostMapping("/request/{responderId}")
     public ResponseEntity<BaseResponse<Void>> requestProfileExchange(@AuthPrincipal AuthContext authContext,
-        @PathVariable Long responderId) {
+        @PathVariable @Min(1) Long responderId) {
         profileExchangeService.request(authContext.getId(), responderId);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
@@ -30,7 +30,7 @@ public class ProfileExchangeController {
     @Operation(summary = "프로필 교환 수락 API")
     @PatchMapping("/{profileExchangeId}/approve")
     public ResponseEntity<BaseResponse<Void>> approveProfileExchange(@AuthPrincipal AuthContext authContext,
-        @PathVariable Long profileExchangeId) {
+        @PathVariable @Min(1) Long profileExchangeId) {
         profileExchangeService.approve(profileExchangeId, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }

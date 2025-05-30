@@ -1,7 +1,7 @@
 package atwoz.atwoz.community.command.application.profileexchange;
 
 import atwoz.atwoz.common.repository.LockRepository;
-import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeAlreadyExists;
+import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeAlreadyExistsException;
 import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeNotFoundException;
 import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeResponderMismatchException;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchange;
@@ -67,7 +67,7 @@ public class ProfileExchangeService {
 
     private void validateProfileExchangeRequest(Long requesterId, Long responderId) {
         if (profileExchangeRepository.existsProfileExchangeBetween(requesterId, responderId)) {
-            throw new ProfileExchangeAlreadyExists();
+            throw new ProfileExchangeAlreadyExistsException();
         }
     }
 }

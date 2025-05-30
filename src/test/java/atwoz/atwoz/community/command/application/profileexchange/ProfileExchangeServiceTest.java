@@ -2,7 +2,7 @@ package atwoz.atwoz.community.command.application.profileexchange;
 
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.common.repository.LockRepository;
-import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeAlreadyExists;
+import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeAlreadyExistsException;
 import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeNotFoundException;
 import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeResponderMismatchException;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchange;
@@ -83,7 +83,7 @@ class ProfileExchangeServiceTest {
 
             // When & Then
             assertThatThrownBy(() -> profileExchangeService.request(requesterId, responderId))
-                .isInstanceOf(ProfileExchangeAlreadyExists.class);
+                .isInstanceOf(ProfileExchangeAlreadyExistsException.class);
         }
 
         @DisplayName("프로필 교환이 존재하지 않으면, 프로필 교환을 생성한다.")
