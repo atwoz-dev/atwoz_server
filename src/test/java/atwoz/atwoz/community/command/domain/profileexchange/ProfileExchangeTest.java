@@ -1,5 +1,6 @@
 package atwoz.atwoz.community.command.domain.profileexchange;
 
+import atwoz.atwoz.community.command.domain.profileexchange.exception.InvalidProfileExchangeStatusException;
 import atwoz.atwoz.community.command.domain.profileexchange.exception.SelfProfileExchangeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -42,6 +43,19 @@ class ProfileExchangeTest {
     @Nested
     @DisplayName("프로필 교환 응답")
     class Respond {
+        @DisplayName("이미 완료된 요청에 응답할 경우, 예외 발생")
+        void throwsExceptionWhenStatusIsNotWaiting() {
+            // Given
+            String requesterName = "requester";
+            String responderName = "responder";
+            ProfileExchange profileExchange = ProfileExchange.request(1L, 2L, requesterName);
+            profileExchange.approve(responderName);
+
+            // When
+            assertThatThrownBy(() -> profileExchange.approve(responderName))
+                .isInstanceOf(InvalidProfileExchangeStatusException.class);
+        }
+
         @DisplayName("수락")
         @Test
         void approve() {
