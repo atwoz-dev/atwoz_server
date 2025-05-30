@@ -12,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -36,7 +38,7 @@ class SuspensionServiceTest {
         var memberId = 20L;
         var request = new SuspendRequest(memberId, "PERMANENT");
         given(suspensionCommandRepository.findByMemberId(memberId))
-            .willReturn(java.util.Optional.empty());
+            .willReturn(Optional.empty());
 
         // when
         suspensionService.updateStatusByAdmin(adminId, request);
@@ -59,7 +61,7 @@ class SuspensionServiceTest {
         var existing = Suspension.of(1L, memberId, SuspensionStatus.TEMPORARY);
         var request = new SuspendRequest(memberId, "PERMANENT");
         given(suspensionCommandRepository.findByMemberId(memberId))
-            .willReturn(java.util.Optional.of(existing));
+            .willReturn(Optional.of(existing));
 
         // when
         suspensionService.updateStatusByAdmin(adminId, request);
@@ -79,7 +81,7 @@ class SuspensionServiceTest {
         given(suspensionPolicy.evaluate(warningCount))
             .willReturn(SuspensionStatus.TEMPORARY);
         given(suspensionCommandRepository.findByMemberId(memberId))
-            .willReturn(java.util.Optional.empty());
+            .willReturn(Optional.empty());
 
         // when
         suspensionService.evaluateAndSuspend(adminId, memberId, warningCount);
@@ -103,7 +105,7 @@ class SuspensionServiceTest {
         given(suspensionPolicy.evaluate(warningCount))
             .willReturn(SuspensionStatus.PERMANENT);
         given(suspensionCommandRepository.findByMemberId(memberId))
-            .willReturn(java.util.Optional.of(existing));
+            .willReturn(Optional.of(existing));
 
         // when
         suspensionService.evaluateAndSuspend(adminId, memberId, warningCount);
