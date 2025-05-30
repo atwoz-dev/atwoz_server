@@ -7,6 +7,7 @@ import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.community.command.application.profileexchange.ProfileExchangeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +38,7 @@ public class ProfileExchangeController {
     @Operation(summary = "프로필 교환 거절 API")
     @PatchMapping("/{profileExchangeId}/reject")
     public ResponseEntity<BaseResponse<Void>> rejectProfileExchange(@AuthPrincipal AuthContext authContext,
-        @PathVariable Long profileExchangeId) {
+        @PathVariable @Min(1) Long profileExchangeId) {
         profileExchangeService.reject(profileExchangeId, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }

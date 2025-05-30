@@ -1,6 +1,7 @@
 package atwoz.atwoz.community.command.application.profileexchange;
 
 import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.common.repository.LockRepository;
 import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeAlreadyExists;
 import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeNotFoundException;
 import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeResponderMismatchException;
@@ -32,8 +33,13 @@ class ProfileExchangeServiceTest {
     Member sender = Member.fromPhoneNumber("01012345678");
     @Mock
     private MemberCommandRepository memberCommandRepository;
+
     @Mock
     private ProfileExchangeRepository profileExchangeRepository;
+
+    @Mock
+    private LockRepository lockRepository;
+
     @InjectMocks
     private ProfileExchangeService profileExchangeService;
 
@@ -73,7 +79,7 @@ class ProfileExchangeServiceTest {
                 Runnable runnable = invocation.getArgument(1);
                 runnable.run();
                 return null;
-            }).when(profileExchangeRepository).withNamedLock(any(), any());
+            }).when(lockRepository).withNamedLock(any(), any());
 
             // When & Then
             assertThatThrownBy(() -> profileExchangeService.request(requesterId, responderId))
@@ -96,7 +102,7 @@ class ProfileExchangeServiceTest {
                 Runnable runnable = invocation.getArgument(1);
                 runnable.run();
                 return null;
-            }).when(profileExchangeRepository).withNamedLock(any(), any());
+            }).when(lockRepository).withNamedLock(any(), any());
 
             // When
             profileExchangeService.request(requesterId, responderId);
