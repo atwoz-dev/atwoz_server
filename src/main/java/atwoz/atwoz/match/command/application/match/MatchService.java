@@ -1,5 +1,6 @@
 package atwoz.atwoz.match.command.application.match;
 
+import atwoz.atwoz.common.repository.LockRepository;
 import atwoz.atwoz.match.command.application.match.exception.ExistsMatchException;
 import atwoz.atwoz.match.command.application.match.exception.InvalidMatchUpdateException;
 import atwoz.atwoz.match.command.application.match.exception.MatchNotFoundException;
@@ -16,13 +17,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class MatchService {
+    private static final String LOCK_PREFIX = "MATCH:";
     private final MatchRepository matchRepository;
+    private final LockRepository lockRepository;
 
     @Transactional
     public void request(Long requesterId, MatchRequestDto requestDto) {
         String key = generateKey(requesterId, requestDto.responderId());
 
-        matchRepository.withNamedLock(key, () -> {
+        lockRepository.withNamedLock(key, () -> {
             if (existsMutualMatch(requesterId, requestDto.responderId())) {
                 throw new ExistsMatchException();
             }
@@ -56,7 +59,7 @@ public class MatchService {
     }
 
     private String generateKey(Long requesterId, Long responderId) {
-        return Math.max(requesterId, responderId) + ":" + Math.min(requesterId, responderId);
+        return LOCK_PREFIX + Math.max(requesterId, responderId) + ":" + Math.min(requesterId, responderId);
     }
 
     private Match getWaitingMatchByIdAndResponderId(Long id, Long responderId) {

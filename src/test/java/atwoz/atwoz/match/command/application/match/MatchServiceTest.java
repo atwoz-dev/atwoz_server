@@ -1,6 +1,7 @@
 package atwoz.atwoz.match.command.application.match;
 
 import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.common.repository.LockRepository;
 import atwoz.atwoz.match.command.application.match.exception.ExistsMatchException;
 import atwoz.atwoz.match.command.application.match.exception.InvalidMatchUpdateException;
 import atwoz.atwoz.match.command.application.match.exception.MatchNotFoundException;
@@ -25,11 +26,15 @@ import static org.mockito.ArgumentMatchers.any;
 
 
 @ExtendWith(MockitoExtension.class)
-public class MatchServiceTest {
+class MatchServiceTest {
 
     private static MockedStatic<Events> mockedEvents;
     @Mock
     private MatchRepository matchRepository;
+
+    @Mock
+    private LockRepository lockRepository;
+
     @InjectMocks
     private MatchService matchService;
 
@@ -61,7 +66,7 @@ public class MatchServiceTest {
                 Runnable runnable = invocation.getArgument(1);
                 runnable.run();
                 return null;
-            }).when(matchRepository).withNamedLock(any(), any());
+            }).when(lockRepository).withNamedLock(any(), any());
 
             Mockito.when(matchRepository.existsActiveMatchBetween(requesterId, requestDto.responderId()))
                 .thenReturn(true);
@@ -85,7 +90,7 @@ public class MatchServiceTest {
                 Runnable runnable = invocation.getArgument(1);
                 runnable.run();
                 return null;
-            }).when(matchRepository).withNamedLock(any(), any());
+            }).when(lockRepository).withNamedLock(any(), any());
 
             Mockito.when(matchRepository.existsActiveMatchBetween(requesterId, requestDto.responderId()))
                 .thenReturn(false);

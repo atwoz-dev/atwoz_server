@@ -2,6 +2,11 @@ package atwoz.atwoz.community.command.domain.profileexchange;
 
 
 import atwoz.atwoz.common.entity.BaseEntity;
+import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.community.command.domain.profileexchange.event.ProfileExchangeApprovedEvent;
+import atwoz.atwoz.community.command.domain.profileexchange.event.ProfileExchangeRejectedEvent;
+import atwoz.atwoz.community.command.domain.profileexchange.event.ProfileExchangeRequestedEvent;
+import atwoz.atwoz.community.command.domain.profileexchange.exception.InvalidProfileExchangeStatusException;
 import atwoz.atwoz.community.command.domain.profileexchange.exception.SelfProfileExchangeException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -35,13 +40,32 @@ public class ProfileExchange extends BaseEntity {
         this.status = status;
     }
 
-    public static ProfileExchange request(long requesterId, long responderId) {
+    public static ProfileExchange request(long requesterId, long responderId, String senderName) {
+        Events.raise(ProfileExchangeRequestedEvent.of(requesterId, responderId, senderName));
         return new ProfileExchange(requesterId, responderId, ProfileExchangeStatus.WAITING);
+    }
+
+    public void approve(String senderName) {
+        validateWaitingStatus();
+        Events.raise(ProfileExchangeApprovedEvent.of(requesterId, responderId, senderName));
+        status = ProfileExchangeStatus.APPROVE;
+    }
+
+    public void reject(String senderName) {
+        validateWaitingStatus();
+        Events.raise(ProfileExchangeRejectedEvent.of(requesterId, responderId, senderName));
+        status = ProfileExchangeStatus.REJECTED;
     }
 
     private void validateRequesterIdAndResponderId(long requesterId, long responderId) {
         if (requesterId == responderId) {
             throw new SelfProfileExchangeException();
+        }
+    }
+
+    private void validateWaitingStatus() {
+        if (status != ProfileExchangeStatus.WAITING) {
+            throw new InvalidProfileExchangeStatusException("대기상태의 요청에만 응답할 수 있습니다.");
         }
     }
 }

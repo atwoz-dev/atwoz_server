@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ProfileExchangeStatus {
     WAITING("응답 대기중"),
-    ACCEPTED("교환 수락"),
+    APPROVE("교환 수락"),
     REJECTED("교환 거절");
 
     private final String description;
