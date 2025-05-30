@@ -1,5 +1,6 @@
 package atwoz.atwoz.community.command.application.profileexchange;
 
+import atwoz.atwoz.common.repository.LockRepository;
 import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeAlreadyExists;
 import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeNotFoundException;
 import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeResponderMismatchException;
@@ -15,12 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ProfileExchangeService {
     private final ProfileExchangeRepository profileExchangeRepository;
+    private final LockRepository lockRepository;
     private final MemberCommandRepository memberCommandRepository;
 
     @Transactional
     public void request(Long requesterId, Long responderId) {
         String key = generateKey(requesterId, responderId);
-        profileExchangeRepository.withNamedLock(key, () -> {
+        lockRepository.withNamedLock(key, () -> {
             validateProfileExchangeRequest(requesterId, responderId);
             String senderName = getNickNameByMemberId(requesterId);
             ProfileExchange profileExchange = ProfileExchange.request(requesterId, responderId, senderName);

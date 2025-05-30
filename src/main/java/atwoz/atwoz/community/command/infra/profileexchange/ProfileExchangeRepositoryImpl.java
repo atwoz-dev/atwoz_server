@@ -1,11 +1,9 @@
 package atwoz.atwoz.community.command.infra.profileexchange;
 
-import atwoz.atwoz.common.exception.CannotGetLockException;
 import atwoz.atwoz.common.repository.LockRepository;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchange;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,18 +25,6 @@ public class ProfileExchangeRepositoryImpl implements ProfileExchangeRepository 
     @Override
     public boolean existsProfileExchangeBetween(final Long memberId, final Long anotherMemberId) {
         return profileExchangeJpaRepository.existsProfileExchangeBetween(memberId, anotherMemberId);
-    }
-
-    @Override
-    public void withNamedLock(String key, Runnable action) {
-        try {
-            lockRepository.getLock(key, 10);
-            action.run();
-        } catch (DataAccessException e) {
-            throw new CannotGetLockException();
-        } finally {
-            lockRepository.releaseLock(key);
-        }
     }
 
     @Override
