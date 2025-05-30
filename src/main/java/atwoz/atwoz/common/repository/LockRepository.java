@@ -13,6 +13,8 @@ public class LockRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public void withNamedLock(String key, Runnable action) {
+        validateKey(key);
+        validateAction(action);
         try {
             getLock(key, LOCK_WAITING_TIME);
             action.run();
@@ -31,5 +33,17 @@ public class LockRepository {
     public void releaseLock(String key) {
         String sql = "SELECT RELEASE_LOCK(?)";
         jdbcTemplate.queryForObject(sql, Boolean.class, key);
+    }
+
+    private void validateKey(String key) {
+        if (key == null || key.isEmpty()) {
+            throw new CannotGetLockException(new IllegalArgumentException("Key cannot be null or empty"));
+        }
+    }
+
+    private void validateAction(Runnable action) {
+        if (action == null) {
+            throw new CannotGetLockException(new IllegalArgumentException("Action cannot be null"));
+        }
     }
 }
