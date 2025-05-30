@@ -4,8 +4,8 @@ import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.auth.infra.JwtProvider;
 import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
-import atwoz.atwoz.member.command.application.member.exception.BannedMemberException;
 import atwoz.atwoz.member.command.application.member.exception.MemberLoginConflictException;
+import atwoz.atwoz.member.command.application.member.exception.PermanentlySuspendedMemberException;
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
@@ -26,7 +26,7 @@ import java.time.Instant;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-public class MemberAuthServiceTest {
+class MemberAuthServiceTest {
     private Member permanentStoppedMember;
     private Member member;
     private Long memberId;
@@ -52,7 +52,7 @@ public class MemberAuthServiceTest {
 
         permanentStoppedMember = Member.fromPhoneNumber("01012345678");
         ReflectionTestUtils.setField(permanentStoppedMember, "id", 2L);
-        ReflectionTestUtils.setField(permanentStoppedMember, "activityStatus", ActivityStatus.BANNED);
+        ReflectionTestUtils.setField(permanentStoppedMember, "activityStatus", ActivityStatus.SUSPENDED_PERMANENTLY);
 
     }
 
@@ -67,7 +67,7 @@ public class MemberAuthServiceTest {
 
         // When & Then
         Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber))
-            .isInstanceOf(BannedMemberException.class);
+            .isInstanceOf(PermanentlySuspendedMemberException.class);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class MemberAuthServiceTest {
         String phoneNumber = "01012345678";
         Instant fixedInstant = Instant.parse("2024-01-01T00:00:00Z");
 
-        try (MockedStatic<Instant> mockedInstant = Mockito.mockStatic(Instant.class);) {
+        try (MockedStatic<Instant> mockedInstant = Mockito.mockStatic(Instant.class)) {
             mockedInstant.when(Instant::now).thenReturn(fixedInstant);
 
             Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());

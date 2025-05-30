@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class MemberExceptionHandler {
 
-    @ExceptionHandler(BannedMemberException.class)
-    public ResponseEntity<BaseResponse<Void>> handleBannedMemberException(BannedMemberException e) {
+    @ExceptionHandler(PermanentlySuspendedMemberException.class)
+    public ResponseEntity<BaseResponse<Void>> handleBannedMemberException(PermanentlySuspendedMemberException e) {
         log.warn("멤버 로그인에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.status(401)
