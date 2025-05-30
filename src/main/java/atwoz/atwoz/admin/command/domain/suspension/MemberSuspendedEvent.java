@@ -13,7 +13,7 @@ public class MemberSuspendedEvent extends Event {
     private final long memberId;
     private final String status;
 
-    public static MemberSuspendedEvent of(long senderId, @NonNull String status) {
-        return new MemberSuspendedEvent(senderId, status);
+    public static MemberSuspendedEvent of(long memberId, @NonNull String status) {
+        return new MemberSuspendedEvent(memberId, status);
     }
 }
