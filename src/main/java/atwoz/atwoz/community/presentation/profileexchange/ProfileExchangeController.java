@@ -41,5 +41,4 @@ public class ProfileExchangeController {
         profileExchangeService.reject(profileExchangeId, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
-
 }

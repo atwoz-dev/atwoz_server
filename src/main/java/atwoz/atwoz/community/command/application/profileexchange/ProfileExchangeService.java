@@ -22,7 +22,7 @@ public class ProfileExchangeService {
         String key = generateKey(requesterId, responderId);
         profileExchangeRepository.withNamedLock(key, () -> {
             validateProfileExchangeRequest(requesterId, responderId);
-            String senderName = getSenderName(requesterId);
+            String senderName = getNickNameByMemberId(requesterId);
             ProfileExchange profileExchange = ProfileExchange.request(requesterId, responderId, senderName);
             profileExchangeRepository.save(profileExchange);
         });
@@ -30,7 +30,7 @@ public class ProfileExchangeService {
 
     @Transactional
     public void approve(Long profileExchangeId, Long responderId) {
-        String senderName = getSenderName(responderId);
+        String senderName = getNickNameByMemberId(responderId);
         ProfileExchange profileExchange = getProfileExchangeById(profileExchangeId);
         validateProfileExchangeResponse(profileExchange, responderId);
         profileExchange.approve(senderName);
@@ -38,14 +38,14 @@ public class ProfileExchangeService {
 
     @Transactional
     public void reject(Long profileExchangeId, Long responderId) {
-        String senderName = getSenderName(responderId);
+        String senderName = getNickNameByMemberId(responderId);
         ProfileExchange profileExchange = getProfileExchangeById(profileExchangeId);
         validateProfileExchangeResponse(profileExchange, responderId);
         profileExchange.reject(senderName);
     }
 
-    private String getSenderName(Long senderId) {
-        return memberCommandRepository.findById(senderId).orElseThrow(MemberNotFoundException::new)
+    private String getNickNameByMemberId(Long memberId) {
+        return memberCommandRepository.findById(memberId).orElseThrow(MemberNotFoundException::new)
             .getProfile().getNickname().getValue();
     }
 
