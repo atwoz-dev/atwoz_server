@@ -1,7 +1,6 @@
 package atwoz.atwoz.like.command.domain;
 
 import atwoz.atwoz.common.entity.BaseEntity;
-import atwoz.atwoz.common.event.Events;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -36,7 +35,6 @@ public class Like extends BaseEntity {
     }
 
     public static Like of(long senderId, long receiverId, LikeLevel level) {
-        Events.raise(LikeSentEvent.of(senderId, receiverId));
         return new Like(senderId, receiverId, level);
     }
 }

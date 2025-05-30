@@ -182,7 +182,7 @@ class InterviewQuestionServiceTest {
             InterviewQuestion interviewQuestion = mock(InterviewQuestion.class);
             when(interviewQuestion.getContent()).thenReturn(content);
 
-            String updatedContent = "content";
+            String updatedContent = "updated content";
             String updatedCategory = InterviewCategory.SOCIAL.name();
             boolean updatedIsPublic = false;
             InterviewQuestionSaveRequest request = new InterviewQuestionSaveRequest(updatedContent, updatedCategory,

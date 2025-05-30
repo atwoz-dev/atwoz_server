@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static atwoz.atwoz.notification.command.domain.notification.QNotification.notification;
+import static atwoz.atwoz.notification.command.domain.QNotification.notification;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,10 +21,14 @@ public class NotificationQueryRepository {
                 notification.senderId,
                 notification.type.stringValue(),
                 notification.title,
-                notification.content
+                notification.body
             ))
             .from(notification)
-            .where(notification.receiverId.eq(receiverId), notification.isRead.eq(isRead))
+            .where(
+                notification.receiverId.eq(receiverId),
+                notification.deletedAt.isNull(),
+                isRead ? notification.readAt.isNotNull() : notification.readAt.isNull()
+            )
             .orderBy(notification.createdAt.desc())
             .fetch();
     }
