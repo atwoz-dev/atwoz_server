@@ -36,7 +36,7 @@ public class LockRepository {
     }
 
     private void validateKey(String key) {
-        if (key == null || key.isEmpty()) {
+        if (key == null || key.trim().isEmpty()) {
             throw new CannotGetLockException(new IllegalArgumentException("Key cannot be null or empty"));
         }
     }

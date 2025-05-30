@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class MatchService {
+    private static final String LOCK_PREFIX = "MATCH:";
     private final MatchRepository matchRepository;
     private final LockRepository lockRepository;
 
@@ -58,7 +59,7 @@ public class MatchService {
     }
 
     private String generateKey(Long requesterId, Long responderId) {
-        return Math.max(requesterId, responderId) + ":" + Math.min(requesterId, responderId);
+        return LOCK_PREFIX + Math.max(requesterId, responderId) + ":" + Math.min(requesterId, responderId);
     }
 
     private Match getWaitingMatchByIdAndResponderId(Long id, Long responderId) {

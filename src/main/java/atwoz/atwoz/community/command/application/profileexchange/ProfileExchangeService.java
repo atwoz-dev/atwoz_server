@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class ProfileExchangeService {
+    private static final String LOCK_PREFIX = "ProfileExchange:";
     private final ProfileExchangeRepository profileExchangeRepository;
     private final LockRepository lockRepository;
     private final MemberCommandRepository memberCommandRepository;
@@ -62,7 +63,7 @@ public class ProfileExchangeService {
     }
 
     private String generateKey(Long requesterId, Long responderId) {
-        return Math.max(requesterId, responderId) + ":" + Math.min(requesterId, responderId);
+        return LOCK_PREFIX + Math.max(requesterId, responderId) + ":" + Math.min(requesterId, responderId);
     }
 
     private void validateProfileExchangeRequest(Long requesterId, Long responderId) {
