@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class MemberExceptionHandler {
 
-    @ExceptionHandler(BannedMemberException.class)
-    public ResponseEntity<BaseResponse<Void>> handleBannedMemberException(BannedMemberException e) {
+    @ExceptionHandler(PermanentlySuspendedMemberException.class)
+    public ResponseEntity<BaseResponse<Void>> handlePermanentlySuspendedMemberException(
+        PermanentlySuspendedMemberException e
+    ) {
         log.warn("멤버 로그인에 실패하였습니다. {}", e.getMessage());
 
-        return ResponseEntity.status(401)
-            .body(BaseResponse.from(StatusType.UNAUTHORIZED));
+        return ResponseEntity.status(403)
+            .body(BaseResponse.from(StatusType.FORBIDDEN));
     }
 
     @ExceptionHandler(MemberNotFoundException.class)

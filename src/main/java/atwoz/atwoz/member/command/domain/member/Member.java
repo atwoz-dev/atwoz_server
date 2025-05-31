@@ -112,8 +112,8 @@ public class Member extends SoftDeleteBaseEntity {
         return profile.getGender();
     }
 
-    public boolean isBanned() {
-        return activityStatus == ActivityStatus.BANNED;
+    public boolean isPermanentlySuspended() {
+        return activityStatus == ActivityStatus.SUSPENDED_PERMANENTLY;
     }
 
     public void useHeart(HeartAmount heartAmount) {
