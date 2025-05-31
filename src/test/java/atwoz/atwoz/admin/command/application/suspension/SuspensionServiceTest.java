@@ -36,12 +36,12 @@ class SuspensionServiceTest {
         // given
         var adminId = 10L;
         var memberId = 20L;
-        var request = new SuspendRequest(memberId, "PERMANENT");
+        var request = new SuspendRequest("PERMANENT");
         given(suspensionCommandRepository.findByMemberId(memberId))
             .willReturn(Optional.empty());
 
         // when
-        suspensionService.updateStatusByAdmin(adminId, request);
+        suspensionService.updateStatusByAdmin(adminId, memberId, request);
 
         // then
         var captor = ArgumentCaptor.forClass(Suspension.class);
@@ -59,12 +59,12 @@ class SuspensionServiceTest {
         var adminId = 11L;
         var memberId = 21L;
         var existing = Suspension.of(1L, memberId, SuspensionStatus.TEMPORARY);
-        var request = new SuspendRequest(memberId, "PERMANENT");
+        var request = new SuspendRequest("PERMANENT");
         given(suspensionCommandRepository.findByMemberId(memberId))
             .willReturn(Optional.of(existing));
 
         // when
-        suspensionService.updateStatusByAdmin(adminId, request);
+        suspensionService.updateStatusByAdmin(adminId, memberId, request);
 
         // then
         assertThat(existing.getAdminId()).isEqualTo(adminId);

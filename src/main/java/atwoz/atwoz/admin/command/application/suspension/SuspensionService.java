@@ -18,8 +18,8 @@ public class SuspensionService {
     private final SuspensionPolicy suspensionPolicy;
 
     @Transactional
-    public void updateStatusByAdmin(long adminId, SuspendRequest request) {
-        var suspension = createOrUpdateSuspension(adminId, request.memberId(), toSuspensionStatus(request.status()));
+    public void updateStatusByAdmin(long adminId, long memberId, SuspendRequest request) {
+        var suspension = createOrUpdateSuspension(adminId, memberId, toSuspensionStatus(request.status()));
         suspensionCommandRepository.save(suspension);
     }
 
