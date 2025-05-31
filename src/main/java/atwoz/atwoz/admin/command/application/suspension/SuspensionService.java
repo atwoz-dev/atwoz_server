@@ -1,7 +1,9 @@
 package atwoz.atwoz.admin.command.application.suspension;
 
-import atwoz.atwoz.admin.command.domain.suspension.*;
-import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.admin.command.domain.suspension.Suspension;
+import atwoz.atwoz.admin.command.domain.suspension.SuspensionCommandRepository;
+import atwoz.atwoz.admin.command.domain.suspension.SuspensionPolicy;
+import atwoz.atwoz.admin.command.domain.suspension.SuspensionStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +21,6 @@ public class SuspensionService {
     public void updateStatusByAdmin(long adminId, SuspendRequest request) {
         var suspension = createOrUpdateSuspension(adminId, request.memberId(), toSuspensionStatus(request.status()));
         suspensionCommandRepository.save(suspension);
-        Events.raise(MemberSuspendedEvent.of(request.memberId(), request.status()));
     }
 
     @Transactional
@@ -27,7 +28,6 @@ public class SuspensionService {
         SuspensionStatus status = suspensionPolicy.evaluate(currentWarningCount);
         var suspension = createOrUpdateSuspension(adminId, memberId, status);
         suspensionCommandRepository.save(suspension);
-        Events.raise(MemberSuspendedEvent.of(memberId, status.toString()));
     }
 
     private Suspension createOrUpdateSuspension(long adminId, long memberId, SuspensionStatus status) {

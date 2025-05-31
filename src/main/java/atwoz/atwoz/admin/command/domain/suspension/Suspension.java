@@ -1,6 +1,7 @@
 package atwoz.atwoz.admin.command.domain.suspension;
 
 import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
+import atwoz.atwoz.common.event.Events;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -37,11 +38,13 @@ public class Suspension extends SoftDeleteBaseEntity {
     }
 
     public static Suspension of(long adminId, long memberId, @NonNull SuspensionStatus status) {
+        Events.raise(MemberSuspendedEvent.of(memberId, status.toString()));
         return new Suspension(adminId, memberId, status);
     }
 
     public void updateStatus(long adminId, @NonNull SuspensionStatus status) {
         this.adminId = adminId;
         this.status = status;
+        Events.raise(MemberSuspendedEvent.of(memberId, status.toString()));
     }
 }
