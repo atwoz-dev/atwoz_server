@@ -1,6 +1,5 @@
 package atwoz.atwoz.community.command.infra.profileexchange;
 
-import atwoz.atwoz.common.repository.LockRepository;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchange;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProfileExchangeRepositoryImpl implements ProfileExchangeRepository {
     private final ProfileExchangeJpaRepository profileExchangeJpaRepository;
-    private final LockRepository lockRepository;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)

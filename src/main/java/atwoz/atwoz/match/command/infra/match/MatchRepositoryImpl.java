@@ -1,6 +1,5 @@
 package atwoz.atwoz.match.command.infra.match;
 
-import atwoz.atwoz.common.repository.LockRepository;
 import atwoz.atwoz.match.command.domain.match.Match;
 import atwoz.atwoz.match.command.domain.match.MatchRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MatchRepositoryImpl implements MatchRepository {
     private final MatchJpaRepository matchJpaRepository;
-    private final LockRepository lockRepository;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)

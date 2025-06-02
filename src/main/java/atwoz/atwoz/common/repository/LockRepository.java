@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class LockRepository {
-    private static final int LOCK_WAITING_TIME = 10;
+    private static final int LOCK_WAITING_TIME = 3;
     private final JdbcTemplate jdbcTemplate;
 
     public void withNamedLock(String key, Runnable action) {
