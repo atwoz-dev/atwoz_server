@@ -8,7 +8,8 @@ public record SelfIntroductionView(
     MemberBasicInfo memberBasicInfo,
     String like,
     String title,
-    String content
+    String content,
+    String profileExchangeStatus
 ) {
     @QueryProjection
     public SelfIntroductionView(Long memberId,
@@ -21,8 +22,9 @@ public record SelfIntroductionView(
         Set<String> hobbies,
         String like,
         String title,
-        String content) {
+        String content,
+        String profileExchangeStatus) {
         this(new MemberBasicInfo(memberId, nickname, yearOfBirth, profileImageUrl, city, district, mbti, hobbies), like,
-            title, content);
+            title, content, profileExchangeStatus);
     }
 }

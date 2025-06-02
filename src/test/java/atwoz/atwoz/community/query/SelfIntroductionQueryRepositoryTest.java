@@ -2,6 +2,8 @@ package atwoz.atwoz.community.query;
 
 import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchange;
+import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeStatus;
 import atwoz.atwoz.community.command.domain.selfintroduction.SelfIntroduction;
 import atwoz.atwoz.community.presentation.selfintroduction.dto.SelfIntroductionSearchCondition;
 import atwoz.atwoz.community.query.selfintroduction.SelfIntroductionQueryRepository;
@@ -366,6 +368,13 @@ public class SelfIntroductionQueryRepositoryTest {
             selfIntroduction = SelfIntroduction.write(
                 targetMember.getId(), "제목", "내용은 50자를 넘어야합니다. 50자를 넘어야 합니다. 50자를 넘어야.."
             );
+
+
+            // 프로필 교환 데이터 생성.
+            ProfileExchange profileExchange = ProfileExchange.request(member.getId(), targetMember.getId(),
+                "MemberName");
+            profileExchange.approve(targetMember.getProfile().getNickname().getValue());
+            entityManager.persist(profileExchange);
             entityManager.persist(selfIntroduction);
 
             entityManager.flush();
@@ -389,7 +398,7 @@ public class SelfIntroductionQueryRepositoryTest {
             // When
             SelfIntroductionView view = selfIntroductionQueryRepository.findSelfIntroductionByIdWithMemberId(
                 selfIntroductionId, memberId).orElse(null);
-
+            
             // Then
             assertThat(view.title()).isEqualTo(selfIntroduction.getTitle());
             assertThat(view.content()).isEqualTo(selfIntroduction.getContent());
@@ -408,6 +417,7 @@ public class SelfIntroductionQueryRepositoryTest {
             assertThat(view.memberBasicInfo().hobbies())
                 .hasSameSizeAs(targetMember.getProfile().getHobbies());
             assertThat(view.memberBasicInfo().profileImageUrl()).isEqualTo(profileImage.getUrl());
+            assertThat(view.profileExchangeStatus()).isEqualTo(ProfileExchangeStatus.APPROVE.name());
         }
 
         @Test

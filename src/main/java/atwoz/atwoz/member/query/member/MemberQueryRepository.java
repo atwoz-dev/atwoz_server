@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.query.member;
 
+import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeStatus;
 import atwoz.atwoz.match.command.domain.match.MatchStatus;
 import atwoz.atwoz.member.command.domain.member.Hobby;
 import atwoz.atwoz.member.command.domain.member.PrimaryContactType;
@@ -13,10 +14,12 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import static atwoz.atwoz.community.command.domain.profileexchange.QProfileExchange.profileExchange;
 import static atwoz.atwoz.interview.command.domain.answer.QInterviewAnswer.interviewAnswer;
 import static atwoz.atwoz.interview.command.domain.question.QInterviewQuestion.interviewQuestion;
 import static atwoz.atwoz.like.command.domain.QLike.like;
 import static atwoz.atwoz.match.command.domain.match.QMatch.match;
+import static atwoz.atwoz.member.command.domain.introduction.QMemberIntroduction.memberIntroduction;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
 import static atwoz.atwoz.member.command.domain.profileImage.QProfileImage.profileImage;
 import static com.querydsl.core.group.GroupBy.groupBy;
@@ -108,7 +111,6 @@ public class MemberQueryRepository {
         return Optional.ofNullable(memberContactView);
     }
 
-
     public Optional<OtherMemberProfileView> findOtherProfileByMemberId(Long memberId, Long otherMemberId) {
         EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
 
@@ -159,6 +161,28 @@ public class MemberQueryRepository {
         return Optional.ofNullable(otherMemberProfileView);
     }
 
+    public Optional<ProfileAccessView> findProfileAccessViewByMemberId(Long memberId, Long otherMemberId) {
+        ProfileAccessView view = queryFactory
+            .select(new QProfileAccessView(
+                cases()
+                    .when(memberIntroduction.id.isNotNull())
+                    .then(true)
+                    .otherwise(false),
+                cases()
+                    .when(profileExchange.id.isNotNull())
+                    .then(true)
+                    .otherwise(false)
+            ))
+            .from(member)
+            .leftJoin(memberIntroduction)
+            .on(memberIntroduction.introducedMemberId.eq(otherMemberId).and(memberIntroduction.memberId.eq(memberId)))
+            .leftJoin(profileExchange)
+            .on(getProfileExchangeJoinCondition(otherMemberId))
+            .where(member.id.eq(memberId)).fetchOne();
+
+        return Optional.ofNullable(view);
+    }
+
     public List<InterviewResultView> findInterviewsByMemberId(Long memberId) {
         return queryFactory
             .from(interviewQuestion)
@@ -169,6 +193,18 @@ public class MemberQueryRepository {
             )
             .where(interviewQuestion.isPublic.eq(true))
             .fetch();
+    }
+
+    private BooleanExpression getProfileExchangeJoinCondition(Long memberId) {
+        return profileExchange.status.eq(ProfileExchangeStatus.APPROVE)
+            .and(
+                profileExchange.requesterId.eq(member.id)
+                    .and(profileExchange.responderId.eq(memberId))
+                    .or(
+                        profileExchange.requesterId.eq(memberId)
+                            .and(profileExchange.responderId.eq(member.id))
+                    )
+            );
     }
 
     private BooleanExpression getMatchJoinCondition(Long memberId, Long otherMemberId) {

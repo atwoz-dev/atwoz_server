@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static atwoz.atwoz.community.command.domain.profileexchange.QProfileExchange.profileExchange;
 import static atwoz.atwoz.community.command.domain.selfintroduction.QSelfIntroduction.selfIntroduction;
 import static atwoz.atwoz.like.command.domain.QLike.like;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
@@ -54,10 +55,14 @@ public class SelfIntroductionQueryRepository {
 
         Map<Long, SelfIntroductionView> view = queryFactory
             .from(selfIntroduction)
-            .leftJoin(member).on(member.id.eq(selfIntroduction.memberId))
-            .leftJoin(like).on(like.senderId.eq(memberId).and(like.receiverId.eq(member.id)))
-            .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
+            .leftJoin(member)
+            .on(member.id.eq(selfIntroduction.memberId))
+            .leftJoin(like)
+            .on(like.senderId.eq(memberId).and(like.receiverId.eq(member.id)))
+            .leftJoin(profileImage)
+            .on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
             .leftJoin(member.profile.hobbies, hobby)
+            .leftJoin(profileExchange).on(getProfileExchangeJoinCondition(memberId))
             .where(selfIntroduction.id.eq(id).and(selfIntroduction.deletedAt.isNull()))
             .transform(
                 groupBy(member.id).as(
@@ -72,12 +77,18 @@ public class SelfIntroductionQueryRepository {
                         set(hobby.stringValue()),
                         like.level.stringValue(),
                         selfIntroduction.title,
-                        selfIntroduction.content
+                        selfIntroduction.content,
+                        profileExchange.status.stringValue()
                     )
                 )
             );
 
         return view.values().stream().findFirst();
+    }
+
+    private BooleanExpression getProfileExchangeJoinCondition(Long memberId) {
+        return (profileExchange.requesterId.eq(member.id).and(profileExchange.responderId.eq(memberId)))
+            .or(profileExchange.requesterId.eq(memberId).and(profileExchange.responderId.eq(member.id)));
     }
 
     private BooleanExpression getSearchCondition(SelfIntroductionSearchCondition searchCondition, Long lastId) {
