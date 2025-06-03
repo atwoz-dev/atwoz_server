@@ -1,11 +1,14 @@
 package atwoz.atwoz.community.query.selfintroduction.view;
 
+import atwoz.atwoz.like.command.domain.LikeLevel;
 import com.querydsl.core.annotations.QueryProjection;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Set;
 
 public record SelfIntroductionView(
     MemberBasicInfo memberBasicInfo,
+    @Schema(implementation = LikeLevel.class)
     String like,
     String title,
     String content

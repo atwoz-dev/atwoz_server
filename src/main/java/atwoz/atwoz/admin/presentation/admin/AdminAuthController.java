@@ -8,6 +8,8 @@ import atwoz.atwoz.admin.presentation.admin.dto.AdminSignupResponse;
 import atwoz.atwoz.auth.presentation.RefreshTokenCookieProperties;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "관리자 인증 API")
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
@@ -25,12 +28,14 @@ public class AdminAuthController {
     private final RefreshTokenCookieProperties refreshTokenCookieProperties;
     private final AdminAuthService adminAuthService;
 
+    @Operation(summary = "관리자 회원가입")
     @PostMapping("/signup")
     public ResponseEntity<BaseResponse<AdminSignupResponse>> signup(@Valid @RequestBody AdminSignupRequest request) {
         AdminSignupResponse data = adminAuthService.signup(request);
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, data));
     }
 
+    @Operation(summary = "관리자 로그인")
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<Void>> login(@Valid @RequestBody AdminLoginRequest request) {
         AdminLoginResponse response = adminAuthService.login(request);
@@ -52,6 +57,7 @@ public class AdminAuthController {
             .body(BaseResponse.from(StatusType.OK));
     }
 
+    @Operation(summary = "관리자 로그아웃")
     @PostMapping("/logout")
     public ResponseEntity<BaseResponse<Void>> logout(
         @CookieValue(value = "refresh_token", required = false) String refreshToken
