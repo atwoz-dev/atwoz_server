@@ -1,5 +1,8 @@
 package atwoz.atwoz.admin.query.member;
 
+import atwoz.atwoz.member.command.domain.member.ActivityStatus;
+import atwoz.atwoz.member.command.domain.member.Gender;
+import atwoz.atwoz.member.command.domain.member.Grade;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -9,21 +12,21 @@ import java.time.LocalDate;
 public record MemberSearchCondition(
     @Schema(
         description = "활동 상태",
-        allowableValues = {"ACTIVE", "BANNED", "SUSPENDED", "DORMANT"},
+        implementation = ActivityStatus.class,
         example = "ACTIVE"
     )
     String activityStatus,
 
     @Schema(
         description = "성별",
-        allowableValues = {"MALE", "FEMALE"},
+        implementation = Gender.class,
         example = "MALE"
     )
     String gender,
 
     @Schema(
         description = "등급",
-        allowableValues = {"DIAMOND", "GOLD", "SILVER"},
+        implementation = Grade.class,
         example = "DIAMOND"
     )
     String grade,

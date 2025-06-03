@@ -1,5 +1,6 @@
 package atwoz.atwoz.admin.query.screening;
 
+import atwoz.atwoz.admin.command.domain.screening.ScreeningStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -9,7 +10,7 @@ import java.time.LocalDate;
 public record ScreeningSearchCondition(
     @Schema(
         description = "심사 상태",
-        allowableValues = {"PENDING", "APPROVED", "REJECTED"},
+        implementation = ScreeningStatus.class,
         example = "PENDING"
     )
     String screeningStatus,
