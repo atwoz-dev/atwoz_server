@@ -17,6 +17,6 @@ public class WarningIssuedEventHandler {
     @Async
     @TransactionalEventListener(value = WarningIssuedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handle(WarningIssuedEvent event) {
-        suspensionService.evaluateAndSuspend(event.getAdminId(), event.getMemberId(), event.getWarningCount());
+        suspensionService.suspendByWarningCount(event.getAdminId(), event.getMemberId(), event.getWarningCount());
     }
 }

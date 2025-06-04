@@ -3,67 +3,82 @@ package atwoz.atwoz.admin.command.domain.suspension;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SuspensionTest {
 
     @Test
-    @DisplayName("of(): 유효한 입력 시 adminId, memberId, status로 Suspension 생성")
-    void createSuspensionWithValidInputs() {
+    @DisplayName("createTemporary(): 유효한 입력 시 일시정지 Suspension 생성")
+    void createTemporarySuspensionWithValidInputs() {
         // given
         long expectedAdminId = 42L;
         long expectedMemberId = 100L;
-        var expectedStatus = SuspensionStatus.TEMPORARY;
+        var before = Instant.now();
 
         // when
-        var suspension = Suspension.of(expectedAdminId, expectedMemberId, expectedStatus);
+        var suspension = Suspension.createTemporary(expectedAdminId, expectedMemberId);
 
         // then
         assertThat(suspension).isNotNull();
         assertThat(suspension.getId()).isNull();
         assertThat(suspension.getAdminId()).isEqualTo(expectedAdminId);
         assertThat(suspension.getMemberId()).isEqualTo(expectedMemberId);
-        assertThat(suspension.getStatus()).isEqualTo(expectedStatus);
+        assertThat(suspension.getStatus()).isEqualTo(SuspensionStatus.TEMPORARY);
+        assertThat(suspension.getExpireAt()).isNotNull();
+        assertThat(suspension.getExpireAt()).isAfter(before);
     }
 
     @Test
-    @DisplayName("of(): null 상태 입력 시 NullPointerException 발생")
-    void ofNullStatusShouldThrowNullPointerException() {
+    @DisplayName("createPermanent(): 유효한 입력 시 영구정지 Suspension 생성")
+    void createPermanentSuspensionWithValidInputs() {
         // given
-        long adminId = 1L;
-        long memberId = 2L;
-
-        // when / then
-        assertThatThrownBy(() -> Suspension.of(adminId, memberId, null))
-            .isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    @DisplayName("updateStatus(): adminId와 status가 업데이트되어야 함")
-    void updateStatusShouldUpdateAdminIdAndStatus() {
-        // given
-        var originalSuspension = Suspension.of(1L, 2L, SuspensionStatus.TEMPORARY);
-        long newAdminId = 99L;
-        var newStatus = SuspensionStatus.PERMANENT;
+        long expectedAdminId = 1L;
+        long expectedMemberId = 2L;
 
         // when
-        originalSuspension.updateStatus(newAdminId, newStatus);
+        var suspension = Suspension.createPermanent(expectedAdminId, expectedMemberId);
 
         // then
-        assertThat(originalSuspension.getAdminId()).isEqualTo(newAdminId);
-        assertThat(originalSuspension.getMemberId()).isEqualTo(2L);
-        assertThat(originalSuspension.getStatus()).isEqualTo(newStatus);
+        assertThat(suspension).isNotNull();
+        assertThat(suspension.getId()).isNull();
+        assertThat(suspension.getAdminId()).isEqualTo(expectedAdminId);
+        assertThat(suspension.getMemberId()).isEqualTo(expectedMemberId);
+        assertThat(suspension.getStatus()).isEqualTo(SuspensionStatus.PERMANENT);
+        assertThat(suspension.getExpireAt()).isNull();
     }
 
     @Test
-    @DisplayName("updateStatus(): null 상태 입력 시 NullPointerException 발생")
-    void updateStatusNullStatusShouldThrowNullPointerException() {
+    @DisplayName("changeToPermanent(): TEMPORARY 상태를 PERMANENT로 변경")
+    void changeToPermanentFromTemporary() {
         // given
-        var suspension = Suspension.of(1L, 2L, SuspensionStatus.TEMPORARY);
+        var suspension = Suspension.createTemporary(1L, 2L);
+        var newAdminId = 123L;
 
-        // when / then
-        assertThatThrownBy(() -> suspension.updateStatus(5L, null))
-            .isInstanceOf(NullPointerException.class);
+        // when
+        suspension.changeToPermanent(newAdminId);
+
+        // then
+        assertThat(suspension.getStatus()).isEqualTo(SuspensionStatus.PERMANENT);
+        assertThat(suspension.getAdminId()).isEqualTo(newAdminId);
+        assertThat(suspension.getExpireAt()).isNull();
+    }
+
+    @Test
+    @DisplayName("changeToPermanent(): 이미 PERMANENT 상태인 경우 변경되지 않음")
+    void changeToPermanentWhenAlreadyPermanent() {
+        // given
+        var suspension = Suspension.createPermanent(1L, 2L);
+        var originalAdminId = suspension.getAdminId();
+        var originalExpireAt = suspension.getExpireAt();
+
+        // when
+        suspension.changeToPermanent(999L);
+
+        // then
+        assertThat(suspension.getStatus()).isEqualTo(SuspensionStatus.PERMANENT);
+        assertThat(suspension.getAdminId()).isEqualTo(originalAdminId);
+        assertThat(suspension.getExpireAt()).isEqualTo(originalExpireAt);
     }
 }

@@ -1,12 +1,13 @@
 package atwoz.atwoz.admin.command.domain.suspension;
 
-import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
+import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.common.event.Events;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
+
+import java.time.Instant;
 
 import static jakarta.persistence.EnumType.STRING;
 
@@ -17,7 +18,7 @@ import static jakarta.persistence.EnumType.STRING;
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Suspension extends SoftDeleteBaseEntity {
+public class Suspension extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,20 +32,43 @@ public class Suspension extends SoftDeleteBaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private SuspensionStatus status;
 
-    private Suspension(Long adminId, Long memberId, SuspensionStatus status) {
+    /**
+     * 일시 정지 만료 시각
+     * - status == TEMPORARY인 경우, 이 시각이 지나면 자동 해제(=정지 엔티티 삭제)해야 한다.
+     * - status == PERMANENT인 경우 null이다.
+     */
+    private Instant expireAt;
+
+    private Suspension(Long adminId, Long memberId, SuspensionStatus status, Instant expireAt) {
         this.adminId = adminId;
         this.memberId = memberId;
         this.status = status;
+        this.expireAt = expireAt;
     }
 
-    public static Suspension of(long adminId, long memberId, @NonNull SuspensionStatus status) {
-        Events.raise(MemberSuspendedEvent.of(memberId, status.toString()));
-        return new Suspension(adminId, memberId, status);
+    public static Suspension createTemporary(long adminId, long memberId) {
+        Events.raise(MemberSuspendedEvent.of(memberId, SuspensionStatus.TEMPORARY.toString()));
+        return new Suspension(
+            adminId,
+            memberId,
+            SuspensionStatus.TEMPORARY,
+            Instant.now().plus(SuspensionPolicy.TEMPORARY_SUSPENSION_DURATION)
+        );
     }
 
-    public void updateStatus(long adminId, @NonNull SuspensionStatus status) {
+    public static Suspension createPermanent(long adminId, long memberId) {
+        Events.raise(MemberSuspendedEvent.of(memberId, SuspensionStatus.PERMANENT.toString()));
+        return new Suspension(adminId, memberId, SuspensionStatus.PERMANENT, null);
+    }
+
+    public void changeToPermanent(long adminId) {
+        if (this.status == SuspensionStatus.PERMANENT) {
+            return;
+        }
         this.adminId = adminId;
-        this.status = status;
-        Events.raise(MemberSuspendedEvent.of(memberId, status.toString()));
+        this.status = SuspensionStatus.PERMANENT;
+        this.expireAt = null;
+
+        Events.raise(MemberSuspendedEvent.of(memberId, SuspensionStatus.PERMANENT.toString()));
     }
 }

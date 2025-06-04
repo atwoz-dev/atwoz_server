@@ -6,4 +6,6 @@ import java.util.Optional;
 
 public interface SuspensionCommandRepository extends JpaRepository<Suspension, Long> {
     Optional<Suspension> findByMemberId(long memberId);
+
+    void deleteByMemberId(long memberId);
 }

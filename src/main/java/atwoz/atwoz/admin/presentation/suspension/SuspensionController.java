@@ -1,6 +1,5 @@
 package atwoz.atwoz.admin.presentation.suspension;
 
-import atwoz.atwoz.admin.command.application.suspension.SuspendRequest;
 import atwoz.atwoz.admin.command.application.suspension.SuspensionService;
 import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
@@ -29,7 +28,14 @@ public class SuspensionController {
         @Valid @RequestBody SuspendRequest request,
         @AuthPrincipal AuthContext authContext
     ) {
-        suspensionService.updateStatusByAdmin(authContext.getId(), memberId, request);
+        suspensionService.suspendByAdmin(authContext.getId(), memberId, request);
+        return ResponseEntity.ok(BaseResponse.from(OK));
+    }
+
+    @Operation(description = "회원 정지 해제")
+    @DeleteMapping("/{memberId}/suspension")
+    public ResponseEntity<BaseResponse<Void>> delete(@PathVariable long memberId) {
+        suspensionService.delete(memberId);
         return ResponseEntity.ok(BaseResponse.from(OK));
     }
 }

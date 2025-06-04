@@ -7,13 +7,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SuspensionPolicyTest {
 
-    private final SuspensionPolicy policy = new SuspensionPolicy();
+    SuspensionPolicy policy = new SuspensionPolicy();
 
     @Test
-    @DisplayName("evaluate(): 경고 수가 임계값 미만이면 TEMPORARY 반환")
-    void evaluateBelowThresholdReturnsTemporary() {
+    @DisplayName("evaluate(): 경고 수가 0이면 null 반환")
+    void evaluateZeroReturnsNull() {
         // given
-        var warningCount = 2L; // 임계값 3 미만
+        var warningCount = 0L;
+
+        // when
+        var result = policy.evaluate(warningCount);
+
+        // then
+        assertThat(result).isNull();
+    }
+
+    @Test
+    @DisplayName("evaluate(): 경고 수가 임계값 미만(1 이상 3 미만)이면 TEMPORARY 반환")
+    void evaluateBelowPermanentThresholdReturnsTemporary() {
+        // given
+        var warningCount = 2L;
 
         // when
         var result = policy.evaluate(warningCount);
@@ -23,10 +36,10 @@ class SuspensionPolicyTest {
     }
 
     @Test
-    @DisplayName("evaluate(): 경고 수가 임계값과 같으면 PERMANENT 반환")
-    void evaluateAtThresholdReturnsPermanent() {
+    @DisplayName("evaluate(): 경고 수가 PERMANENT 임계값과 같으면 PERMANENT 반환")
+    void evaluateAtPermanentThresholdReturnsPermanent() {
         // given
-        var warningCount = 3L; // 임계값 3
+        var warningCount = 3L;
 
         // when
         var result = policy.evaluate(warningCount);
@@ -36,10 +49,10 @@ class SuspensionPolicyTest {
     }
 
     @Test
-    @DisplayName("evaluate(): 경고 수가 임계값 초과이면 PERMANENT 반환")
-    void evaluateAboveThresholdReturnsPermanent() {
+    @DisplayName("evaluate(): 경고 수가 PERMANENT 임계값 초과이면 PERMANENT 반환")
+    void evaluateAbovePermanentThresholdReturnsPermanent() {
         // given
-        var warningCount = 5L; // 임계값 3 초과
+        var warningCount = 5L;
 
         // when
         var result = policy.evaluate(warningCount);

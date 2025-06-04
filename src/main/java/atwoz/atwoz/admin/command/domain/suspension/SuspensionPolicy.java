@@ -2,15 +2,23 @@ package atwoz.atwoz.admin.command.domain.suspension;
 
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+
 @Service
 public class SuspensionPolicy {
 
-    private static final int PERMANENT_SUSPENSION_THRESHOLD = 3;
+    public static final Duration TEMPORARY_SUSPENSION_DURATION = Duration.ofDays(3);
 
-    public SuspensionStatus evaluate(long currentWarningCount) {
-        if (currentWarningCount >= PERMANENT_SUSPENSION_THRESHOLD) {
+    private static final int PERMANENT_SUSPENSION_THRESHOLD = 3;
+    private static final int TEMPORARY_SUSPENSION_THRESHOLD = 1;
+
+    public SuspensionStatus evaluate(long warningCount) {
+        if (warningCount >= PERMANENT_SUSPENSION_THRESHOLD) {
             return SuspensionStatus.PERMANENT;
         }
-        return SuspensionStatus.TEMPORARY;
+        if (warningCount >= TEMPORARY_SUSPENSION_THRESHOLD) {
+            return SuspensionStatus.TEMPORARY;
+        }
+        return null;
     }
 }

@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.command.application.suspension;
+package atwoz.atwoz.admin.presentation.suspension;
 
 import atwoz.atwoz.admin.command.domain.suspension.SuspensionStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
