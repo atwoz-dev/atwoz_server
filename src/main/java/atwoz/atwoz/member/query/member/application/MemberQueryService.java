@@ -55,7 +55,7 @@ public class MemberQueryService {
         if (profileAccessView.likeReceived() == Boolean.TRUE) { // 좋아요를 받은 경우.
             return;
         }
-        if (profileAccessView.profileExchangeStaus().equals(ProfileExchangeStatus.APPROVE.name())) { // 프로필 교환이 완료된 경우.
+        if (ProfileExchangeStatus.APPROVE.name().equals(profileAccessView.profileExchangeStaus())) { // 프로필 교환이 완료된 경우.
             return;
         }
         if (profileAccessView.responderId() == memberId) { // 프로필 교환 요청을 받은 경우.

@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.query.member;
+package atwoz.atwoz.member.query.member.infra;
 
 import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.common.event.Events;
@@ -18,7 +18,6 @@ import atwoz.atwoz.member.command.domain.member.vo.Nickname;
 import atwoz.atwoz.member.command.domain.member.vo.Region;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
-import atwoz.atwoz.member.query.member.infra.MemberQueryRepository;
 import atwoz.atwoz.member.query.member.infra.view.*;
 import org.junit.jupiter.api.*;
 import org.mockito.MockedStatic;
@@ -30,6 +29,7 @@ import org.springframework.context.annotation.Import;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -675,16 +675,17 @@ class MemberQueryRepositoryTest {
     @DisplayName("멤버 하트 잔액 조회")
     class findHeartBalanceByMemberId {
         @Test
-        @DisplayName("존재하지 않는 멤버의 경우, null을 반환한다.")
+        @DisplayName("존재하지 않는 멤버의 경우, 빈 값을 반환한다.")
         void returnNullWhenMemberIsNotExists() {
             // given
             long notExistsMemberId = 100L;
 
             // when
-            HeartBalanceView heartBalanceView = memberQueryRepository.findHeartBalanceByMemberId(notExistsMemberId);
+            Optional<HeartBalanceView> heartBalanceView = memberQueryRepository.findHeartBalanceByMemberId(
+                notExistsMemberId);
 
             // then
-            assertThat(heartBalanceView).isNull();
+            assertThat(heartBalanceView).isEmpty();
         }
 
         @Test
@@ -700,7 +701,8 @@ class MemberQueryRepositoryTest {
             entityManager.flush();
 
             // when
-            HeartBalanceView heartBalanceView = memberQueryRepository.findHeartBalanceByMemberId(member.getId());
+            HeartBalanceView heartBalanceView = memberQueryRepository.findHeartBalanceByMemberId(member.getId())
+                .orElse(null);
 
             // then
             assertThat(heartBalanceView.purchaseHeartBalance()).isEqualTo(purchaseHeartAmount.getAmount());
