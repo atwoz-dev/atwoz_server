@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.query.member.view;
+package atwoz.atwoz.member.query.member.infra.view;
 
 public record MatchInfo(
     Long matchId,

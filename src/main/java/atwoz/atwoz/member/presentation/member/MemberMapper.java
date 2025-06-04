@@ -7,7 +7,7 @@ import atwoz.atwoz.member.command.domain.member.vo.Region;
 import atwoz.atwoz.member.presentation.member.dto.BasicInfo;
 import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.query.member.AgeConverter;
-import atwoz.atwoz.member.query.member.view.BasicMemberInfo;
+import atwoz.atwoz.member.query.member.infra.view.BasicMemberInfo;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

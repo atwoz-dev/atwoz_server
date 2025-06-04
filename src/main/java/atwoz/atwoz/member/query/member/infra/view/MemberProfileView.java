@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.query.member.view;
+package atwoz.atwoz.member.query.member.infra.view;
 
 import atwoz.atwoz.member.command.domain.member.*;
 import com.querydsl.core.annotations.QueryProjection;

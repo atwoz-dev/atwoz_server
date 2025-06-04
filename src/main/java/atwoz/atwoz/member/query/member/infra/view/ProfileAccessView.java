@@ -1,10 +1,14 @@
-package atwoz.atwoz.member.query.member.view;
+package atwoz.atwoz.member.query.member.infra.view;
 
 import com.querydsl.core.annotations.QueryProjection;
 
 public record ProfileAccessView(
     Boolean isIntroduced,
-    Boolean isExchanged
+    Long requesterId,
+    Long responderId,
+    String profileExchangeStaus,
+    Boolean likeReceived
+
 ) {
     @QueryProjection
     public ProfileAccessView {
