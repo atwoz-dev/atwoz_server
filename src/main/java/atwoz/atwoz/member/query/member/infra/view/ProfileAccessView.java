@@ -3,13 +3,13 @@ package atwoz.atwoz.member.query.member.infra.view;
 import com.querydsl.core.annotations.QueryProjection;
 
 public record ProfileAccessView(
-    Boolean isIntroduced,
+    boolean isIntroduced,
     Long matchRequesterId,
     Long matchResponderId,
     Long profileExchangeRequesterId,
     Long profileExchangeResponderId,
     String profileExchangeStatus,
-    Boolean likeReceived
+    boolean likeReceived
 
 ) {
     @QueryProjection

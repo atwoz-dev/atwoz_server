@@ -49,13 +49,13 @@ public class MemberQueryService {
     }
 
     private void validateProfileAccessView(ProfileAccessView profileAccessView, Long memberId) {
-        if (profileAccessView.isIntroduced() == Boolean.TRUE) { // 소개를 받은 경우.
+        if (profileAccessView.isIntroduced()) { // 소개를 받은 경우.
             return;
         }
         if (memberId.equals(profileAccessView.matchResponderId())) { // 매치 응답자인 경우.
             return;
         }
-        if (profileAccessView.likeReceived() == Boolean.TRUE) { // 좋아요를 받은 경우.
+        if (profileAccessView.likeReceived()) { // 좋아요를 받은 경우.
             return;
         }
         if (ProfileExchangeStatus.APPROVE.name().equals(profileAccessView.profileExchangeStatus())) { // 프로필 교환이 완료된 경우.
