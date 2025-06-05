@@ -7,6 +7,8 @@ import atwoz.atwoz.member.command.application.member.MemberAuthService;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.presentation.member.dto.MemberLoginRequest;
 import atwoz.atwoz.member.presentation.member.dto.MemberLoginResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +16,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "멤버 인증 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member")
@@ -22,6 +25,7 @@ public class MemberAuthController {
     private final RefreshTokenCookieProperties refreshTokenCookieProperties;
     private final MemberAuthService memberAuthService;
 
+    @Operation(summary = "멤버 로그인 및 회원가입")
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<MemberLoginResponse>> login(@Valid @RequestBody MemberLoginRequest request) {
         MemberLoginServiceDto loginServiceDto = memberAuthService.login(request.phoneNumber());
@@ -43,6 +47,7 @@ public class MemberAuthController {
             .body(BaseResponse.of(StatusType.OK, loginResponse));
     }
 
+    @Operation(summary = "멤버 로그아웃")
     @GetMapping("/logout")
     public ResponseEntity<BaseResponse<Void>> logout(
         @CookieValue(value = "refresh_token", required = false) String refreshToken) {

@@ -1,6 +1,7 @@
 package atwoz.atwoz.member.query.member.infra.view;
 
 import atwoz.atwoz.member.command.domain.member.*;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Set;
@@ -22,7 +23,7 @@ public record ProfileInfo(
     String drinkingStatus,
     @Schema(implementation = Religion.class)
     String religion,
-    @Schema(implementation = Hobby.class)
+    @ArraySchema(schema = @Schema(implementation = Hobby.class))
     Set<String> hobbies
 ) {
 }
