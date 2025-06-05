@@ -118,6 +118,8 @@ public class MemberQueryRepository {
         ProfileAccessView view = queryFactory.select(
                 new QProfileAccessView(
                     cases().when(memberIntroduction.id.isNotNull()).then(true).otherwise(false),
+                    match.requesterId,
+                    match.responderId,
                     profileExchange.requesterId,
                     profileExchange.responderId,
                     profileExchange.status.stringValue(),
@@ -126,8 +128,12 @@ public class MemberQueryRepository {
             .from(member)
             .leftJoin(memberIntroduction)
             .on(memberIntroduction.introducedMemberId.eq(otherMemberId).and(memberIntroduction.memberId.eq(memberId)))
-            .leftJoin(profileExchange).on(getProfileExchangeJoinCondition(otherMemberId))
-            .leftJoin(like).on(like.receiverId.eq(memberId).and(like.senderId.eq(otherMemberId)))
+            .leftJoin(profileExchange)
+            .on(getProfileExchangeJoinCondition(otherMemberId))
+            .leftJoin(match)
+            .on(getMatchJoinConditionForProfile(memberId, otherMemberId))
+            .leftJoin(like)
+            .on(like.receiverId.eq(memberId).and(like.senderId.eq(otherMemberId)))
             .where(member.id.eq(memberId))
             .fetchOne();
 
@@ -154,6 +160,12 @@ public class MemberQueryRepository {
             .and(match.responderId.eq(otherMemberId))
             .or(match.requesterId.eq(otherMemberId).and(match.responderId.eq(memberId)))).and(
             match.status.notIn(MatchStatus.REJECT_CHECKED, MatchStatus.EXPIRED));
+    }
+
+    private BooleanExpression getMatchJoinConditionForProfile(Long memberId, Long otherMemberId) {
+        return match.requesterId.eq(otherMemberId)
+            .and(match.responderId.eq(memberId))
+            .and(match.status.notIn(MatchStatus.REJECT_CHECKED, MatchStatus.REJECTED));
     }
 
     private BooleanExpression getInterviewAnswerJoinCondition(Long memberId) {

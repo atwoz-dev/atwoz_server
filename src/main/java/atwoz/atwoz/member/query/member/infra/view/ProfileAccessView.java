@@ -4,8 +4,10 @@ import com.querydsl.core.annotations.QueryProjection;
 
 public record ProfileAccessView(
     Boolean isIntroduced,
-    Long requesterId,
-    Long responderId,
+    Long matchRequesterId,
+    Long matchResponderId,
+    Long profileExchangeRequesterId,
+    Long profileExchangeResponderId,
     String profileExchangeStaus,
     Boolean likeReceived
 

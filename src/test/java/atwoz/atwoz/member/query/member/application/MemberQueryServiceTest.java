@@ -102,7 +102,7 @@ class MemberQueryServiceTest {
         @Test
         void throwsExceptionWhenProfileAccessIsNotAuthorized() {
             // Given
-            ProfileAccessView profileAccessView = new ProfileAccessView(false, null, null, null, false);
+            ProfileAccessView profileAccessView = new ProfileAccessView(false, null, null, null, null, null, false);
             when(memberQueryRepository.findProfileAccessViewByMemberId(memberId, otherMemberId))
                 .thenReturn(Optional.of(profileAccessView));
 
@@ -115,8 +115,8 @@ class MemberQueryServiceTest {
         @Test
         void throwsExceptionWhenProfileIsNotAuthorized() {
             // Given
-            ProfileAccessView profileAccessView = new ProfileAccessView(false, memberId, otherMemberId,
-                ProfileExchangeStatus.WAITING.name(), false);
+            ProfileAccessView profileAccessView = new ProfileAccessView(false, memberId, otherMemberId, memberId,
+                otherMemberId, ProfileExchangeStatus.WAITING.name(), false);
             when(memberQueryRepository.findProfileAccessViewByMemberId(memberId, otherMemberId))
                 .thenReturn(Optional.of(profileAccessView));
 
