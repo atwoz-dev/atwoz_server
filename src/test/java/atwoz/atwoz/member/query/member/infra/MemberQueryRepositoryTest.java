@@ -862,7 +862,7 @@ class MemberQueryRepositoryTest {
             assertThat(view.matchResponderId()).isEqualTo(memberId);
             assertThat(view.profileExchangeRequesterId()).isEqualTo(memberId);
             assertThat(view.profileExchangeResponderId()).isEqualTo(otherMemberId);
-            assertThat(view.profileExchangeStaus()).isEqualTo(ProfileExchangeStatus.WAITING.name());
+            assertThat(view.profileExchangeStatus()).isEqualTo(ProfileExchangeStatus.WAITING.name());
             assertThat(view.likeReceived()).isFalse();
         }
     }

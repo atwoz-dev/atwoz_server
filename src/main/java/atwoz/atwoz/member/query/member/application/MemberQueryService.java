@@ -52,16 +52,16 @@ public class MemberQueryService {
         if (profileAccessView.isIntroduced() == Boolean.TRUE) { // 소개를 받은 경우.
             return;
         }
-        if (profileAccessView.matchResponderId() == memberId) { // 매치 응답자인 경우.
+        if (memberId.equals(profileAccessView.matchResponderId())) { // 매치 응답자인 경우.
             return;
         }
         if (profileAccessView.likeReceived() == Boolean.TRUE) { // 좋아요를 받은 경우.
             return;
         }
-        if (ProfileExchangeStatus.APPROVE.name().equals(profileAccessView.profileExchangeStaus())) { // 프로필 교환이 완료된 경우.
+        if (ProfileExchangeStatus.APPROVE.name().equals(profileAccessView.profileExchangeStatus())) { // 프로필 교환이 완료된 경우.
             return;
         }
-        if (profileAccessView.profileExchangeResponderId() == memberId) { // 프로필 교환 요청을 받은 경우.
+        if (memberId.equals(profileAccessView.profileExchangeResponderId())) { // 프로필 교환 요청을 받은 경우.
             return;
         }
         throw new ProfileAccessDeniedException();

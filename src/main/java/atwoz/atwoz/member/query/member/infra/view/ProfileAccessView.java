@@ -8,7 +8,7 @@ public record ProfileAccessView(
     Long matchResponderId,
     Long profileExchangeRequesterId,
     Long profileExchangeResponderId,
-    String profileExchangeStaus,
+    String profileExchangeStatus,
     Boolean likeReceived
 
 ) {
