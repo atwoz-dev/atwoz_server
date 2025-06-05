@@ -89,6 +89,8 @@ public class MemberQueryRepository {
             .on(profileImage.memberId.eq(otherMemberId).and(profileImage.isPrimary.eq(true)))
             .leftJoin(match)
             .on(getMatchJoinCondition(memberId, otherMemberId))
+            .leftJoin(profileExchange)
+            .on(getProfileExchangeJoinCondition(memberId))
             .leftJoin(like)
             .on(like.senderId.eq(memberId).and(like.receiverId.eq(otherMemberId)))
             .where(member.id.eq(otherMemberId))
@@ -107,7 +109,9 @@ public class MemberQueryRepository {
                     .when(match.status.eq(MatchStatus.MATCHED)
                         .and(member.primaryContactType.eq(PrimaryContactType.KAKAO)))
                     .then(member.kakaoId.value)
-                    .otherwise((String) null))))
+                    .otherwise((String) null),
+                    profileExchange.id, profileExchange.requesterId, profileExchange.responderId,
+                    profileExchange.status.stringValue())))
             .get(otherMemberId);
 
 

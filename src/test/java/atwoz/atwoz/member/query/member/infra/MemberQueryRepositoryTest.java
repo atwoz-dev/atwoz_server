@@ -537,6 +537,29 @@ class MemberQueryRepositoryTest {
             assertThat(memberProfileView.matchInfo().requesterId()).isEqualTo(member.getId());
         }
 
+        // 프로필 요청이 존재하는 경우.
+        @DisplayName("상대방과의 프로필 요청이 존재하는 경우, 프로필 교환 요청 정보를 포함.")
+        @Test
+        void getProfileExchangeInfoWhenProfileExchangeExists() {
+            // Given
+            ProfileExchange profileExchange = ProfileExchange.request(member.getId(), otherMember.getId(), "프로필요청자.");
+            entityManager.persist(profileExchange);
+            entityManager.flush();
+
+            // When
+            OtherMemberProfileView view = memberQueryRepository.findOtherProfileByMemberId(member.getId(),
+                otherMember.getId()).orElse(null);
+            
+            // Then
+            assertThat(view).isNotNull();
+            assertThat(view.profileExchangeInfo()).isNotNull();
+            assertThat(view.profileExchangeInfo().profileExchangeId()).isEqualTo(profileExchange.getId());
+            assertThat(view.profileExchangeInfo().requesterId()).isEqualTo(member.getId());
+            assertThat(view.profileExchangeInfo().responderId()).isEqualTo(otherMember.getId());
+            assertThat(view.profileExchangeInfo().profileExchangeStatus()).isEqualTo(
+                profileExchange.getStatus().name());
+        }
+
         private void assertionsBasicInfo(BasicMemberInfo basicMemberInfo, MemberProfile otherMemberProfile) {
             assertThat(basicMemberInfo.nickname()).isEqualTo(otherMemberProfile.getNickname().getValue());
             assertThat(basicMemberInfo.profileImageUrl()).isEqualTo(profileImageUrl);
