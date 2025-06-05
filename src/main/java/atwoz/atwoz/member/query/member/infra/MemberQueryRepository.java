@@ -169,7 +169,7 @@ public class MemberQueryRepository {
     }
 
     private BooleanExpression getInterviewAnswerJoinCondition(Long memberId) {
-        return interviewQuestion.id.eq(interviewAnswer.id).and(interviewAnswer.memberId.eq(memberId));
+        return interviewQuestion.id.eq(interviewAnswer.questionId).and(interviewAnswer.memberId.eq(memberId));
     }
 
     public Optional<HeartBalanceView> findHeartBalanceByMemberId(long memberId) {
