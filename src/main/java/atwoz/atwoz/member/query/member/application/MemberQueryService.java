@@ -6,7 +6,7 @@ import atwoz.atwoz.member.presentation.member.MemberMapper;
 import atwoz.atwoz.member.presentation.member.dto.MemberProfileResponse;
 import atwoz.atwoz.member.query.member.application.exception.ProfileAccessDeniedException;
 import atwoz.atwoz.member.query.member.infra.MemberQueryRepository;
-import atwoz.atwoz.member.query.member.infra.view.*;
+import atwoz.atwoz.member.query.member.view.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

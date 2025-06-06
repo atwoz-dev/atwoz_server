@@ -3,7 +3,7 @@ package atwoz.atwoz.member.query.member.infra;
 import atwoz.atwoz.match.command.domain.match.MatchStatus;
 import atwoz.atwoz.member.command.domain.member.Hobby;
 import atwoz.atwoz.member.command.domain.member.PrimaryContactType;
-import atwoz.atwoz.member.query.member.infra.view.*;
+import atwoz.atwoz.member.query.member.view.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.EnumPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;

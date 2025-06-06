@@ -4,7 +4,7 @@ import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeStatu
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.query.member.application.exception.ProfileAccessDeniedException;
 import atwoz.atwoz.member.query.member.infra.MemberQueryRepository;
-import atwoz.atwoz.member.query.member.infra.view.*;
+import atwoz.atwoz.member.query.member.view.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

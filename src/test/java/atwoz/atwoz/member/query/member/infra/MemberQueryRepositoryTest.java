@@ -21,7 +21,7 @@ import atwoz.atwoz.member.command.domain.member.vo.Nickname;
 import atwoz.atwoz.member.command.domain.member.vo.Region;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
-import atwoz.atwoz.member.query.member.infra.view.*;
+import atwoz.atwoz.member.query.member.view.*;
 import org.junit.jupiter.api.*;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -549,7 +549,7 @@ class MemberQueryRepositoryTest {
             // When
             OtherMemberProfileView view = memberQueryRepository.findOtherProfileByMemberId(member.getId(),
                 otherMember.getId()).orElse(null);
-            
+
             // Then
             assertThat(view).isNotNull();
             assertThat(view.profileExchangeInfo()).isNotNull();

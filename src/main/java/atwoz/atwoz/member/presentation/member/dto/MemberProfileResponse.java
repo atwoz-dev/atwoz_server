@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.presentation.member.dto;
 
-import atwoz.atwoz.member.query.member.infra.view.InterviewResultView;
-import atwoz.atwoz.member.query.member.infra.view.MatchInfo;
+import atwoz.atwoz.member.query.member.view.InterviewResultView;
+import atwoz.atwoz.member.query.member.view.MatchInfo;
 
 import java.util.List;
 

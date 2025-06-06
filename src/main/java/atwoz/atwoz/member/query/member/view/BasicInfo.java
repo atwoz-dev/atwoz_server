@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.query.member.infra.view;
+package atwoz.atwoz.member.query.member.view;
 
 import atwoz.atwoz.member.command.domain.member.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
