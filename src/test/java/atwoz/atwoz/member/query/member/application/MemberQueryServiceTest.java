@@ -135,7 +135,7 @@ class MemberQueryServiceTest {
 
         @ParameterizedTest(name = "{1}")
         @MethodSource("notAuthorizedCaseWithDescription")
-        @DisplayName("프로필 접근 권한이 존재하는 경우, 예외를 발생하지 않는다.")
+        @DisplayName("프로필 접근 권한이 존재하는 경우, 예외가 발생한다.")
         void throwsExceptionWhenProfileAccessIsNotAuthorized(ProfileAccessView profileAccessView, String predict) {
             // Given
             when(memberQueryRepository.findProfileAccessViewByMemberId(memberId, otherMemberId)).thenReturn(
