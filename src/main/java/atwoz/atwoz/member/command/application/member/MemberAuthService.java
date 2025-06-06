@@ -5,8 +5,8 @@ import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
-import atwoz.atwoz.member.command.application.member.exception.BannedMemberException;
 import atwoz.atwoz.member.command.application.member.exception.MemberLoginConflictException;
+import atwoz.atwoz.member.command.application.member.exception.PermanentlySuspendedMemberException;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import atwoz.atwoz.member.command.domain.member.event.MemberRegisteredEvent;
@@ -28,8 +28,8 @@ public class MemberAuthService {
     @Transactional
     public MemberLoginServiceDto login(String phoneNumber) {
         Member member = createOrFindMemberByPhoneNumber(phoneNumber);
-        if (member.isBanned()) {
-            throw new BannedMemberException();
+        if (member.isPermanentlySuspended()) {
+            throw new PermanentlySuspendedMemberException();
         }
 
         String accessToken = tokenProvider.createAccessToken(member.getId(), Role.MEMBER, Instant.now());
