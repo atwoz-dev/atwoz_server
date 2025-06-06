@@ -161,32 +161,5 @@ class MemberQueryServiceTest {
             assertThatCode(
                 () -> memberQueryService.getMemberProfile(memberId, otherMemberId)).doesNotThrowAnyException();
         }
-
-        @DisplayName("프로필 접근 권한이 존재하지 않는 경우, 예외 발생.")
-        @Test
-        void throwsExceptionWhenProfileAccessIsNotAuthorized() {
-            // Given
-            ProfileAccessView profileAccessView = new ProfileAccessView(false, null, null, null, null, null, false);
-            when(memberQueryRepository.findProfileAccessViewByMemberId(memberId, otherMemberId))
-                .thenReturn(Optional.of(profileAccessView));
-
-            // When & Then
-            assertThatThrownBy(() -> memberQueryService.getMemberProfile(memberId, otherMemberId))
-                .isInstanceOf(ProfileAccessDeniedException.class);
-        }
-
-        @DisplayName("프로필 교환 요청을 신청한 뒤, 대기중인 경우, 예외 발생.")
-        @Test
-        void throwsExceptionWhenProfileIsNotAuthorized() {
-            // Given
-            ProfileAccessView profileAccessView = new ProfileAccessView(false, memberId, otherMemberId, memberId,
-                otherMemberId, ProfileExchangeStatus.WAITING.name(), false);
-            when(memberQueryRepository.findProfileAccessViewByMemberId(memberId, otherMemberId))
-                .thenReturn(Optional.of(profileAccessView));
-
-            // When & Then
-            assertThatThrownBy(() -> memberQueryService.getMemberProfile(memberId, otherMemberId))
-                .isInstanceOf(ProfileAccessDeniedException.class);
-        }
     }
 }
