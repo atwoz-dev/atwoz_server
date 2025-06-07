@@ -31,6 +31,8 @@ public class ProfileExchange extends BaseEntity {
 
     private long responderId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(50)")
     private ProfileExchangeStatus status;
 
     private ProfileExchange(long requesterId, long responderId, @NonNull ProfileExchangeStatus status) {

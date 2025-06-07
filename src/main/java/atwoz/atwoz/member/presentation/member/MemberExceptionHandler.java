@@ -3,6 +3,7 @@ package atwoz.atwoz.member.presentation.member;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.member.exception.*;
+import atwoz.atwoz.member.query.member.application.exception.ProfileAccessDeniedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -54,5 +55,14 @@ public class MemberExceptionHandler {
 
         return ResponseEntity.badRequest()
             .body(BaseResponse.from(StatusType.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(ProfileAccessDeniedException.class)
+    public ResponseEntity<BaseResponse<Void>> handleProfileAccessDeniedException(
+        ProfileAccessDeniedException e) {
+        log.warn("프로필 조회에 실패하였습니다. {}", e.getMessage());
+
+        return ResponseEntity.status(403)
+            .body(BaseResponse.from(StatusType.FORBIDDEN));
     }
 }
