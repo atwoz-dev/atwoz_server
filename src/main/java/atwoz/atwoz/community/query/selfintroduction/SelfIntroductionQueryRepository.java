@@ -32,9 +32,9 @@ public class SelfIntroductionQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     public List<SelfIntroductionSummaryView> findSelfIntroductions(SelfIntroductionSearchCondition searchCondition,
-        Long lastId) {
+        Long lastId, Long memberId) {
 
-        BooleanExpression condition = getSearchCondition(searchCondition, lastId);
+        BooleanExpression condition = getSearchCondition(searchCondition, lastId, memberId);
 
         return queryFactory
             .select(
@@ -91,8 +91,10 @@ public class SelfIntroductionQueryRepository {
             .or(profileExchange.requesterId.eq(memberId).and(profileExchange.responderId.eq(member.id)));
     }
 
-    private BooleanExpression getSearchCondition(SelfIntroductionSearchCondition searchCondition, Long lastId) {
-        BooleanExpression condition = selfIntroduction.deletedAt.isNull();
+    private BooleanExpression getSearchCondition(SelfIntroductionSearchCondition searchCondition, Long lastId,
+        Long memberId) {
+        BooleanExpression condition = selfIntroduction.deletedAt.isNull()
+            .and(selfIntroduction.isOpened.eq(true).or(selfIntroduction.memberId.eq(memberId)));
         if (lastId != null) {
             condition = condition.and(selfIntroduction.id.lt(lastId));
         }
