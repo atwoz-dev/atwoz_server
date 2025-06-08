@@ -96,6 +96,10 @@ public class MemberIdeal extends BaseEntity {
         this.drinkingStatus = drinkingStatus;
     }
 
+    public boolean isUpdated() {
+        return getUpdatedAt().isAfter(getCreatedAt());
+    }
+
     private void setMemberId(@NonNull Long memberId) {
         this.memberId = memberId;
     }
