@@ -8,7 +8,8 @@ public enum IntroductionCacheKeyPrefix {
     SAME_HOBBY("hobby:"),
     SAME_RELIGION("religion:"),
     SAME_CITY("city:"),
-    RECENTLY_JOINED("recentlyJoined:");
+    RECENTLY_JOINED("recentlyJoined:"),
+    TODAY_CARD("todayCard:");
 
     private final String prefix;
 
