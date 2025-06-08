@@ -23,9 +23,7 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class TodayCardMemberIdFetcher {
-
     private static final int COMBINATION_NONE_SELECTABLE_SIZE = 2;
-
     private static final long MALE_LIMIT = 3L;
     private static final long FEMALE_LIMIT = 4L;
 
