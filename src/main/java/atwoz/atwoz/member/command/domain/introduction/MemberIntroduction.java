@@ -36,6 +36,11 @@ public class MemberIntroduction extends BaseEntity {
         return memberIntroduction;
     }
 
+    public static MemberIntroduction ofFree(Long memberId, Long introducedMemberId, String content) {
+        validateContent(content);
+        return new MemberIntroduction(memberId, introducedMemberId);
+    }
+
     private static void validateContent(@NonNull String content) {
         if (content.isBlank()) {
             throw new InvalidMemberIntroductionContentException("소개 내용은 비어있을 수 없습니다.");

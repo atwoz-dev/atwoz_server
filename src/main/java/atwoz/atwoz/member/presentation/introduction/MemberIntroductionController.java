@@ -136,4 +136,14 @@ public class MemberIntroductionController {
         memberintroductionService.createRecentIntroduction(memberId, request.introducedMemberId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
+
+    @Operation(summary = "오늘의 카드 프로필 블러 해제")
+    @PostMapping("/today-card")
+    public ResponseEntity<BaseResponse<Void>> createTodayCardIntroduction(
+        @Valid @RequestBody MemberIntroductionCreateRequest request,
+        @AuthPrincipal AuthContext authContext) {
+        long memberId = authContext.getId();
+        memberintroductionService.createTodayCardIntroduction(memberId, request.introducedMemberId());
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
 }
