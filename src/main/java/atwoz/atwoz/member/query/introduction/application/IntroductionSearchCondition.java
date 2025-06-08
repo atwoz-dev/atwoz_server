@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 @Getter
 public class IntroductionSearchCondition {
+    private static final Integer TODAY_CARD_AGE_DEFAULT_RANGE = 3;
+
     private final Set<Long> excludedMemberIds;
     private final Integer minAge;
     private final Integer maxAge;
@@ -46,6 +48,32 @@ public class IntroductionSearchCondition {
         this.drinkingStatus = (drinkingStatus != null) ? drinkingStatus.name() : null;
         this.memberGrade = (memberGrade != null) ? memberGrade.name() : null;
         this.gender = gender.name();
+        this.joinedAfter = joinedAfter;
+    }
+
+    private IntroductionSearchCondition(
+        Set<Long> excludedMemberIds,
+        Integer minAge,
+        Integer maxAge,
+        Set<String> hobbies,
+        Set<String> cities,
+        String religion,
+        String smokingStatus,
+        String drinkingStatus,
+        String memberGrade,
+        @NonNull String gender,
+        LocalDateTime joinedAfter
+    ) {
+        this.excludedMemberIds = excludedMemberIds;
+        this.minAge = minAge;
+        this.maxAge = maxAge;
+        this.hobbies = hobbies;
+        this.cities = cities;
+        this.religion = religion;
+        this.smokingStatus = smokingStatus;
+        this.drinkingStatus = drinkingStatus;
+        this.memberGrade = memberGrade;
+        this.gender = gender;
         this.joinedAfter = joinedAfter;
     }
 
@@ -144,6 +172,72 @@ public class IntroductionSearchCondition {
             memberIdeal.getSmokingStatus(),
             memberIdeal.getDrinkingStatus(),
             null,
+            gender,
+            joinedAfter
+        );
+    }
+
+    public static IntroductionSearchCondition ofTodayCard(
+        Set<Long> excludedMemberIds,
+        MemberIdeal memberIdeal,
+        Gender gender
+    ) {
+        return new IntroductionSearchCondition(
+            excludedMemberIds,
+            memberIdeal.getAgeRange(),
+            memberIdeal.getHobbies(),
+            memberIdeal.getCities(),
+            memberIdeal.getReligion(),
+            memberIdeal.getSmokingStatus(),
+            memberIdeal.getDrinkingStatus(),
+            null,
+            gender,
+            null
+        );
+    }
+
+    public static IntroductionSearchCondition ofTodayCardDefault(
+        Set<Long> excludedMemberIds,
+        Gender gender,
+        Member member
+    ) {
+        return new IntroductionSearchCondition(
+            excludedMemberIds,
+            AgeRange.ofRange(member.getProfile().getYearOfBirth().getAge(), TODAY_CARD_AGE_DEFAULT_RANGE),
+            Set.of(),
+            Set.of(member.getProfile().getRegion().getCity()),
+            null,
+            null
+            , null,
+            null,
+            gender,
+            null
+        );
+    }
+
+    public static IntroductionSearchCondition of(
+        Set<Long> excludedMemberIds,
+        Integer minAge,
+        Integer maxAge,
+        Set<String> hobbies,
+        Set<String> cities,
+        String religion,
+        String smokingStatus,
+        String drinkingStatus,
+        String memberGrade,
+        String gender,
+        LocalDateTime joinedAfter
+    ) {
+        return new IntroductionSearchCondition(
+            excludedMemberIds,
+            minAge,
+            maxAge,
+            hobbies,
+            cities,
+            religion,
+            smokingStatus,
+            drinkingStatus,
+            memberGrade,
             gender,
             joinedAfter
         );
