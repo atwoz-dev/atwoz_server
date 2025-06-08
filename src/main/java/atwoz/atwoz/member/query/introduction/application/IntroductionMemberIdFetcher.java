@@ -21,6 +21,7 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class IntroductionMemberIdFetcher {
+    private static final int FETCH_LIMIT = 10;
 
     private final IntroductionQueryRepository introductionQueryRepository;
     private final IntroductionRedisRepository introductionRedisRepository;
@@ -40,7 +41,8 @@ public class IntroductionMemberIdFetcher {
         Member member = memberCommandRepository.findById(memberId)
             .orElseThrow(MemberNotFoundException::new);
         IntroductionSearchCondition condition = supplier.get(excludedMemberIds, memberIdeal, member, criteria);
-        Set<Long> introductionMemberIds = introductionQueryRepository.findAllIntroductionMemberId(condition);
+        Set<Long> introductionMemberIds = introductionQueryRepository.findAllIntroductionMemberId(condition,
+            FETCH_LIMIT);
         introductionRedisRepository.saveIntroductionMemberIds(cacheKey, introductionMemberIds, getExpireAt());
         return introductionMemberIds;
     }
