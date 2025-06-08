@@ -100,7 +100,7 @@ class IntroductionMemberIdFetcherTest {
         IntroductionMemberIdFetcher.IntroductionConditionSupplier<Grade> supplier =
             (excluded, ideal, m, grade) -> dummyCondition;
 
-        when(introductionQueryRepository.findAllIntroductionMemberId(dummyCondition)).thenReturn(savedIds);
+        when(introductionQueryRepository.findAllIntroductionMemberId(dummyCondition, 10)).thenReturn(savedIds);
 
         doNothing().when(introductionRedisRepository)
             .saveIntroductionMemberIds(anyString(), eq(savedIds), any(Date.class));
@@ -120,7 +120,6 @@ class IntroductionMemberIdFetcherTest {
         // given
         long memberId = 1L;
         IntroductionCacheKeyPrefix introductionCacheKeyPrefix = IntroductionCacheKeyPrefix.DIAMOND;
-        Set<Long> savedIds = Set.of(2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L);
         String key = introductionCacheKeyPrefix.getPrefix() + memberId;
         when(introductionRedisRepository.findIntroductionMemberIds(key))
             .thenReturn(Set.of());
@@ -160,7 +159,6 @@ class IntroductionMemberIdFetcherTest {
         // given
         long memberId = 1L;
         IntroductionCacheKeyPrefix introductionCacheKeyPrefix = IntroductionCacheKeyPrefix.DIAMOND;
-        Set<Long> savedIds = Set.of(2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L);
         String key = introductionCacheKeyPrefix.getPrefix() + memberId;
         when(introductionRedisRepository.findIntroductionMemberIds(key))
             .thenReturn(Set.of());

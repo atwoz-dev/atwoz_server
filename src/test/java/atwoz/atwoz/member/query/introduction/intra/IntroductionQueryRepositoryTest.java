@@ -54,6 +54,7 @@ class IntroductionQueryRepositoryTest {
         void findIntroductionMemberIdsWhenSuccess(String fieldName) {
             // given
             int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+            int limit = 10;
 
             Hobby hobby1 = Hobby.ANIMATION;
             Hobby hobby2 = Hobby.BOARD_GAMES;
@@ -123,7 +124,7 @@ class IntroductionQueryRepositoryTest {
                 fieldName.equals("joinedAfter") ? LocalDateTime.now().plusDays(1) : null);
 
             // when
-            Set<Long> result = introductionQueryRepository.findAllIntroductionMemberId(condition);
+            Set<Long> result = introductionQueryRepository.findAllIntroductionMemberId(condition, limit);
             System.out.println("hobby Condition : " + condition.getHobbies());
 
             // then
