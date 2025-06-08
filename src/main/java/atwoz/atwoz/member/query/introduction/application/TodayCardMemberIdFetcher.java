@@ -45,11 +45,11 @@ public class TodayCardMemberIdFetcher {
     }
 
     private List<IntroductionSearchCondition> getConditions(final long memberId) {
-        Set<Long> excludedMemberIds = findExcludedMemberIds(memberId);
         MemberIdeal memberIdeal = memberIdealCommandRepository.findByMemberId(memberId)
             .orElseThrow(MemberIdealNotFoundException::new);
         Member member = memberCommandRepository.findById(memberId)
             .orElseThrow(MemberNotFoundException::new);
+        Set<Long> excludedMemberIds = findExcludedMemberIds(memberId);
         Gender oppositeGender = member.getGender().getOpposite();
         if (!memberIdeal.isUpdated()) {
             return List.of(
