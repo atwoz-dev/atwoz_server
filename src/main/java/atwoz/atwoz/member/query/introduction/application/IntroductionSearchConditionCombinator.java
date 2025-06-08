@@ -55,11 +55,10 @@ public final class IntroductionSearchConditionCombinator {
     private static <T> void accumulate(List<List<T>> lists, int depth, List<T> current, int selectedCount,
         int selectionLimit, List<List<T>> result) {
 
-        if (selectedCount > selectionLimit) {
-            return;
-        }
         if (depth == lists.size()) {
-            result.add(new ArrayList<>(current));
+            if (selectedCount >= selectionLimit) {
+                result.add(new ArrayList<>(current));
+            }
             return;
         }
         for (T item : lists.get(depth)) {
