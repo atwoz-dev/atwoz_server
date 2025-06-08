@@ -35,6 +35,15 @@ public class AgeRange {
         return new AgeRange(minAge, maxAge);
     }
 
+    public static AgeRange ofRange(Integer memberAge, Integer range) {
+        if (memberAge == null) {
+            return init();
+        }
+        Integer minAge = Math.max(MIN_VALUE, memberAge - range);
+        Integer maxAge = Math.min(MAX_VALUE, memberAge + range);
+        return new AgeRange(minAge, maxAge);
+    }
+
     private void validateAgeRange(Integer minAge, Integer maxAge) {
         if (minAge < MIN_VALUE || maxAge > MAX_VALUE || minAge > maxAge) {
             throw new InvalidAgeRangeException();
