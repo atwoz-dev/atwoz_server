@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.query.member;
+package atwoz.atwoz.member.query.member.view;
 
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Gender;
@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 
-public record MemberView(
+public record AdminMemberView(
     long memberId,
     String nickname,
     @Schema(implementation = Gender.class)
@@ -18,6 +18,6 @@ public record MemberView(
     int warningCount
 ) {
     @QueryProjection
-    public MemberView {
+    public AdminMemberView {
     }
 }

@@ -1,5 +1,9 @@
-package atwoz.atwoz.admin.query.member;
+package atwoz.atwoz.member.query.member.infra;
 
+import atwoz.atwoz.member.query.member.condition.AdminMemberSearchCondition;
+import atwoz.atwoz.member.query.member.view.AdminMemberDetailView;
+import atwoz.atwoz.member.query.member.view.AdminMemberView;
+import atwoz.atwoz.member.query.member.view.QAdminMemberView;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -21,9 +25,9 @@ public class AdminMemberQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public Page<MemberView> findMembers(MemberSearchCondition condition, Pageable pageable) {
-        List<MemberView> views = queryFactory
-            .select(new QMemberView(
+    public Page<AdminMemberView> findMembers(AdminMemberSearchCondition condition, Pageable pageable) {
+        List<AdminMemberView> views = queryFactory
+            .select(new QAdminMemberView(
                 member.id,
                 member.profile.nickname.value,
                 member.profile.gender.stringValue(),
@@ -49,7 +53,7 @@ public class AdminMemberQueryRepository {
         return new PageImpl<>(views, pageable, totalCount);
     }
 
-    private BooleanExpression buildFindMembersFilterExpression(MemberSearchCondition condition) {
+    private BooleanExpression buildFindMembersFilterExpression(AdminMemberSearchCondition condition) {
         return Expressions.allOf(
             activityStatusEq(condition.activityStatus()),
             genderEq(condition.gender()),
@@ -89,7 +93,7 @@ public class AdminMemberQueryRepository {
         return createdDateLoe != null ? member.createdAt.lt(createdDateLoe.plusDays(1).atStartOfDay()) : null;
     }
 
-    public MemberDetailView findById(long memberId) {
+    public AdminMemberDetailView findById(long memberId) {
         return null;
     }
 }

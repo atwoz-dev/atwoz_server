@@ -1,10 +1,10 @@
-package atwoz.atwoz.admin.presentation.member;
+package atwoz.atwoz.member.presentation.member;
 
-import atwoz.atwoz.admin.query.member.AdminMemberQueryRepository;
-import atwoz.atwoz.admin.query.member.MemberDetailView;
-import atwoz.atwoz.admin.query.member.MemberSearchCondition;
-import atwoz.atwoz.admin.query.member.MemberView;
 import atwoz.atwoz.common.response.BaseResponse;
+import atwoz.atwoz.member.query.member.condition.AdminMemberSearchCondition;
+import atwoz.atwoz.member.query.member.infra.AdminMemberQueryRepository;
+import atwoz.atwoz.member.query.member.view.AdminMemberDetailView;
+import atwoz.atwoz.member.query.member.view.AdminMemberView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -27,8 +27,8 @@ public class AdminMemberController {
 
     @Operation(summary = "멤버 목록 조회")
     @GetMapping
-    public ResponseEntity<BaseResponse<Page<MemberView>>> getMembers(
-        @Valid @ModelAttribute MemberSearchCondition condition,
+    public ResponseEntity<BaseResponse<Page<AdminMemberView>>> getMembers(
+        @Valid @ModelAttribute AdminMemberSearchCondition condition,
         @PageableDefault(size = 100) Pageable pageable
     ) {
         return ResponseEntity.ok(BaseResponse.of(OK, adminMemberQueryRepository.findMembers(condition, pageable)));
@@ -36,7 +36,7 @@ public class AdminMemberController {
 
     @Operation(summary = "멤버 상세 조회")
     @GetMapping("/{memberId}")
-    public ResponseEntity<BaseResponse<MemberDetailView>> getMemberDetail(@PathVariable long memberId) {
+    public ResponseEntity<BaseResponse<AdminMemberDetailView>> getMemberDetail(@PathVariable long memberId) {
         return ResponseEntity.ok(BaseResponse.of(OK, adminMemberQueryRepository.findById(memberId)));
     }
 }
