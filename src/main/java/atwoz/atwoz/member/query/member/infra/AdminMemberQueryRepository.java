@@ -1,10 +1,10 @@
 package atwoz.atwoz.member.query.member.infra;
 
+import atwoz.atwoz.member.command.domain.member.Hobby;
 import atwoz.atwoz.member.query.member.condition.AdminMemberSearchCondition;
-import atwoz.atwoz.member.query.member.view.AdminMemberDetailView;
-import atwoz.atwoz.member.query.member.view.AdminMemberView;
-import atwoz.atwoz.member.query.member.view.QAdminMemberView;
+import atwoz.atwoz.member.query.member.view.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.EnumPath;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static atwoz.atwoz.admin.command.domain.warning.QWarning.warning;
+import static atwoz.atwoz.interview.command.domain.answer.QInterviewAnswer.interviewAnswer;
+import static atwoz.atwoz.interview.command.domain.question.QInterviewQuestion.interviewQuestion;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
+import static atwoz.atwoz.member.command.domain.profileImage.QProfileImage.profileImage;
+import static atwoz.atwoz.notification.command.domain.QNotificationPreference.notificationPreference;
+import static com.querydsl.core.group.GroupBy.*;
+import static com.querydsl.core.types.dsl.Expressions.constant;
+import static com.querydsl.core.types.dsl.Expressions.enumPath;
 
 @Repository
 @RequiredArgsConstructor
@@ -94,6 +101,76 @@ public class AdminMemberQueryRepository {
     }
 
     public AdminMemberDetailView findById(long memberId) {
-        return null;
+        List<InterviewInfoView> interviewInfos = queryFactory
+            .select(new QInterviewInfoView(
+                interviewQuestion.content,
+                interviewAnswer.content
+            ))
+            .from(interviewAnswer)
+            .leftJoin(interviewQuestion).on(interviewAnswer.questionId.eq(interviewQuestion.id))
+            .where(interviewAnswer.memberId.eq(memberId))
+            .fetch();
+
+        boolean hasInterviewAnswers = !interviewInfos.isEmpty();
+
+        int warningCount = queryFactory
+            .select(warning.count())
+            .from(warning)
+            .where(warning.memberId.eq(memberId))
+            .fetchOne()
+            .intValue();
+
+        EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
+
+        return queryFactory
+            .from(member)
+            .leftJoin(notificationPreference).on(notificationPreference.memberId.eq(member.id))
+            .leftJoin(profileImage).on(profileImage.memberId.eq(member.id))
+            .leftJoin(member.profile.hobbies, hobby)
+            .where(member.id.eq(memberId))
+            .transform(
+                groupBy(member.id).as(new QAdminMemberDetailView(
+                    new QAdminMemberSettingInfo(
+                        member.grade.stringValue(),
+                        member.activityStatus.stringValue(),
+                        member.isVip
+                    ),
+                    new QAdminMemberStatusInfo(
+                        member.primaryContactType.stringValue(),
+                        notificationPreference.isEnabledGlobally,
+                        constant(hasInterviewAnswers),
+                        constant(warningCount)
+                    ),
+                    new QBasicInfo(
+                        member.profile.nickname.value,
+                        member.profile.gender.stringValue(),
+                        member.kakaoId.value,
+                        member.profile.yearOfBirth.value,
+                        member.profile.height.intValue(),
+                        member.phoneNumber.value
+                    ),
+                    new QHeartBalanceView(
+                        member.heartBalance.purchaseHeartBalance,
+                        member.heartBalance.missionHeartBalance,
+                        member.heartBalance.purchaseHeartBalance.add(member.heartBalance.missionHeartBalance)
+                    ),
+                    list(profileImage.imageUrl.value),
+                    new QProfileInfo(
+                        member.profile.job.stringValue(),
+                        member.profile.highestEducation.stringValue(),
+                        member.profile.region.city.stringValue(),
+                        member.profile.region.district.stringValue(),
+                        member.profile.mbti.stringValue(),
+                        member.profile.smokingStatus.stringValue(),
+                        member.profile.drinkingStatus.stringValue(),
+                        member.profile.religion.stringValue(),
+                        set(hobby.stringValue())
+                    ),
+                    constant(interviewInfos),
+                    member.createdAt,
+                    member.deletedAt
+                ))
+            )
+            .get(memberId);
     }
 }
