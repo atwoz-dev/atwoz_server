@@ -38,18 +38,17 @@ public class TodayCardMemberIdFetcher {
         if (!cachedIds.isEmpty()) {
             return cachedIds;
         }
-        List<IntroductionSearchCondition> conditions = getConditions(memberId);
-        Set<Long> introductionMemberIds = findAllIntroductionMemberId(conditions, memberId);
+        Member member = memberCommandRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
+        List<IntroductionSearchCondition> conditions = getConditions(member);
+        Set<Long> introductionMemberIds = findAllIntroductionMemberId(conditions, member);
         introductionRedisRepository.saveIntroductionMemberIds(cacheKey, introductionMemberIds, getExpireAt());
         return introductionMemberIds;
     }
 
-    private List<IntroductionSearchCondition> getConditions(final long memberId) {
-        MemberIdeal memberIdeal = memberIdealCommandRepository.findByMemberId(memberId)
+    private List<IntroductionSearchCondition> getConditions(Member member) {
+        MemberIdeal memberIdeal = memberIdealCommandRepository.findByMemberId(member.getId())
             .orElseThrow(MemberIdealNotFoundException::new);
-        Member member = memberCommandRepository.findById(memberId)
-            .orElseThrow(MemberNotFoundException::new);
-        Set<Long> excludedMemberIds = findExcludedMemberIds(memberId);
+        Set<Long> excludedMemberIds = findExcludedMemberIds(member.getId());
         Gender oppositeGender = member.getGender().getOpposite();
         if (!memberIdeal.isUpdated()) {
             return List.of(
@@ -70,9 +69,9 @@ public class TodayCardMemberIdFetcher {
         return excludedMemberIds;
     }
 
-    private Set<Long> findAllIntroductionMemberId(List<IntroductionSearchCondition> conditions, final long memberId) {
+    private Set<Long> findAllIntroductionMemberId(List<IntroductionSearchCondition> conditions, Member member) {
         Set<Long> introductionMemberIds = new HashSet<>();
-        final long limit = getLimit(memberId);
+        final long limit = getLimit(member);
         for (IntroductionSearchCondition condition : conditions) {
             final long currentLimit = limit - introductionMemberIds.size();
             introductionMemberIds.addAll(
@@ -84,8 +83,7 @@ public class TodayCardMemberIdFetcher {
         return introductionMemberIds;
     }
 
-    private long getLimit(final long memberId) {
-        Member member = memberCommandRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
+    private long getLimit(Member member) {
         return member.getGender().equals(Gender.MALE) ? MALE_LIMIT : FEMALE_LIMIT;
     }
 
