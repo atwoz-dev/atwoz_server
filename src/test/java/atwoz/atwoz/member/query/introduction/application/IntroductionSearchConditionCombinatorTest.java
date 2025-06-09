@@ -127,21 +127,24 @@ class IntroductionSearchConditionCombinatorTest {
         // Then
         assertThat(combinations).hasSize(7);
         assertCondition(combinations.get(0), base);
-        assertCondition(combinations.get(1), base.getMinAge(), base.getMaxAge(), base.getCities(), base.getReligion(),
+        assertFieldOptions(combinations.get(1), base.getMinAge(), base.getMaxAge(), base.getCities(),
+            base.getReligion(),
             base.getHobbies(), base.getSmokingStatus(), null);
-        assertCondition(combinations.get(2), base.getMinAge(), base.getMaxAge(), base.getCities(), base.getReligion(),
+        assertFieldOptions(combinations.get(2), base.getMinAge(), base.getMaxAge(), base.getCities(),
+            base.getReligion(),
             base.getHobbies(), null, base.getDrinkingStatus());
-        assertCondition(combinations.get(3), base.getMinAge(), base.getMaxAge(), base.getCities(), base.getReligion(),
+        assertFieldOptions(combinations.get(3), base.getMinAge(), base.getMaxAge(), base.getCities(),
+            base.getReligion(),
             Set.of(), base.getSmokingStatus(), base.getDrinkingStatus());
-        assertCondition(combinations.get(4), base.getMinAge(), base.getMaxAge(), base.getCities(), null,
+        assertFieldOptions(combinations.get(4), base.getMinAge(), base.getMaxAge(), base.getCities(), null,
             base.getHobbies(), base.getSmokingStatus(), base.getDrinkingStatus());
-        assertCondition(combinations.get(5), base.getMinAge(), base.getMaxAge(), Set.of(), base.getReligion(),
+        assertFieldOptions(combinations.get(5), base.getMinAge(), base.getMaxAge(), Set.of(), base.getReligion(),
             base.getHobbies(), base.getSmokingStatus(), base.getDrinkingStatus());
-        assertCondition(combinations.get(6), null, null, base.getCities(), base.getReligion(),
+        assertFieldOptions(combinations.get(6), null, null, base.getCities(), base.getReligion(),
             base.getHobbies(), base.getSmokingStatus(), base.getDrinkingStatus());
     }
 
-    private void assertCondition(
+    private void assertFieldOptions(
         IntroductionSearchCondition condition,
         Integer minAge,
         Integer maxAge,
