@@ -100,7 +100,7 @@ class MemberIntroductionServiceTest {
         try (MockedStatic<MemberIntroduction> memberIntroductionMock = mockStatic(MemberIntroduction.class)) {
             MemberIntroduction memberIntroduction = mock(MemberIntroduction.class);
             memberIntroductionMock.when(() -> MemberIntroduction.of(memberId, introducedMemberId,
-                    IntroductionType.DIAMOND_GRADE.getDescription()))
+                    IntroductionType.DIAMOND_GRADE))
                 .thenReturn(memberIntroduction);
             memberIntroductionService.createGradeIntroduction(memberId, introducedMemberId);
 

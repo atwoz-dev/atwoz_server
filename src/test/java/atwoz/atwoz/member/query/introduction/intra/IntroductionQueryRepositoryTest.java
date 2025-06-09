@@ -54,6 +54,7 @@ class IntroductionQueryRepositoryTest {
         void findIntroductionMemberIdsWhenSuccess(String fieldName) {
             // given
             int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+            int limit = 10;
 
             Hobby hobby1 = Hobby.ANIMATION;
             Hobby hobby2 = Hobby.BOARD_GAMES;
@@ -123,7 +124,7 @@ class IntroductionQueryRepositoryTest {
                 fieldName.equals("joinedAfter") ? LocalDateTime.now().plusDays(1) : null);
 
             // when
-            Set<Long> result = introductionQueryRepository.findAllIntroductionMemberId(condition);
+            Set<Long> result = introductionQueryRepository.findAllIntroductionMemberId(condition, limit);
             System.out.println("hobby Condition : " + condition.getHobbies());
 
             // then
@@ -221,17 +222,17 @@ class IntroductionQueryRepositoryTest {
             entityManager.persist(like);
             entityManager.flush();
 
-            String content = IntroductionType.DIAMOND_GRADE.getDescription();
+            IntroductionType type = IntroductionType.DIAMOND_GRADE;
 
             if (fieldName.equals("introduced")) {
                 MemberIntroduction memberIntroduction = MemberIntroduction.of(me.getId(),
-                    introductionTargetMember.getId(), content);
+                    introductionTargetMember.getId(), type);
                 entityManager.persist(memberIntroduction);
                 entityManager.flush();
             }
             if (fieldName.equals("notIntroduced1")) {
                 MemberIntroduction memberIntroduction = MemberIntroduction.of(introductionTargetMember.getId(),
-                    me.getId(), content);
+                    me.getId(), type);
                 entityManager.persist(memberIntroduction);
                 entityManager.flush();
             }

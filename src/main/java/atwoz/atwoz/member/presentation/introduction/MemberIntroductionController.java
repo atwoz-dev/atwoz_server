@@ -8,6 +8,7 @@ import atwoz.atwoz.member.command.application.introduction.MemberIntroductionSer
 import atwoz.atwoz.member.presentation.introduction.dto.MemberIntroductionCreateRequest;
 import atwoz.atwoz.member.query.introduction.application.IntroductionQueryService;
 import atwoz.atwoz.member.query.introduction.application.MemberIntroductionProfileView;
+import atwoz.atwoz.member.query.introduction.application.TodayCardQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -22,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/member/introduction")
 public class MemberIntroductionController {
+    private final TodayCardQueryService todayCardQueryService;
     private final IntroductionQueryService introductionQueryService;
     private final MemberIntroductionService memberintroductionService;
 
@@ -75,6 +77,16 @@ public class MemberIntroductionController {
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, introductionProfileViews));
     }
 
+    @Operation(summary = "오늘의 카드 조회")
+    @GetMapping("/today-card")
+    public ResponseEntity<BaseResponse<List<MemberIntroductionProfileView>>> findTodayCardIntroductions(
+        @AuthPrincipal AuthContext authContext) {
+        long memberId = authContext.getId();
+        List<MemberIntroductionProfileView> introductionProfileViews = todayCardQueryService.findTodayCardIntroductions(
+            memberId);
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, introductionProfileViews));
+    }
+
     @Operation(summary = "다이아 등급 이성 프로필 블러 해제")
     @PostMapping("/grade")
     public ResponseEntity<BaseResponse<Void>> createGradeIntroduction(
@@ -122,6 +134,16 @@ public class MemberIntroductionController {
         @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
         memberintroductionService.createRecentIntroduction(memberId, request.introducedMemberId());
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
+
+    @Operation(summary = "오늘의 카드 프로필 블러 해제")
+    @PostMapping("/today-card")
+    public ResponseEntity<BaseResponse<Void>> createTodayCardIntroduction(
+        @Valid @RequestBody MemberIntroductionCreateRequest request,
+        @AuthPrincipal AuthContext authContext) {
+        long memberId = authContext.getId();
+        memberintroductionService.createTodayCardIntroduction(memberId, request.introducedMemberId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 }

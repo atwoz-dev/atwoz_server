@@ -24,7 +24,6 @@ import static com.querydsl.core.types.dsl.Expressions.enumPath;
 @Repository
 @RequiredArgsConstructor
 public class IntroductionQueryRepository {
-    private static final Long LIMIT = 10L;
     private final JPAQueryFactory queryFactory;
 
     public Set<Long> findAllMatchRequestedMemberId(long memberId) {
@@ -51,7 +50,7 @@ public class IntroductionQueryRepository {
             .fetch());
     }
 
-    public Set<Long> findAllIntroductionMemberId(IntroductionSearchCondition condition) {
+    public Set<Long> findAllIntroductionMemberId(IntroductionSearchCondition condition, final long limit) {
         JPAQuery<Long> query = queryFactory
             .select(member.id)
             .from(member)
@@ -67,7 +66,7 @@ public class IntroductionQueryRepository {
                 createdAtGoe(condition.getJoinedAfter())
             )
             .orderBy(member.id.desc())
-            .limit(LIMIT);
+            .limit(limit);
 
         applyHobbiesCondition(query, condition);
         return new HashSet<>(query.fetch());

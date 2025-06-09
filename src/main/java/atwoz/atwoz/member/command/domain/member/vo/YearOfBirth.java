@@ -1,6 +1,7 @@
 package atwoz.atwoz.member.command.domain.member.vo;
 
 import atwoz.atwoz.member.command.domain.member.exception.InvalidYearOfBirthException;
+import atwoz.atwoz.member.query.member.AgeConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -26,6 +27,13 @@ public class YearOfBirth {
 
     public static YearOfBirth from(Integer yearOfBirth) {
         return new YearOfBirth(yearOfBirth);
+    }
+
+    public Integer getAge() {
+        if (value == null) {
+            return null;
+        }
+        return AgeConverter.toAge(value);
     }
 
     private void validateYearOfBirth(Integer yearOfBirth) {
