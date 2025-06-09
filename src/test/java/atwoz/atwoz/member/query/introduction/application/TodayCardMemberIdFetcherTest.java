@@ -62,6 +62,21 @@ class TodayCardMemberIdFetcherTest {
     }
 
     @Test
+    @DisplayName("캐시된 값이 없고 멤버가 없으면 예외를 던진다.")
+    void throwExceptionWhenMemberNotFound() {
+        // given
+        long memberId = 1L;
+        IntroductionCacheKeyPrefix cacheKeyPrefix = IntroductionCacheKeyPrefix.TODAY_CARD;
+        when(introductionRedisRepository.findIntroductionMemberIds(cacheKeyPrefix.getPrefix() + memberId))
+            .thenReturn(Set.of());
+        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> todayCardMemberIdFetcher.fetch(memberId, cacheKeyPrefix))
+            .isInstanceOf(MemberNotFoundException.class);
+    }
+
+    @Test
     @DisplayName("캐시된 값이 없고 멤버 이상형이 없으면 예외를 던진다.")
     void throwExceptionWhenMemberIdealNotFound() {
         // given
@@ -70,6 +85,9 @@ class TodayCardMemberIdFetcherTest {
         when(introductionRedisRepository.findIntroductionMemberIds(cacheKeyPrefix.getPrefix() + memberId))
             .thenReturn(Set.of());
 
+        Member member = mock(Member.class);
+        when(member.getId()).thenReturn(memberId);
+        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(member));
         when(memberIdealCommandRepository.findByMemberId(memberId)).thenReturn(Optional.empty());
 
         // when & then
@@ -77,24 +95,6 @@ class TodayCardMemberIdFetcherTest {
             .isInstanceOf(MemberIdealNotFoundException.class);
     }
 
-    @Test
-    @DisplayName("캐시된 값이 없고 멤버가 없으면 예외를 던진다.")
-    void throwExceptionWhenMemberNotFound() {
-        // given
-        long memberId = 1L;
-        IntroductionCacheKeyPrefix cacheKeyPrefix = IntroductionCacheKeyPrefix.TODAY_CARD;
-        when(introductionRedisRepository.findIntroductionMemberIds(cacheKeyPrefix.getPrefix() + memberId))
-            .thenReturn(Set.of());
-
-        MemberIdeal memberIdeal = mock(MemberIdeal.class);
-        when(memberIdealCommandRepository.findByMemberId(memberId)).thenReturn(Optional.of(memberIdeal));
-
-        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.empty());
-
-        // when & then
-        assertThatThrownBy(() -> todayCardMemberIdFetcher.fetch(memberId, cacheKeyPrefix))
-            .isInstanceOf(MemberNotFoundException.class);
-    }
 
     @Test
     @DisplayName("캐시된 값이 없고 이상형이 설정되지 않았다면 기본 조건으로 멤버를 조회한다.")
@@ -110,6 +110,7 @@ class TodayCardMemberIdFetcherTest {
         when(memberIdeal.isUpdated()).thenReturn(false);
 
         Member member = mock(Member.class);
+        when(member.getId()).thenReturn(memberId);
         when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(member));
         Gender memberGender = Gender.MALE;
         when(member.getGender()).thenReturn(memberGender);
@@ -160,6 +161,7 @@ class TodayCardMemberIdFetcherTest {
         when(memberIdeal.isUpdated()).thenReturn(true);
 
         Member member = mock(Member.class);
+        when(member.getId()).thenReturn(memberId);
         when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(member));
         Gender memberGender = Gender.MALE;
         when(member.getGender()).thenReturn(memberGender);
