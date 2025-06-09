@@ -104,7 +104,7 @@ class IntroductionSearchConditionCombinatorTest {
     }
 
     @Test
-    @DisplayName("조합 생성 시 fieldOptions 순서대로 우선순위로 생성되는지 테스트")
+    @DisplayName("조합 생성 시 fieldOptions 순서대로 나이, 도시, 종교, 취미, 흡연 여부, 음주 여부 우선순위로 생성되는지 테스트")
     void generateCombinationsWithPriority() {
         // Given
         IntroductionSearchCondition base = IntroductionSearchCondition.of(
