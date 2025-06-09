@@ -43,7 +43,7 @@ public class SelfIntroduction extends SoftDeleteBaseEntity {
     }
 
     public static SelfIntroduction write(Long memberId, String title, String content) {
-        return new SelfIntroduction(memberId, title, content, true);
+        return new SelfIntroduction(memberId, title, content, false);
     }
 
     public void update(String title, String content) {

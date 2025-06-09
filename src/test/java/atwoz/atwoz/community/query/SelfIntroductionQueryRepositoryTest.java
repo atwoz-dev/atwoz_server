@@ -115,6 +115,11 @@ public class SelfIntroductionQueryRepositoryTest {
                 selfIntroductions.add(maleSelfIntroduction);
                 selfIntroductions.add(femaleSelfIntroduction);
 
+                if (i % 2 == 0) {
+                    maleSelfIntroduction.open();
+                    femaleSelfIntroduction.open();
+                }
+
                 entityManager.persist(maleSelfIntroduction);
                 entityManager.persist(femaleSelfIntroduction);
             }
@@ -129,7 +134,7 @@ public class SelfIntroductionQueryRepositoryTest {
         }
 
         @Test
-        @DisplayName("검색 조건이 없는 경우, 모든 글을 불러온다.")
+        @DisplayName("검색 조건이 없는 경우, 자신의 글 또는 공개된 모든 글을 불러온다.")
         void getAllSelfIntroductions() {
             // Given
             SelfIntroductionSearchCondition searchCondition = new SelfIntroductionSearchCondition(
@@ -138,31 +143,36 @@ public class SelfIntroductionQueryRepositoryTest {
 
             // When
             List<SelfIntroductionSummaryView> selfIntroductionPage1 = selfIntroductionQueryRepository
-                .findSelfIntroductions(searchCondition, null);
+                .findSelfIntroductions(searchCondition, null, maleMember.getId());
             List<SelfIntroductionSummaryView> selfIntroductionPage2 = selfIntroductionQueryRepository
-                .findSelfIntroductions(searchCondition, selfIntroductionPage1.getLast().id());
+                .findSelfIntroductions(searchCondition, selfIntroductionPage1.getLast().id(), maleMember.getId());
 
             // Then
             assertThat(selfIntroductionPage1).isNotNull();
             assertThat(selfIntroductionPage2).isNotNull();
+
+            List<SelfIntroduction> expectedResult = selfIntroductions.stream()
+                .filter(s -> s.isOpened() || s.getMemberId().equals(maleMember.getId()))
+                .toList();
+
             assertThat(selfIntroductionPage1.size() + selfIntroductionPage2.size())
-                .isEqualTo(selfIntroductions.size());
+                .isEqualTo(expectedResult.size());
         }
 
         @Test
-        @DisplayName("검색 조건 중 성별에 남성을 명시한 경우, 남성의 글을 불러온다.")
+        @DisplayName("검색 조건 중 성별에 남성을 명시한 경우, 공개된 남성의 글을 불러온다.")
         void getSelfIntroductionsByGender() {
             // Given
             SelfIntroductionSearchCondition searchCondition = new SelfIntroductionSearchCondition(
                 null, null, null, Gender.MALE
             );
             List<SelfIntroduction> maleSelfIntroduction = selfIntroductions.stream()
-                .filter(s -> s.getMemberId() == maleMember.getId())
+                .filter(s -> s.getMemberId() == maleMember.getId() && s.isOpened())
                 .toList();
 
             // When
             List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                .findSelfIntroductions(searchCondition, null);
+                .findSelfIntroductions(searchCondition, null, femaleMember.getId());
 
             // Then
             assertThat(selfIntroductionPage).isNotNull().hasSameSizeAs(maleSelfIntroduction);
@@ -180,7 +190,7 @@ public class SelfIntroductionQueryRepositoryTest {
         }
 
         @Test
-        @DisplayName("검색 조건 중 최대 연도를 명시한 경우, 해당 연도 이하의 멤버가 작성한 글을 불러온다.")
+        @DisplayName("검색 조건 중 최대 연도를 명시한 경우, 해당 연도 이하의 멤버가 작성한 공개된 글을 불러온다.")
         void getSelfIntroductionsByStartAgeCondition() {
             // Given
             int toYearOfBirth = maleMember.getProfile().getYearOfBirth().getValue() + 1;
@@ -190,7 +200,7 @@ public class SelfIntroductionQueryRepositoryTest {
 
             // When
             List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                .findSelfIntroductions(searchCondition, null);
+                .findSelfIntroductions(searchCondition, null, maleMember.getId());
 
             // Then
             assertThat(selfIntroductionPage).isNotNull();
@@ -200,7 +210,7 @@ public class SelfIntroductionQueryRepositoryTest {
         }
 
         @Test
-        @DisplayName("검색 조건 중 최소 연도를 명시한 경우, 해당 연도 이상의 멤버가 작성한 글을 불러온다.")
+        @DisplayName("검색 조건 중 최소 연도를 명시한 경우, 해당 연도 이상의 멤버가 작성한 공개된 글을 불러온다.")
         void getSelfIntroductionsByEndAgeCondition() {
             // Given
             int fromYearOfBirth = femaleMember.getProfile().getYearOfBirth().getValue() - 1;
@@ -211,7 +221,7 @@ public class SelfIntroductionQueryRepositoryTest {
 
             // When
             List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                .findSelfIntroductions(searchCondition, null);
+                .findSelfIntroductions(searchCondition, null, maleMember.getId());
 
             // Then
             assertThat(selfIntroductionPage).isNotNull();
@@ -221,7 +231,7 @@ public class SelfIntroductionQueryRepositoryTest {
         }
 
         @Test
-        @DisplayName("검색 조건 중 최소/최대 연도를 명시한 경우, 해당 연도 사이의 멤버가 작성한 글을 불러온다.")
+        @DisplayName("검색 조건 중 최소/최대 연도를 명시한 경우, 해당 연도 사이의 멤버가 작성한 공개된 글을 불러온다.")
         void getSelfIntroductionsByYearRangeCondition() {
             // Given
             int toYearOfBirth = maleMember.getProfile().getYearOfBirth().getValue();
@@ -233,7 +243,7 @@ public class SelfIntroductionQueryRepositoryTest {
 
             // When
             List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                .findSelfIntroductions(searchCondition, null);
+                .findSelfIntroductions(searchCondition, null, maleMember.getId());
 
             // Then
             assertThat(selfIntroductionPage).isNotNull();
@@ -243,7 +253,7 @@ public class SelfIntroductionQueryRepositoryTest {
         }
 
         @Test
-        @DisplayName("검색 조건 중 지역을 명시한 경우, 해당 지역 출신의 멤벅 작성한 글을 불러온다.")
+        @DisplayName("검색 조건 중 지역을 명시한 경우, 해당 지역 출신의 멤벅 작성한 공개된 글을 불러온다.")
         void getSelfIntroductionByRegionCondition() {
             // Given
             City city = maleMember.getProfile().getRegion().getCity();
@@ -257,7 +267,7 @@ public class SelfIntroductionQueryRepositoryTest {
 
             // When
             List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                .findSelfIntroductions(searchCondition, null);
+                .findSelfIntroductions(searchCondition, null, maleMember.getId());
 
             // Then
             assertThat(selfIntroductionPage).isNotNull();
@@ -283,7 +293,7 @@ public class SelfIntroductionQueryRepositoryTest {
 
             // When
             List<SelfIntroductionSummaryView> selfIntroductionPage = selfIntroductionQueryRepository
-                .findSelfIntroductions(searchCondition, null);
+                .findSelfIntroductions(searchCondition, null, maleMember.getId());
 
             // Then
             assertThat(selfIntroductionPage).isNotNull();
@@ -398,7 +408,7 @@ public class SelfIntroductionQueryRepositoryTest {
             // When
             SelfIntroductionView view = selfIntroductionQueryRepository.findSelfIntroductionByIdWithMemberId(
                 selfIntroductionId, memberId).orElse(null);
-            
+
             // Then
             assertThat(view.title()).isEqualTo(selfIntroduction.getTitle());
             assertThat(view.content()).isEqualTo(selfIntroduction.getContent());
