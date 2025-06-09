@@ -222,17 +222,17 @@ class IntroductionQueryRepositoryTest {
             entityManager.persist(like);
             entityManager.flush();
 
-            String content = IntroductionType.DIAMOND_GRADE.getDescription();
+            IntroductionType type = IntroductionType.DIAMOND_GRADE;
 
             if (fieldName.equals("introduced")) {
                 MemberIntroduction memberIntroduction = MemberIntroduction.of(me.getId(),
-                    introductionTargetMember.getId(), content);
+                    introductionTargetMember.getId(), type);
                 entityManager.persist(memberIntroduction);
                 entityManager.flush();
             }
             if (fieldName.equals("notIntroduced1")) {
                 MemberIntroduction memberIntroduction = MemberIntroduction.of(introductionTargetMember.getId(),
-                    me.getId(), content);
+                    me.getId(), type);
                 entityManager.persist(memberIntroduction);
                 entityManager.flush();
             }
