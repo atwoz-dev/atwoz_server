@@ -39,17 +39,7 @@ class IntroductionSearchConditionCombinatorTest {
         // Then
         assertThat(combinations).hasSize(1);
         IntroductionSearchCondition condition = combinations.get(0);
-        assertThat(condition.getCities()).containsAll(base.getCities());
-        assertThat(condition.getHobbies()).containsAll(base.getHobbies());
-        assertThat(condition.getReligion()).isEqualTo(base.getReligion());
-        assertThat(condition.getMinAge()).isEqualTo(base.getMinAge());
-        assertThat(condition.getMaxAge()).isEqualTo(base.getMaxAge());
-        assertThat(condition.getSmokingStatus()).isEqualTo(base.getSmokingStatus());
-        assertThat(condition.getDrinkingStatus()).isEqualTo(base.getDrinkingStatus());
-        assertThat(condition.getMemberGrade()).isEqualTo(base.getMemberGrade());
-        assertThat(condition.getGender()).isEqualTo(base.getGender());
-        assertThat(condition.getExcludedMemberIds()).containsAll(base.getExcludedMemberIds());
-        assertThat(condition.getJoinedAfter()).isEqualTo(base.getJoinedAfter());
+        assertCondition(condition, base);
     }
 
     private void assertCondition(IntroductionSearchCondition condition, IntroductionSearchCondition base) {
