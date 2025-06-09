@@ -23,7 +23,8 @@ import static atwoz.atwoz.interview.command.domain.question.QInterviewQuestion.i
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
 import static atwoz.atwoz.member.command.domain.profileImage.QProfileImage.profileImage;
 import static atwoz.atwoz.notification.command.domain.QNotificationPreference.notificationPreference;
-import static com.querydsl.core.group.GroupBy.*;
+import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.group.GroupBy.set;
 import static com.querydsl.core.types.dsl.Expressions.constant;
 import static com.querydsl.core.types.dsl.Expressions.enumPath;
 
@@ -121,9 +122,16 @@ public class AdminMemberQueryRepository {
             .fetchOne()
             .intValue();
 
+        List<String> profileImageUrls = queryFactory
+            .select(profileImage.imageUrl.value)
+            .from(profileImage)
+            .where(profileImage.memberId.eq(memberId))
+            .orderBy(profileImage.order.asc())
+            .fetch();
+
         EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
 
-        return Optional.of(queryFactory
+        return Optional.ofNullable(queryFactory
             .from(member)
             .leftJoin(notificationPreference).on(notificationPreference.memberId.eq(member.id))
             .leftJoin(profileImage).on(profileImage.memberId.eq(member.id))
@@ -155,7 +163,7 @@ public class AdminMemberQueryRepository {
                         member.heartBalance.missionHeartBalance,
                         member.heartBalance.purchaseHeartBalance.add(member.heartBalance.missionHeartBalance)
                     ),
-                    list(profileImage.imageUrl.value),
+                    constant(profileImageUrls),
                     new QProfileInfo(
                         member.profile.job.stringValue(),
                         member.profile.highestEducation.stringValue(),
