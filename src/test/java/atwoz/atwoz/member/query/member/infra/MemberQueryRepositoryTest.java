@@ -13,6 +13,7 @@ import atwoz.atwoz.like.command.domain.LikeLevel;
 import atwoz.atwoz.match.command.domain.match.Match;
 import atwoz.atwoz.match.command.domain.match.MatchStatus;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
+import atwoz.atwoz.member.command.domain.introduction.IntroductionType;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
 import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
@@ -764,9 +765,9 @@ class MemberQueryRepositoryTest {
 
             // 이상형 소개.
             MemberIntroduction memberIntroduction = MemberIntroduction.of(member.getId(), otherMember1.getId(),
-                "멤버 소개");
+                IntroductionType.DIAMOND_GRADE);
             MemberIntroduction memberIntroduction2 = MemberIntroduction.of(member.getId(), otherMember2.getId(),
-                "멤버 소개");
+                IntroductionType.DIAMOND_GRADE);
             entityManager.persist(memberIntroduction);
             entityManager.persist(memberIntroduction2);
             entityManager.flush();
