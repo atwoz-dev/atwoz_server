@@ -19,18 +19,7 @@ class IntroductionSearchConditionCombinatorTest {
     @DisplayName("파라미터 위치에 맞게 생성하는지 테스트")
     void generateCombinations() {
         // Given
-        IntroductionSearchCondition base = IntroductionSearchCondition.of(
-            Set.of(1L, 2L),
-            25,
-            30,
-            Set.of(Hobby.ANIMATION.name()),
-            Set.of(City.BUSAN.name()),
-            Religion.BUDDHIST.name(),
-            SmokingStatus.DAILY.name(),
-            DrinkingStatus.FREQUENT.name(),
-            Grade.DIAMOND.name(),
-            Gender.MALE.name(),
-            LocalDateTime.now());
+        IntroductionSearchCondition base = createCondition();
 
         // When
         List<IntroductionSearchCondition> combinations = IntroductionSearchConditionCombinator.generateCombinations(
@@ -40,20 +29,6 @@ class IntroductionSearchConditionCombinatorTest {
         assertThat(combinations).hasSize(1);
         IntroductionSearchCondition condition = combinations.get(0);
         assertCondition(condition, base);
-    }
-
-    private void assertCondition(IntroductionSearchCondition condition, IntroductionSearchCondition base) {
-        assertThat(condition.getCities()).containsAll(base.getCities());
-        assertThat(condition.getHobbies()).containsAll(base.getHobbies());
-        assertThat(condition.getReligion()).isEqualTo(base.getReligion());
-        assertThat(condition.getMinAge()).isEqualTo(base.getMinAge());
-        assertThat(condition.getMaxAge()).isEqualTo(base.getMaxAge());
-        assertThat(condition.getSmokingStatus()).isEqualTo(base.getSmokingStatus());
-        assertThat(condition.getDrinkingStatus()).isEqualTo(base.getDrinkingStatus());
-        assertThat(condition.getMemberGrade()).isEqualTo(base.getMemberGrade());
-        assertThat(condition.getGender()).isEqualTo(base.getGender());
-        assertThat(condition.getExcludedMemberIds()).containsAll(base.getExcludedMemberIds());
-        assertThat(condition.getJoinedAfter()).isEqualTo(base.getJoinedAfter());
     }
 
     @ParameterizedTest
@@ -107,18 +82,7 @@ class IntroductionSearchConditionCombinatorTest {
     @DisplayName("조합 생성 시 fieldOptions 순서대로 나이, 도시, 종교, 취미, 흡연 여부, 음주 여부 우선순위로 생성되는지 테스트")
     void generateCombinationsWithPriority() {
         // Given
-        IntroductionSearchCondition base = IntroductionSearchCondition.of(
-            Set.of(1L, 2L),
-            25,
-            30,
-            Set.of(Hobby.ANIMATION.name()),
-            Set.of(City.BUSAN.name()),
-            Religion.BUDDHIST.name(),
-            SmokingStatus.DAILY.name(),
-            DrinkingStatus.FREQUENT.name(),
-            Grade.DIAMOND.name(),
-            Gender.MALE.name(),
-            LocalDateTime.now());
+        IntroductionSearchCondition base = createCondition();
 
         // When
         List<IntroductionSearchCondition> combinations = IntroductionSearchConditionCombinator.generateCombinations(
@@ -142,6 +106,35 @@ class IntroductionSearchConditionCombinatorTest {
             base.getHobbies(), base.getSmokingStatus(), base.getDrinkingStatus());
         assertFieldOptions(combinations.get(6), null, null, base.getCities(), base.getReligion(),
             base.getHobbies(), base.getSmokingStatus(), base.getDrinkingStatus());
+    }
+
+    private IntroductionSearchCondition createCondition() {
+        return IntroductionSearchCondition.of(
+            Set.of(1L, 2L),
+            25,
+            30,
+            Set.of(Hobby.ANIMATION.name()),
+            Set.of(City.BUSAN.name()),
+            Religion.BUDDHIST.name(),
+            SmokingStatus.DAILY.name(),
+            DrinkingStatus.FREQUENT.name(),
+            Grade.DIAMOND.name(),
+            Gender.MALE.name(),
+            LocalDateTime.now());
+    }
+
+    private void assertCondition(IntroductionSearchCondition condition, IntroductionSearchCondition base) {
+        assertThat(condition.getCities()).containsAll(base.getCities());
+        assertThat(condition.getHobbies()).containsAll(base.getHobbies());
+        assertThat(condition.getReligion()).isEqualTo(base.getReligion());
+        assertThat(condition.getMinAge()).isEqualTo(base.getMinAge());
+        assertThat(condition.getMaxAge()).isEqualTo(base.getMaxAge());
+        assertThat(condition.getSmokingStatus()).isEqualTo(base.getSmokingStatus());
+        assertThat(condition.getDrinkingStatus()).isEqualTo(base.getDrinkingStatus());
+        assertThat(condition.getMemberGrade()).isEqualTo(base.getMemberGrade());
+        assertThat(condition.getGender()).isEqualTo(base.getGender());
+        assertThat(condition.getExcludedMemberIds()).containsAll(base.getExcludedMemberIds());
+        assertThat(condition.getJoinedAfter()).isEqualTo(base.getJoinedAfter());
     }
 
     private void assertFieldOptions(
