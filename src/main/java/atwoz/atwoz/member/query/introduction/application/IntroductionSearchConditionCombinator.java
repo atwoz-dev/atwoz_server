@@ -19,6 +19,10 @@ public final class IntroductionSearchConditionCombinator {
         return getConditions(combinations, base);
     }
 
+    /**
+     * fieldOptions 의 순서에 따른 우선순위로 조합을 생성합니다.
+     * 나이, 도시, 종교, 취미, 흡연 여부, 음주 여부 순서로 우선순위를 가집니다.
+     */
     private static List<List<Object>> getFieldOptions(IntroductionSearchCondition base) {
         return Arrays.asList(
             choices(AgeRange.of(base.getMinAge(), base.getMaxAge()), null),
