@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static atwoz.atwoz.admin.command.domain.warning.QWarning.warning;
 import static atwoz.atwoz.interview.command.domain.answer.QInterviewAnswer.interviewAnswer;
@@ -100,7 +101,7 @@ public class AdminMemberQueryRepository {
         return createdDateLoe != null ? member.createdAt.lt(createdDateLoe.plusDays(1).atStartOfDay()) : null;
     }
 
-    public AdminMemberDetailView findById(long memberId) {
+    public Optional<AdminMemberDetailView> findById(long memberId) {
         List<InterviewInfoView> interviewInfos = queryFactory
             .select(new QInterviewInfoView(
                 interviewQuestion.content,
@@ -122,7 +123,7 @@ public class AdminMemberQueryRepository {
 
         EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
 
-        return queryFactory
+        return Optional.of(queryFactory
             .from(member)
             .leftJoin(notificationPreference).on(notificationPreference.memberId.eq(member.id))
             .leftJoin(profileImage).on(profileImage.memberId.eq(member.id))
@@ -171,6 +172,6 @@ public class AdminMemberQueryRepository {
                     member.deletedAt
                 ))
             )
-            .get(memberId);
+            .get(memberId));
     }
 }

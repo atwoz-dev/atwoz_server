@@ -1,6 +1,7 @@
 package atwoz.atwoz.member.presentation.member;
 
 import atwoz.atwoz.common.response.BaseResponse;
+import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.query.member.condition.AdminMemberSearchCondition;
 import atwoz.atwoz.member.query.member.infra.AdminMemberQueryRepository;
 import atwoz.atwoz.member.query.member.view.AdminMemberDetailView;
@@ -37,6 +38,8 @@ public class AdminMemberController {
     @Operation(summary = "멤버 상세 조회")
     @GetMapping("/{memberId}")
     public ResponseEntity<BaseResponse<AdminMemberDetailView>> getMemberDetail(@PathVariable long memberId) {
-        return ResponseEntity.ok(BaseResponse.of(OK, adminMemberQueryRepository.findById(memberId)));
+        AdminMemberDetailView view = adminMemberQueryRepository.findById(memberId)
+            .orElseThrow(MemberNotFoundException::new);
+        return ResponseEntity.ok(BaseResponse.of(OK, view));
     }
 }
