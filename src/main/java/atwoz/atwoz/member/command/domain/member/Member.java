@@ -37,7 +37,8 @@ public class Member extends SoftDeleteBaseEntity {
     @Getter
     private boolean isVip;
 
-    @Embedded
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(50)")
     @Getter
     private Grade grade;
 
@@ -128,5 +129,9 @@ public class Member extends SoftDeleteBaseEntity {
 
     public void gainMissionHeart(HeartAmount heartAmount) {
         heartBalance = heartBalance.gainMissionHeart(heartAmount);
+    }
+
+    public void updateGrade(@NonNull Grade grade) {
+        this.grade = grade;
     }
 }
