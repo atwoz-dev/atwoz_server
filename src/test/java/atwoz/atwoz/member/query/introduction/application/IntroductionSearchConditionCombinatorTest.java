@@ -36,6 +36,7 @@ class IntroductionSearchConditionCombinatorTest {
     @DisplayName("상관없음 옵션 수와 비 선택 가능 옵션 수에 따른 조합 수 테스트")
     void generateCombinationsWithNonSelectableOptions(int nullableCount) {
         // Given
+        // nullableCount에 따라 하나씩 상관없음 옵션으로 설정
         IntroductionSearchCondition base = IntroductionSearchCondition.of(
             Set.of(1L, 2L),
             25,
@@ -59,7 +60,10 @@ class IntroductionSearchConditionCombinatorTest {
             // Then
             final int r = n - i;
             expectedCombinationSize += calculateCombinationSize(n, r);
-            assertThat(combinations).hasSize(expectedCombinationSize);
+            assertThat(combinations).overridingErrorMessage(
+                "n = %d, r >= %d 조건에서 조합 개수가 기대값(%d)과 다릅니다! 실제 개수: %d", n, r,
+                expectedCombinationSize, combinations.size()
+            ).hasSize(expectedCombinationSize);
         }
     }
 
