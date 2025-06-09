@@ -1,6 +1,7 @@
 package atwoz.atwoz.member.query.member.view;
 
 import atwoz.atwoz.member.command.domain.member.*;
+import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -26,4 +27,7 @@ public record ProfileInfo(
     @ArraySchema(schema = @Schema(implementation = Hobby.class))
     Set<String> hobbies
 ) {
+    @QueryProjection
+    public ProfileInfo {
+    }
 }
