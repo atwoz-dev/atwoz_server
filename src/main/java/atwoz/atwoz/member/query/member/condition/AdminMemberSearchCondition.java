@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.query.member;
+package atwoz.atwoz.member.query.member.condition;
 
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Gender;
@@ -9,7 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
-public record MemberSearchCondition(
+public record AdminMemberSearchCondition(
     @Schema(
         description = "활동 상태",
         implementation = ActivityStatus.class,
