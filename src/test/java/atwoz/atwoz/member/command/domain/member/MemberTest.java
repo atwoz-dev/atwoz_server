@@ -30,7 +30,7 @@ public class MemberTest {
         // Then
         Assertions.assertThat(member).isNotNull();
         Assertions.assertThat(member.isProfileSettingNeeded()).isTrue();
-        Assertions.assertThat(member.isBanned()).isFalse();
+        Assertions.assertThat(member.isPermanentlySuspended()).isFalse();
     }
 
     @Nested

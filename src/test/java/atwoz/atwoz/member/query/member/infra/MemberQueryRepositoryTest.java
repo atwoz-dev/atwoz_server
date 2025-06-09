@@ -1,7 +1,9 @@
-package atwoz.atwoz.member.query.member;
+package atwoz.atwoz.member.query.member.infra;
 
 import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchange;
+import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeStatus;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.interview.command.domain.answer.InterviewAnswer;
 import atwoz.atwoz.interview.command.domain.question.InterviewCategory;
@@ -11,6 +13,7 @@ import atwoz.atwoz.like.command.domain.LikeLevel;
 import atwoz.atwoz.match.command.domain.match.Match;
 import atwoz.atwoz.match.command.domain.match.MatchStatus;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
+import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
 import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
@@ -29,6 +32,7 @@ import org.springframework.context.annotation.Import;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -533,6 +537,29 @@ class MemberQueryRepositoryTest {
             assertThat(memberProfileView.matchInfo().requesterId()).isEqualTo(member.getId());
         }
 
+        // 프로필 요청이 존재하는 경우.
+        @DisplayName("상대방과의 프로필 요청이 존재하는 경우, 프로필 교환 요청 정보를 포함.")
+        @Test
+        void getProfileExchangeInfoWhenProfileExchangeExists() {
+            // Given
+            ProfileExchange profileExchange = ProfileExchange.request(member.getId(), otherMember.getId(), "프로필요청자.");
+            entityManager.persist(profileExchange);
+            entityManager.flush();
+
+            // When
+            OtherMemberProfileView view = memberQueryRepository.findOtherProfileByMemberId(member.getId(),
+                otherMember.getId()).orElse(null);
+
+            // Then
+            assertThat(view).isNotNull();
+            assertThat(view.profileExchangeInfo()).isNotNull();
+            assertThat(view.profileExchangeInfo().profileExchangeId()).isEqualTo(profileExchange.getId());
+            assertThat(view.profileExchangeInfo().requesterId()).isEqualTo(member.getId());
+            assertThat(view.profileExchangeInfo().responderId()).isEqualTo(otherMember.getId());
+            assertThat(view.profileExchangeInfo().profileExchangeStatus()).isEqualTo(
+                profileExchange.getStatus().name());
+        }
+
         private void assertionsBasicInfo(BasicMemberInfo basicMemberInfo, MemberProfile otherMemberProfile) {
             assertThat(basicMemberInfo.nickname()).isEqualTo(otherMemberProfile.getNickname().getValue());
             assertThat(basicMemberInfo.profileImageUrl()).isEqualTo(profileImageUrl);
@@ -674,16 +701,17 @@ class MemberQueryRepositoryTest {
     @DisplayName("멤버 하트 잔액 조회")
     class findHeartBalanceByMemberId {
         @Test
-        @DisplayName("존재하지 않는 멤버의 경우, null을 반환한다.")
+        @DisplayName("존재하지 않는 멤버의 경우, 빈 값을 반환한다.")
         void returnNullWhenMemberIsNotExists() {
             // given
             long notExistsMemberId = 100L;
 
             // when
-            HeartBalanceView heartBalanceView = memberQueryRepository.findHeartBalanceByMemberId(notExistsMemberId);
+            Optional<HeartBalanceView> heartBalanceView = memberQueryRepository.findHeartBalanceByMemberId(
+                notExistsMemberId);
 
             // then
-            assertThat(heartBalanceView).isNull();
+            assertThat(heartBalanceView).isEmpty();
         }
 
         @Test
@@ -699,13 +727,166 @@ class MemberQueryRepositoryTest {
             entityManager.flush();
 
             // when
-            HeartBalanceView heartBalanceView = memberQueryRepository.findHeartBalanceByMemberId(member.getId());
+            HeartBalanceView heartBalanceView = memberQueryRepository.findHeartBalanceByMemberId(member.getId())
+                .orElse(null);
 
             // then
             assertThat(heartBalanceView.purchaseHeartBalance()).isEqualTo(purchaseHeartAmount.getAmount());
             assertThat(heartBalanceView.missionHeartBalance()).isEqualTo(missionHeartAmount.getAmount());
             assertThat(heartBalanceView.totalHeartBalance())
                 .isEqualTo(purchaseHeartAmount.getAmount() + missionHeartAmount.getAmount());
+        }
+    }
+
+    @Nested
+    @DisplayName("프로필 접근 권한 조회 테스트")
+    class findProfileAccessViewByMemberIdTest {
+
+        static MockedStatic<Events> mockedEvents;
+        Member member;
+        Member otherMember1;
+        Member otherMember2;
+
+        @BeforeEach
+        void setUp() {
+            mockedEvents = Mockito.mockStatic(Events.class);
+            mockedEvents.when(() -> Events.raise(Mockito.any()))
+                .thenAnswer(invocation -> null);
+
+            member = Member.fromPhoneNumber("01012345677");
+            otherMember1 = Member.fromPhoneNumber("01012345678");
+            otherMember2 = Member.fromPhoneNumber("01012345679");
+
+            entityManager.persist(member);
+            entityManager.persist(otherMember1);
+            entityManager.persist(otherMember2);
+            entityManager.flush();
+
+            // 이상형 소개.
+            MemberIntroduction memberIntroduction = MemberIntroduction.of(member.getId(), otherMember1.getId(),
+                "멤버 소개");
+            MemberIntroduction memberIntroduction2 = MemberIntroduction.of(member.getId(), otherMember2.getId(),
+                "멤버 소개");
+            entityManager.persist(memberIntroduction);
+            entityManager.persist(memberIntroduction2);
+            entityManager.flush();
+
+            // 좋아요.
+            Like like = Like.of(otherMember1.getId(), member.getId(), LikeLevel.INTERESTED);
+            Like like2 = Like.of(member.getId(), otherMember2.getId(), LikeLevel.HIGHLY_INTERESTED);
+            entityManager.persist(like);
+            entityManager.persist(like2);
+            entityManager.flush();
+
+            // 매치 신청.
+            Match match = Match.request(member.getId(), otherMember1.getId(), Message.from("매치 신청합니다."));
+            Match match2 = Match.request(otherMember2.getId(), member.getId(), Message.from("매치 신청합니다."));
+            entityManager.persist(match);
+            entityManager.persist(match2);
+            entityManager.flush();
+
+            // 프로필 교환 신청.
+            ProfileExchange profileExchange = ProfileExchange.request(otherMember1.getId(), member.getId(),
+                "otherMember1");
+            ProfileExchange profileExchange2 = ProfileExchange.request(member.getId(), otherMember2.getId(),
+                "otherMember2");
+            entityManager.persist(profileExchange);
+            entityManager.persist(profileExchange2);
+            entityManager.flush();
+        }
+
+        @AfterEach
+        void tearDown() {
+            mockedEvents.close();
+        }
+
+        @Test
+        @DisplayName("멤버가 이상형 소개의 대상자로 받은 경우, isIntroduce 를 true로 반환.")
+        void returnIsIntroduceTrueWhenMemberIsIntroduced() {
+            // Given
+            long memberId = member.getId();
+            long introducedMemberId = otherMember1.getId();
+
+            // When
+            ProfileAccessView view = memberQueryRepository.findProfileAccessViewByMemberId(memberId,
+                introducedMemberId).orElse(null);
+
+            // Then
+            assertThat(view).isNotNull();
+            assertThat(view.isIntroduced()).isTrue();
+        }
+
+        @Test
+        @DisplayName("멤버가 매치 요청을 받은 경우, requesterId,responderId를 반환.")
+        void returnMatchRequesterIdAndResponderIdWhenMemberIsRequested() {
+            // Given
+            long memberId = member.getId();
+            long requesterMemberId = otherMember2.getId();
+
+            // When
+            ProfileAccessView view = memberQueryRepository.findProfileAccessViewByMemberId(memberId, requesterMemberId)
+                .orElse(null);
+
+            // Then
+            assertThat(view).isNotNull();
+            assertThat(view.matchRequesterId()).isEqualTo(requesterMemberId);
+            assertThat(view.matchResponderId()).isEqualTo(memberId);
+        }
+
+        @Test
+        @DisplayName("멤버가 프로필 교환 요청을 받은 경우, requesterId, responderId를 반환.")
+        void returnProfileExchangeRequesterIdAndResponderIdWhenMemberIsRequested() {
+            // Given
+            long memberId = member.getId();
+            long requesterMemberId = otherMember1.getId();
+
+            // When
+            ProfileAccessView view = memberQueryRepository.findProfileAccessViewByMemberId(memberId, requesterMemberId)
+                .orElse(null);
+
+            // Then
+            assertThat(view).isNotNull();
+            assertThat(view.profileExchangeRequesterId()).isEqualTo(requesterMemberId);
+            assertThat(view.profileExchangeResponderId()).isEqualTo(memberId);
+        }
+
+        @Test
+        @DisplayName("멤버가 좋아요를 받은 경우, likeReceived를 true로 반환.")
+        void returnLikeReceivedWhenMemberIsLiked() {
+            // Given
+            long likeReceivedMember = member.getId();
+            long likeRequesterMember = otherMember1.getId();
+
+            // When
+            ProfileAccessView view = memberQueryRepository.findProfileAccessViewByMemberId(likeReceivedMember,
+                    likeRequesterMember)
+                .orElse(null);
+
+            // Then
+            assertThat(view).isNotNull();
+            assertThat(view.likeReceived()).isTrue();
+        }
+
+        @Test
+        @DisplayName("모든 값을 검증.")
+        void verifyAllValues() {
+            // Given
+            long memberId = member.getId();
+            long otherMemberId = otherMember2.getId();
+
+            // When
+            ProfileAccessView view = memberQueryRepository.findProfileAccessViewByMemberId(memberId, otherMemberId)
+                .orElse(null);
+
+            // Then
+            assertThat(view).isNotNull();
+            assertThat(view.isIntroduced()).isTrue();
+            assertThat(view.matchRequesterId()).isEqualTo(otherMemberId);
+            assertThat(view.matchResponderId()).isEqualTo(memberId);
+            assertThat(view.profileExchangeRequesterId()).isEqualTo(memberId);
+            assertThat(view.profileExchangeResponderId()).isEqualTo(otherMemberId);
+            assertThat(view.profileExchangeStatus()).isEqualTo(ProfileExchangeStatus.WAITING.name());
+            assertThat(view.likeReceived()).isFalse();
         }
     }
 }
