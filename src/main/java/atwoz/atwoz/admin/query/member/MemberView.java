@@ -5,6 +5,8 @@ import atwoz.atwoz.member.command.domain.member.Gender;
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.LocalDateTime;
+
 public record MemberView(
     long memberId,
     String nickname,
@@ -12,9 +14,8 @@ public record MemberView(
     String gender,
     @Schema(implementation = ActivityStatus.class)
     String activityStatus,
-    String joinedAt,
-    int warningCount,
-    String bannedReason
+    LocalDateTime joinedAt,
+    int warningCount
 ) {
     @QueryProjection
     public MemberView {
