@@ -16,4 +16,8 @@ public enum IntroductionType {
     IntroductionType(String description) {
         this.description = description;
     }
+
+    public boolean isFreeIntroduction() {
+        return this == TODAY_CARD;
+    }
 }

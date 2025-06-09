@@ -45,20 +45,12 @@ public class MemberIntroductionService {
 
     @Transactional
     public void createTodayCardIntroduction(long memberId, long introducedMemberId) {
-        createFreeIntroduction(memberId, introducedMemberId, IntroductionType.TODAY_CARD);
+        createIntroduction(memberId, introducedMemberId, IntroductionType.TODAY_CARD);
     }
 
     private void createIntroduction(long memberId, long introducedMemberId, IntroductionType introductionType) {
         validateIntroduction(memberId, introducedMemberId);
-        MemberIntroduction memberIntroduction = MemberIntroduction.of(memberId, introducedMemberId,
-            introductionType.getDescription());
-        memberIntroductionCommandRepository.save(memberIntroduction);
-    }
-
-    private void createFreeIntroduction(long memberId, long introducedMemberId, IntroductionType introductionType) {
-        validateIntroduction(memberId, introducedMemberId);
-        MemberIntroduction memberIntroduction = MemberIntroduction.ofFree(memberId, introducedMemberId,
-            introductionType.getDescription());
+        MemberIntroduction memberIntroduction = MemberIntroduction.of(memberId, introducedMemberId, introductionType);
         memberIntroductionCommandRepository.save(memberIntroduction);
     }
 
