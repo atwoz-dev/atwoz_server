@@ -134,7 +134,6 @@ public class AdminMemberQueryRepository {
         return Optional.ofNullable(queryFactory
             .from(member)
             .leftJoin(notificationPreference).on(notificationPreference.memberId.eq(member.id))
-            .leftJoin(profileImage).on(profileImage.memberId.eq(member.id))
             .leftJoin(member.profile.hobbies, hobby)
             .where(member.id.eq(memberId))
             .transform(
