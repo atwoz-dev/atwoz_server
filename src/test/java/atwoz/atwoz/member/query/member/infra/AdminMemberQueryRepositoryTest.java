@@ -248,8 +248,8 @@ class AdminMemberQueryRepositoryTest {
             assertHeartBalanceView(result.heartBalanceInfo(), member);
             assertProfileImageUrls(result.profileImageUrls(), profileImages);
             assertProfileInfo(result.profileInfo(), member);
-            assertAdminMemberSettingInfo(result.settingInfo(), member);
-            assertAdminMemberStatusInfo(result.statusInfo(), member, 2, notificationPreference, true);
+            assertAdminMemberSettingInfo(result.settingInfo(), member, notificationPreference);
+            assertAdminMemberStatusInfo(result.statusInfo(), member, 2, true);
             assertDateInfo(result, member);
         }
 
