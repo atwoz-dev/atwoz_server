@@ -78,3 +78,9 @@ payment:
     bundle-id: ${APP_STORE_BUNDLE_ID:bundle-id}
     app-apple-id: ${APP_STORE_APP_APPLE_ID:0000000000}
     root-ca-paths: ${APP_STORE_ROOT_CA_G2_PATH:/etc/certs/appstore/AppleRootCA-G2.pem}, ${APP_STORE_ROOT_CA_G3_PATH:/etc/certs/appstore/AppleRootCA-G3.pem}
+
+
+bizgo:
+  client_id: ${BIZGO_CLIENT_ID:client_id}
+  client_password: ${BIZGO_CLIENT_PASSWORD:client_password}
+  from_phone_number: ${BIZGO_FROM_PHONE_NUMBER:from_phone_number}
