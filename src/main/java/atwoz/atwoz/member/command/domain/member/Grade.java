@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.command.domain.member;
 
+import atwoz.atwoz.member.command.domain.member.exception.InvalidMemberEnumValueException;
 import lombok.Getter;
 
 @Getter
@@ -12,5 +13,13 @@ public enum Grade {
 
     Grade(String description) {
         this.description = description;
+    }
+
+    public static Grade from(String grade) {
+        try {
+            return Grade.valueOf(grade.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidMemberEnumValueException("Invalid grade value: " + grade);
+        }
     }
 }
