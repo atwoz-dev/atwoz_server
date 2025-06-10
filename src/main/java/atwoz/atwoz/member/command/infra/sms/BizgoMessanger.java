@@ -9,14 +9,17 @@ import org.springframework.web.client.RestClient;
 
 @Service
 public class BizgoMessanger {
-    @Value("${bizgo.client_id}")
+    @Value("${bizgo.client-id}")
     private String CLIENT_ID;
 
-    @Value("${bizgo.client_password}")
+    @Value("${bizgo.client-password}")
     private String CLIENT_PASSWORD;
 
-    @Value("${bizgo.from_phone_number}")
-    private String FROM_PHONE_NUMBER = "01032376134";
+    @Value("${bizgo.from-phone-number}")
+    private String FROM_PHONE_NUMBER;
+
+    @Value("${bizgo.api-url}")
+    private String API_URL;
 
     private String AUTH_TOKEN;
 
@@ -37,7 +40,7 @@ public class BizgoMessanger {
     }
 
     private BizgoMessageResponse sendRequest(String message, String phoneNumber) {
-        String requestURL = "https://omni.ibapi.kr/v1/send/sms";
+        String requestURL = API_URL + "/send/sms";
         RestClient restClient = RestClient.create();
         return restClient.post()
             .uri(requestURL)
@@ -51,7 +54,7 @@ public class BizgoMessanger {
     }
 
     private void setAuthToken() {
-        String requestURL = "https://omni.ibapi.kr/v1/auth/token";
+        String requestURL = API_URL + "/auth/token";
 
         RestClient restClient = RestClient.create();
         BizgoAuthResponse response = restClient.post()

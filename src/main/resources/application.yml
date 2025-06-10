@@ -81,6 +81,7 @@ payment:
 
 
 bizgo:
-  client_id: ${BIZGO_CLIENT_ID:client_id}
-  client_password: ${BIZGO_CLIENT_PASSWORD:client_password}
-  from_phone_number: ${BIZGO_FROM_PHONE_NUMBER:from_phone_number}
+  api-url: ${BIZGO_API_URL:api-url}
+  client-id: ${BIZGO_CLIENT_ID:client-id}
+  client-password: ${BIZGO_CLIENT_PASSWORD:client_password}
+  from-phone-number: ${BIZGO_FROM_PHONE_NUMBER:from-phone-number}
