@@ -11,7 +11,8 @@ public record AdminMemberSettingInfo(
     String grade,
     @Schema(implementation = ActivityStatus.class)
     String activityStatus,
-    boolean isVip
+    boolean isVip,
+    boolean isPushNotificationEnabled
 ) {
     @QueryProjection
     public AdminMemberSettingInfo {
