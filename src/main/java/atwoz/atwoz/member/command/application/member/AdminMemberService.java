@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.command.application;
+package atwoz.atwoz.member.command.application.member;
 
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;

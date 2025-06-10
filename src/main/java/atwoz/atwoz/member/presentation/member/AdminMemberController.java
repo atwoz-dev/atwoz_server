@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.presentation.member;
 
 import atwoz.atwoz.common.response.BaseResponse;
-import atwoz.atwoz.member.command.application.AdminMemberService;
+import atwoz.atwoz.member.command.application.member.AdminMemberService;
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.presentation.member.dto.AdminMemberSettingUpdateRequest;
 import atwoz.atwoz.member.query.member.condition.AdminMemberSearchCondition;
