@@ -6,17 +6,20 @@ import atwoz.atwoz.member.command.infra.member.sms.BizgoMessanger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class AuthMessageService {
-    private static final Random generator = new Random();
+    private static final Random generator = new SecureRandom();
     private final AuthMessageRedisRepository authMessageRedisRepository;
     private final BizgoMessanger bizgoMessanger;
 
-    public void sendMessage(String phoneNumber) {
-        bizgoMessanger.sendMessage(getMessage(), phoneNumber);
+    public void sendAndSaveCode(String phoneNumber) {
+        String code = generateNumber();
+        authMessageRedisRepository.save(phoneNumber, code);
+        bizgoMessanger.sendMessage(getMessage(code), phoneNumber);
     }
 
     public void authenticate(String phoneNumber, String code) {
@@ -25,14 +28,12 @@ public class AuthMessageService {
         authMessageRedisRepository.delete(phoneNumber);
     }
 
-    private String getMessage() {
-        String randomNumber = generateNumber();
-        return "[에이투지] + 인증번호 [" + randomNumber + "]를 입력해주세요.";
+    private String getMessage(String code) {
+        return "[에이투지] + 인증번호 [" + code + "]를 입력해주세요.";
     }
 
     private String generateNumber() {
-        generator.setSeed(System.currentTimeMillis());
-        return (generator.nextInt(100000) % 1000000) + "";
+        return String.format("%06d", (generator.nextInt(1000000)));
     }
 
     private void validateWithCode(String value, String code) {

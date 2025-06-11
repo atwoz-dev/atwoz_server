@@ -47,7 +47,7 @@ public class MemberAuthService {
     }
 
     public void sendAuthCode(String phoneNumber) {
-        authMessageService.sendMessage(phoneNumber);
+        authMessageService.sendAndSaveCode(phoneNumber);
     }
 
     private Member createOrFindMemberByPhoneNumber(String phoneNumber) {
