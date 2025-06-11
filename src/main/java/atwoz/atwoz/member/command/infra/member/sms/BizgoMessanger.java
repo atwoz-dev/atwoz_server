@@ -78,7 +78,9 @@ public class BizgoMessanger {
     private void resetAuthToken() {
         lock.lock();
         try {
-            setAuthToken();
+            if (authToken == null) {
+                setAuthToken();
+            }
         } finally {
             lock.unlock();
         }
