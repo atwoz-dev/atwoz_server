@@ -4,37 +4,39 @@ import atwoz.atwoz.member.command.infra.member.sms.dto.BizgoAuthResponse;
 import atwoz.atwoz.member.command.infra.member.sms.dto.BizgoMessageRequest;
 import atwoz.atwoz.member.command.infra.member.sms.dto.BizgoMessageResponse;
 import atwoz.atwoz.member.command.infra.member.sms.exception.BizgoMessageSendException;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 @Service
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class BizgoMessanger {
+    private final ReentrantLock lock = new ReentrantLock();
     @Value("${bizgo.client-id}")
     private String clientId;
-
     @Value("${bizgo.client-password}")
     private String clientPassword;
-
     @Value("${bizgo.from-phone-number}")
     private String fromPhoneNumber;
-
     @Value("${bizgo.api-url}")
     private String apiUrl;
-
     private String authToken;
-
 
     public void sendMessage(String message, String phoneNumber) {
         if (authToken == null) {
-            setAuthToken();
+            lock.lock();
+            try {
+                if (authToken == null) {
+                    setAuthToken();
+                }
+            } finally {
+                lock.unlock();
+            }
         }
-
         BizgoMessageResponse response = sendRequest(message, phoneNumber);
 
         // 재시도 로직.

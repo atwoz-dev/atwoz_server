@@ -64,3 +64,9 @@ payment:
     environment: "Sandbox"
     app-apple-id: 0000000000
     root-ca-paths: certs/appstore/AppleRootCA-G2.pem,certs/appstore/AppleRootCA-G3.pem
+
+bizgo:
+  api-url: api-url
+  client-id: client-id
+  client-password: client_password
+  from-phone-number: from-phone-number

@@ -5,6 +5,7 @@ import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.member.MemberAuthService;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
+import atwoz.atwoz.member.presentation.member.dto.MemberCodeRequest;
 import atwoz.atwoz.member.presentation.member.dto.MemberLoginRequest;
 import atwoz.atwoz.member.presentation.member.dto.MemberLoginResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -65,6 +66,13 @@ public class MemberAuthController {
 
         return ResponseEntity.ok()
             .headers(headers)
+            .body(BaseResponse.from(StatusType.OK));
+    }
+
+    @GetMapping("/code")
+    public ResponseEntity<BaseResponse<Void>> getCode(@ModelAttribute @Valid MemberCodeRequest request) {
+        memberAuthService.sendAuthCode(request.phoneNumber());
+        return ResponseEntity.ok()
             .body(BaseResponse.from(StatusType.OK));
     }
 }

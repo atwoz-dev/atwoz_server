@@ -15,17 +15,22 @@ public class AuthMessageRedisRepository {
     private final RedisTemplate<String, String> redisTemplate;
 
     public void save(String key, String message) {
-        String fullKey = PREFIX + key;
+        String fullKey = getFullKey(key);
         redisTemplate.opsForValue().set(fullKey, message);
         redisTemplate.expire(fullKey, EXPIRE_TIME_MINUTE, TimeUnit.MINUTES);
     }
 
     public String getByKey(String key) {
-        return redisTemplate.opsForValue().get(key);
+        String fullKey = getFullKey(key);
+        return redisTemplate.opsForValue().get(fullKey);
     }
 
     public void delete(String key) {
-        String fullKey = PREFIX + key;
+        String fullKey = getFullKey(key);
         redisTemplate.delete(fullKey);
+    }
+
+    private String getFullKey(String key) {
+        return PREFIX + key;
     }
 }
