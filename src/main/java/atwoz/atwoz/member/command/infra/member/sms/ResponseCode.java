@@ -1,10 +1,10 @@
-package atwoz.atwoz.member.command.infra.sms;
+package atwoz.atwoz.member.command.infra.member.sms;
 
 import lombok.Getter;
 
 @Getter
 public enum ResponseCode {
-    SUCCESS("A000"), EXFIRED_TOKEN("A001");
+    SUCCESS("A000"), EXPIRED_TOKEN("A001");
 
     private final String code;
 

@@ -20,6 +20,10 @@ public class AuthMessageRedisRepository {
         redisTemplate.expire(fullKey, EXPIRE_TIME_MINUTE, TimeUnit.MINUTES);
     }
 
+    public String getByKey(String key) {
+        return redisTemplate.opsForValue().get(key);
+    }
+
     public void delete(String key) {
         String fullKey = PREFIX + key;
         redisTemplate.delete(fullKey);

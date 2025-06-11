@@ -6,6 +6,7 @@ import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.command.application.member.exception.MemberLoginConflictException;
 import atwoz.atwoz.member.command.application.member.exception.PermanentlySuspendedMemberException;
+import atwoz.atwoz.member.command.application.member.sms.AuthMessageService;
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
@@ -40,6 +41,9 @@ class MemberAuthServiceTest {
     @Mock
     private TokenRepository tokenRepository;
 
+    @Mock
+    private AuthMessageService authMessageService;
+
     @InjectMocks
     private MemberAuthService memberAuthService;
 
@@ -61,12 +65,14 @@ class MemberAuthServiceTest {
     void shouldThrowExceptionWhenLoginAttemptedByPermanentStoppedMember() {
         // Given
         String phoneNumber = "01012345678";
+        String code = "01012345678";
 
         Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber))
             .thenReturn(Optional.of(permanentStoppedMember));
+        Mockito.doNothing().when(authMessageService).authenticate(phoneNumber, code);
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber))
+        Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber, code))
             .isInstanceOf(PermanentlySuspendedMemberException.class);
     }
 
@@ -74,6 +80,7 @@ class MemberAuthServiceTest {
     @DisplayName("기존 유저가 로그인할 경우, 토큰 발급")
     void shouldCreateTokenWhenUserIsRegistered() {
         String phoneNumber = "01012345678";
+        String code = "01012345678";
         Instant fixedInstant = Instant.parse("2024-01-01T00:00:00Z");
 
         try (MockedStatic<Instant> mockedInstant = Mockito.mockStatic(Instant.class)) {
@@ -83,9 +90,10 @@ class MemberAuthServiceTest {
             Mockito.when(
                     jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
                 .thenReturn("accessToken");
+            Mockito.doNothing().when(authMessageService).authenticate(phoneNumber, code);
 
             // When
-            String token = memberAuthService.login(phoneNumber).accessToken();
+            String token = memberAuthService.login(phoneNumber, code).accessToken();
 
             // Then
             Assertions.assertThat(token).isNotNull();
@@ -98,6 +106,7 @@ class MemberAuthServiceTest {
     void shouldCreateNewMemberAndTokenWhenUserIsNotRegistered() {
         // Given
         String phoneNumber = "01012345678";
+        String code = "01012345678";
         Instant fixedInstant = Instant.parse("2024-01-01T00:00:00Z");
 
         try (MockedStatic<Instant> mockedInstant = Mockito.mockStatic(Instant.class)) {
@@ -108,9 +117,10 @@ class MemberAuthServiceTest {
                     jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
                 .thenReturn("accessToken");
             Mockito.when(memberCommandRepository.save(Mockito.any())).thenReturn(member);
+            Mockito.doNothing().when(authMessageService).authenticate(phoneNumber, code);
 
             // When
-            MemberLoginServiceDto response = memberAuthService.login(phoneNumber);
+            MemberLoginServiceDto response = memberAuthService.login(phoneNumber, code);
 
             // Then
             Assertions.assertThat(response.accessToken()).isNotNull();
@@ -124,13 +134,15 @@ class MemberAuthServiceTest {
     void shouldThrowExceptionWhenUniqueConstraint() {
         // Given
         String phoneNumber = "01012345678";
+        String code = "01012345678";
 
         // When
         Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
         Mockito.when(memberCommandRepository.save(Mockito.any())).thenThrow(DataIntegrityViolationException.class);
+        Mockito.doNothing().when(authMessageService).authenticate(phoneNumber, code);
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber))
+        Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber, code))
             .isInstanceOf(MemberLoginConflictException.class);
     }
 }

@@ -7,6 +7,7 @@ import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.command.application.member.exception.MemberLoginConflictException;
 import atwoz.atwoz.member.command.application.member.exception.PermanentlySuspendedMemberException;
+import atwoz.atwoz.member.command.application.member.sms.AuthMessageService;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import atwoz.atwoz.member.command.domain.member.event.MemberRegisteredEvent;
@@ -22,11 +23,13 @@ import java.time.Instant;
 public class MemberAuthService {
 
     private final MemberCommandRepository memberCommandRepository;
+    private final AuthMessageService authMessageService;
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;
 
     @Transactional
-    public MemberLoginServiceDto login(String phoneNumber) {
+    public MemberLoginServiceDto login(String phoneNumber, String code) {
+        authMessageService.authenticate(phoneNumber, code);
         Member member = createOrFindMemberByPhoneNumber(phoneNumber);
         if (member.isPermanentlySuspended()) {
             throw new PermanentlySuspendedMemberException();
@@ -41,6 +44,10 @@ public class MemberAuthService {
 
     public void logout(String token) {
         tokenRepository.delete(token);
+    }
+
+    public void sendAuthCode(String phoneNumber) {
+        authMessageService.sendMessage(phoneNumber);
     }
 
     private Member createOrFindMemberByPhoneNumber(String phoneNumber) {

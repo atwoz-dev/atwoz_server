@@ -28,7 +28,7 @@ public class MemberAuthController {
     @Operation(summary = "멤버 로그인 및 회원가입")
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<MemberLoginResponse>> login(@Valid @RequestBody MemberLoginRequest request) {
-        MemberLoginServiceDto loginServiceDto = memberAuthService.login(request.phoneNumber());
+        MemberLoginServiceDto loginServiceDto = memberAuthService.login(request.phoneNumber(), request.code());
 
         HttpHeaders headers = new HttpHeaders();
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", loginServiceDto.refreshToken())

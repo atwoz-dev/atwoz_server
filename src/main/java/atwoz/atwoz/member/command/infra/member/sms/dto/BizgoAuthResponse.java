@@ -1,4 +1,4 @@
-package atwoz.atwoz.member.command.infra.sms.dto;
+package atwoz.atwoz.member.command.infra.member.sms.dto;
 
 public record BizgoAuthResponse(
     String code,
