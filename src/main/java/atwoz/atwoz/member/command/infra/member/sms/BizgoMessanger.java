@@ -32,20 +32,16 @@ public class BizgoMessanger {
         if (authToken == null) {
             resetAuthToken();
         }
-        BizgoMessageResponse response = trySendMessageWithRetry(message, phoneNumber);
-
-        if (isFailMessageResponse(response)) {
-            throw new BizgoMessageSendException(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        }
+        trySendMessageWithRetry(message, phoneNumber);
     }
 
-    private BizgoMessageResponse trySendMessageWithRetry(String message, String phoneNumber) {
+    private void trySendMessageWithRetry(String message, String phoneNumber) {
         int retryCount = 0;
         while (retryCount < 3) {
             try {
                 BizgoMessageResponse response = sendRequest(message, phoneNumber);
                 if (!isFailMessageResponse(response)) {
-                    return response;
+                    return;
                 }
             } catch (BizgoMessageSendException e) {
                 if (e.getStatusCode() == HttpStatus.UNAUTHORIZED.value()) {
@@ -54,7 +50,7 @@ public class BizgoMessanger {
             }
             retryCount++;
         }
-        return null;
+        throw new BizgoMessageSendException(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     private BizgoMessageResponse sendRequest(String message, String phoneNumber) {
