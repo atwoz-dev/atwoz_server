@@ -3,9 +3,11 @@ package atwoz.atwoz.member.command.infra.member.sms;
 import atwoz.atwoz.member.command.infra.member.sms.dto.BizgoAuthResponse;
 import atwoz.atwoz.member.command.infra.member.sms.dto.BizgoMessageRequest;
 import atwoz.atwoz.member.command.infra.member.sms.dto.BizgoMessageResponse;
+import atwoz.atwoz.member.command.infra.member.sms.exception.BizgoAuthenticationException;
 import atwoz.atwoz.member.command.infra.member.sms.exception.BizgoMessageSendException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -28,19 +30,31 @@ public class BizgoMessanger {
 
     public void sendMessage(String message, String phoneNumber) {
         if (authToken == null) {
-            lock.lock();
-            try {
-                if (authToken == null) {
-                    setAuthToken();
-                }
-            } finally {
-                lock.unlock();
-            }
+            resetAuthToken();
         }
-        BizgoMessageResponse response = sendRequest(message, phoneNumber);
+        BizgoMessageResponse response = trySendMessageWithRetry(message, phoneNumber);
 
-        // 재시도 로직.
-        retryWhenResponseError(response, message, phoneNumber);
+        if (isFailMessageResponse(response)) {
+            throw new BizgoMessageSendException(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+    }
+
+    private BizgoMessageResponse trySendMessageWithRetry(String message, String phoneNumber) {
+        int retryCount = 0;
+        while (retryCount < 3) {
+            try {
+                BizgoMessageResponse response = sendRequest(message, phoneNumber);
+                if (!isFailMessageResponse(response)) {
+                    return response;
+                }
+            } catch (BizgoMessageSendException e) {
+                if (e.getStatusCode() == HttpStatus.UNAUTHORIZED.value()) {
+                    resetAuthToken();
+                }
+            }
+            retryCount++;
+        }
+        return null;
     }
 
     private BizgoMessageResponse sendRequest(String message, String phoneNumber) {
@@ -53,11 +67,21 @@ public class BizgoMessanger {
             .header("Authorization", "Bearer " + authToken)
             .body(new BizgoMessageRequest(fromPhoneNumber, phoneNumber, message))
             .retrieve()
-            .onStatus(HttpStatusCode::isError, (request, httpResponse) ->
-                httpResponse.getBody()
+            .onStatus(HttpStatusCode::isError, (request, httpResponse) -> {
+                    throw new BizgoMessageSendException(httpResponse.getStatusCode().value());
+                }
             )
             .toEntity(BizgoMessageResponse.class)
             .getBody();
+    }
+
+    private void resetAuthToken() {
+        lock.lock();
+        try {
+            setAuthToken();
+        } finally {
+            lock.unlock();
+        }
     }
 
     private void setAuthToken() {
@@ -70,8 +94,9 @@ public class BizgoMessanger {
             .header("X-IB-Client-Id", clientId)
             .header("X-IB-Client-Passwd", clientPassword)
             .retrieve()
-            .onStatus(HttpStatusCode::isError, (request, httpResponse) ->
-                httpResponse.getBody()
+            .onStatus(HttpStatusCode::isError, (request, httpResponse) -> {
+                    throw new BizgoAuthenticationException();
+                }
             )
             .toEntity(BizgoAuthResponse.class)
             .getBody();
@@ -84,19 +109,7 @@ public class BizgoMessanger {
         if (response == null || response.code() == null || !response.code().equals(ResponseCode.SUCCESS.getCode())
             || response.data() == null
             || response.data().token() == null) {
-            throw new BizgoMessageSendException();
-        }
-    }
-
-    private void retryWhenResponseError(BizgoMessageResponse response, String message, String phoneNumber) {
-        int retryCount = 0;
-        while (isFailMessageResponse(response) && retryCount < 3) {
-            response = sendRequest(message, phoneNumber);
-            retryCount++;
-        }
-
-        if (isFailMessageResponse(response)) {
-            throw new BizgoMessageSendException();
+            throw new BizgoAuthenticationException();
         }
     }
 

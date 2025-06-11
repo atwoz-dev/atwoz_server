@@ -31,10 +31,11 @@ public class MemberAuthService {
     public MemberLoginServiceDto login(String phoneNumber, String code) {
         authMessageService.authenticate(phoneNumber, code);
         Member member = createOrFindMemberByPhoneNumber(phoneNumber);
+
         if (member.isPermanentlySuspended()) {
             throw new PermanentlySuspendedMemberException();
         }
-
+        
         String accessToken = tokenProvider.createAccessToken(member.getId(), Role.MEMBER, Instant.now());
         String refreshToken = tokenProvider.createRefreshToken(member.getId(), Role.MEMBER, Instant.now());
         tokenRepository.save(refreshToken);
