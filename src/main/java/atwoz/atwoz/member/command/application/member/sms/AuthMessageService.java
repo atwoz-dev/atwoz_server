@@ -37,7 +37,11 @@ public class AuthMessageService {
     }
 
     private void validateWithCode(String value, String code) {
-        if (value == null || !value.equals(code)) {
+        if (value == null) {
+            throw new CodeNotMatchException();
+        }
+
+        if (!value.equals(code)) {
             throw new CodeNotMatchException();
         }
     }

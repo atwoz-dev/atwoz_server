@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -16,9 +15,9 @@ import java.util.concurrent.locks.ReentrantLock;
 @Service
 @RequiredArgsConstructor
 public class BizgoTokenHandler {
-    private ReentrantLock lock;
+    private final ReentrantLock lock = new ReentrantLock();
 
-    private RestClient restClient;
+    private final RestClient restClient = RestClient.create();
 
     @Value("${bizgo.client-id}")
     private String clientId;
@@ -29,12 +28,6 @@ public class BizgoTokenHandler {
 
     private volatile String authToken;
     private volatile Date authTime;
-
-    @PostConstruct
-    public void init() {
-        lock = new ReentrantLock();
-        restClient = RestClient.create();
-    }
 
     public String getAuthToken() {
         if (isOver23Hours(authTime)) {
