@@ -4,7 +4,6 @@ import atwoz.atwoz.member.command.infra.member.sms.dto.BizgoMessageRequest;
 import atwoz.atwoz.member.command.infra.member.sms.exception.BizgoMessageSendException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -13,7 +12,7 @@ import org.springframework.web.client.RestClient;
 @Service
 @RequiredArgsConstructor
 public class BizgoMessanger {
-    private final RestClient restClient = RestClient.create();
+    private final RestClient restClient;
 
     private final BizgoTokenHandler bizgoTokenHandler;
 
@@ -36,7 +35,7 @@ public class BizgoMessanger {
                 authToken = bizgoTokenHandler.getAuthToken();
                 sendRequest(message, phoneNumber, authToken);
             } else {
-                throw new BizgoMessageSendException(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                throw e;
             }
         }
     }

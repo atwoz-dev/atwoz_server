@@ -17,7 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class BizgoTokenHandler {
     private final ReentrantLock lock = new ReentrantLock();
 
-    private final RestClient restClient = RestClient.create();
+    private final RestClient restClient;
 
     @Value("${bizgo.client-id}")
     private String clientId;
