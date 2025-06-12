@@ -1,9 +1,6 @@
 package atwoz.atwoz.member.command.infra.member.sms;
 
-import atwoz.atwoz.member.command.infra.member.sms.dto.BizgoAuthResponse;
 import atwoz.atwoz.member.command.infra.member.sms.dto.BizgoMessageRequest;
-import atwoz.atwoz.member.command.infra.member.sms.dto.BizgoMessageResponse;
-import atwoz.atwoz.member.command.infra.member.sms.exception.BizgoAuthenticationException;
 import atwoz.atwoz.member.command.infra.member.sms.exception.BizgoMessageSendException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,51 +9,42 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 @RequiredArgsConstructor
 public class BizgoMessanger {
-    private final ReentrantLock lock = new ReentrantLock();
-    @Value("${bizgo.client-id}")
-    private String clientId;
-    @Value("${bizgo.client-password}")
-    private String clientPassword;
+    private final RestClient restClient = RestClient.create();
+
+    private final BizgoTokenHandler bizgoTokenHandler;
+
     @Value("${bizgo.from-phone-number}")
     private String fromPhoneNumber;
     @Value("${bizgo.api-url}")
     private String apiUrl;
-    private String authToken;
 
     public void sendMessage(String message, String phoneNumber) {
-        if (authToken == null) {
-            resetAuthToken();
-        }
         trySendMessageWithRetry(message, phoneNumber);
     }
 
     private void trySendMessageWithRetry(String message, String phoneNumber) {
-        int retryCount = 0;
-        while (retryCount < 3) {
-            try {
-                BizgoMessageResponse response = sendRequest(message, phoneNumber);
-                if (!isFailMessageResponse(response)) {
-                    return;
-                }
-            } catch (BizgoMessageSendException e) {
-                if (e.getStatusCode() == HttpStatus.UNAUTHORIZED.value()) {
-                    resetAuthToken();
-                }
+        String authToken = bizgoTokenHandler.getAuthToken();
+        
+        try {
+            sendRequest(message, phoneNumber, authToken);
+        } catch (BizgoMessageSendException e) {
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED.value()) {
+                authToken = bizgoTokenHandler.getAuthToken();
+                sendRequest(message, phoneNumber, authToken);
+            } else {
+                throw new BizgoMessageSendException(HttpStatus.INTERNAL_SERVER_ERROR.value());
             }
-            retryCount++;
         }
-        throw new BizgoMessageSendException(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    private BizgoMessageResponse sendRequest(String message, String phoneNumber) {
+    private void sendRequest(String message, String phoneNumber, String authToken) {
         String requestURL = apiUrl + "/send/sms";
-        RestClient restClient = RestClient.create();
-        return restClient.post()
+
+        restClient.post()
             .uri(requestURL)
             .header("Content-Type", "application/json")
             .header("Accept", "application/json")
@@ -66,52 +54,6 @@ public class BizgoMessanger {
             .onStatus(HttpStatusCode::isError, (request, httpResponse) -> {
                     throw new BizgoMessageSendException(httpResponse.getStatusCode().value());
                 }
-            )
-            .toEntity(BizgoMessageResponse.class)
-            .getBody();
-    }
-
-    private void resetAuthToken() {
-        lock.lock();
-        try {
-            if (authToken == null) {
-                setAuthToken();
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private void setAuthToken() {
-        String requestURL = apiUrl + "/auth/token";
-
-        RestClient restClient = RestClient.create();
-        BizgoAuthResponse response = restClient.post()
-            .uri(requestURL)
-            .header("Accept", "application/json")
-            .header("X-IB-Client-Id", clientId)
-            .header("X-IB-Client-Passwd", clientPassword)
-            .retrieve()
-            .onStatus(HttpStatusCode::isError, (request, httpResponse) -> {
-                    throw new BizgoAuthenticationException();
-                }
-            )
-            .toEntity(BizgoAuthResponse.class)
-            .getBody();
-
-        validateAuthResponse(response);
-        authToken = response.data().token();
-    }
-
-    private void validateAuthResponse(BizgoAuthResponse response) {
-        if (response == null || response.code() == null || !response.code().equals(ResponseCode.SUCCESS.getCode())
-            || response.data() == null
-            || response.data().token() == null) {
-            throw new BizgoAuthenticationException();
-        }
-    }
-
-    private boolean isFailMessageResponse(BizgoMessageResponse response) {
-        return response == null || response.code() == null || !response.code().equals(ResponseCode.SUCCESS.getCode());
+            );
     }
 }
