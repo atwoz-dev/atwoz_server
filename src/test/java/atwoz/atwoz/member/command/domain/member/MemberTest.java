@@ -3,6 +3,7 @@ package atwoz.atwoz.member.command.domain.member;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartBalance;
+import atwoz.atwoz.member.command.domain.member.event.MemberSettingUpdatedEvent;
 import atwoz.atwoz.member.command.domain.member.event.PurchaseHeartGainedEvent;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import org.assertj.core.api.Assertions;
@@ -16,7 +17,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
-public class MemberTest {
+class MemberTest {
 
     @Test
     @DisplayName("유효한 전화번호를 사용하여 멤버를 생성합니다.")
@@ -146,6 +147,40 @@ public class MemberTest {
 
             // Then
             Assertions.assertThat(member.getHeartBalance()).isEqualTo(expectedHeartBalance);
+        }
+    }
+
+    @Nested
+    @DisplayName("updateSetting 메서드 테스트")
+    class UpdateSettingMethodTest {
+
+        @Test
+        @DisplayName("멤버의 설정을 업데이트하고 이벤트를 발행합니다.")
+        void shouldUpdateMemberSettings() {
+            // Given
+            Member member = Member.fromPhoneNumber("01012345678");
+            Long memberId = 1L;
+            setField(member, "id", memberId);
+            Grade grade = Grade.GOLD;
+            ActivityStatus activityStatus = ActivityStatus.ACTIVE;
+            boolean isVip = true;
+            boolean isPushNotificationEnabled = false;
+
+            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
+                // When
+                member.updateSetting(grade, activityStatus, isVip, isPushNotificationEnabled);
+
+                // Then
+                eventsMockedStatic.verify(() ->
+                    Events.raise(argThat((MemberSettingUpdatedEvent event) ->
+                        event.getMemberId() == member.getId() &&
+                            event.isPushNotificationEnabled() == isPushNotificationEnabled
+                    )), times(1));
+
+                Assertions.assertThat(member.getGrade()).isEqualTo(grade);
+                Assertions.assertThat(member.getActivityStatus()).isEqualTo(activityStatus);
+                Assertions.assertThat(member.isVip()).isEqualTo(isVip);
+            }
         }
     }
 }
