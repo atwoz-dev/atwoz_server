@@ -2,17 +2,19 @@ package atwoz.atwoz.member.command.infra.member.sms;
 
 import atwoz.atwoz.member.command.infra.member.sms.dto.BizgoAuthResponse;
 import atwoz.atwoz.member.command.infra.member.sms.exception.BizgoAuthenticationException;
-import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.concurrent.locks.ReentrantLock;
 
 
 @Service
+@RequiredArgsConstructor
 public class BizgoTokenHandler {
     private ReentrantLock lock;
 
@@ -25,14 +27,13 @@ public class BizgoTokenHandler {
     @Value("${bizgo.api-url}")
     private String apiUrl;
 
-    private String authToken;
-    private Date authTime;
+    private volatile String authToken;
+    private volatile Date authTime;
 
     @PostConstruct
     public void init() {
         lock = new ReentrantLock();
         restClient = RestClient.create();
-        setAuthToken();
     }
 
     public String getAuthToken() {
@@ -43,6 +44,9 @@ public class BizgoTokenHandler {
     }
 
     private boolean isOver23Hours(Date authTime) {
+        if (authTime == null) {
+            return true;
+        }
         long now = System.currentTimeMillis();
         long diffMillis = now - authTime.getTime();
         long hours23 = 23L * 60 * 60 * 1000;
@@ -83,9 +87,7 @@ public class BizgoTokenHandler {
     }
 
     private void validateAuthResponse(BizgoAuthResponse response) {
-        if (response == null || response.code() == null || !response.code().equals(ResponseCode.SUCCESS.getCode())
-            || response.data() == null
-            || response.data().token() == null) {
+        if (response == null || response.code() == null || response.data() == null || response.data().token() == null) {
             throw new BizgoAuthenticationException();
         }
     }

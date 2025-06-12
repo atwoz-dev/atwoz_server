@@ -4,11 +4,11 @@ import lombok.Getter;
 
 @Getter
 public enum ResponseCode {
-    SUCCESS("A000"), EXPIRED_TOKEN("A001");
+    SUCCESS(200), EXPIRED_TOKEN(403);
 
-    private final String code;
+    private final int code;
 
-    ResponseCode(String code) {
+    ResponseCode(int code) {
         this.code = code;
     }
 }

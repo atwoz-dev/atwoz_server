@@ -28,11 +28,11 @@ public class BizgoMessanger {
 
     private void trySendMessageWithRetry(String message, String phoneNumber) {
         String authToken = bizgoTokenHandler.getAuthToken();
-        
+
         try {
             sendRequest(message, phoneNumber, authToken);
         } catch (BizgoMessageSendException e) {
-            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED.value()) {
+            if (e.getStatusCode() == ResponseCode.EXPIRED_TOKEN.getCode()) {
                 authToken = bizgoTokenHandler.getAuthToken();
                 sendRequest(message, phoneNumber, authToken);
             } else {
