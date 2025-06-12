@@ -64,8 +64,8 @@ public class BizgoTokenHandler {
 
         validateAuthResponse(response);
 
-        authTime = new Date();
         authToken = response.data().token();
+        authTime = new Date();
     }
 
     private void reissueAuthToken() {
