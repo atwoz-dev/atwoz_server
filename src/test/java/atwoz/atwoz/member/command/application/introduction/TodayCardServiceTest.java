@@ -37,9 +37,14 @@ class TodayCardServiceTest {
         final long memberId = 1L;
         Set<Long> todayCardMemberIds = Set.of(2L, 3L);
 
-        when(memberIntroductionCommandRepository.findIntroducedMemberIdsByMemberIdAndIntroducedMemberIdIn(memberId,
+        final MemberIntroduction memberIntroduction1 = mock(MemberIntroduction.class);
+        when(memberIntroduction1.getIntroducedMemberId()).thenReturn(2L);
+        final MemberIntroduction memberIntroduction2 = mock(MemberIntroduction.class);
+        when(memberIntroduction2.getIntroducedMemberId()).thenReturn(3L);
+
+        when(memberIntroductionCommandRepository.findAllByMemberIdAndIntroducedMemberIdIn(memberId,
             todayCardMemberIds))
-            .thenReturn(todayCardMemberIds);
+            .thenReturn(List.of(memberIntroduction1, memberIntroduction2));
 
         // when
         todayCardService.createTodayCardIntroductions(memberId, todayCardMemberIds);
@@ -56,9 +61,9 @@ class TodayCardServiceTest {
         final long memberId = 1L;
         Set<Long> todayCardMemberIds = Set.of(2L, 3L);
 
-        when(memberIntroductionCommandRepository.findIntroducedMemberIdsByMemberIdAndIntroducedMemberIdIn(memberId,
+        when(memberIntroductionCommandRepository.findAllByMemberIdAndIntroducedMemberIdIn(memberId,
             todayCardMemberIds))
-            .thenReturn(Set.of());
+            .thenReturn(List.of());
         when(memberCommandRepository.findAllById(todayCardMemberIds)).thenReturn(List.of());
 
         // when
@@ -75,9 +80,9 @@ class TodayCardServiceTest {
         final long memberId = 1L;
         Set<Long> todayCardMemberIds = Set.of(2L, 3L, 4L);
 
-        when(memberIntroductionCommandRepository.findIntroducedMemberIdsByMemberIdAndIntroducedMemberIdIn(memberId,
+        when(memberIntroductionCommandRepository.findAllByMemberIdAndIntroducedMemberIdIn(memberId,
             todayCardMemberIds))
-            .thenReturn(Set.of());
+            .thenReturn(List.of());
 
         Member inactiveMember = mock(Member.class);
         when(inactiveMember.isActive()).thenReturn(false);
@@ -98,9 +103,9 @@ class TodayCardServiceTest {
         final long memberId = 1L;
         Set<Long> todayCardMemberIds = Set.of(2L, 3L);
 
-        when(memberIntroductionCommandRepository.findIntroducedMemberIdsByMemberIdAndIntroducedMemberIdIn(memberId,
+        when(memberIntroductionCommandRepository.findAllByMemberIdAndIntroducedMemberIdIn(memberId,
             todayCardMemberIds))
-            .thenReturn(Set.of());
+            .thenReturn(List.of());
 
         Member activeMember = mock(Member.class);
         when(activeMember.isActive()).thenReturn(true);

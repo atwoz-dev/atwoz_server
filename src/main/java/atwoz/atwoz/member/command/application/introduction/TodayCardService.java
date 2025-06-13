@@ -30,7 +30,8 @@ public class TodayCardService {
 
     private Set<Long> getIntroductionTargetMemberIds(long memberId, Set<Long> todayCardMemberIds) {
         Set<Long> memberIntroductions = memberIntroductionCommandRepository
-            .findIntroducedMemberIdsByMemberIdAndIntroducedMemberIdIn(memberId, todayCardMemberIds);
+            .findAllByMemberIdAndIntroducedMemberIdIn(memberId, todayCardMemberIds)
+            .stream().map(MemberIntroduction::getIntroducedMemberId).collect(Collectors.toSet());
 
         final Set<Long> introductionTargetMemberIds = todayCardMemberIds.stream()
             .filter(introducedMemberId -> !memberIntroductions.contains(introducedMemberId))
