@@ -7,6 +7,6 @@ import java.util.Set;
 public interface MemberIntroductionCommandRepository extends JpaRepository<MemberIntroduction, Long> {
     boolean existsByMemberIdAndIntroducedMemberId(long memberId, long introducedMemberId);
 
-    Set<Long> findAllIntroducedMemberIdsByMemberIdAndInIntroducedMemberIds(long memberId,
+    Set<Long> findIntroducedMemberIdsByMemberIdAndIntroducedMemberIdIn(long memberId,
         Set<Long> introducedMemberIds);
 }

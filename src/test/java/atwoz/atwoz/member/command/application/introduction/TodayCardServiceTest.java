@@ -37,7 +37,7 @@ class TodayCardServiceTest {
         final long memberId = 1L;
         Set<Long> todayCardMemberIds = Set.of(2L, 3L);
 
-        when(memberIntroductionCommandRepository.findAllIntroducedMemberIdsByMemberIdAndInIntroducedMemberIds(memberId,
+        when(memberIntroductionCommandRepository.findIntroducedMemberIdsByMemberIdAndIntroducedMemberIdIn(memberId,
             todayCardMemberIds))
             .thenReturn(todayCardMemberIds);
 
@@ -56,7 +56,7 @@ class TodayCardServiceTest {
         final long memberId = 1L;
         Set<Long> todayCardMemberIds = Set.of(2L, 3L);
 
-        when(memberIntroductionCommandRepository.findAllIntroducedMemberIdsByMemberIdAndInIntroducedMemberIds(memberId,
+        when(memberIntroductionCommandRepository.findIntroducedMemberIdsByMemberIdAndIntroducedMemberIdIn(memberId,
             todayCardMemberIds))
             .thenReturn(Set.of());
         when(memberCommandRepository.findAllById(todayCardMemberIds)).thenReturn(List.of());
@@ -75,7 +75,7 @@ class TodayCardServiceTest {
         final long memberId = 1L;
         Set<Long> todayCardMemberIds = Set.of(2L, 3L, 4L);
 
-        when(memberIntroductionCommandRepository.findAllIntroducedMemberIdsByMemberIdAndInIntroducedMemberIds(memberId,
+        when(memberIntroductionCommandRepository.findIntroducedMemberIdsByMemberIdAndIntroducedMemberIdIn(memberId,
             todayCardMemberIds))
             .thenReturn(Set.of());
 
@@ -98,7 +98,7 @@ class TodayCardServiceTest {
         final long memberId = 1L;
         Set<Long> todayCardMemberIds = Set.of(2L, 3L);
 
-        when(memberIntroductionCommandRepository.findAllIntroducedMemberIdsByMemberIdAndInIntroducedMemberIds(memberId,
+        when(memberIntroductionCommandRepository.findIntroducedMemberIdsByMemberIdAndIntroducedMemberIdIn(memberId,
             todayCardMemberIds))
             .thenReturn(Set.of());
 
