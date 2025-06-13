@@ -141,11 +141,11 @@ public class AdminMemberQueryRepository {
                     new QAdminMemberSettingInfo(
                         member.grade.stringValue(),
                         member.activityStatus.stringValue(),
-                        member.isVip
+                        member.isVip,
+                        notificationPreference.isEnabledGlobally
                     ),
                     new QAdminMemberStatusInfo(
                         member.primaryContactType.stringValue(),
-                        notificationPreference.isEnabledGlobally,
                         constant(hasInterviewAnswers),
                         constant(warningCount)
                     ),

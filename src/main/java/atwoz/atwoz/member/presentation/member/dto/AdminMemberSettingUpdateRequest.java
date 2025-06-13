@@ -1,12 +1,10 @@
-package atwoz.atwoz.member.query.member.view;
+package atwoz.atwoz.member.presentation.member.dto;
 
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Grade;
-import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-// TODO : 프로필 공개 여부 추가
-public record AdminMemberSettingInfo(
+public record AdminMemberSettingUpdateRequest(
     @Schema(implementation = Grade.class)
     String grade,
     @Schema(implementation = ActivityStatus.class)
@@ -14,7 +12,4 @@ public record AdminMemberSettingInfo(
     boolean isVip,
     boolean isPushNotificationEnabled
 ) {
-    @QueryProjection
-    public AdminMemberSettingInfo {
-    }
 }

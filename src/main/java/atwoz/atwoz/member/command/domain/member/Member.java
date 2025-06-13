@@ -4,6 +4,7 @@ import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartBalance;
+import atwoz.atwoz.member.command.domain.member.event.MemberSettingUpdatedEvent;
 import atwoz.atwoz.member.command.domain.member.event.PurchaseHeartGainedEvent;
 import atwoz.atwoz.member.command.domain.member.exception.MemberNotActiveException;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
@@ -133,5 +134,17 @@ public class Member extends SoftDeleteBaseEntity {
 
     public void updateGrade(@NonNull Grade grade) {
         this.grade = grade;
+    }
+
+    public void updateSetting(
+        @NonNull Grade grade,
+        @NonNull ActivityStatus activityStatus,
+        boolean isVip,
+        boolean isPushNotificationEnabled
+    ) {
+        this.grade = grade;
+        this.activityStatus = activityStatus;
+        this.isVip = isVip;
+        Events.raise(MemberSettingUpdatedEvent.of(id, isPushNotificationEnabled));
     }
 }

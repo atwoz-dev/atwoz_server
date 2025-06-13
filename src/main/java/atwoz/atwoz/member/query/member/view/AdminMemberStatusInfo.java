@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record AdminMemberStatusInfo(
     @Schema(implementation = PrimaryContactType.class)
     String primaryContactType,
-    boolean isPushNotificationEnabled,
     boolean hasInterviewAnswer,
     int warningCount
 ) {

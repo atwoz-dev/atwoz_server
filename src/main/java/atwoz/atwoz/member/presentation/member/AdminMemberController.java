@@ -1,7 +1,9 @@
 package atwoz.atwoz.member.presentation.member;
 
 import atwoz.atwoz.common.response.BaseResponse;
+import atwoz.atwoz.member.command.application.member.AdminMemberService;
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
+import atwoz.atwoz.member.presentation.member.dto.AdminMemberSettingUpdateRequest;
 import atwoz.atwoz.member.query.member.condition.AdminMemberSearchCondition;
 import atwoz.atwoz.member.query.member.infra.AdminMemberQueryRepository;
 import atwoz.atwoz.member.query.member.view.AdminMemberDetailView;
@@ -24,6 +26,7 @@ import static atwoz.atwoz.common.enums.StatusType.OK;
 @RequiredArgsConstructor
 public class AdminMemberController {
 
+    private final AdminMemberService adminMemberService;
     private final AdminMemberQueryRepository adminMemberQueryRepository;
 
     @Operation(summary = "멤버 목록 조회")
@@ -41,5 +44,15 @@ public class AdminMemberController {
         AdminMemberDetailView view = adminMemberQueryRepository.findById(memberId)
             .orElseThrow(MemberNotFoundException::new);
         return ResponseEntity.ok(BaseResponse.of(OK, view));
+    }
+
+    @Operation(summary = "멤버 설정 업데이트")
+    @PutMapping("/{memberId}/settings")
+    public ResponseEntity<BaseResponse<Void>> updateMemberSetting(
+        @Valid @RequestBody AdminMemberSettingUpdateRequest request,
+        @PathVariable long memberId
+    ) {
+        adminMemberService.updateMemberSetting(memberId, request);
+        return ResponseEntity.ok(BaseResponse.from(OK));
     }
 }

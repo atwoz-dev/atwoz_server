@@ -248,8 +248,8 @@ class AdminMemberQueryRepositoryTest {
             assertHeartBalanceView(result.heartBalanceInfo(), member);
             assertProfileImageUrls(result.profileImageUrls(), profileImages);
             assertProfileInfo(result.profileInfo(), member);
-            assertAdminMemberSettingInfo(result.settingInfo(), member);
-            assertAdminMemberStatusInfo(result.statusInfo(), member, 2, notificationPreference, true);
+            assertAdminMemberSettingInfo(result.settingInfo(), member, notificationPreference);
+            assertAdminMemberStatusInfo(result.statusInfo(), member, 2, true);
             assertDateInfo(result, member);
         }
 
@@ -322,16 +322,17 @@ class AdminMemberQueryRepositoryTest {
             assertThat(profileInfo.hobbies()).containsExactlyInAnyOrderElementsOf(hobbies);
         }
 
-        private void assertAdminMemberSettingInfo(AdminMemberSettingInfo settingInfo, Member member) {
+        private void assertAdminMemberSettingInfo(AdminMemberSettingInfo settingInfo, Member member,
+            NotificationPreference notificationPreference) {
             assertThat(settingInfo.grade()).isEqualTo(member.getGrade().name());
             assertThat(settingInfo.activityStatus()).isEqualTo(member.getActivityStatus().name());
             assertThat(settingInfo.isVip()).isEqualTo(member.isVip());
+            assertThat(settingInfo.isPushNotificationEnabled()).isEqualTo(notificationPreference.isEnabledGlobally());
         }
 
         private void assertAdminMemberStatusInfo(AdminMemberStatusInfo statusInfo, Member member, int warningCount,
-            NotificationPreference notificationPreference, boolean hasInterviewAnswers) {
+            boolean hasInterviewAnswers) {
             assertThat(statusInfo.primaryContactType()).isEqualTo(member.getPrimaryContactType().name());
-            assertThat(statusInfo.isPushNotificationEnabled()).isEqualTo(notificationPreference.isEnabledGlobally());
             assertThat(statusInfo.hasInterviewAnswer()).isEqualTo(hasInterviewAnswers);
             assertThat(statusInfo.warningCount()).isEqualTo(warningCount);
         }

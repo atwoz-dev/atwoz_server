@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.command.domain.member;
 
+import atwoz.atwoz.member.command.domain.member.exception.InvalidMemberEnumValueException;
 import lombok.Getter;
 
 @Getter
@@ -13,5 +14,13 @@ public enum ActivityStatus {
 
     ActivityStatus(String description) {
         this.description = description;
+    }
+
+    public static ActivityStatus from(String activityStatus) {
+        try {
+            return ActivityStatus.valueOf(activityStatus.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidMemberEnumValueException("Invalid activity status: " + activityStatus);
+        }
     }
 }
