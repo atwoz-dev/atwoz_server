@@ -2,7 +2,6 @@ package atwoz.atwoz.member.command.application.introduction;
 
 import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotActiveException;
 import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotFoundException;
-import atwoz.atwoz.member.command.application.introduction.exception.MemberIntroductionAlreadyExistsException;
 import atwoz.atwoz.member.command.domain.introduction.IntroductionType;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroductionCommandRepository;
@@ -35,6 +34,24 @@ class TodayCardServiceTest {
     private MemberIntroductionCommandRepository memberIntroductionCommandRepository;
 
     @Test
+    @DisplayName("오늘의 카드 멤버 id가 이미 소개된 멤버라면 소개를 생성하지 않는다")
+    void doesNotCreateIntroductionWhenAlreadyExists() {
+        // given
+        final long memberId = 1L;
+        final long todayCardMemberId = 2L;
+        Set<Long> todayCardMemberIds = Set.of(todayCardMemberId);
+
+        when(memberIntroductionCommandRepository.existsByMemberIdAndIntroducedMemberId(memberId, todayCardMemberId))
+            .thenReturn(true);
+
+        // when
+        todayCardService.createTodayCardIntroductions(memberId, todayCardMemberIds);
+
+        // then
+        verify(memberIntroductionCommandRepository, never()).save(any());
+    }
+
+    @Test
     @DisplayName("오늘의 카드 멤버 id가 존재하지 않으면 예외를 던진다.")
     void throwsExceptionWhenTodayCardMemberIdNotFound() {
         // given
@@ -42,10 +59,12 @@ class TodayCardServiceTest {
         final long todayCardMemberId = 2L;
         Set<Long> todayCardMemberIds = Set.of(todayCardMemberId);
 
+        when(memberIntroductionCommandRepository.existsByMemberIdAndIntroducedMemberId(memberId, todayCardMemberId))
+            .thenReturn(false);
         when(memberCommandRepository.findById(todayCardMemberId)).thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> todayCardService.createTodayCardAndIntroductions(memberId, todayCardMemberIds))
+        assertThatThrownBy(() -> todayCardService.createTodayCardIntroductions(memberId, todayCardMemberIds))
             .isInstanceOf(IntroducedMemberNotFoundException.class);
     }
 
@@ -57,34 +76,17 @@ class TodayCardServiceTest {
         final long todayCardMemberId = 2L;
         Set<Long> todayCardMemberIds = Set.of(todayCardMemberId);
 
+        when(memberIntroductionCommandRepository.existsByMemberIdAndIntroducedMemberId(memberId, todayCardMemberId))
+            .thenReturn(false);
         Member introducedMember = mock(Member.class);
         when(introducedMember.isActive()).thenReturn(false);
         when(memberCommandRepository.findById(todayCardMemberId)).thenReturn(Optional.of(introducedMember));
 
         // when & then
-        assertThatThrownBy(() -> todayCardService.createTodayCardAndIntroductions(memberId, todayCardMemberIds))
+        assertThatThrownBy(() -> todayCardService.createTodayCardIntroductions(memberId, todayCardMemberIds))
             .isInstanceOf(IntroducedMemberNotActiveException.class);
     }
 
-    @Test
-    @DisplayName("오늘의 카드 멤버 id가 이미 소개된 멤버라면 예외를 던진다")
-    void throwsExceptionWhenTodayCardMemberAlreadyIntroduced() {
-        // given
-        final long memberId = 1L;
-        final long todayCardMemberId = 2L;
-        Set<Long> todayCardMemberIds = Set.of(todayCardMemberId);
-
-        Member introducedMember = mock(Member.class);
-        when(introducedMember.isActive()).thenReturn(true);
-        when(memberCommandRepository.findById(todayCardMemberId)).thenReturn(Optional.of(introducedMember));
-
-        when(memberIntroductionCommandRepository.existsByMemberIdAndIntroducedMemberId(memberId, todayCardMemberId))
-            .thenReturn(true);
-
-        // when & then
-        assertThatThrownBy(() -> todayCardService.createTodayCardAndIntroductions(memberId, todayCardMemberIds))
-            .isInstanceOf(MemberIntroductionAlreadyExistsException.class);
-    }
 
     @Test
     @DisplayName("오늘의 카드 멤버 id가 유효하다면 소개를 생성한다")
@@ -94,12 +96,12 @@ class TodayCardServiceTest {
         final long todayCardMemberId = 2L;
         Set<Long> todayCardMemberIds = Set.of(todayCardMemberId);
 
+        when(memberIntroductionCommandRepository.existsByMemberIdAndIntroducedMemberId(memberId, todayCardMemberId))
+            .thenReturn(false);
+
         Member introducedMember = mock(Member.class);
         when(introducedMember.isActive()).thenReturn(true);
         when(memberCommandRepository.findById(todayCardMemberId)).thenReturn(Optional.of(introducedMember));
-
-        when(memberIntroductionCommandRepository.existsByMemberIdAndIntroducedMemberId(memberId, todayCardMemberId))
-            .thenReturn(false);
 
         // when
         try (MockedStatic<MemberIntroduction> memberIntroductionMockedStatic = mockStatic(MemberIntroduction.class)) {
@@ -107,7 +109,7 @@ class TodayCardServiceTest {
             memberIntroductionMockedStatic.when(
                     () -> MemberIntroduction.of(memberId, todayCardMemberId, IntroductionType.TODAY_CARD))
                 .thenReturn(memberIntroduction);
-            todayCardService.createTodayCardAndIntroductions(memberId, todayCardMemberIds);
+            todayCardService.createTodayCardIntroductions(memberId, todayCardMemberIds);
 
             // then
             verify(memberIntroductionCommandRepository, times(1)).save(memberIntroduction);
