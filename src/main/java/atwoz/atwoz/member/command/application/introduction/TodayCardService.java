@@ -2,7 +2,6 @@ package atwoz.atwoz.member.command.application.introduction;
 
 import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotActiveException;
 import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotFoundException;
-import atwoz.atwoz.member.command.application.introduction.exception.MemberIntroductionAlreadyExistsException;
 import atwoz.atwoz.member.command.domain.introduction.IntroductionType;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroductionCommandRepository;
@@ -21,25 +20,29 @@ public class TodayCardService {
     private final MemberIntroductionCommandRepository memberIntroductionCommandRepository;
 
     @Transactional
-    public void createTodayCardAndIntroductions(long memberId, Set<Long> todayCardMemberIds) {
+    public void createTodayCardIntroductions(long memberId, Set<Long> todayCardMemberIds) {
         todayCardMemberIds.forEach(
             introducedMemberId -> createIntroduction(memberId, introducedMemberId, IntroductionType.TODAY_CARD));
     }
 
     private void createIntroduction(long memberId, long introducedMemberId, IntroductionType introductionType) {
-        validateIntroduction(memberId, introducedMemberId);
+        if (hasIntroduction(memberId, introducedMemberId)) {
+            return;
+        }
+        validateIntroduction(introducedMemberId);
         MemberIntroduction memberIntroduction = MemberIntroduction.of(memberId, introducedMemberId, introductionType);
         memberIntroductionCommandRepository.save(memberIntroduction);
     }
 
-    private void validateIntroduction(long memberId, long introducedMemberId) {
+    private boolean hasIntroduction(long memberId, long introducedMemberId) {
+        return memberIntroductionCommandRepository.existsByMemberIdAndIntroducedMemberId(memberId, introducedMemberId);
+    }
+
+    private void validateIntroduction(long introducedMemberId) {
         Member introductionMember = memberCommandRepository.findById(introducedMemberId)
             .orElseThrow(IntroducedMemberNotFoundException::new);
         if (!introductionMember.isActive()) {
             throw new IntroducedMemberNotActiveException();
-        }
-        if (memberIntroductionCommandRepository.existsByMemberIdAndIntroducedMemberId(memberId, introducedMemberId)) {
-            throw new MemberIntroductionAlreadyExistsException();
         }
     }
 }

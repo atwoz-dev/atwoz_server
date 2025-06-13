@@ -86,7 +86,7 @@ public class MemberIntroductionController {
         @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
         final Set<Long> todayCardMemberIds = todayCardQueryService.findTodayCardMemberIds(memberId);
-        todayCardService.createTodayCardAndIntroductions(memberId, todayCardMemberIds);
+        todayCardService.createTodayCardIntroductions(memberId, todayCardMemberIds);
         List<MemberIntroductionProfileView> introductionProfileViews = todayCardQueryService.findTodayCardIntroductions(
             memberId, todayCardMemberIds);
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, introductionProfileViews));
