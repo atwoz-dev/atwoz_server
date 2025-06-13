@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.command.application.member.sms;
 
+import atwoz.atwoz.member.command.application.member.exception.CodeNotExistsException;
 import atwoz.atwoz.member.command.application.member.exception.CodeNotMatchException;
 import atwoz.atwoz.member.command.infra.member.AuthMessageRedisRepository;
 import org.assertj.core.api.Assertions;
@@ -32,7 +33,7 @@ class AuthMessageServiceTest {
 
         // When & Then
         Assertions.assertThatThrownBy(() -> authMessageService.authenticate(phoneNumber, code))
-            .isInstanceOf(CodeNotMatchException.class);
+            .isInstanceOf(CodeNotExistsException.class);
     }
 
     @DisplayName("키가 일치하지 않는 경우, 예외 발생.")
