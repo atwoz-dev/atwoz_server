@@ -3,6 +3,7 @@ package atwoz.atwoz.member.command.domain.introduction;
 
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.member.command.domain.introduction.event.MemberIntroducedEvent;
+import atwoz.atwoz.member.command.domain.introduction.exception.InvalidIntroductionMemberIdException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -75,5 +76,18 @@ class MemberIntroductionTest {
             assertThat(memberIntroduction.getMemberId()).isEqualTo(memberId);
             assertThat(memberIntroduction.getIntroducedMemberId()).isEqualTo(introducedMemberId);
         }
+    }
+
+    @Test
+    @DisplayName("소개 멤버 id가 같으면 예외를 던진다.")
+    void throwsExceptionWhenMemberIdEqualsIntroducedMemberId() {
+        // given
+        long memberId = 1L;
+        long introducedMemberId = 1L;
+        IntroductionType type = mock(IntroductionType.class);
+
+        // when & then
+        assertThatThrownBy(() -> MemberIntroduction.of(memberId, introducedMemberId, type))
+            .isInstanceOf(InvalidIntroductionMemberIdException.class);
     }
 }
