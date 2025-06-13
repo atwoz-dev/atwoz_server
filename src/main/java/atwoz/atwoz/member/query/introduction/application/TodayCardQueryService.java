@@ -15,8 +15,11 @@ public class TodayCardQueryService {
     private final TodayCardMemberIdFetcher todayCardMemberIdFetcher;
     private final IntroductionQueryRepository introductionQueryRepository;
 
-    public List<MemberIntroductionProfileView> findTodayCardIntroductions(long memberId) {
-        Set<Long> todayCardMemberIds = todayCardMemberIdFetcher.fetch(memberId, IntroductionCacheKeyPrefix.TODAY_CARD);
+    public Set<Long> findTodayCardMemberIds(long memberId) {
+        return todayCardMemberIdFetcher.fetch(memberId, IntroductionCacheKeyPrefix.TODAY_CARD);
+    }
+
+    public List<MemberIntroductionProfileView> findTodayCardIntroductions(long memberId, Set<Long> todayCardMemberIds) {
         List<MemberIntroductionProfileQueryResult> memberIntroductionProfileQueryResults =
             introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId,
                 todayCardMemberIds);
