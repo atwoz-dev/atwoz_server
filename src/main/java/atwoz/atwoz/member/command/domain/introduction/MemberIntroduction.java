@@ -3,6 +3,7 @@ package atwoz.atwoz.member.command.domain.introduction;
 import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.member.command.domain.introduction.event.MemberIntroducedEvent;
+import atwoz.atwoz.member.command.domain.introduction.exception.InvalidIntroductionMemberIdException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,6 +25,7 @@ public class MemberIntroduction extends BaseEntity {
     private Long introducedMemberId;
 
     private MemberIntroduction(@NonNull Long memberId, @NonNull Long introducedMemberId) {
+        validateMemberId(memberId, introducedMemberId);
         this.memberId = memberId;
         this.introducedMemberId = introducedMemberId;
     }
@@ -35,5 +37,11 @@ public class MemberIntroduction extends BaseEntity {
         }
         Events.raise(MemberIntroducedEvent.of(memberId, type.getDescription()));
         return memberIntroduction;
+    }
+
+    private void validateMemberId(@NonNull Long memberId, @NonNull Long introducedMemberId) {
+        if (memberId.equals(introducedMemberId)) {
+            throw new InvalidIntroductionMemberIdException(memberId, introducedMemberId);
+        }
     }
 }

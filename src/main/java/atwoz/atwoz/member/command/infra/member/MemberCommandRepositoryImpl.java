@@ -7,7 +7,9 @@ import atwoz.atwoz.member.command.domain.member.vo.PhoneNumber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 @RequiredArgsConstructor
@@ -43,5 +45,15 @@ public class MemberCommandRepositoryImpl implements MemberCommandRepository {
     @Override
     public boolean existsById(Long id) {
         return memberCommandJpaRepository.existsById(id);
+    }
+
+    @Override
+    public List<Member> findAllById(Set<Long> ids) {
+        return memberCommandJpaRepository.findAllById(ids);
+    }
+
+    @Override
+    public List<Member> saveAll(List<Member> members) {
+        return memberCommandJpaRepository.saveAll(members);
     }
 }

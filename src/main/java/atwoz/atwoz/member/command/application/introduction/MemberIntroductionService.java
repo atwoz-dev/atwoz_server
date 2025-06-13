@@ -43,11 +43,6 @@ public class MemberIntroductionService {
         createIntroduction(memberId, introducedMemberId, IntroductionType.RECENTLY_JOINED);
     }
 
-    @Transactional
-    public void createTodayCardIntroduction(long memberId, long introducedMemberId) {
-        createIntroduction(memberId, introducedMemberId, IntroductionType.TODAY_CARD);
-    }
-
     private void createIntroduction(long memberId, long introducedMemberId, IntroductionType introductionType) {
         validateIntroduction(memberId, introducedMemberId);
         MemberIntroduction memberIntroduction = MemberIntroduction.of(memberId, introducedMemberId, introductionType);
