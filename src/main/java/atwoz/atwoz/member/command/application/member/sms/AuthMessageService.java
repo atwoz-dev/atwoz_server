@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.command.application.member.sms;
 
+import atwoz.atwoz.member.command.application.member.exception.CodeNotExistsException;
 import atwoz.atwoz.member.command.application.member.exception.CodeNotMatchException;
 import atwoz.atwoz.member.command.infra.member.AuthMessageRedisRepository;
 import atwoz.atwoz.member.command.infra.member.sms.BizgoMessanger;
@@ -38,7 +39,7 @@ public class AuthMessageService {
 
     private void validateWithCode(String value, String code) {
         if (value == null) {
-            throw new CodeNotMatchException();
+            throw new CodeNotExistsException();
         }
 
         if (!value.equals(code)) {

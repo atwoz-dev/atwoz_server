@@ -15,10 +15,9 @@ import java.util.concurrent.locks.ReentrantLock;
 @Service
 @RequiredArgsConstructor
 public class BizgoTokenHandler {
+    private static final long HOURS23 = 23L * 60L * 60L * 1000L;
     private final ReentrantLock lock = new ReentrantLock();
-
     private final RestClient restClient;
-
     @Value("${bizgo.client-id}")
     private String clientId;
     @Value("${bizgo.client-password}")
@@ -42,8 +41,7 @@ public class BizgoTokenHandler {
         }
         long now = System.currentTimeMillis();
         long diffMillis = now - authTime.getTime();
-        long hours23 = 23L * 60 * 60 * 1000;
-        return diffMillis >= hours23;
+        return diffMillis >= HOURS23;
     }
 
     private void setAuthToken() {
