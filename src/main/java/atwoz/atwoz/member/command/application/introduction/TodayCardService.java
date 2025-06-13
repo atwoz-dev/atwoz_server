@@ -1,7 +1,5 @@
 package atwoz.atwoz.member.command.application.introduction;
 
-import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotActiveException;
-import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotFoundException;
 import atwoz.atwoz.member.command.domain.introduction.IntroductionType;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroductionCommandRepository;
@@ -11,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,28 +21,37 @@ public class TodayCardService {
 
     @Transactional
     public void createTodayCardIntroductions(long memberId, Set<Long> todayCardMemberIds) {
-        todayCardMemberIds.forEach(
-            introducedMemberId -> createIntroduction(memberId, introducedMemberId, IntroductionType.TODAY_CARD));
-    }
-
-    private void createIntroduction(long memberId, long introducedMemberId, IntroductionType introductionType) {
-        if (hasIntroduction(memberId, introducedMemberId)) {
+        Set<Long> introductionTargetMemberIds = getIntroductionTargetMemberIds(memberId, todayCardMemberIds);
+        if (introductionTargetMemberIds.isEmpty()) {
             return;
         }
-        validateIntroduction(introducedMemberId);
-        MemberIntroduction memberIntroduction = MemberIntroduction.of(memberId, introducedMemberId, introductionType);
-        memberIntroductionCommandRepository.save(memberIntroduction);
+        createIntroductions(memberId, introductionTargetMemberIds);
     }
 
-    private boolean hasIntroduction(long memberId, long introducedMemberId) {
-        return memberIntroductionCommandRepository.existsByMemberIdAndIntroducedMemberId(memberId, introducedMemberId);
-    }
+    private Set<Long> getIntroductionTargetMemberIds(long memberId, Set<Long> todayCardMemberIds) {
+        Set<Long> memberIntroductions = memberIntroductionCommandRepository
+            .findAllIntroducedMemberIdsByMemberIdAndInIntroducedMemberIds(memberId, todayCardMemberIds);
 
-    private void validateIntroduction(long introducedMemberId) {
-        Member introductionMember = memberCommandRepository.findById(introducedMemberId)
-            .orElseThrow(IntroducedMemberNotFoundException::new);
-        if (!introductionMember.isActive()) {
-            throw new IntroducedMemberNotActiveException();
+        final Set<Long> introductionTargetMemberIds = todayCardMemberIds.stream()
+            .filter(introducedMemberId -> !memberIntroductions.contains(introducedMemberId))
+            .collect(Collectors.toSet());
+
+        if (introductionTargetMemberIds.isEmpty()) {
+            return introductionTargetMemberIds;
         }
+
+        List<Member> introductionTargetMembers = memberCommandRepository.findAllById(introductionTargetMemberIds);
+
+        return introductionTargetMembers.stream()
+            .filter(Member::isActive)
+            .map(Member::getId)
+            .collect(Collectors.toSet());
+    }
+
+    private void createIntroductions(long memberId, Set<Long> todayCardMemberIds) {
+        List<MemberIntroduction> memberIntroductions = todayCardMemberIds.stream()
+            .map(introducedMemberId -> MemberIntroduction.of(memberId, introducedMemberId, IntroductionType.TODAY_CARD))
+            .toList();
+        memberIntroductionCommandRepository.saveAll(memberIntroductions);
     }
 }
