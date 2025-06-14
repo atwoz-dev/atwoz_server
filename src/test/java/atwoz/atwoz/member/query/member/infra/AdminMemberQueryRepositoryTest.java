@@ -325,6 +325,7 @@ class AdminMemberQueryRepositoryTest {
         private void assertAdminMemberSettingInfo(AdminMemberSettingInfo settingInfo, Member member,
             NotificationPreference notificationPreference) {
             assertThat(settingInfo.grade()).isEqualTo(member.getGrade().name());
+            assertThat(settingInfo.isProfilePublic()).isEqualTo(member.isProfilePublic());
             assertThat(settingInfo.activityStatus()).isEqualTo(member.getActivityStatus().name());
             assertThat(settingInfo.isVip()).isEqualTo(member.isVip());
             assertThat(settingInfo.isPushNotificationEnabled()).isEqualTo(notificationPreference.isEnabledGlobally());

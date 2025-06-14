@@ -38,6 +38,12 @@ public class MemberProfileService {
         }
     }
 
+    @Transactional
+    public void publishProfile(Long memberId) {
+        Member member = getMemberById(memberId);
+        member.publishProfile();
+    }
+
     private Member getMemberById(Long memberId) {
         return memberCommandRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
     }

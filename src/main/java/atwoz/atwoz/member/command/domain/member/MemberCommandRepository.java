@@ -21,4 +21,6 @@ public interface MemberCommandRepository {
     List<Member> findAllById(Set<Long> memberIds);
 
     List<Member> saveAll(List<Member> members);
+
+    Set<Long> findAllIdByIsProfilePublicFalse();
 }

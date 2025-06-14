@@ -56,4 +56,9 @@ public class MemberCommandRepositoryImpl implements MemberCommandRepository {
     public List<Member> saveAll(List<Member> members) {
         return memberCommandJpaRepository.saveAll(members);
     }
+
+    @Override
+    public Set<Long> findAllIdByIsProfilePublicFalse() {
+        return memberCommandJpaRepository.findAllIdByIsProfilePublicFalse();
+    }
 }

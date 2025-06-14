@@ -23,6 +23,7 @@ public class AdminMemberService {
         Member member = getMember(memberId);
         member.updateSetting(
             grade,
+            request.isProfilePublic(),
             activityStatus,
             request.isVip(),
             request.isPushNotificationEnabled()

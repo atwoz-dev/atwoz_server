@@ -32,6 +32,12 @@ class MemberTest {
         Assertions.assertThat(member).isNotNull();
         Assertions.assertThat(member.isProfileSettingNeeded()).isTrue();
         Assertions.assertThat(member.isPermanentlySuspended()).isFalse();
+        Assertions.assertThat(member.getPhoneNumber()).isEqualTo(phoneNumber);
+        Assertions.assertThat(member.getPrimaryContactType()).isEqualTo(PrimaryContactType.NONE);
+        Assertions.assertThat(member.getHeartBalance()).isEqualTo(HeartBalance.init());
+        Assertions.assertThat(member.getActivityStatus()).isEqualTo(ActivityStatus.ACTIVE);
+        Assertions.assertThat(member.isVip()).isFalse();
+        Assertions.assertThat(member.isProfilePublic()).isFalse();
     }
 
     @Nested
@@ -162,13 +168,14 @@ class MemberTest {
             Long memberId = 1L;
             setField(member, "id", memberId);
             Grade grade = Grade.GOLD;
+            final boolean isProfilePublic = true;
             ActivityStatus activityStatus = ActivityStatus.ACTIVE;
-            boolean isVip = true;
-            boolean isPushNotificationEnabled = false;
+            final boolean isVip = true;
+            final boolean isPushNotificationEnabled = false;
 
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
                 // When
-                member.updateSetting(grade, activityStatus, isVip, isPushNotificationEnabled);
+                member.updateSetting(grade, isProfilePublic, activityStatus, isVip, isPushNotificationEnabled);
 
                 // Then
                 eventsMockedStatic.verify(() ->
@@ -178,9 +185,28 @@ class MemberTest {
                     )), times(1));
 
                 Assertions.assertThat(member.getGrade()).isEqualTo(grade);
+                Assertions.assertThat(member.isProfilePublic()).isEqualTo(isProfilePublic);
                 Assertions.assertThat(member.getActivityStatus()).isEqualTo(activityStatus);
                 Assertions.assertThat(member.isVip()).isEqualTo(isVip);
             }
+        }
+    }
+
+    @Nested
+    @DisplayName("publishProfile 메서드 테스트")
+    class PublishProfileMethodTest {
+
+        @Test
+        @DisplayName("멤버의 프로필을 공개합니다.")
+        void shouldPublishMemberProfile() {
+            // Given
+            Member member = Member.fromPhoneNumber("01012345678");
+
+            // When
+            member.publishProfile();
+
+            // Then
+            Assertions.assertThat(member.isProfilePublic()).isTrue();
         }
     }
 }
