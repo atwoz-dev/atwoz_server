@@ -141,11 +141,13 @@ public class Member extends SoftDeleteBaseEntity {
 
     public void updateSetting(
         @NonNull Grade grade,
+        boolean isProfilePublic,
         @NonNull ActivityStatus activityStatus,
         boolean isVip,
         boolean isPushNotificationEnabled
     ) {
         this.grade = grade;
+        this.isProfilePublic = isProfilePublic;
         this.activityStatus = activityStatus;
         this.isVip = isVip;
         Events.raise(MemberSettingUpdatedEvent.of(id, isPushNotificationEnabled));
