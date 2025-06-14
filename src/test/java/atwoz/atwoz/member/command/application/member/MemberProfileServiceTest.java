@@ -136,7 +136,7 @@ class MemberProfileServiceTest {
 
         @Test
         @DisplayName("멤버가 존재하지 않으면 예외를 던집니다.")
-        void changeProfilePublicToTrueWhenMemberNotFound() {
+        void throwsExceptionWhenMemberNotFound() {
             // Given
             final long memberId = 1L;
             when(memberCommandRepository.findById(memberId)).thenReturn(Optional.empty());
@@ -148,7 +148,7 @@ class MemberProfileServiceTest {
 
         @Test
         @DisplayName("멤버가 존재하면 member.publishProfile() 메서드를 호출합니다.")
-        void changeProfilePublicToTrue() {
+        void callsPublishProfileMethodWhenMemberExists() {
             // Given
             final long memberId = 1L;
             Member member = mock(Member.class);
