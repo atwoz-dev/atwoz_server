@@ -38,6 +38,9 @@ public class Member extends SoftDeleteBaseEntity {
     @Getter
     private boolean isVip;
 
+    @Getter
+    private boolean isProfilePublic = false;
+
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
     @Getter
@@ -146,5 +149,9 @@ public class Member extends SoftDeleteBaseEntity {
         this.activityStatus = activityStatus;
         this.isVip = isVip;
         Events.raise(MemberSettingUpdatedEvent.of(id, isPushNotificationEnabled));
+    }
+
+    public void publishProfile() {
+        isProfilePublic = true;
     }
 }
