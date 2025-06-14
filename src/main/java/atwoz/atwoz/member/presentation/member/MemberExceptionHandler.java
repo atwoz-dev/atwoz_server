@@ -23,6 +23,14 @@ public class MemberExceptionHandler {
             .body(BaseResponse.from(StatusType.FORBIDDEN));
     }
 
+    @ExceptionHandler(MemberDeletedException.class)
+    public ResponseEntity<BaseResponse<Void>> handleMemberDeletedException(MemberDeletedException e) {
+        log.warn("멤버 로그인에 실패하였습니다. {}", e.getMessage());
+
+        return ResponseEntity.status(403)
+            .body(BaseResponse.from(StatusType.DELETED_TARGET));
+    }
+
     @ExceptionHandler(MemberNotFoundException.class)
     public ResponseEntity<BaseResponse<Void>> handleMemberNotFoundException(MemberNotFoundException e) {
         log.warn("멤버 조회에 실패하였습니다. {}", e.getMessage());

@@ -5,6 +5,7 @@ import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
+import atwoz.atwoz.member.command.application.member.exception.MemberDeletedException;
 import atwoz.atwoz.member.command.application.member.exception.MemberLoginConflictException;
 import atwoz.atwoz.member.command.application.member.exception.PermanentlySuspendedMemberException;
 import atwoz.atwoz.member.command.application.member.sms.AuthMessageService;
@@ -35,7 +36,11 @@ public class MemberAuthService {
         if (member.isPermanentlySuspended()) {
             throw new PermanentlySuspendedMemberException();
         }
-        
+
+        if (member.isDeleted()) {
+            throw new MemberDeletedException();
+        }
+
         String accessToken = tokenProvider.createAccessToken(member.getId(), Role.MEMBER, Instant.now());
         String refreshToken = tokenProvider.createRefreshToken(member.getId(), Role.MEMBER, Instant.now());
         tokenRepository.save(refreshToken);
