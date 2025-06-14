@@ -1,5 +1,7 @@
 package atwoz.atwoz.member.presentation.member;
 
+import atwoz.atwoz.auth.presentation.AuthContext;
+import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.auth.presentation.RefreshTokenCookieProperties;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
@@ -55,13 +57,7 @@ public class MemberAuthController {
         memberAuthService.logout(refreshToken);
 
         HttpHeaders headers = new HttpHeaders();
-        ResponseCookie deleteCookie = ResponseCookie.from(refreshTokenCookieProperties.name(), "")
-            .httpOnly(refreshTokenCookieProperties.httpOnly())
-            .secure(refreshTokenCookieProperties.secure())
-            .sameSite(refreshTokenCookieProperties.sameSite())
-            .path(refreshTokenCookieProperties.path())
-            .maxAge(refreshTokenCookieProperties.maxAge())
-            .build();
+        ResponseCookie deleteCookie = getResponseCookieDeletedRefreshToken();
         headers.add(HttpHeaders.SET_COOKIE, deleteCookie.toString());
 
         return ResponseEntity.ok()
@@ -69,10 +65,40 @@ public class MemberAuthController {
             .body(BaseResponse.from(StatusType.OK));
     }
 
+    @Operation(summary = "멤버 탈퇴")
+    @GetMapping("/delete")
+    public ResponseEntity<BaseResponse<Void>> delete(
+        @CookieValue(value = "refresh_token", required = false) String refreshToken,
+        @AuthPrincipal AuthContext authContext) {
+        memberAuthService.delete(authContext.getId(), refreshToken);
+
+        HttpHeaders headers = new HttpHeaders();
+        ResponseCookie deleteCookie = getResponseCookieDeletedRefreshToken();
+        headers.add(HttpHeaders.SET_COOKIE, deleteCookie.toString());
+
+        return ResponseEntity.ok()
+            .headers(headers)
+            .body(BaseResponse.from(StatusType.OK));
+
+
+    }
+
+    @Operation(summary = "휴대폰 번호 인증 코드 발송")
     @GetMapping("/code")
     public ResponseEntity<BaseResponse<Void>> getCode(@ModelAttribute @Valid MemberCodeRequest request) {
         memberAuthService.sendAuthCode(request.phoneNumber());
         return ResponseEntity.ok()
             .body(BaseResponse.from(StatusType.OK));
+    }
+
+
+    private ResponseCookie getResponseCookieDeletedRefreshToken() {
+        return ResponseCookie.from(refreshTokenCookieProperties.name(), "")
+            .httpOnly(refreshTokenCookieProperties.httpOnly())
+            .secure(refreshTokenCookieProperties.secure())
+            .sameSite(refreshTokenCookieProperties.sameSite())
+            .path(refreshTokenCookieProperties.path())
+            .maxAge(refreshTokenCookieProperties.maxAge())
+            .build();
     }
 }
