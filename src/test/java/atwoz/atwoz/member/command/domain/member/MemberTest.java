@@ -168,13 +168,14 @@ class MemberTest {
             Long memberId = 1L;
             setField(member, "id", memberId);
             Grade grade = Grade.GOLD;
+            final boolean isProfilePublic = true;
             ActivityStatus activityStatus = ActivityStatus.ACTIVE;
-            boolean isVip = true;
-            boolean isPushNotificationEnabled = false;
+            final boolean isVip = true;
+            final boolean isPushNotificationEnabled = false;
 
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
                 // When
-                member.updateSetting(grade, activityStatus, isVip, isPushNotificationEnabled);
+                member.updateSetting(grade, isProfilePublic, activityStatus, isVip, isPushNotificationEnabled);
 
                 // Then
                 eventsMockedStatic.verify(() ->
@@ -184,6 +185,7 @@ class MemberTest {
                     )), times(1));
 
                 Assertions.assertThat(member.getGrade()).isEqualTo(grade);
+                Assertions.assertThat(member.isProfilePublic()).isEqualTo(isProfilePublic);
                 Assertions.assertThat(member.getActivityStatus()).isEqualTo(activityStatus);
                 Assertions.assertThat(member.isVip()).isEqualTo(isVip);
             }
