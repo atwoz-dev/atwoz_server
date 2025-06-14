@@ -5,8 +5,8 @@ import atwoz.atwoz.heart.command.domain.hearttransaction.HeartTransaction;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartBalance;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.TransactionType;
-import atwoz.atwoz.heart.query.hearttransaction.condition.HeartTransactionSearchCondition;
-import atwoz.atwoz.heart.query.hearttransaction.view.HeartTransactionView;
+import atwoz.atwoz.heart.query.hearttransaction.condition.AdminHeartTransactionSearchCondition;
+import atwoz.atwoz.heart.query.hearttransaction.view.AdminHeartTransactionView;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;
@@ -26,18 +26,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
 @DataJpaTest
-@Import({QueryDslConfig.class, HeartTransactionQueryRepository.class})
-class HeartTransactionQueryRepositoryTest {
+@Import({QueryDslConfig.class, AdminHeartTransactionQueryRepository.class})
+class AdminHeartTransactionQueryRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
     @Autowired
-    private HeartTransactionQueryRepository heartTransactionQueryRepository;
+    private AdminHeartTransactionQueryRepository adminHeartTransactionQueryRepository;
 
     @Test
     @DisplayName("하트 거래 내역 페이지 조회 파라미터 순서 테스트")
     void findPage() {
         // given
-        HeartTransactionSearchCondition condition = new HeartTransactionSearchCondition(
+        AdminHeartTransactionSearchCondition condition = new AdminHeartTransactionSearchCondition(
             null,
             null,
             null,
@@ -50,22 +50,23 @@ class HeartTransactionQueryRepositoryTest {
         entityManager.flush();
 
         // when
-        final Page<HeartTransactionView> result = heartTransactionQueryRepository.findPage(condition,
+        final Page<AdminHeartTransactionView> result = adminHeartTransactionQueryRepository.findPage(condition,
             pageRequest);
 
         // then
         assertThat(result).isNotNull();
-        List<HeartTransactionView> heartTransactionViews = result.getContent();
-        assertThat(heartTransactionViews).hasSize(1);
-        HeartTransactionView heartTransactionView = heartTransactionViews.get(0);
-        assertThat(heartTransactionView.id()).isEqualTo(heartTransaction1.getId());
-        assertThat(heartTransactionView.transactionType()).isEqualTo(heartTransaction1.getTransactionType().name());
-        assertThat(heartTransactionView.content()).isEqualTo(heartTransaction1.getContent());
-        assertThat(heartTransactionView.heartAmount()).isEqualTo(heartTransaction1.getHeartAmount().getAmount());
+        List<AdminHeartTransactionView> adminHeartTransactionViews = result.getContent();
+        assertThat(adminHeartTransactionViews).hasSize(1);
+        AdminHeartTransactionView adminHeartTransactionView = adminHeartTransactionViews.get(0);
+        assertThat(adminHeartTransactionView.id()).isEqualTo(heartTransaction1.getId());
+        assertThat(adminHeartTransactionView.transactionType()).isEqualTo(
+            heartTransaction1.getTransactionType().name());
+        assertThat(adminHeartTransactionView.content()).isEqualTo(heartTransaction1.getContent());
+        assertThat(adminHeartTransactionView.heartAmount()).isEqualTo(heartTransaction1.getHeartAmount().getAmount());
         Long heartBalance = heartTransaction1.getHeartBalance().getMissionHeartBalance() +
             heartTransaction1.getHeartBalance().getPurchaseHeartBalance();
-        assertThat(heartTransactionView.heartBalance()).isEqualTo(heartBalance);
-        assertThat(heartTransactionView.createdAt()).isCloseTo(heartTransaction1.getCreatedAt(),
+        assertThat(adminHeartTransactionView.heartBalance()).isEqualTo(heartBalance);
+        assertThat(adminHeartTransactionView.createdAt()).isCloseTo(heartTransaction1.getCreatedAt(),
             within(1, ChronoUnit.MICROS));
     }
 
@@ -73,7 +74,7 @@ class HeartTransactionQueryRepositoryTest {
     @DisplayName("하트 거래 내역 페이지 조회 nickname condition 테스트")
     void findPageWithNicknameCondition() {
         // given
-        HeartTransactionSearchCondition condition = new HeartTransactionSearchCondition(
+        AdminHeartTransactionSearchCondition condition = new AdminHeartTransactionSearchCondition(
             "name1",
             null,
             null,
@@ -96,22 +97,22 @@ class HeartTransactionQueryRepositoryTest {
         entityManager.flush();
 
         // when
-        final Page<HeartTransactionView> result = heartTransactionQueryRepository.findPage(condition,
+        final Page<AdminHeartTransactionView> result = adminHeartTransactionQueryRepository.findPage(condition,
             pageRequest);
 
         // then
         assertThat(result).isNotNull();
-        List<HeartTransactionView> heartTransactionViews = result.getContent();
-        assertThat(heartTransactionViews).hasSize(1);
-        HeartTransactionView heartTransactionView = heartTransactionViews.get(0);
-        assertThat(heartTransactionView.id()).isEqualTo(heartTransaction1.getId());
+        List<AdminHeartTransactionView> adminHeartTransactionViews = result.getContent();
+        assertThat(adminHeartTransactionViews).hasSize(1);
+        AdminHeartTransactionView adminHeartTransactionView = adminHeartTransactionViews.get(0);
+        assertThat(adminHeartTransactionView.id()).isEqualTo(heartTransaction1.getId());
     }
 
     @Test
     @DisplayName("하트 거래 내역 페이지 조회 phoneNumber condition 테스트")
     void findPageWithPhoneNumberCondition() {
         // given
-        HeartTransactionSearchCondition condition = new HeartTransactionSearchCondition(
+        AdminHeartTransactionSearchCondition condition = new AdminHeartTransactionSearchCondition(
             null,
             "01000000000",
             null,
@@ -134,28 +135,28 @@ class HeartTransactionQueryRepositoryTest {
         entityManager.flush();
 
         // when
-        final Page<HeartTransactionView> result = heartTransactionQueryRepository.findPage(condition,
+        final Page<AdminHeartTransactionView> result = adminHeartTransactionQueryRepository.findPage(condition,
             pageRequest);
 
         // then
         assertThat(result).isNotNull();
-        List<HeartTransactionView> heartTransactionViews = result.getContent();
-        assertThat(heartTransactionViews).hasSize(1);
-        HeartTransactionView heartTransactionView = heartTransactionViews.get(0);
-        assertThat(heartTransactionView.id()).isEqualTo(heartTransaction1.getId());
+        List<AdminHeartTransactionView> adminHeartTransactionViews = result.getContent();
+        assertThat(adminHeartTransactionViews).hasSize(1);
+        AdminHeartTransactionView adminHeartTransactionView = adminHeartTransactionViews.get(0);
+        assertThat(adminHeartTransactionView.id()).isEqualTo(heartTransaction1.getId());
     }
 
     @Test
     @DisplayName("하트 거래 내역 페이지 조회 nickname and phoneNumber condition 테스트")
     void findPageWithNicknameAndPhoneNumberCondition() {
         // given
-        HeartTransactionSearchCondition condition1 = new HeartTransactionSearchCondition(
+        AdminHeartTransactionSearchCondition condition1 = new AdminHeartTransactionSearchCondition(
             "name1",
             "01000000000",
             null,
             null
         );
-        HeartTransactionSearchCondition condition2 = new HeartTransactionSearchCondition(
+        AdminHeartTransactionSearchCondition condition2 = new AdminHeartTransactionSearchCondition(
             "name1",
             "01011111111",
             null,
@@ -178,17 +179,17 @@ class HeartTransactionQueryRepositoryTest {
         entityManager.flush();
 
         // when
-        final Page<HeartTransactionView> result1 = heartTransactionQueryRepository.findPage(condition1,
+        final Page<AdminHeartTransactionView> result1 = adminHeartTransactionQueryRepository.findPage(condition1,
             pageRequest);
-        final Page<HeartTransactionView> result2 = heartTransactionQueryRepository.findPage(condition2,
+        final Page<AdminHeartTransactionView> result2 = adminHeartTransactionQueryRepository.findPage(condition2,
             pageRequest);
 
         // then
         assertThat(result1).isNotNull();
-        List<HeartTransactionView> heartTransactionViews = result1.getContent();
-        assertThat(heartTransactionViews).hasSize(1);
-        HeartTransactionView heartTransactionView = heartTransactionViews.get(0);
-        assertThat(heartTransactionView.id()).isEqualTo(heartTransaction1.getId());
+        List<AdminHeartTransactionView> adminHeartTransactionViews = result1.getContent();
+        assertThat(adminHeartTransactionViews).hasSize(1);
+        AdminHeartTransactionView adminHeartTransactionView = adminHeartTransactionViews.get(0);
+        assertThat(adminHeartTransactionView.id()).isEqualTo(heartTransaction1.getId());
 
         assertThat(result2).isEmpty();
     }
@@ -201,14 +202,14 @@ class HeartTransactionQueryRepositoryTest {
         entityManager.persist(heartTransaction1);
         entityManager.flush();
 
-        HeartTransactionSearchCondition condition1 = new HeartTransactionSearchCondition(
+        AdminHeartTransactionSearchCondition condition1 = new AdminHeartTransactionSearchCondition(
             null,
             null,
             heartTransaction1.getCreatedAt().toLocalDate(),
             null
         );
 
-        HeartTransactionSearchCondition condition2 = new HeartTransactionSearchCondition(
+        AdminHeartTransactionSearchCondition condition2 = new AdminHeartTransactionSearchCondition(
             null,
             null,
             heartTransaction1.getCreatedAt().toLocalDate().plusDays(1),
@@ -218,18 +219,18 @@ class HeartTransactionQueryRepositoryTest {
 
 
         // when
-        final Page<HeartTransactionView> result1 = heartTransactionQueryRepository.findPage(condition1,
+        final Page<AdminHeartTransactionView> result1 = adminHeartTransactionQueryRepository.findPage(condition1,
             pageRequest);
 
-        final Page<HeartTransactionView> result2 = heartTransactionQueryRepository.findPage(condition2,
+        final Page<AdminHeartTransactionView> result2 = adminHeartTransactionQueryRepository.findPage(condition2,
             pageRequest);
 
         // then
         assertThat(result1).isNotNull();
-        List<HeartTransactionView> heartTransactionViews1 = result1.getContent();
-        assertThat(heartTransactionViews1).hasSize(1);
-        HeartTransactionView heartTransactionView1 = heartTransactionViews1.get(0);
-        assertThat(heartTransactionView1.id()).isEqualTo(heartTransaction1.getId());
+        List<AdminHeartTransactionView> adminHeartTransactionViews1 = result1.getContent();
+        assertThat(adminHeartTransactionViews1).hasSize(1);
+        AdminHeartTransactionView adminHeartTransactionView1 = adminHeartTransactionViews1.get(0);
+        assertThat(adminHeartTransactionView1.id()).isEqualTo(heartTransaction1.getId());
 
         assertThat(result2).isEmpty();
     }
@@ -242,14 +243,14 @@ class HeartTransactionQueryRepositoryTest {
         entityManager.persist(heartTransaction1);
         entityManager.flush();
 
-        HeartTransactionSearchCondition condition1 = new HeartTransactionSearchCondition(
+        AdminHeartTransactionSearchCondition condition1 = new AdminHeartTransactionSearchCondition(
             null,
             null,
             null,
             heartTransaction1.getCreatedAt().toLocalDate()
         );
 
-        HeartTransactionSearchCondition condition2 = new HeartTransactionSearchCondition(
+        AdminHeartTransactionSearchCondition condition2 = new AdminHeartTransactionSearchCondition(
             null,
             null,
             null,
@@ -258,18 +259,18 @@ class HeartTransactionQueryRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        final Page<HeartTransactionView> result1 = heartTransactionQueryRepository.findPage(condition1,
+        final Page<AdminHeartTransactionView> result1 = adminHeartTransactionQueryRepository.findPage(condition1,
             pageRequest);
 
-        final Page<HeartTransactionView> result2 = heartTransactionQueryRepository.findPage(condition2,
+        final Page<AdminHeartTransactionView> result2 = adminHeartTransactionQueryRepository.findPage(condition2,
             pageRequest);
 
         // then
         assertThat(result1).isNotNull();
-        List<HeartTransactionView> heartTransactionViews1 = result1.getContent();
-        assertThat(heartTransactionViews1).hasSize(1);
-        HeartTransactionView heartTransactionView1 = heartTransactionViews1.get(0);
-        assertThat(heartTransactionView1.id()).isEqualTo(heartTransaction1.getId());
+        List<AdminHeartTransactionView> adminHeartTransactionViews1 = result1.getContent();
+        assertThat(adminHeartTransactionViews1).hasSize(1);
+        AdminHeartTransactionView adminHeartTransactionView1 = adminHeartTransactionViews1.get(0);
+        assertThat(adminHeartTransactionView1.id()).isEqualTo(heartTransaction1.getId());
 
         assertThat(result2).isEmpty();
     }
