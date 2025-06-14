@@ -5,6 +5,7 @@ import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.exception.InvalidMemberEnumValueException;
 import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MemberProfileServiceTest {
@@ -93,7 +94,7 @@ class MemberProfileServiceTest {
         assertThat(existingMember.getProfile().getNickname().getValue()).isEqualTo("nickname");
         assertThat(existingMember.getProfile().getGender()).isEqualTo(Gender.MALE);
         assertThat(existingMember.getProfile().getJob()).isEqualTo(job);
-        assertThat(existingMember.getProfile().getHobbies().size()).isEqualTo(hobbies.size());
+        assertThat(existingMember.getProfile().getHobbies()).hasSameSizeAs(hobbies.size());
         assertThat(existingMember.getProfile().getHeight()).isEqualTo(180);
         assertThat(existingMember.getProfile().getRegion().getCity()).isEqualTo(City.DAEJEON);
         assertThat(existingMember.getProfile().getReligion()).isEqualTo(Religion.BUDDHIST);
@@ -127,5 +128,37 @@ class MemberProfileServiceTest {
         assertThat(existingMember.getProfile().getHeight()).isEqualTo(180);
         assertThat(existingMember.getProfile().getRegion()).isNull();
         assertThat(existingMember.getProfile().getReligion()).isEqualTo(Religion.BUDDHIST);
+    }
+
+    @Nested
+    @DisplayName("publishProfile 메서드 테스트")
+    class PublishProfileMethodTest {
+
+        @Test
+        @DisplayName("멤버가 존재하지 않으면 예외를 던집니다.")
+        void changeProfilePublicToTrueWhenMemberNotFound() {
+            // Given
+            final long memberId = 1L;
+            when(memberCommandRepository.findById(memberId)).thenReturn(Optional.empty());
+
+            // When
+            assertThatThrownBy(() -> memberProfileService.publishProfile(memberId))
+                .isInstanceOf(MemberNotFoundException.class);
+        }
+
+        @Test
+        @DisplayName("멤버가 존재하면 member.publishProfile() 메서드를 호출합니다.")
+        void changeProfilePublicToTrue() {
+            // Given
+            final long memberId = 1L;
+            Member member = mock(Member.class);
+            when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(member));
+
+            // When
+            memberProfileService.publishProfile(memberId);
+
+            // Then
+            verify(member, times(1)).publishProfile();
+        }
     }
 }
