@@ -94,7 +94,7 @@ class MemberProfileServiceTest {
         assertThat(existingMember.getProfile().getNickname().getValue()).isEqualTo("nickname");
         assertThat(existingMember.getProfile().getGender()).isEqualTo(Gender.MALE);
         assertThat(existingMember.getProfile().getJob()).isEqualTo(job);
-        assertThat(existingMember.getProfile().getHobbies()).hasSameSizeAs(hobbies.size());
+        assertThat(existingMember.getProfile().getHobbies()).hasSameSizeAs(hobbies);
         assertThat(existingMember.getProfile().getHeight()).isEqualTo(180);
         assertThat(existingMember.getProfile().getRegion().getCity()).isEqualTo(City.DAEJEON);
         assertThat(existingMember.getProfile().getReligion()).isEqualTo(Religion.BUDDHIST);
