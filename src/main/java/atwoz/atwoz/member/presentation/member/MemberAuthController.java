@@ -34,13 +34,7 @@ public class MemberAuthController {
         MemberLoginServiceDto loginServiceDto = memberAuthService.login(request.phoneNumber(), request.code());
 
         HttpHeaders headers = new HttpHeaders();
-        ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", loginServiceDto.refreshToken())
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("None")
-            .path("/")
-            .maxAge(60 * 60 * 24 * 7 * 4)
-            .build();
+        ResponseCookie refreshTokenCookie = getResponseCookieCreatedRefreshToken(loginServiceDto.refreshToken());
         headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
         MemberLoginResponse loginResponse = MemberDtoMapper.toMemberLoginResponse(loginServiceDto);
@@ -66,7 +60,7 @@ public class MemberAuthController {
     }
 
     @Operation(summary = "멤버 탈퇴")
-    @GetMapping("/delete")
+    @DeleteMapping
     public ResponseEntity<BaseResponse<Void>> delete(
         @CookieValue(value = "refresh_token", required = false) String refreshToken,
         @AuthPrincipal AuthContext authContext) {
@@ -94,6 +88,16 @@ public class MemberAuthController {
 
     private ResponseCookie getResponseCookieDeletedRefreshToken() {
         return ResponseCookie.from(refreshTokenCookieProperties.name(), "")
+            .httpOnly(refreshTokenCookieProperties.httpOnly())
+            .secure(refreshTokenCookieProperties.secure())
+            .sameSite(refreshTokenCookieProperties.sameSite())
+            .path(refreshTokenCookieProperties.path())
+            .maxAge(0)
+            .build();
+    }
+
+    private ResponseCookie getResponseCookieCreatedRefreshToken(String refreshToken) {
+        return ResponseCookie.from(refreshTokenCookieProperties.name(), refreshToken)
             .httpOnly(refreshTokenCookieProperties.httpOnly())
             .secure(refreshTokenCookieProperties.secure())
             .sameSite(refreshTokenCookieProperties.sameSite())

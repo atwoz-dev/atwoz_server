@@ -12,7 +12,9 @@ public abstract class SoftDeleteBaseEntity extends BaseEntity {
     private LocalDateTime deletedAt;
 
     public void delete() {
-        deletedAt = LocalDateTime.now();
+        if (deletedAt == null) {
+            deletedAt = LocalDateTime.now();
+        }
     }
 
     public boolean isDeleted() {
