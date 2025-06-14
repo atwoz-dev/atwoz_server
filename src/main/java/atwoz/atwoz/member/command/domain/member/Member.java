@@ -39,6 +39,7 @@ public class Member extends SoftDeleteBaseEntity {
     private boolean isVip;
 
     @Getter
+    @Builder.Default
     private boolean isProfilePublic = false;
 
     @Enumerated(EnumType.STRING)
