@@ -5,6 +5,7 @@ import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.member.MemberAuthService;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
+import atwoz.atwoz.member.presentation.member.dto.MemberCodeRequest;
 import atwoz.atwoz.member.presentation.member.dto.MemberLoginRequest;
 import atwoz.atwoz.member.presentation.member.dto.MemberLoginResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +29,7 @@ public class MemberAuthController {
     @Operation(summary = "멤버 로그인 및 회원가입")
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<MemberLoginResponse>> login(@Valid @RequestBody MemberLoginRequest request) {
-        MemberLoginServiceDto loginServiceDto = memberAuthService.login(request.phoneNumber());
+        MemberLoginServiceDto loginServiceDto = memberAuthService.login(request.phoneNumber(), request.code());
 
         HttpHeaders headers = new HttpHeaders();
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", loginServiceDto.refreshToken())
@@ -65,6 +66,13 @@ public class MemberAuthController {
 
         return ResponseEntity.ok()
             .headers(headers)
+            .body(BaseResponse.from(StatusType.OK));
+    }
+
+    @GetMapping("/code")
+    public ResponseEntity<BaseResponse<Void>> getCode(@ModelAttribute @Valid MemberCodeRequest request) {
+        memberAuthService.sendAuthCode(request.phoneNumber());
+        return ResponseEntity.ok()
             .body(BaseResponse.from(StatusType.OK));
     }
 }
