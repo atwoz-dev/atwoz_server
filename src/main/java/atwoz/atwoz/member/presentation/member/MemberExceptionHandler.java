@@ -65,4 +65,20 @@ public class MemberExceptionHandler {
         return ResponseEntity.status(403)
             .body(BaseResponse.from(StatusType.FORBIDDEN));
     }
+
+    @ExceptionHandler(CodeNotExistsException.class)
+    public ResponseEntity<BaseResponse<Void>> handleCodeNotExistsException(CodeNotExistsException e) {
+        log.warn("코드 인증에 실패하였습니다. {}", e.getMessage());
+
+        return ResponseEntity.status(404)
+            .body(BaseResponse.from(StatusType.NOT_FOUND));
+    }
+
+    @ExceptionHandler(CodeNotMatchException.class)
+    public ResponseEntity<BaseResponse<Void>> handleCodeNotMatchException(CodeNotMatchException e) {
+        log.warn("코드가 일치하지 않습니다. {}", e.getMessage());
+
+        return ResponseEntity.badRequest()
+            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+    }
 }
