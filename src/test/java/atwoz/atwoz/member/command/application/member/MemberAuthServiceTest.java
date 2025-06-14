@@ -4,6 +4,7 @@ import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.auth.infra.JwtProvider;
 import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
+import atwoz.atwoz.member.command.application.member.exception.MemberDeletedException;
 import atwoz.atwoz.member.command.application.member.exception.MemberLoginConflictException;
 import atwoz.atwoz.member.command.application.member.exception.PermanentlySuspendedMemberException;
 import atwoz.atwoz.member.command.application.member.sms.AuthMessageService;
@@ -74,6 +75,24 @@ class MemberAuthServiceTest {
         // When & Then
         Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber, code))
             .isInstanceOf(PermanentlySuspendedMemberException.class);
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴한 사용자가 로그인할 경우 예외 처리")
+    void shouldThrowExceptionWhenLoginAttemptedByDeletedMember() {
+        // Given
+        String phoneNumber = "01012345678";
+        String code = "01012345678";
+        Member deletedMember = Member.fromPhoneNumber("01012345678");
+        deletedMember.delete();
+
+        Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber))
+            .thenReturn(Optional.of(deletedMember));
+        Mockito.doNothing().when(authMessageService).authenticate(phoneNumber, code);
+
+        // When & Then
+        Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber, code))
+            .isInstanceOf(MemberDeletedException.class);
     }
 
     @Test

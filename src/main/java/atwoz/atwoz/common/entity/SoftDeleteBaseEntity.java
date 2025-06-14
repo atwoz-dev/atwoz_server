@@ -11,6 +11,10 @@ public abstract class SoftDeleteBaseEntity extends BaseEntity {
     @Getter
     private LocalDateTime deletedAt;
 
+    public void delete() {
+        deletedAt = LocalDateTime.now();
+    }
+
     public boolean isDeleted() {
         return this.deletedAt != null;
     }
