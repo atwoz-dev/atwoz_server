@@ -37,6 +37,7 @@ public enum StatusType {
     FORBIDDEN(403, "403", "Forbidden"),
     HANDLE_ACCESS_DENIED(403, "403001", "Access is Denied"),
     ADMIN_ACCESS_DENIED(403, "403002", "Manager Access Denied"),
+    DELETED_TARGET(403, "403003", "Deleted Target"),
 
     NOT_FOUND(404, "404", "Not Found"),
 
