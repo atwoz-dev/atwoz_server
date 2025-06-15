@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record AdminMemberSettingUpdateRequest(
     @Schema(implementation = Grade.class)
     String grade,
+    boolean isProfilePublic,
     @Schema(implementation = ActivityStatus.class)
     String activityStatus,
     boolean isVip,

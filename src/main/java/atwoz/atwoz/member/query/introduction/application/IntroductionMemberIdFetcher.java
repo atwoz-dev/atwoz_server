@@ -50,6 +50,7 @@ public class IntroductionMemberIdFetcher {
     private Set<Long> findExcludedMemberIds(long memberId) {
         Set<Long> excludedMemberIds = new HashSet<>();
         excludedMemberIds.add(memberId);
+        excludedMemberIds.addAll(memberCommandRepository.findAllIdByIsProfilePublicFalse());
         excludedMemberIds.addAll(introductionQueryRepository.findAllMatchRequestedMemberId(memberId));
         excludedMemberIds.addAll(introductionQueryRepository.findAllMatchRequestingMemberId(memberId));
         excludedMemberIds.addAll(introductionQueryRepository.findAllIntroducedMemberId(memberId));
