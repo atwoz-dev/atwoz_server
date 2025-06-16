@@ -83,7 +83,10 @@ public class MemberAuthController {
             .body(BaseResponse.from(StatusType.OK));
     }
 
+<<<<<<< feat/member-delete-scheduler
 
+=======
+>>>>>>> main
     private ResponseCookie getResponseCookieDeletedRefreshToken() {
         return ResponseCookie.from(refreshTokenCookieProperties.name(), "")
             .httpOnly(refreshTokenCookieProperties.httpOnly())
@@ -103,4 +106,8 @@ public class MemberAuthController {
             .maxAge(refreshTokenCookieProperties.maxAge())
             .build();
     }
+<<<<<<< feat/member-delete-scheduler
 }
+=======
+}
+>>>>>>> main

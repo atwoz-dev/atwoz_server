@@ -58,10 +58,15 @@ public class MemberAuthService {
     @Transactional
     public void delete(Long memberId, String token) {
         Member member = getMemberById(memberId);
+<<<<<<< feat/member-delete-scheduler
         if (tokenParser.isValid(token) && tokenParser.getId(token) == member.getId()) {
             deleteToken(token);
         }
         member.delete();
+=======
+        member.delete();
+        deleteToken(token);
+>>>>>>> main
     }
 
     public void sendAuthCode(String phoneNumber) {
