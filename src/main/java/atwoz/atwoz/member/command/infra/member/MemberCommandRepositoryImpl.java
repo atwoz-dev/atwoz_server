@@ -59,12 +59,8 @@ public class MemberCommandRepositoryImpl implements MemberCommandRepository {
     }
 
     @Override
-    public List<Long> findIdDeletedBefore(final LocalDateTime dateTime) {
-        return memberCommandJpaRepository.findAllDeletedBefore(dateTime);
+    public void deleteBefore(final LocalDateTime dateTime) {
+        memberCommandJpaRepository.deleteAllBefore(dateTime);
     }
 
-    @Override
-    public void deleteInIds(final List<Long> ids) {
-        memberCommandJpaRepository.deleteInIds(ids);
-    }
 }

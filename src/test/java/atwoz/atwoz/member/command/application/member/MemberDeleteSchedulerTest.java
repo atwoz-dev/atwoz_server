@@ -9,8 +9,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-
 @ExtendWith(MockitoExtension.class)
 class MemberDeleteSchedulerTest {
     @Mock
@@ -20,19 +18,13 @@ class MemberDeleteSchedulerTest {
     private MemberDeleteScheduler memberDeleteScheduler;
 
     @Test
-    @DisplayName("삭제 대상이 존재하는 경우, 해당 대상들을 삭제한다.")
-    void deleteWhenTargetExists() {
-        // Given
-        List<Long> memberIds = List.of(1L, 2L, 3L);
-
-        Mockito.when(memberCommandRepository.findIdDeletedBefore(Mockito.any()))
-            .thenReturn(memberIds);
-
+    @DisplayName("함수가 호출될 경우, deleteBefore 메서드를 호출한다.")
+    void callDeleteBeforeWhenDeleteMethodCalled() {
         // When
         memberDeleteScheduler.delete();
 
         // Then
         Mockito.verify(memberCommandRepository, Mockito.times(1))
-            .deleteInIds(memberIds);
+            .deleteBefore(Mockito.any());
     }
 }
