@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.command.application.member;
 
+import atwoz.atwoz.auth.domain.TokenParser;
 import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.auth.infra.JwtProvider;
 import atwoz.atwoz.common.enums.Role;
@@ -32,7 +33,6 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 class MemberAuthServiceTest {
 
-
     @Mock
     private MemberCommandRepository memberCommandRepository;
 
@@ -41,6 +41,9 @@ class MemberAuthServiceTest {
 
     @Mock
     private TokenRepository tokenRepository;
+
+    @Mock
+    private TokenParser tokenParser;
 
     @Mock
     private AuthMessageService authMessageService;
