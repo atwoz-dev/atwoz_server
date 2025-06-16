@@ -73,8 +73,6 @@ public class MemberAuthController {
         return ResponseEntity.ok()
             .headers(headers)
             .body(BaseResponse.from(StatusType.OK));
-
-
     }
 
     @Operation(summary = "휴대폰 번호 인증 코드 발송")
@@ -84,7 +82,6 @@ public class MemberAuthController {
         return ResponseEntity.ok()
             .body(BaseResponse.from(StatusType.OK));
     }
-
 
     private ResponseCookie getResponseCookieDeletedRefreshToken() {
         return ResponseCookie.from(refreshTokenCookieProperties.name(), "")
