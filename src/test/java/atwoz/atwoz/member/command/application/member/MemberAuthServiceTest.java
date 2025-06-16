@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.command.application.member;
 
+import atwoz.atwoz.auth.domain.TokenParser;
 import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.auth.infra.JwtProvider;
 import atwoz.atwoz.common.enums.Role;
@@ -38,6 +39,9 @@ class MemberAuthServiceTest {
 
     @Mock
     private JwtProvider jwtProvider;
+
+    @Mock
+    private TokenParser tokenParser;
 
     @Mock
     private TokenRepository tokenRepository;
