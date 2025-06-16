@@ -40,6 +40,10 @@ public class Member extends SoftDeleteBaseEntity {
     @Getter
     private boolean isVip;
 
+    @Getter
+    @Builder.Default
+    private boolean isProfilePublic = false;
+
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
     @Getter
@@ -140,13 +144,19 @@ public class Member extends SoftDeleteBaseEntity {
 
     public void updateSetting(
         @NonNull Grade grade,
+        boolean isProfilePublic,
         @NonNull ActivityStatus activityStatus,
         boolean isVip,
         boolean isPushNotificationEnabled
     ) {
         this.grade = grade;
+        this.isProfilePublic = isProfilePublic;
         this.activityStatus = activityStatus;
         this.isVip = isVip;
         Events.raise(MemberSettingUpdatedEvent.of(id, isPushNotificationEnabled));
+    }
+
+    public void publishProfile() {
+        isProfilePublic = true;
     }
 }
