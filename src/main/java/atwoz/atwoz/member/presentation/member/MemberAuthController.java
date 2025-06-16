@@ -1,5 +1,7 @@
 package atwoz.atwoz.member.presentation.member;
 
+import atwoz.atwoz.auth.presentation.AuthContext;
+import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.auth.presentation.RefreshTokenCookieProperties;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
@@ -32,13 +34,7 @@ public class MemberAuthController {
         MemberLoginServiceDto loginServiceDto = memberAuthService.login(request.phoneNumber(), request.code());
 
         HttpHeaders headers = new HttpHeaders();
-        ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", loginServiceDto.refreshToken())
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("None")
-            .path("/")
-            .maxAge(60 * 60 * 24 * 7 * 4)
-            .build();
+        ResponseCookie refreshTokenCookie = getResponseCookieCreatedRefreshToken(loginServiceDto.refreshToken());
         headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
         MemberLoginResponse loginResponse = MemberDtoMapper.toMemberLoginResponse(loginServiceDto);
@@ -55,13 +51,7 @@ public class MemberAuthController {
         memberAuthService.logout(refreshToken);
 
         HttpHeaders headers = new HttpHeaders();
-        ResponseCookie deleteCookie = ResponseCookie.from(refreshTokenCookieProperties.name(), "")
-            .httpOnly(refreshTokenCookieProperties.httpOnly())
-            .secure(refreshTokenCookieProperties.secure())
-            .sameSite(refreshTokenCookieProperties.sameSite())
-            .path(refreshTokenCookieProperties.path())
-            .maxAge(refreshTokenCookieProperties.maxAge())
-            .build();
+        ResponseCookie deleteCookie = getResponseCookieDeletedRefreshToken();
         headers.add(HttpHeaders.SET_COOKIE, deleteCookie.toString());
 
         return ResponseEntity.ok()
@@ -69,10 +59,47 @@ public class MemberAuthController {
             .body(BaseResponse.from(StatusType.OK));
     }
 
+    @Operation(summary = "멤버 탈퇴")
+    @DeleteMapping
+    public ResponseEntity<BaseResponse<Void>> delete(
+        @CookieValue(value = "refresh_token", required = false) String refreshToken,
+        @AuthPrincipal AuthContext authContext) {
+        memberAuthService.delete(authContext.getId(), refreshToken);
+
+        HttpHeaders headers = new HttpHeaders();
+        ResponseCookie deleteCookie = getResponseCookieDeletedRefreshToken();
+        headers.add(HttpHeaders.SET_COOKIE, deleteCookie.toString());
+
+        return ResponseEntity.ok()
+            .headers(headers)
+            .body(BaseResponse.from(StatusType.OK));
+    }
+
+    @Operation(summary = "휴대폰 번호 인증 코드 발송")
     @GetMapping("/code")
     public ResponseEntity<BaseResponse<Void>> getCode(@ModelAttribute @Valid MemberCodeRequest request) {
         memberAuthService.sendAuthCode(request.phoneNumber());
         return ResponseEntity.ok()
             .body(BaseResponse.from(StatusType.OK));
+    }
+
+    private ResponseCookie getResponseCookieDeletedRefreshToken() {
+        return ResponseCookie.from(refreshTokenCookieProperties.name(), "")
+            .httpOnly(refreshTokenCookieProperties.httpOnly())
+            .secure(refreshTokenCookieProperties.secure())
+            .sameSite(refreshTokenCookieProperties.sameSite())
+            .path(refreshTokenCookieProperties.path())
+            .maxAge(0)
+            .build();
+    }
+
+    private ResponseCookie getResponseCookieCreatedRefreshToken(String refreshToken) {
+        return ResponseCookie.from(refreshTokenCookieProperties.name(), refreshToken)
+            .httpOnly(refreshTokenCookieProperties.httpOnly())
+            .secure(refreshTokenCookieProperties.secure())
+            .sameSite(refreshTokenCookieProperties.sameSite())
+            .path(refreshTokenCookieProperties.path())
+            .maxAge(refreshTokenCookieProperties.maxAge())
+            .build();
     }
 }
