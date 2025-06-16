@@ -21,8 +21,8 @@ public interface MemberCommandJpaRepository extends JpaRepository<Member, Long> 
 
     boolean existsByKakaoIdAndIdNot(KakaoId kakaoId, Long id);
 
-    @Query("SELECT m FROM Member m WHERE m.deletedAt <= :deletedAt")
-    List<Member> findAllDeletedBefore(@Param("deletedAt") LocalDateTime deletedAt);
+    @Query("SELECT m.id FROM Member m WHERE m.deletedAt <= :deletedAt")
+    List<Long> findAllDeletedBefore(@Param("deletedAt") LocalDateTime deletedAt);
 
     @Query("DELETE FROM Member m WHERE m.id IN :ids")
     @Modifying

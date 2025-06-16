@@ -70,3 +70,6 @@ bizgo:
   client-id: client-id
   client-password: client_password
   from-phone-number: from-phone-number
+
+scheduler:
+  cron: "0 0 0 * * *"

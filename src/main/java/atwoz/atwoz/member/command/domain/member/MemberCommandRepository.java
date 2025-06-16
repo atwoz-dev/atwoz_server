@@ -23,7 +23,7 @@ public interface MemberCommandRepository {
 
     List<Member> saveAll(List<Member> members);
 
-    List<Member> findAllDeletedBefore(LocalDateTime dateTime);
+    List<Long> findIdDeletedBefore(LocalDateTime dateTime);
 
     void deleteInIds(List<Long> ids);
 }
