@@ -18,11 +18,9 @@ public class MemberProfileService {
 
     private final MemberCommandRepository memberCommandRepository;
 
-
     @Transactional
     public void updateMember(Long memberId, MemberProfileUpdateRequest request) {
         Member member = getMemberById(memberId);
-
         member.updateProfile(MemberMapper.toMemberProfile(request));
     }
 
@@ -42,6 +40,12 @@ public class MemberProfileService {
     public void publishProfile(Long memberId) {
         Member member = getMemberById(memberId);
         member.publishProfile();
+    }
+
+    @Transactional
+    public void unpublishProfile(Long memberId) {
+        Member member = getMemberById(memberId);
+        member.unpublishProfile();
     }
 
     private Member getMemberById(Long memberId) {
