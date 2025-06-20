@@ -10,6 +10,7 @@ import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.presentation.member.dto.MemberCodeRequest;
 import atwoz.atwoz.member.presentation.member.dto.MemberLoginRequest;
 import atwoz.atwoz.member.presentation.member.dto.MemberLoginResponse;
+import atwoz.atwoz.member.presentation.member.dto.MemberTestLoginRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -32,6 +33,22 @@ public class MemberAuthController {
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<MemberLoginResponse>> login(@Valid @RequestBody MemberLoginRequest request) {
         MemberLoginServiceDto loginServiceDto = memberAuthService.login(request.phoneNumber(), request.code());
+
+        HttpHeaders headers = new HttpHeaders();
+        ResponseCookie refreshTokenCookie = getResponseCookieCreatedRefreshToken(loginServiceDto.refreshToken());
+        headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+
+        MemberLoginResponse loginResponse = MemberDtoMapper.toMemberLoginResponse(loginServiceDto);
+
+        return ResponseEntity.ok()
+            .headers(headers)
+            .body(BaseResponse.of(StatusType.OK, loginResponse));
+    }
+
+    @Operation(summary = "멤버 로그인 (테스트용, 인증번호X)")
+    @PostMapping("/login/test")
+    public ResponseEntity<BaseResponse<MemberLoginResponse>> test(@Valid @RequestBody MemberTestLoginRequest request) {
+        MemberLoginServiceDto loginServiceDto = memberAuthService.test(request.phoneNumber());
 
         HttpHeaders headers = new HttpHeaders();
         ResponseCookie refreshTokenCookie = getResponseCookieCreatedRefreshToken(loginServiceDto.refreshToken());
