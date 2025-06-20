@@ -51,6 +51,25 @@ public class MemberAuthService {
         return new MemberLoginServiceDto(accessToken, refreshToken, member.isProfileSettingNeeded());
     }
 
+    @Transactional
+    public MemberLoginServiceDto test(String phoneNumber) {
+        Member member = createOrFindMemberByPhoneNumber(phoneNumber);
+
+        if (member.isPermanentlySuspended()) {
+            throw new PermanentlySuspendedMemberException();
+        }
+
+        if (member.isDeleted()) {
+            throw new MemberDeletedException();
+        }
+
+        String accessToken = tokenProvider.createAccessToken(member.getId(), Role.MEMBER, Instant.now());
+        String refreshToken = tokenProvider.createRefreshToken(member.getId(), Role.MEMBER, Instant.now());
+        tokenRepository.save(refreshToken);
+
+        return new MemberLoginServiceDto(accessToken, refreshToken, member.isProfileSettingNeeded());
+    }
+
     public void logout(String token) {
         deleteToken(token);
     }
