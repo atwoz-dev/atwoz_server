@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.command.application.member;
 
+import atwoz.atwoz.auth.domain.TokenParser;
 import atwoz.atwoz.auth.domain.TokenProvider;
 import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.common.enums.Role;
@@ -27,6 +28,7 @@ public class MemberAuthService {
     private final MemberCommandRepository memberCommandRepository;
     private final AuthMessageService authMessageService;
     private final TokenProvider tokenProvider;
+    private final TokenParser tokenParser;
     private final TokenRepository tokenRepository;
 
     @Transactional
@@ -56,8 +58,11 @@ public class MemberAuthService {
     @Transactional
     public void delete(Long memberId, String token) {
         Member member = getMemberById(memberId);
+
+        if (tokenParser.isValid(token) && tokenParser.getId(token) == member.getId()) {
+            deleteToken(token);
+        }
         member.delete();
-        deleteToken(token);
     }
 
     public void sendAuthCode(String phoneNumber) {

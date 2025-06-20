@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.command.domain.member;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -21,6 +22,8 @@ public interface MemberCommandRepository {
     List<Member> findAllById(Set<Long> memberIds);
 
     List<Member> saveAll(List<Member> members);
+
+    void deleteBefore(LocalDateTime dateTime);
 
     Set<Long> findAllIdByIsProfilePublicFalse();
 }

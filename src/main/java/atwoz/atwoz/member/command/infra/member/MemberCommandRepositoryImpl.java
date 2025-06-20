@@ -7,6 +7,7 @@ import atwoz.atwoz.member.command.domain.member.vo.PhoneNumber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -58,6 +59,10 @@ public class MemberCommandRepositoryImpl implements MemberCommandRepository {
     }
 
     @Override
+    public void deleteBefore(final LocalDateTime dateTime) {
+        memberCommandJpaRepository.deleteAllBefore(dateTime);
+    }
+
     public Set<Long> findAllIdByIsProfilePublicFalse() {
         return memberCommandJpaRepository.findAllIdByIsProfilePublicFalse();
     }
