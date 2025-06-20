@@ -15,7 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @Service
 @RequiredArgsConstructor
 public class BizgoTokenHandler {
-    private static final long HOURS23 = 23L * 60L * 60L * 1000L;
+    private static final long HOURS23 = 1000L;
     private final ReentrantLock lock = new ReentrantLock();
     private final RestClient restClient;
     @Value("${bizgo.client-id}")
