@@ -39,9 +39,21 @@ public class MemberProfileService {
     }
 
     @Transactional
-    public void publishProfile(Long memberId) {
+    public void changeProfilePublishStatus(Long memberId, boolean publishStatus) {
         Member member = getMemberById(memberId);
+        if (publishStatus) {
+            publish(member);
+        } else {
+            nonPublish(member);
+        }
+    }
+
+    private void publish(Member member) {
         member.publishProfile();
+    }
+
+    private void nonPublish(Member member) {
+        member.nonPublishProfile();
     }
 
     private Member getMemberById(Long memberId) {

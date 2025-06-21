@@ -159,4 +159,8 @@ public class Member extends SoftDeleteBaseEntity {
     public void publishProfile() {
         isProfilePublic = true;
     }
+
+    public void nonPublishProfile() {
+        isProfilePublic = false;
+    }
 }
