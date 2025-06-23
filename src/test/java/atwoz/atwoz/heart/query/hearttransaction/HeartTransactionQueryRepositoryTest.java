@@ -18,8 +18,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
+import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 @Import({QuerydslConfig.class, HeartTransactionQueryRepository.class})
@@ -127,6 +126,18 @@ class HeartTransactionQueryRepositoryTest {
         var view = result.get(0);
         assertThat(view.id()).isEqualTo(
             heartTransactions.stream().max(Comparator.comparing(HeartTransaction::getId)).get().getId());
+    }
+
+    @Test
+    @DisplayName("하트 내역 조회 시 size가 0 이하이면 예외를 던집니다.")
+    void findHeartTransactionsWithZeroOrNegativeSizeTest() {
+        // Given
+        long memberId = 1L;
+        HeartTransactionSearchCondition condition = new HeartTransactionSearchCondition(null);
+
+        // When & Then
+        assertThatThrownBy(() -> heartTransactionQueryRepository.findHeartTransactions(memberId, condition, 0))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     private HeartTransaction createHeartTransaction(final long memberId) {
