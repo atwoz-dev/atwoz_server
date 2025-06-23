@@ -19,6 +19,10 @@ public class HeartTransactionQueryRepository {
 
     public List<HeartTransactionView> findHeartTransactions(long memberId, HeartTransactionSearchCondition condition,
         int size) {
+        if (size <= 0) {
+            throw new IllegalArgumentException("Size must be greater than 0");
+        }
+
         return queryFactory
             .select(new QHeartTransactionView(
                 heartTransaction.id,
