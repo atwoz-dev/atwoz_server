@@ -140,6 +140,7 @@ public class AdminMemberQueryRepository {
                 groupBy(member.id).as(new QAdminMemberDetailView(
                     new QAdminMemberSettingInfo(
                         member.grade.stringValue(),
+                        member.isProfilePublic,
                         member.activityStatus.stringValue(),
                         member.isVip,
                         notificationPreference.isEnabledGlobally

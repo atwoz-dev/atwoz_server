@@ -67,3 +67,9 @@ payment:
     environment: ${APP_STORE_ENVIRONMENT:Sandbox}
     bundle-id: ${APP_STORE_BUNDLE_ID:bundle-id}
 
+bizgo:
+  api-url: ${BIZGO_API_URL:api-url}
+  client-id: ${BIZGO_CLIENT_ID:client-id}
+  client-password: ${BIZGO_CLIENT_PASSWORD:client_password}
+  from-phone-number: ${BIZGO_FROM_PHONE_NUMBER:from-phone-number}
+

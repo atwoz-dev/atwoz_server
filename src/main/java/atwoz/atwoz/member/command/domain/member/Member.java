@@ -14,7 +14,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "members")
+@Table(name = "members", indexes = {
+    @Index(name = "idx_deleted_at", columnList = "deletedAt")
+})
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -37,6 +39,10 @@ public class Member extends SoftDeleteBaseEntity {
 
     @Getter
     private boolean isVip;
+
+    @Getter
+    @Builder.Default
+    private boolean isProfilePublic = false;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
@@ -138,13 +144,19 @@ public class Member extends SoftDeleteBaseEntity {
 
     public void updateSetting(
         @NonNull Grade grade,
+        boolean isProfilePublic,
         @NonNull ActivityStatus activityStatus,
         boolean isVip,
         boolean isPushNotificationEnabled
     ) {
         this.grade = grade;
+        this.isProfilePublic = isProfilePublic;
         this.activityStatus = activityStatus;
         this.isVip = isVip;
         Events.raise(MemberSettingUpdatedEvent.of(id, isPushNotificationEnabled));
+    }
+
+    public void publishProfile() {
+        isProfilePublic = true;
     }
 }

@@ -1,11 +1,17 @@
 package atwoz.atwoz.admin.command.domain.screening;
 
+import atwoz.atwoz.admin.command.domain.screening.event.ScreeningApprovedEvent;
+import atwoz.atwoz.common.event.Events;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
 
 class ScreeningTest {
 
@@ -38,12 +44,19 @@ class ScreeningTest {
         @DisplayName("PENDING 상태인 Screening을 approve하면, APPROVED 상태가 되며 거절 사유는 null이 됩니다.")
         void approvePendingScreening() {
             // given
-            Screening screening = Screening.from(10L);
+            final long memberId = 10L;
+            Screening screening = Screening.from(memberId);
 
             // when
-            screening.approve(1L);
+            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
+                screening.approve(1L);
 
-            // then
+                // then
+                eventsMockedStatic.verify(() ->
+                    Events.raise(argThat((ScreeningApprovedEvent event) ->
+                        event.getMemberId() == memberId
+                    )), times(1));
+            }
             assertThat(screening.getStatus()).isEqualTo(ScreeningStatus.APPROVED);
             assertThat(screening.getAdminId()).isEqualTo(1L);
             assertThat(screening.getRejectionReason()).isNull();
@@ -53,13 +66,20 @@ class ScreeningTest {
         @DisplayName("REJECTED 상태인 Screening을 approve하면, 다시 APPROVED 상태가 되며 거절 사유는 null이 됩니다.")
         void approveRejectedScreening() {
             // given
-            Screening screening = Screening.from(10L);
+            final long memberId = 10L;
+            Screening screening = Screening.from(memberId);
             screening.reject(1L, RejectionReasonType.CONTACT_IN_PROFILE);
 
             // when
-            screening.approve(2L);
+            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
+                screening.approve(2L);
 
-            // then
+                // then
+                eventsMockedStatic.verify(() ->
+                    Events.raise(argThat((ScreeningApprovedEvent event) ->
+                        event.getMemberId() == memberId
+                    )), times(1));
+            }
             assertThat(screening.getStatus()).isEqualTo(ScreeningStatus.APPROVED);
             assertThat(screening.getAdminId()).isEqualTo(2L); // adminId 갱신
             assertThat(screening.getRejectionReason()).isNull();
@@ -69,13 +89,19 @@ class ScreeningTest {
         @DisplayName("APPROVED 상태인 Screening을 다시 approve하면, 상태 변화 없이 adminId만 갱신되고 거절 사유는 여전히 null입니다.")
         void approveApprovedScreening() {
             // given
-            Screening screening = Screening.from(10L);
+            final long memberId = 10L;
+            Screening screening = Screening.from(memberId);
             screening.approve(1L);
 
-            // when
-            screening.approve(2L);
+            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
+                screening.approve(2L);
 
-            // then
+                // then
+                eventsMockedStatic.verify(() ->
+                    Events.raise(argThat((ScreeningApprovedEvent event) ->
+                        event.getMemberId() == memberId
+                    )), times(1));
+            }
             assertThat(screening.getStatus()).isEqualTo(ScreeningStatus.APPROVED);
             assertThat(screening.getAdminId()).isEqualTo(2L);
             assertThat(screening.getRejectionReason()).isNull();
