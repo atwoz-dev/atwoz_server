@@ -13,6 +13,7 @@ public record SelfIntroductionSearchRequest(
     Integer fromAge,
     Integer toAge,
     @Schema(implementation = Gender.class)
-    String gender
+    String gender,
+    Long lastId
 ) {
 }
