@@ -134,8 +134,9 @@ public class SelfIntroductionQueryRepository {
     private BooleanExpression addPreferredCityCondition(BooleanExpression condition,
         SelfIntroductionSearchCondition searchCondition) {
         if (searchCondition.preferredCities() != null && !searchCondition.preferredCities().isEmpty()) {
-            condition = (condition == null) ? member.profile.region.city.in(searchCondition.preferredCities())
-                : condition.and(member.profile.region.city.in(searchCondition.preferredCities()));
+            condition =
+                (condition == null) ? member.profile.region.city.stringValue().in(searchCondition.preferredCities())
+                    : condition.and(member.profile.region.city.stringValue().in(searchCondition.preferredCities()));
         }
         return condition;
     }
