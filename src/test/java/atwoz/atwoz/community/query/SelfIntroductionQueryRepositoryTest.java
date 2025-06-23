@@ -258,7 +258,7 @@ public class SelfIntroductionQueryRepositoryTest {
             // Given
             City city = maleMember.getProfile().getRegion().getCity();
             SelfIntroductionSearchCondition searchCondition = new SelfIntroductionSearchCondition(
-                List.of(city), null, null, null
+                List.of(city.name()), null, null, null
             );
 
             List<SelfIntroduction> maleSelfIntroduction = selfIntroductions.stream()
@@ -284,7 +284,7 @@ public class SelfIntroductionQueryRepositoryTest {
         void findSelfIntroductions() {
             // Given
             SelfIntroductionSearchCondition searchCondition = new SelfIntroductionSearchCondition(
-                List.of(City.DAEJEON, City.SEOUL), femaleMember.getProfile().getYearOfBirth().getValue(),
+                List.of(City.DAEJEON.name(), City.SEOUL.name()), femaleMember.getProfile().getYearOfBirth().getValue(),
                 maleMember.getProfile().getYearOfBirth().getValue(), maleMember.getProfile().getGender()
             );
             List<SelfIntroduction> maleSelfIntroduction = selfIntroductions.stream()
