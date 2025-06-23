@@ -63,7 +63,8 @@ public class IntroductionQueryRepository {
                 drinkingStatusEq(condition.getDrinkingStatus()),
                 gradeEq(condition.getMemberGrade()),
                 genderEq(condition.getGender()),
-                createdAtGoe(condition.getJoinedAfter())
+                createdAtGoe(condition.getJoinedAfter()),
+                isProfilePublicIsTrue()
             )
             .orderBy(member.id.desc())
             .limit(limit);
@@ -180,6 +181,10 @@ public class IntroductionQueryRepository {
             return null;
         }
         return member.createdAt.goe(createdAt);
+    }
+
+    private BooleanExpression isProfilePublicIsTrue() {
+        return member.isProfilePublic.isTrue();
     }
 
     private void applyHobbiesCondition(JPAQuery<?> query, IntroductionSearchCondition condition) {
