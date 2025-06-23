@@ -77,8 +77,6 @@ class IntroductionMemberIdFetcherTest {
         when(introductionRedisRepository.findIntroductionMemberIds(key))
             .thenReturn(Set.of());
 
-        Set<Long> profilePublicFalseMemberIds = Set.of(12L, 13L);
-        when(memberCommandRepository.findAllIdByIsProfilePublicFalse()).thenReturn(profilePublicFalseMemberIds);
         Set<Long> matchedRequestedMemberIds = Set.of(memberId, 12L);
         when(introductionQueryRepository.findAllMatchRequestedMemberId(memberId)).thenReturn(matchedRequestedMemberIds);
         Set<Long> matchedRequestingMemberIds = Set.of(memberId, 12L);
@@ -88,7 +86,6 @@ class IntroductionMemberIdFetcherTest {
         when(introductionQueryRepository.findAllIntroducedMemberId(memberId)).thenReturn(introducedMemberIds);
 
         Set<Long> excludedMemberIds = new HashSet<>(Set.of(memberId));
-        excludedMemberIds.addAll(profilePublicFalseMemberIds);
         excludedMemberIds.addAll(matchedRequestedMemberIds);
         excludedMemberIds.addAll(matchedRequestingMemberIds);
         excludedMemberIds.addAll(introducedMemberIds);
@@ -127,8 +124,6 @@ class IntroductionMemberIdFetcherTest {
         when(introductionRedisRepository.findIntroductionMemberIds(key))
             .thenReturn(Set.of());
 
-        Set<Long> profilePublicFalseMemberIds = Set.of(12L, 13L);
-        when(memberCommandRepository.findAllIdByIsProfilePublicFalse()).thenReturn(profilePublicFalseMemberIds);
         Set<Long> matchedRequestedMemberIds = Set.of(memberId, 12L);
         when(introductionQueryRepository.findAllMatchRequestedMemberId(memberId)).thenReturn(matchedRequestedMemberIds);
         Set<Long> matchedRequestingMemberIds = Set.of(memberId, 12L);
@@ -138,7 +133,6 @@ class IntroductionMemberIdFetcherTest {
         when(introductionQueryRepository.findAllIntroducedMemberId(memberId)).thenReturn(introducedMemberIds);
 
         Set<Long> excludedMemberIds = new HashSet<>(Set.of(memberId));
-        excludedMemberIds.addAll(profilePublicFalseMemberIds);
         excludedMemberIds.addAll(matchedRequestedMemberIds);
         excludedMemberIds.addAll(matchedRequestingMemberIds);
         excludedMemberIds.addAll(introducedMemberIds);
@@ -169,8 +163,6 @@ class IntroductionMemberIdFetcherTest {
         when(introductionRedisRepository.findIntroductionMemberIds(key))
             .thenReturn(Set.of());
 
-        Set<Long> profilePublicFalseMemberIds = Set.of(12L, 13L);
-        when(memberCommandRepository.findAllIdByIsProfilePublicFalse()).thenReturn(profilePublicFalseMemberIds);
         Set<Long> matchedRequestedMemberIds = Set.of(memberId, 12L);
         when(introductionQueryRepository.findAllMatchRequestedMemberId(memberId)).thenReturn(matchedRequestedMemberIds);
         Set<Long> matchedRequestingMemberIds = Set.of(memberId, 12L);
@@ -180,7 +172,6 @@ class IntroductionMemberIdFetcherTest {
         when(introductionQueryRepository.findAllIntroducedMemberId(memberId)).thenReturn(introducedMemberIds);
 
         Set<Long> excludedMemberIds = new HashSet<>(Set.of(memberId));
-        excludedMemberIds.addAll(profilePublicFalseMemberIds);
         excludedMemberIds.addAll(matchedRequestedMemberIds);
         excludedMemberIds.addAll(matchedRequestingMemberIds);
         excludedMemberIds.addAll(introducedMemberIds);
