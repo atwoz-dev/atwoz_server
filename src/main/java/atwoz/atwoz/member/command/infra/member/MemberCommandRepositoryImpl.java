@@ -62,8 +62,4 @@ public class MemberCommandRepositoryImpl implements MemberCommandRepository {
     public void deleteBefore(final LocalDateTime dateTime) {
         memberCommandJpaRepository.deleteAllBefore(dateTime);
     }
-
-    public Set<Long> findAllIdByIsProfilePublicFalse() {
-        return memberCommandJpaRepository.findAllIdByIsProfilePublicFalse();
-    }
 }
