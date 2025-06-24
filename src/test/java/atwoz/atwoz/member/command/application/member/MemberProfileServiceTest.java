@@ -142,7 +142,7 @@ class MemberProfileServiceTest {
             when(memberCommandRepository.findById(memberId)).thenReturn(Optional.empty());
 
             // When
-            assertThatThrownBy(() -> memberProfileService.publishProfile(memberId))
+            assertThatThrownBy(() -> memberProfileService.changeProfilePublishStatus(memberId, true))
                 .isInstanceOf(MemberNotFoundException.class);
         }
 
@@ -155,7 +155,7 @@ class MemberProfileServiceTest {
             when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(member));
 
             // When
-            memberProfileService.publishProfile(memberId);
+            memberProfileService.changeProfilePublishStatus(memberId, true);
 
             // Then
             verify(member, times(1)).publishProfile();

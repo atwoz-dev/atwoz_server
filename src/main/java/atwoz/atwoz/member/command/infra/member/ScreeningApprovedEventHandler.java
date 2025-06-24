@@ -19,7 +19,7 @@ public class ScreeningApprovedEventHandler {
     @TransactionalEventListener(value = ScreeningApprovedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handle(ScreeningApprovedEvent event) {
         try {
-            memberProfileService.publishProfile(event.getMemberId());
+            memberProfileService.changeProfilePublishStatus(event.getMemberId(), true);
         } catch (Exception e) {
             log.error("Member(id: {})의 프로필 업데이트 중 예외가 발생했습니다.", event.getMemberId(), e);
         }
