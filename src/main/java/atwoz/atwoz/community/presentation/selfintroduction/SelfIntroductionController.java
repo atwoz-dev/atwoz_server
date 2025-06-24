@@ -55,11 +55,13 @@ public class SelfIntroductionController {
     @GetMapping
     public ResponseEntity<BaseResponse<List<SelfIntroductionSummaryView>>> getIntroductions(
         @AuthPrincipal AuthContext authContext,
-        @ModelAttribute SelfIntroductionSearchRequest searchRequest, Long lastId) {
+        @ModelAttribute SelfIntroductionSearchRequest searchRequest
+    ) {
         SelfIntroductionSearchCondition searchCondition = SelfIntroductionMapper.toSelfIntroductionSearchCondition(
             searchRequest);
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK,
-            selfIntroductionQueryRepository.findSelfIntroductions(searchCondition, lastId, authContext.getId())));
+            selfIntroductionQueryRepository.findSelfIntroductions(searchCondition, searchRequest.lastId(),
+                authContext.getId())));
     }
 
     @Operation(summary = "셀프 소개 상세 조회 API")

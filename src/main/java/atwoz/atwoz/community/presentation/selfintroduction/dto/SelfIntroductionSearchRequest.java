@@ -9,10 +9,11 @@ import java.util.List;
 
 public record SelfIntroductionSearchRequest(
     @ArraySchema(schema = @Schema(implementation = City.class))
-    List<City> preferredCities,
+    List<String> preferredCities,
     Integer fromAge,
     Integer toAge,
     @Schema(implementation = Gender.class)
-    String gender
+    String gender,
+    Long lastId
 ) {
 }

@@ -49,7 +49,7 @@ class IntroductionQueryRepositoryTest {
     @DisplayName("findAllIntroductionMemberId 메서드 테스트")
     class FindAllIntroductionMemberIdTest {
         @ParameterizedTest
-        @ValueSource(strings = {"excludedIds", "minAge", "maxAge", "hobbies", "religion", "cities", "smokingStatus", "drinkingStatus", "memberGrade", "gender", "joinedAfter", "null"})
+        @ValueSource(strings = {"excludedIds", "minAge", "maxAge", "hobbies", "religion", "cities", "smokingStatus", "drinkingStatus", "memberGrade", "gender", "joinedAfter", "isProfilePublic", "null"})
         @DisplayName("search condition에 대한 검증")
         void findIntroductionMemberIdsWhenSuccess(String fieldName) {
             // given
@@ -72,6 +72,7 @@ class IntroductionQueryRepositoryTest {
                 .gender(Gender.MALE)
                 .build();
             member1.updateProfile(profile1);
+            member1.publishProfile();
 
             entityManager.persist(member1);
             entityManager.flush();
@@ -87,6 +88,9 @@ class IntroductionQueryRepositoryTest {
                 .gender(Gender.FEMALE)
                 .build();
             member2.updateProfile(profile2);
+            if (!fieldName.equals("isProfilePublic")) {
+                member2.publishProfile();
+            }
 
             entityManager.persist(member2);
             entityManager.flush();
@@ -140,6 +144,7 @@ class IntroductionQueryRepositoryTest {
                 case "memberGrade" -> assertThat(result).isEmpty();
                 case "gender" -> assertThat(result).containsExactly(member1.getId());
                 case "joinedAfter" -> assertThat(result).isEmpty();
+                case "isProfilePublic" -> assertThat(result).containsExactly(member1.getId());
                 default -> assertThat(result).containsExactlyInAnyOrder(member1.getId(), member2.getId());
             }
         }

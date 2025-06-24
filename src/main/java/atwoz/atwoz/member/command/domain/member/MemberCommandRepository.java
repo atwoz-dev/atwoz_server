@@ -24,6 +24,4 @@ public interface MemberCommandRepository {
     List<Member> saveAll(List<Member> members);
 
     void deleteBefore(LocalDateTime dateTime);
-
-    Set<Long> findAllIdByIsProfilePublicFalse();
 }
