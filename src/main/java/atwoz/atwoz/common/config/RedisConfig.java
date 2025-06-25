@@ -41,10 +41,4 @@ public class RedisConfig {
         config.useSingleServer().setAddress(REDISSON_HOST_PREFIX + host + ":" + port);
         return Redisson.create(config);
     }
-
-    @Bean
-    @Profile("test")
-    public RedissonClient redissonClientMock() {
-        return Redisson.create();
-    }
 }

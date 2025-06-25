@@ -1,5 +1,6 @@
 package atwoz.atwoz.auth.infra;
 
+import atwoz.atwoz.RedisTestConfig;
 import atwoz.atwoz.common.enums.Role;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -17,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
+@Import(RedisTestConfig.class)
 class JwtProviderParserIntegrationTest {
 
     @Value("${jwt.access-token.expiration}")
