@@ -131,8 +131,8 @@ class MemberProfileServiceTest {
     }
 
     @Nested
-    @DisplayName("publishProfile 메서드 테스트")
-    class PublishProfileMethodTest {
+    @DisplayName("changeProfilePublishStatus 메서드 테스트")
+    class ChangeProfilePublishStatusMethodTest {
 
         @Test
         @DisplayName("멤버가 존재하지 않으면 예외를 던집니다.")
@@ -147,7 +147,7 @@ class MemberProfileServiceTest {
         }
 
         @Test
-        @DisplayName("멤버가 존재하면 member.publishProfile() 메서드를 호출합니다.")
+        @DisplayName("멤버가 존재하면 member.changeProfilePublishStatus() 메서드를 호출합니다.")
         void callsPublishProfileMethodWhenMemberExists() {
             // Given
             final long memberId = 1L;
@@ -159,6 +159,41 @@ class MemberProfileServiceTest {
 
             // Then
             verify(member, times(1)).publishProfile();
+        }
+    }
+
+    @Nested
+    @DisplayName("changeMemberActivityStatus 메서드 테스트")
+    class ChangeMemberActivityStatusMethodTest {
+        @Test
+        @DisplayName("멤버가 존재하지 않으면 예외를 던집니다.")
+        void throwsExceptionWhenMemberNotFound() {
+            // Given
+            final long memberId = 1L;
+            when(memberCommandRepository.findById(memberId)).thenReturn(Optional.empty());
+
+            // When
+            assertThatThrownBy(
+                () -> memberProfileService.changeMemberActivityStatus(memberId, ActivityStatus.SUSPENDED_TEMPORARILY))
+                .isInstanceOf(MemberNotFoundException.class);
+        }
+
+        @Test
+        @DisplayName("회원의 상태를 활동중이 아닌 다른 상태로 변경하는 경우, 프로필 공개 상태 또한 비공개로 변경합니다.")
+        void changeProfileStatusToNonPublishWhenActivityStatusIsNotActive() {
+            // Given
+            final long memberId = 1L;
+            ActivityStatus activityStatus = ActivityStatus.SUSPENDED_PERMANENTLY;
+            Member member = Member.fromPhoneNumber("01012345678");
+            member.publishProfile();
+            when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(member));
+
+            // When
+            memberProfileService.changeMemberActivityStatus(memberId, activityStatus);
+
+            // Then
+            assertThat(member.getActivityStatus()).isEqualTo(activityStatus);
+            assertThat(member.isProfilePublic()).isEqualTo(false);
         }
     }
 }
