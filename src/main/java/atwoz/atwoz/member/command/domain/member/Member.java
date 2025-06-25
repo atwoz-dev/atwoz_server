@@ -163,4 +163,8 @@ public class Member extends SoftDeleteBaseEntity {
     public void nonPublishProfile() {
         isProfilePublic = false;
     }
+
+    public void changeActivityStatus(@NonNull ActivityStatus activityStatus) {
+        this.activityStatus = activityStatus;
+    }
 }

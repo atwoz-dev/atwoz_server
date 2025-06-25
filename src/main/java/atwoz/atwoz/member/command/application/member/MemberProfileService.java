@@ -3,6 +3,7 @@ package atwoz.atwoz.member.command.application.member;
 
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.application.member.exception.PrimaryContactTypeSettingNeededException;
+import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import atwoz.atwoz.member.command.domain.member.PrimaryContactType;
@@ -46,6 +47,12 @@ public class MemberProfileService {
         } else {
             nonPublish(member);
         }
+    }
+
+    @Transactional
+    public void changeMemberActivityStatus(Long memberId, ActivityStatus status) {
+        Member member = getMemberById(memberId);
+        member.changeActivityStatus(status);
     }
 
     private void publish(Member member) {
