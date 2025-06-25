@@ -53,6 +53,12 @@ public class MemberProfileService {
     public void changeMemberActivityStatus(Long memberId, ActivityStatus status) {
         Member member = getMemberById(memberId);
         member.changeActivityStatus(status);
+
+        if (status != ActivityStatus.ACTIVE) {
+            nonPublish(member);
+        } else {
+            publish(member);
+        }
     }
 
     private void publish(Member member) {

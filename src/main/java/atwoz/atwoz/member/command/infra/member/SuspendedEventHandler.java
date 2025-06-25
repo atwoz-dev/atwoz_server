@@ -6,10 +6,8 @@ import atwoz.atwoz.member.command.application.member.MemberProfileService;
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -22,20 +20,18 @@ public class SuspendedEventHandler {
 
     @Async
     @TransactionalEventListener(value = MemberSuspendedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
-    @Transactional
     public void handle(MemberSuspendedEvent event) {
         try {
-            memberProfileService.changeProfilePublishStatus(event.getMemberId(), false);
             memberProfileService.changeMemberActivityStatus(event.getMemberId(), getStatusFromEvent(event));
         } catch (Exception e) {
             log.error("Member(id: {})의 프로필 업데이트 중 예외가 발생했습니다.", event.getMemberId(), e);
         }
     }
 
-    @EventListener(value = MemberUnsuspendedEvent.class)
+    @Async
+    @TransactionalEventListener(value = MemberUnsuspendedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handle(MemberUnsuspendedEvent event) {
         try {
-            memberProfileService.changeProfilePublishStatus(event.getMemberId(), true);
             memberProfileService.changeMemberActivityStatus(event.getMemberId(), ActivityStatus.ACTIVE);
         } catch (Exception e) {
             log.error("Member(id: {})의 프로필 업데이트 중 예외가 발생했습니다.", event.getMemberId(), e);
