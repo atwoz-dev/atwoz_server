@@ -1,7 +1,6 @@
 package atwoz.atwoz.admin.command.domain.screening;
 
 import atwoz.atwoz.admin.command.domain.screening.event.ScreeningApprovedEvent;
-import atwoz.atwoz.admin.command.domain.screening.event.ScreeningRejectedEvent;
 import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.common.event.Events;
 import jakarta.persistence.*;
@@ -63,7 +62,6 @@ public class Screening extends BaseEntity {
         setAdminId(adminId);
         changeScreeningStatus(ScreeningStatus.REJECTED);
         setRejectionReason(rejectionReason);
-        Events.raise(ScreeningRejectedEvent.from(memberId));
     }
 
     private void setAdminId(long adminId) {
