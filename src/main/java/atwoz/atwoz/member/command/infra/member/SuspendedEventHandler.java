@@ -39,7 +39,7 @@ public class SuspendedEventHandler {
     }
 
     private ActivityStatus getStatusFromEvent(MemberSuspendedEvent event) {
-        if (event.getStatus().equals("TEMPORARY")) {
+        if ("TEMPORARY".equals(event.getStatus())) {
             return ActivityStatus.SUSPENDED_TEMPORARILY;
         } else {
             return ActivityStatus.SUSPENDED_PERMANENTLY;
