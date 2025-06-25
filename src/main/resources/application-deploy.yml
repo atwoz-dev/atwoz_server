@@ -26,8 +26,6 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
     baseline-version: 0
-    placeholders:
-      schema: ${MYSQL_DATABASE:atwoz_local}
     table: flyway_schema_history
 
 cloud:
