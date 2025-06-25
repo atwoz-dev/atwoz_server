@@ -28,8 +28,6 @@ public class BizgoTokenHandler {
     @Value("${bizgo.api-url}")
     private String apiUrl;
 
-    private volatile String authToken;
-
     public String getAuthToken() {
         String token = redisTemplate.opsForValue().get(KEY);
         if (token == null) {
@@ -64,7 +62,7 @@ public class BizgoTokenHandler {
 
         validateAuthResponse(response);
 
-        authToken = response.data().token();
+        String authToken = response.data().token();
         redisTemplate.opsForValue().set(KEY, authToken);
         redisTemplate.expire(KEY, EXPIRE_TIME_SECOND, TimeUnit.SECONDS);
     }

@@ -17,9 +17,10 @@ public class RedissonLockRepository {
 
     public void withLock(Runnable runnable, String key, int waitTime, int leaseTime) {
         RLock lock = redissonClient.getLock(PREFIX + key);
+        boolean isLocked = false;
         try {
-            boolean lockable = lock.tryLock(waitTime, leaseTime, TimeUnit.SECONDS);
-            if (!lockable) {
+            isLocked = lock.tryLock(waitTime, leaseTime, TimeUnit.SECONDS);
+            if (!isLocked) {
                 log.error("Lock 획득 실패 = {}", key);
                 return;
             }
@@ -27,7 +28,9 @@ public class RedissonLockRepository {
         } catch (Exception e) {
             log.error("잠금 에러 발생 = {}", key, e);
         } finally {
-            lock.unlock();
+            if (isLocked && lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
         }
     }
 }
