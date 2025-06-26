@@ -1,22 +1,27 @@
 package atwoz.atwoz.member.command.infra.member.sms;
 
+import atwoz.atwoz.common.repository.RedissonLockRepository;
 import atwoz.atwoz.member.command.infra.member.sms.dto.BizgoAuthResponse;
 import atwoz.atwoz.member.command.infra.member.sms.exception.BizgoAuthenticationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import java.util.Date;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.TimeUnit;
 
 
 @Service
 @RequiredArgsConstructor
 public class BizgoTokenHandler {
-    private static final long HOURS23 = 23 * 60 * 60 * 1000L;
-    private final ReentrantLock lock = new ReentrantLock();
+    private static final long EXPIRE_TIME_SECOND = 23 * 60 * 60;
+    private static final String KEY = "BIZGO_AUTH_TOKEN";
+    private static final int WAIT_TIME = 3;
+    private static final int LEASE_TIME = 5;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final RedissonLockRepository redissonLockRepository;
     private final RestClient restClient;
     @Value("${bizgo.client-id}")
     private String clientId;
@@ -25,23 +30,20 @@ public class BizgoTokenHandler {
     @Value("${bizgo.api-url}")
     private String apiUrl;
 
-    private volatile String authToken;
-    private volatile Date authTime;
-
     public String getAuthToken() {
-        if (isOver23Hours(authTime)) {
-            reissueAuthToken();
-        }
-        return authToken;
-    }
+        String token = redisTemplate.opsForValue().get(KEY);
+        if (token == null) {
+            redissonLockRepository.withLock(() -> {
+                if (redisTemplate.opsForValue().get(KEY) != null) {
+                    return;
+                }
+                setAuthToken();
+            }, KEY, WAIT_TIME, LEASE_TIME);
 
-    private boolean isOver23Hours(Date authTime) {
-        if (authTime == null) {
-            return true;
+            return redisTemplate.opsForValue().get(KEY);
+        } else {
+            return token;
         }
-        long now = System.currentTimeMillis();
-        long diffMillis = now - authTime.getTime();
-        return diffMillis >= HOURS23;
     }
 
     private void setAuthToken() {
@@ -62,19 +64,9 @@ public class BizgoTokenHandler {
 
         validateAuthResponse(response);
 
-        authToken = response.data().token();
-        authTime = new Date();
-    }
-
-    private void reissueAuthToken() {
-        lock.lock();
-        try {
-            if (isOver23Hours(authTime)) {
-                setAuthToken();
-            }
-        } finally {
-            lock.unlock();
-        }
+        String authToken = response.data().token();
+        redisTemplate.opsForValue().set(KEY, authToken);
+        redisTemplate.expire(KEY, EXPIRE_TIME_SECOND, TimeUnit.SECONDS);
     }
 
     private void validateAuthResponse(BizgoAuthResponse response) {
