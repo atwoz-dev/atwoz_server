@@ -21,6 +21,13 @@ spring:
       ssl:
         enabled: true
 
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
+    table: flyway_schema_history
+
 cloud:
   aws:
     bucket: ${AWS_S3_BUCKET_NAME}
