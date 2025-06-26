@@ -18,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 public class BizgoTokenHandler {
     private static final long EXPIRE_TIME_SECOND = 23 * 60 * 60;
     private static final String KEY = "BIZGO_AUTH_TOKEN";
+    private static final int WAIT_TIME = 3;
+    private static final int LEASE_TIME = 5;
     private final RedisTemplate<String, String> redisTemplate;
     private final RedissonLockRepository redissonLockRepository;
     private final RestClient restClient;
@@ -36,7 +38,7 @@ public class BizgoTokenHandler {
                     return;
                 }
                 setAuthToken();
-            }, KEY, 3, 5);
+            }, KEY, WAIT_TIME, LEASE_TIME);
 
             return redisTemplate.opsForValue().get(KEY);
         } else {

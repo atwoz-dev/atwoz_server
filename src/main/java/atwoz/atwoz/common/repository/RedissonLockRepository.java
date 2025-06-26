@@ -1,5 +1,6 @@
 package atwoz.atwoz.common.repository;
 
+import atwoz.atwoz.common.exception.CannotGetLockException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -27,6 +28,7 @@ public class RedissonLockRepository {
             runnable.run();
         } catch (Exception e) {
             log.error("잠금 에러 발생 = {}", key, e);
+            throw new CannotGetLockException(e);
         } finally {
             if (isLocked && lock.isHeldByCurrentThread()) {
                 lock.unlock();
