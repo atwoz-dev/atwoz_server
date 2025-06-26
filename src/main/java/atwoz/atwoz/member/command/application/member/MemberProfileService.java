@@ -50,11 +50,12 @@ public class MemberProfileService {
     }
 
     @Transactional
-    public void changeMemberActivityStatus(Long memberId, ActivityStatus status) {
+    public void changeMemberActivityStatus(Long memberId, String status) {
         Member member = getMemberById(memberId);
-        member.changeActivityStatus(status);
+        ActivityStatus activityStatus = getActivityStatus(status);
+        member.changeActivityStatus(activityStatus);
 
-        if (status != ActivityStatus.ACTIVE) {
+        if (activityStatus != ActivityStatus.ACTIVE) {
             nonPublish(member);
         } else {
             publish(member);
@@ -71,5 +72,15 @@ public class MemberProfileService {
 
     private Member getMemberById(Long memberId) {
         return memberCommandRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
+    }
+
+    private ActivityStatus getActivityStatus(String status) {
+        if ("TEMPORARY".equals(status)) {
+            return ActivityStatus.SUSPENDED_TEMPORARILY;
+        } else if ("ACTIVE".equals(status)) {
+            return ActivityStatus.ACTIVE;
+        } else {
+            return ActivityStatus.SUSPENDED_PERMANENTLY;
+        }
     }
 }

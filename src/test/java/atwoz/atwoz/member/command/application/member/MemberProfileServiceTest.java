@@ -147,7 +147,7 @@ class MemberProfileServiceTest {
         }
 
         @Test
-        @DisplayName("멤버가 존재하면 member.changeProfilePublishStatus() 메서드를 호출합니다.")
+        @DisplayName("멤버가 존재하면 member.publishProfile() 메서드를 호출합니다.")
         void callsPublishProfileMethodWhenMemberExists() {
             // Given
             final long memberId = 1L;
@@ -174,17 +174,17 @@ class MemberProfileServiceTest {
 
             // When
             assertThatThrownBy(
-                () -> memberProfileService.changeMemberActivityStatus(memberId, ActivityStatus.SUSPENDED_TEMPORARILY))
+                () -> memberProfileService.changeMemberActivityStatus(memberId, "TEMPORARY"))
                 .isInstanceOf(MemberNotFoundException.class);
         }
 
         @Test
         @DisplayName("회원의 상태를 활동중이 아닌 다른 상태로 변경하는 경우, 프로필 공개 상태 또한 비공개로 변경합니다.")
-        void changeProfileStatusToNonPublishWhenActivityStatusIsNotActive() {
+        void callsChangeActivityStatusAndNonPublishProfileWhenActivityStatusIsNotActive() {
             // Given
             final long memberId = 1L;
-            ActivityStatus activityStatus = ActivityStatus.SUSPENDED_PERMANENTLY;
-            Member member = Member.fromPhoneNumber("01012345678");
+            String activityStatus = "TEMPORARY";
+            Member member = mock(Member.class);
             member.publishProfile();
             when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(member));
 
@@ -192,8 +192,8 @@ class MemberProfileServiceTest {
             memberProfileService.changeMemberActivityStatus(memberId, activityStatus);
 
             // Then
-            assertThat(member.getActivityStatus()).isEqualTo(activityStatus);
-            assertThat(member.isProfilePublic()).isEqualTo(false);
+            verify(member, times(1)).changeActivityStatus(ActivityStatus.SUSPENDED_TEMPORARILY);
+            verify(member, times(1)).nonPublishProfile();
         }
     }
 }

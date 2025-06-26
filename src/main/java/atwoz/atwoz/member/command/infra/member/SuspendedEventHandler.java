@@ -3,7 +3,6 @@ package atwoz.atwoz.member.command.infra.member;
 import atwoz.atwoz.admin.command.domain.suspension.MemberSuspendedEvent;
 import atwoz.atwoz.admin.command.domain.suspension.MemberUnsuspendedEvent;
 import atwoz.atwoz.member.command.application.member.MemberProfileService;
-import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -22,7 +21,7 @@ public class SuspendedEventHandler {
     @TransactionalEventListener(value = MemberSuspendedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handle(MemberSuspendedEvent event) {
         try {
-            memberProfileService.changeMemberActivityStatus(event.getMemberId(), getStatusFromEvent(event));
+            memberProfileService.changeMemberActivityStatus(event.getMemberId(), event.getStatus());
         } catch (Exception e) {
             log.error("Member(id: {})의 프로필 업데이트 중 예외가 발생했습니다.", event.getMemberId(), e);
         }
@@ -32,17 +31,9 @@ public class SuspendedEventHandler {
     @TransactionalEventListener(value = MemberUnsuspendedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handle(MemberUnsuspendedEvent event) {
         try {
-            memberProfileService.changeMemberActivityStatus(event.getMemberId(), ActivityStatus.ACTIVE);
+            memberProfileService.changeMemberActivityStatus(event.getMemberId(), "ACTIVE");
         } catch (Exception e) {
             log.error("Member(id: {})의 프로필 업데이트 중 예외가 발생했습니다.", event.getMemberId(), e);
-        }
-    }
-
-    private ActivityStatus getStatusFromEvent(MemberSuspendedEvent event) {
-        if ("TEMPORARY".equals(event.getStatus())) {
-            return ActivityStatus.SUSPENDED_TEMPORARILY;
-        } else {
-            return ActivityStatus.SUSPENDED_PERMANENTLY;
         }
     }
 }
