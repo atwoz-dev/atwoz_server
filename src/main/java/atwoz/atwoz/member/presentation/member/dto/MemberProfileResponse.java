@@ -6,7 +6,7 @@ import atwoz.atwoz.member.query.member.view.MatchInfo;
 import java.util.List;
 
 public record MemberProfileResponse(
-    BasicInfo basicMemberInfo,
+    MemberInfo memberInfo,
     MatchInfo matchInfo,
     List<InterviewResultView> interviews
 ) {

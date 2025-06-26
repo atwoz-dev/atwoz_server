@@ -3,6 +3,7 @@ package atwoz.atwoz.member.command.application.member;
 
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.application.member.exception.PrimaryContactTypeSettingNeededException;
+import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import atwoz.atwoz.member.command.domain.member.PrimaryContactType;
@@ -39,12 +40,47 @@ public class MemberProfileService {
     }
 
     @Transactional
-    public void publishProfile(Long memberId) {
+    public void changeProfilePublishStatus(Long memberId, boolean publishStatus) {
         Member member = getMemberById(memberId);
+        if (publishStatus) {
+            publish(member);
+        } else {
+            nonPublish(member);
+        }
+    }
+
+    @Transactional
+    public void changeMemberActivityStatus(Long memberId, String status) {
+        Member member = getMemberById(memberId);
+        ActivityStatus activityStatus = getActivityStatus(status);
+        member.changeActivityStatus(activityStatus);
+
+        if (activityStatus != ActivityStatus.ACTIVE) {
+            nonPublish(member);
+        } else {
+            publish(member);
+        }
+    }
+
+    private void publish(Member member) {
         member.publishProfile();
+    }
+
+    private void nonPublish(Member member) {
+        member.nonPublishProfile();
     }
 
     private Member getMemberById(Long memberId) {
         return memberCommandRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
+    }
+
+    private ActivityStatus getActivityStatus(String status) {
+        if ("TEMPORARY".equals(status)) {
+            return ActivityStatus.SUSPENDED_TEMPORARILY;
+        } else if ("ACTIVE".equals(status)) {
+            return ActivityStatus.ACTIVE;
+        } else {
+            return ActivityStatus.SUSPENDED_PERMANENTLY;
+        }
     }
 }

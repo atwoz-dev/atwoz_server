@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Set;
 
-public record BasicInfo(
+public record MemberInfo(
     Long id,
     String nickname,
     String profileImageUrl,
