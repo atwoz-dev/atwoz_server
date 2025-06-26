@@ -4,10 +4,7 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-.DS_STORE
-src/.DS_STORE
-src/main/java/.DS_STORE
-src/main/java/atwoz/.DS_Store
+.DS_Store
 
 ### STS ###
 .apt_generated
