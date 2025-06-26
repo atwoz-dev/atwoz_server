@@ -24,6 +24,9 @@ spring:
     multipart:
       max-request-size: 50MB
 
+  flyway:
+    enabled: false
+
 cloud:
   aws:
     bucket: bucket-name
