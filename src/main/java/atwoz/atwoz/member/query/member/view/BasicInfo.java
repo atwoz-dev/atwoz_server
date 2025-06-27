@@ -9,7 +9,7 @@ public record BasicInfo(
     @Schema(implementation = Gender.class)
     String gender,
     String kakaoId,
-    Integer yearOfBirth,
+    Integer age,
     Integer height,
     String phoneNumber
 ) {

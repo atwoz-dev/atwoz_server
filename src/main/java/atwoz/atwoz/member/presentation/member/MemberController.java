@@ -6,13 +6,13 @@ import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.member.MemberContactService;
 import atwoz.atwoz.member.command.application.member.MemberProfileService;
+import atwoz.atwoz.member.presentation.member.dto.MemberMyProfileResponse;
 import atwoz.atwoz.member.presentation.member.dto.MemberProfileResponse;
 import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.query.member.application.MemberQueryService;
 import atwoz.atwoz.member.query.member.view.HeartBalanceView;
 import atwoz.atwoz.member.query.member.view.MemberContactView;
 import atwoz.atwoz.member.query.member.view.MemberInfoView;
-import atwoz.atwoz.member.query.member.view.MemberProfileView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -45,8 +45,9 @@ public class MemberController {
 
     @Operation(summary = "회원(자기 자신) 프로필 정보 조회 API")
     @GetMapping("/profile")
-    public ResponseEntity<BaseResponse<MemberProfileView>> getMyProfile(@AuthPrincipal AuthContext authContext) {
-        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, memberQueryService.getProfile(authContext.getId())));
+    public ResponseEntity<BaseResponse<MemberMyProfileResponse>> getMyProfile(@AuthPrincipal AuthContext authContext) {
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK,
+            MemberMapper.toMemberMyProfileResponse(memberQueryService.getProfile(authContext.getId()))));
     }
 
     @Operation(summary = "상대방 프로필 조회 API")

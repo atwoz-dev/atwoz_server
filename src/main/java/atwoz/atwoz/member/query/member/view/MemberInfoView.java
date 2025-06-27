@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.query.member.view;
 
+import atwoz.atwoz.member.query.member.AgeConverter;
 import com.querydsl.core.annotations.QueryProjection;
 
 import java.util.Set;
@@ -17,7 +18,7 @@ public record MemberInfoView(
         String district, String mbti, String smokingStatus, String drinkingStatus, String religion,
         Set<String> hobbies, Set<InterviewInfoView> interviewInfoView) {
         this(new StatusInfo(activityStatus, isVip, contactType),
-            new BasicInfo(nickname, gender, kakaoId, yearOfBirth, height, phoneNumber),
+            new BasicInfo(nickname, gender, kakaoId, AgeConverter.toAge(yearOfBirth), height, phoneNumber),
             new ProfileInfo(job, highestEducation, city, district, mbti, smokingStatus, drinkingStatus, religion,
                 hobbies), interviewInfoView);
     }
