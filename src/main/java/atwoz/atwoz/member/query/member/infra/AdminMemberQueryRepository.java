@@ -150,14 +150,13 @@ public class AdminMemberQueryRepository {
                         constant(hasInterviewAnswers),
                         constant(warningCount)
                     ),
-                    new QBasicInfo(
-                        member.profile.nickname.value,
-                        member.profile.gender.stringValue(),
-                        member.kakaoId.value,
-                        member.profile.yearOfBirth.value,
-                        member.profile.height.intValue(),
-                        member.phoneNumber.value
-                    ),
+                    member.profile.nickname.value,
+                    member.profile.gender.stringValue(),
+                    member.kakaoId.value,
+                    member.profile.yearOfBirth.value,
+                    member.profile.height.intValue(),
+                    member.phoneNumber.value
+                    ,
                     new QHeartBalanceView(
                         member.heartBalance.purchaseHeartBalance,
                         member.heartBalance.missionHeartBalance,

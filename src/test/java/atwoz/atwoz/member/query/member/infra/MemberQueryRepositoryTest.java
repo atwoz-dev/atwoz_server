@@ -22,6 +22,7 @@ import atwoz.atwoz.member.command.domain.member.vo.Nickname;
 import atwoz.atwoz.member.command.domain.member.vo.Region;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
+import atwoz.atwoz.member.query.member.AgeConverter;
 import atwoz.atwoz.member.query.member.view.*;
 import org.junit.jupiter.api.*;
 import org.mockito.MockedStatic;
@@ -136,7 +137,7 @@ class MemberQueryRepositoryTest {
             assertThat(basicInfo.nickname()).isEqualTo(member.getProfile().getNickname().getValue());
             assertThat(basicInfo.gender()).isEqualTo(member.getGender().toString());
             assertThat(basicInfo.kakaoId()).isEqualTo(member.getKakaoId());
-            assertThat(basicInfo.yearOfBirth()).isEqualTo(member.getProfile().getYearOfBirth().getValue());
+            assertThat(basicInfo.age()).isEqualTo(AgeConverter.toAge(member.getProfile().getYearOfBirth().getValue()));
             assertThat(basicInfo.height()).isEqualTo(member.getProfile().getHeight());
             assertThat(basicInfo.phoneNumber()).isEqualTo(member.getPhoneNumber());
         }

@@ -268,11 +268,13 @@ class AdminMemberQueryRepositoryTest {
         }
 
         private void assertBasicInfo(BasicInfo basicInfo, Member member) {
+
+            System.out.println(basicInfo.age() + " " + member.getProfile().getYearOfBirth().getValue());
             assertThat(basicInfo.nickname()).isEqualTo(member.getProfile().getNickname().getValue());
             assertThat(basicInfo.phoneNumber()).isEqualTo(member.getPhoneNumber());
             assertThat(basicInfo.kakaoId()).isEqualTo(member.getKakaoId());
             assertThat(basicInfo.gender()).isEqualTo(member.getGender().name());
-            assertThat(basicInfo.yearOfBirth()).isEqualTo(member.getProfile().getYearOfBirth().getValue());
+            assertThat(basicInfo.age()).isEqualTo((member.getProfile().getYearOfBirth().getAge()));
             assertThat(basicInfo.height()).isEqualTo(member.getProfile().getHeight());
         }
 
