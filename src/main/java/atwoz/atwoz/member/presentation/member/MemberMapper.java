@@ -5,9 +5,11 @@ import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;
 import atwoz.atwoz.member.command.domain.member.vo.Region;
 import atwoz.atwoz.member.presentation.member.dto.MemberInfo;
+import atwoz.atwoz.member.presentation.member.dto.MemberMyProfileResponse;
 import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.query.member.AgeConverter;
 import atwoz.atwoz.member.query.member.view.BasicMemberInfo;
+import atwoz.atwoz.member.query.member.view.MemberProfileView;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -42,5 +44,12 @@ public class MemberMapper {
             basicMemberInfo.job(), basicMemberInfo.hobbies(), basicMemberInfo.mbti(), basicMemberInfo.city(),
             basicMemberInfo.smokingStatus(), basicMemberInfo.drinkingStatus(), basicMemberInfo.highestEducation(),
             basicMemberInfo.religion(), basicMemberInfo.like());
+    }
+
+    public static MemberMyProfileResponse toMemberMyProfileResponse(MemberProfileView view) {
+        return new MemberMyProfileResponse(view.nickname(), AgeConverter.toAge(view.yearOfBirth()), view.gender(),
+            view.height(),
+            view.job(), view.hobbies(), view.mbti(), view.city(), view.district(), view.smokingStatus(),
+            view.drinkingStatus(), view.highestEducation(), view.religion());
     }
 }

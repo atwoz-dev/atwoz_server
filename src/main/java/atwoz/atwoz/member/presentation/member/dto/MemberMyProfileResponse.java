@@ -1,14 +1,13 @@
-package atwoz.atwoz.member.query.member.view;
+package atwoz.atwoz.member.presentation.member.dto;
 
 import atwoz.atwoz.member.command.domain.member.*;
-import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Set;
 
-public record MemberProfileView(
+public record MemberMyProfileResponse(
     String nickname,
-    Integer yearOfBirth,
+    Integer age,
     @Schema(implementation = Gender.class)
     String gender,
     Integer height,
@@ -31,8 +30,4 @@ public record MemberProfileView(
     @Schema(implementation = Religion.class)
     String religion
 ) {
-    @QueryProjection
-    public MemberProfileView {
-
-    }
 }

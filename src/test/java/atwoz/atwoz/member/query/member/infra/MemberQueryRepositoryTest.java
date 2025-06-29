@@ -136,7 +136,7 @@ class MemberQueryRepositoryTest {
             assertThat(basicInfo.nickname()).isEqualTo(member.getProfile().getNickname().getValue());
             assertThat(basicInfo.gender()).isEqualTo(member.getGender().toString());
             assertThat(basicInfo.kakaoId()).isEqualTo(member.getKakaoId());
-            assertThat(basicInfo.yearOfBirth()).isEqualTo(member.getProfile().getYearOfBirth().getValue());
+            assertThat(basicInfo.age()).isEqualTo(member.getProfile().getYearOfBirth().getAge());
             assertThat(basicInfo.height()).isEqualTo(member.getProfile().getHeight());
             assertThat(basicInfo.phoneNumber()).isEqualTo(member.getPhoneNumber());
         }
