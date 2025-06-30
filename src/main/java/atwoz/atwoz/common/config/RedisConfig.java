@@ -15,14 +15,20 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 public class RedisConfig {
 
-    private static final String REDISSON_HOST_PREFIX = "rediss://";
+    private final String REDISSON_HOST_PREFIX;
     private final String host;
     private final String port;
 
     public RedisConfig(@Value("${spring.data.redis.host}") String host,
-        @Value("${spring.data.redis.port}") String port) {
+        @Value("${spring.data.redis.port}") String port,
+        @Value("${spring.data.redis.ssl.enabled}") boolean sslEnabled) {
         this.host = host;
         this.port = port;
+        if (sslEnabled) {
+            REDISSON_HOST_PREFIX = "rediss://";
+        } else {
+            REDISSON_HOST_PREFIX = "redis://";
+        }
     }
 
     @Bean
