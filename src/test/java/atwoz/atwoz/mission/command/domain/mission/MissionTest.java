@@ -23,7 +23,7 @@ class MissionTest {
             return Stream.of(
                 Arguments.of("시도 횟수가 1보다 작은 경우, 예외 발생", ActionType.LIKE, FrequencyType.CHALLENGE, 0, 2, 10, true),
                 Arguments.of("반복 횟수가 1보다 작은 경우, 예외 발생", ActionType.LIKE, FrequencyType.CHALLENGE, 3, -1, 10, true),
-                Arguments.of("하트 보상이 1보다 작은 경우, 예외 발생", ActionType.LIKE, FrequencyType.CHALLENGE, 0, 2, -5, true));
+                Arguments.of("하트 보상이 1보다 작은 경우, 예외 발생", ActionType.LIKE, FrequencyType.CHALLENGE, 1, 2, -5, true));
         }
 
         @Test
@@ -97,6 +97,7 @@ class MissionTest {
             // Then
             Assertions.assertThat(mission.getActionType()).isEqualTo(actionType);
             Assertions.assertThat(mission.getFrequencyType()).isEqualTo(frequencyType);
+            Assertions.assertThat(mission.getRequiredAttempt()).isEqualTo(requiredAttempt);
             Assertions.assertThat(mission.getRepeatableCount()).isEqualTo(repeatableCount);
             Assertions.assertThat(mission.getRewardedHeart()).isEqualTo(rewardedHeart);
             Assertions.assertThat(mission.isPublic()).isEqualTo(isPublic);
