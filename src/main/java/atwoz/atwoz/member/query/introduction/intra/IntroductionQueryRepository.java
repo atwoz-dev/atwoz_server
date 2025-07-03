@@ -79,7 +79,8 @@ public class IntroductionQueryRepository {
 
         return new ArrayList<>(queryFactory
             .from(member)
-            .leftJoin(memberIntroduction).on(memberIntroduction.memberId.eq(memberId))
+            .leftJoin(memberIntroduction).on(memberIntroduction.memberId.eq(memberId)
+                .and(memberIntroduction.introducedMemberId.eq(member.id)))
             .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.isTrue()))
             .leftJoin(like).on(like.senderId.eq(memberId).and(like.receiverId.eq(member.id)))
             .leftJoin(member.profile.hobbies, hobby)
