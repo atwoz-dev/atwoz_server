@@ -1,11 +1,9 @@
 package atwoz.atwoz.mission.command.domain.mission;
 
 import atwoz.atwoz.common.entity.BaseEntity;
+import atwoz.atwoz.mission.command.domain.mission.exception.MustBePositiveException;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
@@ -28,18 +26,40 @@ public class Mission extends BaseEntity {
 
     private int repeatableCount;
 
+    private int rewardedHeart;
+
     private boolean isPublic;
 
-    private int rewardedHearts;
-
     @Builder
-    private Mission(ActionType actionType, FrequencyType frequencyType, int requiredAttempt, int repeatableCount,
-        boolean isPublic, int rewardedHearts) {
+    private Mission(@NonNull ActionType actionType, @NonNull FrequencyType frequencyType, int requiredAttempt,
+        int repeatableCount,
+        int rewardedHeart, boolean isPublic) {
+        validateRequiredAttempt(requiredAttempt);
+        validateRepeatableCount(repeatableCount);
+        validateRewardedHearts(rewardedHeart);
         this.actionType = actionType;
         this.frequencyType = frequencyType;
         this.requiredAttempt = requiredAttempt;
         this.repeatableCount = repeatableCount;
+        this.rewardedHeart = rewardedHeart;
         this.isPublic = isPublic;
-        this.rewardedHearts = rewardedHearts;
+    }
+
+    private void validateRequiredAttempt(int requiredAttempt) {
+        if (requiredAttempt <= 0) {
+            throw new MustBePositiveException(requiredAttempt);
+        }
+    }
+
+    private void validateRepeatableCount(int repeatableCount) {
+        if (repeatableCount <= 0) {
+            throw new MustBePositiveException(repeatableCount);
+        }
+    }
+
+    private void validateRewardedHearts(int rewardedHeart) {
+        if (rewardedHeart <= 0) {
+            throw new MustBePositiveException(rewardedHeart);
+        }
     }
 }
