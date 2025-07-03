@@ -315,7 +315,7 @@ class IntroductionQueryRepositoryTest {
                 .drinkingStatus(DrinkingStatus.NONE)
                 .mbti(Mbti.ISTP)
                 .build();
-            isIntroducedTrueMember.updateProfile(isIntroducedFalseMemberProfile);
+            isIntroducedFalseMember.updateProfile(isIntroducedFalseMemberProfile);
 
             entityManager.persist(isIntroducedFalseMember);
             entityManager.flush();
