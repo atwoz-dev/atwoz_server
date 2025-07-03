@@ -22,7 +22,7 @@ public class MemberMapper {
         return MemberProfile.builder()
             .yearOfBirth(memberProfileUpdateRequest.yearOfBirth())
             .height(memberProfileUpdateRequest.height())
-            .nickname(Nickname.from(memberProfileUpdateRequest.nickName()))
+            .nickname(Nickname.from(memberProfileUpdateRequest.nickname()))
             .gender(Gender.from(memberProfileUpdateRequest.gender()))
             .mbti(Mbti.from(memberProfileUpdateRequest.mbti()))
             .region(Region.of(District.from(memberProfileUpdateRequest.district())))
