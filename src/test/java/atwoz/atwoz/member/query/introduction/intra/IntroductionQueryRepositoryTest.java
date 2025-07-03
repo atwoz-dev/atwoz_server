@@ -12,10 +12,7 @@ import atwoz.atwoz.member.command.domain.member.vo.Region;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.query.introduction.application.IntroductionSearchCondition;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedStatic;
@@ -268,6 +265,84 @@ class IntroductionQueryRepositoryTest {
             } else {
                 assertThat(memberIntroductionProfileQueryResult.isIntroduced()).isFalse();
             }
+        }
+
+        @Test
+        @DisplayName("소개되지 않은 멤버는 isIntroduced가 false로 설정되어야 한다.")
+        void isIntroducedFalseWhenNotIntroduced() {
+            // given
+            Hobby hobby1 = Hobby.ANIMATION;
+            Hobby hobby2 = Hobby.BOARD_GAMES;
+            Hobby hobby3 = Hobby.CAMPING;
+            Hobby hobby4 = Hobby.BADMINTON_AND_TENNIS;
+
+            Member me = Member.fromPhoneNumber("01011111111");
+            MemberProfile profile1 = MemberProfile.builder()
+                .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
+                .hobbies(Set.of(hobby1, hobby2))
+                .religion(Religion.BUDDHIST)
+                .region(Region.of(District.DONG_GU_DAEJEON))
+                .smokingStatus(SmokingStatus.DAILY)
+                .drinkingStatus(DrinkingStatus.SOCIAL)
+                .build();
+            me.updateProfile(profile1);
+
+            entityManager.persist(me);
+            entityManager.flush();
+
+            Member isIntroducedTrueMember = Member.fromPhoneNumber("01022222222");
+            MemberProfile isIntroducedTrueMemberProfile = MemberProfile.builder()
+                .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
+                .hobbies(Set.of(hobby3, hobby4))
+                .religion(Religion.NONE)
+                .region(Region.of(District.GANGBUK_GU))
+                .smokingStatus(SmokingStatus.NONE)
+                .drinkingStatus(DrinkingStatus.NONE)
+                .mbti(Mbti.ISTP)
+                .build();
+            isIntroducedTrueMember.updateProfile(isIntroducedTrueMemberProfile);
+
+            entityManager.persist(isIntroducedTrueMember);
+            entityManager.flush();
+
+            Member isIntroducedFalseMember = Member.fromPhoneNumber("01033333333");
+            MemberProfile isIntroducedFalseMemberProfile = MemberProfile.builder()
+                .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
+                .hobbies(Set.of(hobby3, hobby4))
+                .religion(Religion.NONE)
+                .region(Region.of(District.GANGBUK_GU))
+                .smokingStatus(SmokingStatus.NONE)
+                .drinkingStatus(DrinkingStatus.NONE)
+                .mbti(Mbti.ISTP)
+                .build();
+            isIntroducedTrueMember.updateProfile(isIntroducedFalseMemberProfile);
+
+            entityManager.persist(isIntroducedFalseMember);
+            entityManager.flush();
+
+            IntroductionType type = IntroductionType.DIAMOND_GRADE;
+
+            MemberIntroduction memberIntroduction = MemberIntroduction.of(me.getId(), isIntroducedTrueMember.getId(),
+                type);
+            entityManager.persist(memberIntroduction);
+            entityManager.flush();
+
+            // when
+            List<MemberIntroductionProfileQueryResult> result = introductionQueryRepository
+                .findAllMemberIntroductionProfileQueryResultByMemberIds(
+                    me.getId(),
+                    Set.of(isIntroducedTrueMember.getId(), isIntroducedFalseMember.getId()));
+
+            // then
+            assertThat(result).hasSize(2);
+
+            MemberIntroductionProfileQueryResult isIntroducedTrueResult =
+                result.getFirst().memberId() == isIntroducedTrueMember.getId() ? result.getFirst() : result.get(1);
+            assertThat(isIntroducedTrueResult.isIntroduced()).isTrue();
+
+            MemberIntroductionProfileQueryResult isIntroducedFalseResult =
+                result.getFirst().memberId() == isIntroducedFalseMember.getId() ? result.getFirst() : result.get(1);
+            assertThat(isIntroducedFalseResult.isIntroduced()).isFalse();
         }
     }
 }
