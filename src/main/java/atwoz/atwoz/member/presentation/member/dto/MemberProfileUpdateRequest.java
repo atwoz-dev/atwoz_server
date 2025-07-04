@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Set;
 
 public record MemberProfileUpdateRequest(
-    String nickName,
+    String nickname,
     @Schema(implementation = Gender.class)
     String gender,
     Integer yearOfBirth,
