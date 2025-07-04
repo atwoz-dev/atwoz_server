@@ -3,7 +3,10 @@ package atwoz.atwoz.mission.command.domain.mission;
 import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.mission.command.domain.mission.exception.MustBePositiveException;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Entity
 @Getter
@@ -30,19 +33,35 @@ public class Mission extends BaseEntity {
 
     private boolean isPublic;
 
-    @Builder
     private Mission(@NonNull ActionType actionType, @NonNull FrequencyType frequencyType, int requiredAttempt,
         int repeatableCount,
         int rewardedHeart, boolean isPublic) {
-        validateRequiredAttempt(requiredAttempt);
-        validateRepeatableCount(repeatableCount);
-        validateRewardedHearts(rewardedHeart);
+        setRequiredAttempt(requiredAttempt);
+        setRepeatableCount(repeatableCount);
+        setRewardedHeart(rewardedHeart);
         this.actionType = actionType;
         this.frequencyType = frequencyType;
-        this.requiredAttempt = requiredAttempt;
-        this.repeatableCount = repeatableCount;
-        this.rewardedHeart = rewardedHeart;
         this.isPublic = isPublic;
+    }
+
+    public static Mission create(ActionType actionType, FrequencyType frequencyType, int requiredAttempt,
+        int repeatableCount, int rewardedHeart, boolean isPublic) {
+        return new Mission(actionType, frequencyType, requiredAttempt, repeatableCount, rewardedHeart, isPublic);
+    }
+
+    private void setRequiredAttempt(int requiredAttempt) {
+        validateRequiredAttempt(requiredAttempt);
+        this.requiredAttempt = requiredAttempt;
+    }
+
+    private void setRepeatableCount(int repeatableCount) {
+        validateRepeatableCount(repeatableCount);
+        this.repeatableCount = repeatableCount;
+    }
+
+    private void setRewardedHeart(int rewardedHeart) {
+        validateRewardedHearts(rewardedHeart);
+        this.rewardedHeart = rewardedHeart;
     }
 
     private void validateRequiredAttempt(int requiredAttempt) {

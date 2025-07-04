@@ -21,9 +21,9 @@ class MissionTest {
 
         private static Stream<Arguments> constructorSource() {
             return Stream.of(
-                Arguments.of("시도 횟수가 1보다 작은 경우, 예외 발생", ActionType.LIKE, FrequencyType.CHALLENGE, 0, 2, 10, true),
-                Arguments.of("반복 횟수가 1보다 작은 경우, 예외 발생", ActionType.LIKE, FrequencyType.CHALLENGE, 3, -1, 10, true),
-                Arguments.of("하트 보상이 1보다 작은 경우, 예외 발생", ActionType.LIKE, FrequencyType.CHALLENGE, 1, 2, -5, true));
+                Arguments.of("시도 횟수가 1보다 작은 경우, 예외 발생", 0, 2, 10),
+                Arguments.of("반복 횟수가 1보다 작은 경우, 예외 발생", 3, -1, 10),
+                Arguments.of("하트 보상이 1보다 작은 경우, 예외 발생", 1, 2, -5));
         }
 
         @Test
@@ -48,29 +48,23 @@ class MissionTest {
             FrequencyType frequencyType = null;
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> Mission.builder()
-                .actionType(actionType)
-                .frequencyType(frequencyType)
-                .requiredAttempt(10)
-                .repeatableCount(10)
-                .rewardedHeart(10)
-                .isPublic(true)
-                .build()).isInstanceOf(NullPointerException.class);
+            Assertions.assertThatThrownBy(() -> Mission.create(actionType, frequencyType, 3, 1, 4, true))
+                .isInstanceOf(NullPointerException.class);
         }
 
         @ParameterizedTest(name = "{0}")
         @MethodSource("constructorSource")
-        void throwExceptionWhenIntValueIsLessThan1(String name, ActionType actionType, FrequencyType frequencyType,
-            int requiredAttempt, int repeatableCount, int rewardedHeart, boolean isPublic) {
+        void throwExceptionWhenIntValueIsLessThan1(String name, int requiredAttempt, int repeatableCount,
+            int rewardedHeart) {
+            // Given
+            ActionType actionType = ActionType.LIKE;
+            FrequencyType frequencyType = FrequencyType.CHALLENGE;
+            boolean isPublic = true;
+
             // When & Then
-            Assertions.assertThatThrownBy(() -> Mission.builder()
-                .actionType(actionType)
-                .frequencyType(frequencyType)
-                .requiredAttempt(requiredAttempt)
-                .repeatableCount(repeatableCount)
-                .rewardedHeart(rewardedHeart)
-                .isPublic(isPublic)
-                .build()).isInstanceOf(MustBePositiveException.class);
+            Assertions.assertThatThrownBy(
+                () -> Mission.create(actionType, frequencyType, requiredAttempt, repeatableCount, rewardedHeart,
+                    isPublic)).isInstanceOf(MustBePositiveException.class);
         }
 
         @Test
@@ -85,14 +79,8 @@ class MissionTest {
             boolean isPublic = true;
 
             // When
-            Mission mission = Mission.builder()
-                .actionType(actionType)
-                .frequencyType(frequencyType)
-                .requiredAttempt(requiredAttempt)
-                .repeatableCount(repeatableCount)
-                .rewardedHeart(rewardedHeart)
-                .isPublic(isPublic)
-                .build();
+            Mission mission = Mission.create(actionType, frequencyType, requiredAttempt, repeatableCount, rewardedHeart,
+                isPublic);
 
             // Then
             Assertions.assertThat(mission.getActionType()).isEqualTo(actionType);
