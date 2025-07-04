@@ -23,6 +23,7 @@ public class MemberMission extends BaseEntity {
 
     private long missionId;
 
+    // 미션을 성공하기 위한 시도 횟수. 해당 미션의 설정 값을 넘으면, successCount 증가.
     private int attemptCount;
 
     // 반복 미션의 경우, 해당 미션을 얼마나 수행했는지에 대한 값.
