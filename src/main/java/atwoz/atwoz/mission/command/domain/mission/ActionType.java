@@ -7,7 +7,9 @@ import lombok.Getter;
 public enum ActionType {
 
     // TODO: 기획에 따른 활동 타입별 지정 필요.
-    LIKE("좋아요");
+    LIKE("좋아요"),
+    INTERVIEW("인터뷰"),
+    FIRST_DATE_EXAM("첫 연애모의고사 응시");
 
     private final String description;
 
