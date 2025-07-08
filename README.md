@@ -24,13 +24,14 @@
 ## 시스템 아키텍처
 
 - CI/CD 관련 내용은 [여기](https://github.com/atwoz-dev/atwoz_server/pull/46)를 참고해주세요.
-  <img width="792" alt="atwoz-architecture" src="https://github.com/user-attachments/assets/0d8574cd-80c2-4625-b0e2-4ff98d69cdaa" />
+  <img width="792" src="https://github.com/user-attachments/assets/e38d4208-03cc-45c5-8792-eaac02eecaf8"/>
+
 
 <br>
 
 ## 컨텍스트 맵
 
-<img width="587" src="https://github.com/user-attachments/assets/eee4f7d7-5309-49ca-8651-de21d145858f" />
+<img width="587" alt="Screenshot 2025-03-09 at 6 59 11 PM" src="https://github.com/user-attachments/assets/06e8217f-45b2-4fd6-a5fe-d84a5ef45cc3" />
 
 <br>
 
