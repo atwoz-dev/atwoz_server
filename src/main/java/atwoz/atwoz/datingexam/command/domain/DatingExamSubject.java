@@ -1,0 +1,49 @@
+package atwoz.atwoz.datingexam.command.domain;
+
+import atwoz.atwoz.common.entity.BaseEntity;
+import atwoz.atwoz.datingexam.command.domain.exception.InvalidSubjectNameException;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
+
+@Entity
+@NoArgsConstructor(access = PROTECTED)
+@Getter
+public class DatingExamSubject extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    private Long id;
+
+    private String name;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(50)")
+    private SubjectType type;
+
+    private boolean isPublic;
+
+    private DatingExamSubject(String name, SubjectType type) {
+        setName(name);
+        setType(type);
+        this.isPublic = true;
+    }
+
+    public static DatingExamSubject create(String name, SubjectType type) {
+        return new DatingExamSubject(name, type);
+    }
+
+    private void setName(@NonNull String name) {
+        if (name.isBlank()) {
+            throw new InvalidSubjectNameException("Subject name cannot be null or blank");
+        }
+        this.name = name;
+    }
+
+    private void setType(@NonNull SubjectType type) {
+        this.type = type;
+    }
+}
