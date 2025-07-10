@@ -3,6 +3,7 @@ package atwoz.atwoz.mission.command.application.memberMission;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import atwoz.atwoz.mission.command.application.memberMission.exception.MemberNotFoundException;
+import atwoz.atwoz.mission.command.domain.memberMission.MemberMission;
 import atwoz.atwoz.mission.command.domain.memberMission.MemberMissionCommandRepository;
 import atwoz.atwoz.mission.command.domain.mission.ActionType;
 import atwoz.atwoz.mission.command.domain.mission.Mission;
@@ -25,7 +26,10 @@ public class MemberMissionService {
         List<Mission> missions = getMission(member.getProfile().getGender().name(), actionType);
 
         missions.forEach(mission -> {
-
+            MemberMission memberMission = createOrFindByMemberIdAndMissionId(memberId, mission.getId());
+            if (!memberMission.isCompleted()) {
+                memberMission.countPlus(mission.getRequiredAttempt(), mission.getRepeatableCount());
+            }
         });
     }
 
@@ -37,5 +41,14 @@ public class MemberMissionService {
 
     private Member getMember(Long memberId) {
         return memberCommandRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(memberId));
+    }
+
+    private MemberMission createOrFindByMemberIdAndMissionId(Long memberId, Long missionId) {
+        return memberMissionCommandRepository.findByMemberIdAndMissionId(memberId, missionId)
+            .orElseGet(() -> create(memberId, missionId));
+    }
+
+    private MemberMission create(Long memberId, Long missionId) {
+        return memberMissionCommandRepository.save(MemberMission.create(memberId, missionId));
     }
 }

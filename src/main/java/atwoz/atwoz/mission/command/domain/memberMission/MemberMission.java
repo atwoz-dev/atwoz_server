@@ -71,4 +71,9 @@ public class MemberMission extends BaseEntity {
             throw new MustNotBeNegativeException(successCount);
         }
     }
+
+    public void countPlus(int requiredAttempt, int repeatableCount) {
+        successCount++;
+        // TODO : successCount 증가 시에는 이벤트 발행.
+    }
 }
