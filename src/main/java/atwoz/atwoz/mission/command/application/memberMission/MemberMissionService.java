@@ -22,7 +22,7 @@ public class MemberMissionService {
     @Transactional
     public void createOrUpdate(Long memberId, String actionType) {
         Member member = getMember(memberId);
-        List<Mission> missions = getMission(member.getProfile().getGender().name(), actionType);
+        List<Mission> missions = getMission(actionType, member.getProfile().getGender().name());
 
         missions.forEach(mission -> {
             MemberMission memberMission =

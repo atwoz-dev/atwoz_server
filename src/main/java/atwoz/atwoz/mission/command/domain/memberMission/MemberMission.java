@@ -76,6 +76,7 @@ public class MemberMission extends BaseEntity {
         if (++attemptCount == requiredAttempt) {
             // TODO : 미션 성공 이벤트 발행.
             successCount++;
+            attemptCount = 0;
             if (successCount == repeatableCount) {
                 isCompleted = true;
             }

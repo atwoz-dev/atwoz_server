@@ -31,4 +31,47 @@ public class MemberMissionTest {
             Assertions.assertThat(memberMission.isCompleted()).isEqualTo(isCompleted);
         }
     }
+
+    @Nested
+    @DisplayName("멤버 미션 수행 테스트")
+    class Do {
+
+        @DisplayName("미션을 수행합니다.")
+        @Test
+        void doMission() {
+            // Given
+            int requiredAttempt = 3;
+            int repeatableCount = 2;
+            long missionId = 1L;
+            long memberId = 2L;
+            MemberMission memberMission = MemberMission.create(missionId, memberId);
+
+            // When
+            memberMission.countPlus(requiredAttempt, repeatableCount);
+
+            // Then
+            Assertions.assertThat(memberMission.getSuccessCount()).isEqualTo(0);
+            Assertions.assertThat(memberMission.getAttemptCount()).isEqualTo(1);
+            Assertions.assertThat(memberMission.isCompleted()).isFalse();
+        }
+
+        @DisplayName("미션을 완료합니다.")
+        @Test
+        void completeMission() {
+            // Given
+            int requiredAttempt = 1;
+            int repeatableCount = 1;
+            long missionId = 1L;
+            long memberId = 2L;
+            MemberMission memberMission = MemberMission.create(missionId, memberId);
+
+            // When
+            memberMission.countPlus(requiredAttempt, repeatableCount);
+
+            // Then
+            Assertions.assertThat(memberMission.getSuccessCount()).isEqualTo(1);
+            Assertions.assertThat(memberMission.getAttemptCount()).isEqualTo(0);
+            Assertions.assertThat(memberMission.isCompleted()).isTrue();
+        }
+    }
 }
