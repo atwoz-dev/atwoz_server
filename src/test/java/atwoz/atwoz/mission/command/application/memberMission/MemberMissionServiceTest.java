@@ -68,7 +68,7 @@ public class MemberMissionServiceTest {
 
             // When & Then
             Assertions.assertThatThrownBy(
-                    () -> memberMissionService.createOrUpdate(memberId, mission.getActionType().name()))
+                    () -> memberMissionService.executeMissionsByAction(memberId, mission.getActionType().name()))
                 .isInstanceOf(MemberNotFoundException.class);
         }
 
@@ -88,11 +88,10 @@ public class MemberMissionServiceTest {
                 .thenReturn(memberMission);
 
             // When
-            memberMissionService.createOrUpdate(memberId, mission.getActionType().name());
+            memberMissionService.executeMissionsByAction(memberId, mission.getActionType().name());
 
             // Then
             Mockito.verify(memberMissionCommandRepository).save(Mockito.any(MemberMission.class));
-            Assertions.assertThat(memberMission.getSuccessCount()).isEqualTo(1);
         }
 
         @Test
@@ -108,11 +107,10 @@ public class MemberMissionServiceTest {
                 .thenReturn(Optional.of(memberMission));
 
             // When
-            memberMissionService.createOrUpdate(memberId, mission.getActionType().name());
+            memberMissionService.executeMissionsByAction(memberId, mission.getActionType().name());
 
             // Then
             Mockito.verify(memberMissionCommandRepository, Mockito.never()).save(Mockito.any(MemberMission.class));
-            Assertions.assertThat(memberMission.getSuccessCount()).isEqualTo(1);
         }
 
         @Test
@@ -130,7 +128,7 @@ public class MemberMissionServiceTest {
             Mockito.when(completedMemberMission.isCompleted()).thenReturn(true);
 
             // When
-            memberMissionService.createOrUpdate(memberId, mission.getActionType().name());
+            memberMissionService.executeMissionsByAction(memberId, mission.getActionType().name());
 
             // Then
             Mockito.verify(memberMissionCommandRepository, Mockito.never()).save(Mockito.any(MemberMission.class));

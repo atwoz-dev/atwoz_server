@@ -44,7 +44,7 @@ public class MemberMissionTest {
             int repeatableCount = 2;
             long missionId = 1L;
             long memberId = 2L;
-            MemberMission memberMission = MemberMission.create(missionId, memberId);
+            MemberMission memberMission = MemberMission.create(memberId, missionId);
 
             // When
             memberMission.countPlus(requiredAttempt, repeatableCount);

@@ -20,7 +20,7 @@ public class MemberMissionService {
     private final MemberCommandRepository memberCommandRepository;
 
     @Transactional
-    public void createOrUpdate(Long memberId, String actionType) {
+    public void executeMissionsByAction(Long memberId, String actionType) {
         Member member = getMember(memberId);
         List<Mission> missions = getMission(actionType, member.getProfile().getGender().name());
 
