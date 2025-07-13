@@ -5,6 +5,9 @@ import atwoz.atwoz.mission.command.domain.memberMission.MemberMissionCommandRepo
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 
 @Repository
@@ -21,5 +24,13 @@ public class MemberMissionCommandRepositoryImpl implements MemberMissionCommandR
     @Override
     public MemberMission save(MemberMission memberMission) {
         return memberMissionJpaRepository.save(memberMission);
+    }
+
+    @Override
+    public Optional<MemberMission> findByMemberIdAndMissionIdOnToday(final Long memberId, final Long missionId) {
+        LocalDate now = LocalDateTime.now().toLocalDate();
+        return memberMissionJpaRepository.findByMemberIdAndMissionIdAndCreatedAtBetween(memberId, missionId,
+            now.atStartOfDay(), now.atTime(
+                LocalTime.MAX));
     }
 }

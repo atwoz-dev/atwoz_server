@@ -73,7 +73,12 @@ public class MemberMission extends BaseEntity {
     }
 
     public void countPlus(int requiredAttempt, int repeatableCount) {
-        successCount++;
-        // TODO : successCount 증가 시에는 이벤트 발행.
+        if (++attemptCount == requiredAttempt) {
+            // TODO : 미션 성공 이벤트 발행.
+            successCount++;
+            if (successCount == repeatableCount) {
+                isCompleted = true;
+            }
+        }
     }
 }
