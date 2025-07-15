@@ -49,9 +49,15 @@ public class MemberMissionServiceTest {
         long memberId = 1L;
         long missionId = 2L;
 
+        int requiredAttempt = 1; // 1회 하면 미션 성공.
+        int repeatableCount = 2; // 2번까지 반복 가능.
+        int rewardedHeart = 4; // 하트 보상 4개.
+        boolean isPublic = true; // 미션 공개.
+
         @BeforeEach
         void setUp() {
-            mission = Mission.create(ActionType.LIKE, FrequencyType.DAILY, TargetGender.MALE, 1, 2, 4, true);
+            mission = Mission.create(ActionType.LIKE, FrequencyType.DAILY, TargetGender.MALE, requiredAttempt,
+                repeatableCount, rewardedHeart, true);
             member = Member.fromPhoneNumber("01012345689");
             member.updateProfile(MemberProfile.builder().gender(Gender.MALE).build());
             memberMission = MemberMission.create(memberId, missionId);
