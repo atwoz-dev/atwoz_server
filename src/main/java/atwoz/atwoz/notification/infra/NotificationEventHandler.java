@@ -43,7 +43,7 @@ public class NotificationEventHandler {
         notificationSendService.send(request);
     }
 
-    // TODO: MatchApprovedEvent, MatchRejectedEvent
+    // TODO: MatchAcceptedEvent, MatchRejectedEvent
 
     @Async
     @TransactionalEventListener(value = ProfileExchangeRequestedEvent.class, phase = TransactionPhase.AFTER_COMMIT)

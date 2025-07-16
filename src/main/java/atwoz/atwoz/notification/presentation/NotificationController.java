@@ -52,7 +52,7 @@ public class NotificationController {
     @Operation(summary = "알림 전송 테스트")
     @PostMapping
     public ResponseEntity<BaseResponse<Void>> send(
-        NotificationSendRequest request
+        @RequestBody NotificationSendRequest request
     ) {
         notificationSendService.send(request);
         return ResponseEntity.ok(BaseResponse.from(OK));
