@@ -1,6 +1,9 @@
 package atwoz.atwoz.notification.infra;
 
 import atwoz.atwoz.admin.command.domain.warning.WarningIssuedEvent;
+import atwoz.atwoz.community.command.domain.profileexchange.event.ProfileExchangeAcceptedEvent;
+import atwoz.atwoz.community.command.domain.profileexchange.event.ProfileExchangeRejectedEvent;
+import atwoz.atwoz.community.command.domain.profileexchange.event.ProfileExchangeRequestedEvent;
 import atwoz.atwoz.like.command.domain.LikeSentEvent;
 import atwoz.atwoz.match.command.domain.match.event.MatchRequestedEvent;
 import atwoz.atwoz.notification.command.application.NotificationSendRequest;
@@ -22,6 +25,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class NotificationEventHandler {
 
+    public static final String SENDER_NAME = "senderName";
+
     private final NotificationSendService notificationSendService;
 
     @Async
@@ -32,11 +37,57 @@ public class NotificationEventHandler {
             event.getRequesterId(),
             event.getResponderId(),
             NotificationType.MATCH_REQUEST,
-            Map.of("senderName", event.getRequesterName()),
+            Map.of(SENDER_NAME, event.getRequesterName()),
             ChannelType.PUSH
         );
         notificationSendService.send(request);
     }
+
+    // TODO: MatchApprovedEvent, MatchRejectedEvent
+
+    @Async
+    @TransactionalEventListener(value = ProfileExchangeRequestedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
+    public void handleProfileExchangeRequestedEvent(ProfileExchangeRequestedEvent event) {
+        NotificationSendRequest request = new NotificationSendRequest(
+            SenderType.MEMBER,
+            event.getRequesterId(),
+            event.getResponderId(),
+            NotificationType.PROFILE_EXCHANGE_REQUEST,
+            Map.of(SENDER_NAME, event.getSenderName()),
+            ChannelType.PUSH
+        );
+        notificationSendService.send(request);
+    }
+
+    @Async
+    @TransactionalEventListener(value = ProfileExchangeAcceptedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
+    public void handleProfileExchangeAcceptedEvent(ProfileExchangeAcceptedEvent event) {
+        NotificationSendRequest request = new NotificationSendRequest(
+            SenderType.MEMBER,
+            event.getRequesterId(),
+            event.getResponderId(),
+            NotificationType.PROFILE_EXCHANGE_ACCEPT,
+            Map.of(SENDER_NAME, event.getSenderName()),
+            ChannelType.PUSH
+        );
+        notificationSendService.send(request);
+    }
+
+    @Async
+    @TransactionalEventListener(value = ProfileExchangeRejectedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
+    public void handleProfileExchangeRejectedEvent(ProfileExchangeRejectedEvent event) {
+        NotificationSendRequest request = new NotificationSendRequest(
+            SenderType.MEMBER,
+            event.getRequesterId(),
+            event.getResponderId(),
+            NotificationType.PROFILE_EXCHANGE_REJECT,
+            Map.of(SENDER_NAME, event.getSenderName()),
+            ChannelType.PUSH
+        );
+        notificationSendService.send(request);
+    }
+
+    // TODO: 프로필 이미지 변경 요청, 인터뷰 작성 요청
 
     @Async
     @TransactionalEventListener(value = WarningIssuedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
@@ -60,7 +111,7 @@ public class NotificationEventHandler {
             event.getSenderId(),
             event.getReceiverId(),
             NotificationType.LIKE,
-            Map.of("senderName", event.getSenderName()),
+            Map.of(SENDER_NAME, event.getSenderName()),
             ChannelType.PUSH
         );
         notificationSendService.send(request);
