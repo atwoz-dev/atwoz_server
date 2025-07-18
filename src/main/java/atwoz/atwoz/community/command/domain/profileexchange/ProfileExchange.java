@@ -3,7 +3,7 @@ package atwoz.atwoz.community.command.domain.profileexchange;
 
 import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.common.event.Events;
-import atwoz.atwoz.community.command.domain.profileexchange.event.ProfileExchangeApprovedEvent;
+import atwoz.atwoz.community.command.domain.profileexchange.event.ProfileExchangeAcceptedEvent;
 import atwoz.atwoz.community.command.domain.profileexchange.event.ProfileExchangeRejectedEvent;
 import atwoz.atwoz.community.command.domain.profileexchange.event.ProfileExchangeRequestedEvent;
 import atwoz.atwoz.community.command.domain.profileexchange.exception.InvalidProfileExchangeStatusException;
@@ -49,7 +49,7 @@ public class ProfileExchange extends BaseEntity {
 
     public void approve(String senderName) {
         validateWaitingStatus();
-        Events.raise(ProfileExchangeApprovedEvent.of(requesterId, responderId, senderName));
+        Events.raise(ProfileExchangeAcceptedEvent.of(requesterId, responderId, senderName));
         status = ProfileExchangeStatus.APPROVE;
     }
 

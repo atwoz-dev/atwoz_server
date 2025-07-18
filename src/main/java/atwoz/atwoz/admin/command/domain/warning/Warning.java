@@ -18,8 +18,6 @@ import static jakarta.persistence.EnumType.STRING;
 @Getter
 public class Warning {
 
-    private static final int THRESHOLD = 2;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
