@@ -1,7 +1,6 @@
 package atwoz.atwoz.mission.command.domain.memberMission;
 
 import atwoz.atwoz.common.entity.BaseEntity;
-import atwoz.atwoz.mission.command.domain.memberMission.event.MemberMissionCompletedEvent;
 import atwoz.atwoz.mission.command.domain.memberMission.exception.MustNotBeNegativeException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -81,7 +80,6 @@ public class MemberMission extends BaseEntity {
             if (successCount == repeatableCount) {
                 isCompleted = true;
             }
-            MemberMissionCompletedEvent.from(memberId);
         }
     }
 }

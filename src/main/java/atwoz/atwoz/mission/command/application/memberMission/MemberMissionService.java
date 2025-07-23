@@ -1,11 +1,13 @@
 package atwoz.atwoz.mission.command.application.memberMission;
 
+import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import atwoz.atwoz.mission.command.application.memberMission.exception.MemberNotFoundException;
 import atwoz.atwoz.mission.command.application.memberMission.exception.ShouldSetGenderOnProfileException;
 import atwoz.atwoz.mission.command.domain.memberMission.MemberMission;
 import atwoz.atwoz.mission.command.domain.memberMission.MemberMissionCommandRepository;
+import atwoz.atwoz.mission.command.domain.memberMission.event.MemberMissionCompletedEvent;
 import atwoz.atwoz.mission.command.domain.mission.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,9 @@ public class MemberMissionService {
                     mission.getId()) : createOrFindByMemberIdAndMissionIdOnToday(memberId, mission.getId());
             if (!memberMission.isCompleted()) {
                 memberMission.countPlus(mission.getRequiredAttempt(), mission.getRepeatableCount());
+                Events.raise(
+                    MemberMissionCompletedEvent.from(member.getId(), member.getProfile().getNickname().getValue(),
+                        mission.getRewardedHeart(), mission.getActionType().getDescription()));
             }
         });
     }
