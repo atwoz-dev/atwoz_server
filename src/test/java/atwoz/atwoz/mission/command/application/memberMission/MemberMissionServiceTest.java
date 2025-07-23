@@ -4,6 +4,7 @@ import atwoz.atwoz.member.command.domain.member.Gender;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
+import atwoz.atwoz.member.command.domain.member.vo.Nickname;
 import atwoz.atwoz.mission.command.application.memberMission.exception.MemberNotFoundException;
 import atwoz.atwoz.mission.command.domain.memberMission.MemberMission;
 import atwoz.atwoz.mission.command.domain.memberMission.MemberMissionCommandRepository;
@@ -59,7 +60,10 @@ public class MemberMissionServiceTest {
             mission = Mission.create(ActionType.LIKE, FrequencyType.DAILY, TargetGender.MALE, requiredAttempt,
                 repeatableCount, rewardedHeart, true);
             member = Member.fromPhoneNumber("01012345689");
-            member.updateProfile(MemberProfile.builder().gender(Gender.MALE).build());
+            member.updateProfile(MemberProfile.builder()
+                .gender(Gender.MALE)
+                .nickname(Nickname.from("닉네임"))
+                .build());
             memberMission = MemberMission.create(memberId, missionId);
 
             ReflectionTestUtils.setField(member, "id", memberId);
