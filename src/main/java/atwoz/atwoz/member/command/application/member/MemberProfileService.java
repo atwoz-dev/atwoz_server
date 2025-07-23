@@ -2,6 +2,7 @@ package atwoz.atwoz.member.command.application.member;
 
 
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
+import atwoz.atwoz.member.command.application.member.exception.PermanentlySuspendedMemberException;
 import atwoz.atwoz.member.command.application.member.exception.PrimaryContactTypeSettingNeededException;
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
@@ -30,6 +31,19 @@ public class MemberProfileService {
     @Transactional
     public void changeToDormant(Long memberId) {
         getMemberById(memberId).changeToDormant();
+    }
+
+    @Transactional
+    public void changeToActive(String phoneNumber) {
+        Member member = getMemberByPhoneNumber(phoneNumber);
+        validateMemberStatusForActive(member);
+        member.changeToActive();
+    }
+
+    private void validateMemberStatusForActive(final Member member) {
+        if (member.isPermanentlySuspended()) {
+            throw new PermanentlySuspendedMemberException();
+        }
     }
 
     @Transactional
@@ -72,6 +86,10 @@ public class MemberProfileService {
 
     private Member getMemberById(Long memberId) {
         return memberCommandRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
+    }
+
+    private Member getMemberByPhoneNumber(String phoneNumber) {
+        return memberCommandRepository.findByPhoneNumber(phoneNumber).orElseThrow(MemberNotFoundException::new);
     }
 
     private ActivityStatus getActivityStatus(String status) {

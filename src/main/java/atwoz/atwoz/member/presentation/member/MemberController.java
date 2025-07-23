@@ -6,6 +6,7 @@ import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.member.MemberContactService;
 import atwoz.atwoz.member.command.application.member.MemberProfileService;
+import atwoz.atwoz.member.presentation.member.dto.MemberChangeToActiveRequest;
 import atwoz.atwoz.member.presentation.member.dto.MemberMyProfileResponse;
 import atwoz.atwoz.member.presentation.member.dto.MemberProfileResponse;
 import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
@@ -15,6 +16,7 @@ import atwoz.atwoz.member.query.member.view.MemberContactView;
 import atwoz.atwoz.member.query.member.view.MemberInfoView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -62,6 +64,13 @@ public class MemberController {
     @PostMapping("/profile/dormant")
     public ResponseEntity<BaseResponse<Void>> changeToDormant(@AuthPrincipal AuthContext authContext) {
         memberProfileService.changeToDormant(authContext.getId());
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
+
+    @Operation(summary = "활동 계정 전환 API")
+    @PostMapping("/profile/active")
+    public ResponseEntity<BaseResponse<Void>> changeToActive(@Valid MemberChangeToActiveRequest request) {
+        memberProfileService.changeToActive(request.phoneNumber());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
