@@ -14,6 +14,7 @@ import atwoz.atwoz.member.command.application.member.sms.AuthMessageService;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import atwoz.atwoz.member.command.domain.member.event.MemberRegisteredEvent;
+import atwoz.atwoz.member.command.domain.member.exception.MemberNotActiveException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -36,12 +37,16 @@ public class MemberAuthService {
         authMessageService.authenticate(phoneNumber, code);
         Member member = createOrFindMemberByPhoneNumber(phoneNumber);
 
+        if (member.isDeleted()) {
+            throw new MemberDeletedException();
+        }
+
         if (member.isPermanentlySuspended()) {
             throw new PermanentlySuspendedMemberException();
         }
 
-        if (member.isDeleted()) {
-            throw new MemberDeletedException();
+        if (!member.isActive()) {
+            throw new MemberNotActiveException();
         }
 
         String accessToken = tokenProvider.createAccessToken(member.getId(), Role.MEMBER, Instant.now());

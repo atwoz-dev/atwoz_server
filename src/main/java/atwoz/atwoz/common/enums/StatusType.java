@@ -26,6 +26,7 @@ public enum StatusType {
     EXISTS_NOTIFICATION_DATETIME(400, "400500", "Exists Reservation Time"),
     CANNOT_BE_EDITED(400, "400600", "Cannot be edited"),
     INSUFFICIENT_HEARTS(400, "400700", "Insufficient heart balance"),
+    DORMANT_STATUS(400, "400800", "Member is Dormant status"),
 
     UNAUTHORIZED(401, "401", "Unauthorized"),
     MISSING_ACCESS_TOKEN(401, "401001", "Missing Access Token"),
