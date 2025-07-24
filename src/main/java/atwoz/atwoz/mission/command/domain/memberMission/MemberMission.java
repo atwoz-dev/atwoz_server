@@ -71,4 +71,15 @@ public class MemberMission extends BaseEntity {
             throw new MustNotBeNegativeException(successCount);
         }
     }
+
+    public void countPlus(int requiredAttempt, int repeatableCount) {
+        attemptCount++;
+        if (attemptCount == requiredAttempt) {
+            successCount++;
+            attemptCount = 0;
+            if (successCount == repeatableCount) {
+                isCompleted = true;
+            }
+        }
+    }
 }
