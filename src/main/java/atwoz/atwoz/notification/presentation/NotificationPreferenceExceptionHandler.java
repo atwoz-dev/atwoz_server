@@ -2,6 +2,7 @@ package atwoz.atwoz.notification.presentation;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
+import atwoz.atwoz.notification.command.application.InvalidNotificationTypeException;
 import atwoz.atwoz.notification.command.application.NotificationPreferenceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -23,5 +24,15 @@ public class NotificationPreferenceExceptionHandler {
 
         return ResponseEntity.status(404)
             .body(BaseResponse.from(StatusType.NOT_FOUND));
+    }
+
+    @ExceptionHandler(InvalidNotificationTypeException.class)
+    public ResponseEntity<BaseResponse<Void>> handleInvalidNotificationTypeException(
+        InvalidNotificationTypeException e
+    ) {
+        log.warn(e.getMessage());
+
+        return ResponseEntity.status(400)
+            .body(BaseResponse.from(StatusType.BAD_REQUEST));
     }
 }
