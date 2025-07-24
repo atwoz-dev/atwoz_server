@@ -9,10 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static atwoz.atwoz.common.enums.StatusType.OK;
 
@@ -55,6 +52,16 @@ public class NotificationPreferenceController {
         @Valid @ModelAttribute NotificationPreferenceToggleRequest notificationPreferenceToggleRequest
     ) {
         notificationPreferenceService.disableForType(authContext.getId(), notificationPreferenceToggleRequest);
+        return ResponseEntity.ok(BaseResponse.from(OK));
+    }
+
+    @Operation(summary = "원하는 알림 토글")
+    @PostMapping
+    public ResponseEntity<BaseResponse<Void>> setNotificationPreference(
+        @AuthPrincipal AuthContext authContext,
+        @Valid @RequestBody NotificationPreferenceSetRequest notificationPreferenceSetRequest
+    ) {
+        notificationPreferenceService.setNotificationPreferences(authContext.getId(), notificationPreferenceSetRequest);
         return ResponseEntity.ok(BaseResponse.from(OK));
     }
 }
