@@ -23,7 +23,7 @@ public class FlywayConfig {
             .dataSource(dataSource)
             .baselineOnMigrate(props.isBaselineOnMigrate())
             .baselineVersion(MigrationVersion.fromVersion(props.getBaselineVersion()))
-            .locations(String.join(", ", props.getLocations()))
+            .locations(props.getLocations().toArray(new String[0]))
             .table(props.getTable())
             .load();
     }
