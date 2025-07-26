@@ -60,12 +60,16 @@ public class MemberAuthService {
     public MemberLoginServiceDto test(String phoneNumber) {
         Member member = createOrFindMemberByPhoneNumber(phoneNumber);
 
+        if (member.isDeleted()) {
+            throw new MemberDeletedException();
+        }
+
         if (member.isPermanentlySuspended()) {
             throw new PermanentlySuspendedMemberException();
         }
 
-        if (member.isDeleted()) {
-            throw new MemberDeletedException();
+        if (!member.isActive()) {
+            throw new MemberNotActiveException();
         }
 
         String accessToken = tokenProvider.createAccessToken(member.getId(), Role.MEMBER, Instant.now());

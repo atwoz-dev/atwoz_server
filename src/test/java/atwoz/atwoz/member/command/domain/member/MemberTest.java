@@ -58,6 +58,20 @@ class MemberTest {
         }
 
         @Test
+        @DisplayName("멤버의 활동 상태를 활동중 상태로 전환합니다.")
+        void changeMemberActivityStatusToActive() {
+            // Given
+            Member member = Member.fromPhoneNumber("01012345678");
+            member.changeToDormant();
+
+            // When
+            member.changeToActive();
+
+            // Then
+            Assertions.assertThat(member.isActive()).isTrue();
+        }
+
+        @Test
         @DisplayName("멤버의 카카오 아이디를 변경합니다.")
         void changeMemberKakaoId() {
             // Given
