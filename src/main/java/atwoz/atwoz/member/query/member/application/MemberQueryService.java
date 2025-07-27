@@ -42,7 +42,7 @@ public class MemberQueryService {
         OtherMemberProfileView profileView = memberQueryRepository.findOtherProfileByMemberId(memberId, otherMemberId)
             .orElseThrow(MemberNotFoundException::new);
 
-        List<InterviewResultView> interviewResultViews = memberQueryRepository.findInterviewsByMemberId(memberId);
+        List<InterviewResultView> interviewResultViews = memberQueryRepository.findInterviewsByMemberId(otherMemberId);
 
         return new MemberProfileResponse(MemberMapper.toBasicInfo(profileView.basicMemberInfo()),
             profileView.matchInfo(), interviewResultViews);
