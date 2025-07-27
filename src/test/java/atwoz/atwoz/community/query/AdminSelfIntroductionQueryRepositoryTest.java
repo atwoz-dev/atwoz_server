@@ -24,11 +24,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @DataJpaTest
 @Import({QueryDslConfig.class, AdminSelfIntroductionQueryRepository.class})
-public class AdminSelfIntroductionQueryRepositoryTest {
+class AdminSelfIntroductionQueryRepositoryTest {
 
     private static final int PAGE_SIZE = 5;
     Member manMember;
@@ -84,6 +85,9 @@ public class AdminSelfIntroductionQueryRepositoryTest {
             selfIntroductionsByMan.add(selfIntroductionByMan);
             selfIntroductionsByWoman.add(selfIntroductionByWoman);
         }
+
+        selfIntroductionsByMan.sort(Comparator.comparing(SelfIntroduction::getId).reversed());
+        selfIntroductionsByWoman.sort(Comparator.comparing(SelfIntroduction::getId).reversed());
 
         entityManager.flush();
         entityManager.clear();
