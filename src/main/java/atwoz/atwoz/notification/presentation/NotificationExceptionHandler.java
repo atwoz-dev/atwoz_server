@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class NotificationExceptionHandler {
 
     @ExceptionHandler(ReceiverNotificationPreferenceNotFoundException.class)
-    public ResponseEntity<BaseResponse<Void>> handleReceiverNotificationSettingNotFoundException(
+    public ResponseEntity<BaseResponse<Void>> handleReceiverNotificationPreferenceNotFoundException(
         ReceiverNotificationPreferenceNotFoundException e) {
         log.warn(e.getMessage());
 

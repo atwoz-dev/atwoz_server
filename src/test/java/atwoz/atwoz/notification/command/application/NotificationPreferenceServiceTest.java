@@ -2,6 +2,7 @@ package atwoz.atwoz.notification.command.application;
 
 import atwoz.atwoz.notification.command.domain.NotificationPreference;
 import atwoz.atwoz.notification.command.domain.NotificationPreferenceCommandRepository;
+import atwoz.atwoz.notification.presentation.NotificationPreferenceSetRequest;
 import atwoz.atwoz.notification.presentation.NotificationPreferenceToggleRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,10 +11,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Map;
 import java.util.Optional;
 
-import static atwoz.atwoz.notification.command.domain.NotificationType.LIKE;
-import static atwoz.atwoz.notification.command.domain.NotificationType.MATCH_REQUEST;
+import static atwoz.atwoz.notification.command.domain.NotificationType.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -74,6 +75,18 @@ class NotificationPreferenceServiceTest {
     }
 
     @Test
+    @DisplayName("enableGlobally(): 설정 없으면 예외 발생")
+    void enableGloballyThrowsWhenNotFound() {
+        // given
+        long memberId = 7L;
+        when(repository.findByMemberId(memberId)).thenReturn(Optional.empty());
+
+        // when && then
+        assertThatThrownBy(() -> service.enableGlobally(memberId))
+            .isInstanceOf(NotificationPreferenceNotFoundException.class);
+    }
+
+    @Test
     @DisplayName("disableGlobally(): 글로벌 비활성화")
     void disableGloballySetsFalse() {
         // given
@@ -106,6 +119,17 @@ class NotificationPreferenceServiceTest {
     }
 
     @Test
+    @DisplayName("enableForType(): 설정 없으면 예외 발생")
+    void enableForTypeThrowsWhenNotFound() {
+        long memberId = 8L;
+        when(repository.findByMemberId(memberId)).thenReturn(Optional.empty());
+        var req = new NotificationPreferenceToggleRequest("MATCH_REQUEST");
+
+        assertThatThrownBy(() -> service.enableForType(memberId, req))
+            .isInstanceOf(NotificationPreferenceNotFoundException.class);
+    }
+
+    @Test
     @DisplayName("disableForType(): 특정 타입 비활성화")
     void disableForTypeSetsFalse() {
         // given
@@ -122,14 +146,41 @@ class NotificationPreferenceServiceTest {
     }
 
     @Test
-    @DisplayName("enableGlobally(): 설정 없으면 예외 발생")
-    void enableGloballyThrowsWhenNotFound() {
-        // given
-        long memberId = 7L;
+    @DisplayName("disableForType(): 설정 없으면 예외 발생")
+    void disableForTypeThrowsWhenNotFound() {
+        long memberId = 9L;
         when(repository.findByMemberId(memberId)).thenReturn(Optional.empty());
+        var req = new NotificationPreferenceToggleRequest("LIKE");
 
-        // when && then
-        assertThatThrownBy(() -> service.enableGlobally(memberId))
+        assertThatThrownBy(() -> service.disableForType(memberId, req))
+            .isInstanceOf(NotificationPreferenceNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("setNotificationPreferences(): 전달된 문자열 키를 enum으로 매핑하여 업데이트")
+    void setNotificationPreferencesUpdatesSpecifiedTypes() {
+        long memberId = 10L;
+        var pref = NotificationPreference.of(memberId);
+        when(repository.findByMemberId(memberId)).thenReturn(Optional.of(pref));
+
+        var updates = Map.of(MATCH_REQUEST.name(), false, LIKE.name(), false);
+        var req = new NotificationPreferenceSetRequest(updates);
+
+        service.setNotificationPreferences(memberId, req);
+
+        assertThat(pref.canReceive(MATCH_REQUEST)).isFalse();
+        assertThat(pref.canReceive(LIKE)).isFalse();
+        assertThat(pref.canReceive(MATCH_ACCEPT)).isTrue();
+    }
+
+    @Test
+    @DisplayName("setNotificationPreferences(): 설정 없으면 예외 발생")
+    void setNotificationPreferencesThrowsWhenNotFound() {
+        long memberId = 11L;
+        when(repository.findByMemberId(memberId)).thenReturn(Optional.empty());
+        var req = new NotificationPreferenceSetRequest(Map.of());
+
+        assertThatThrownBy(() -> service.setNotificationPreferences(memberId, req))
             .isInstanceOf(NotificationPreferenceNotFoundException.class);
     }
 }

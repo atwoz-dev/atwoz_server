@@ -32,11 +32,11 @@ public class NotificationPreference extends SoftDeleteBaseEntity {
     @MapKeyEnumerated(STRING)
     @MapKeyColumn(name = "notification_type")
     @Column(name = "enabled")
-    private Map<NotificationType, Boolean> isEnabledByNotificationType = new EnumMap<>(NotificationType.class);
+    private Map<NotificationType, Boolean> preferences = new EnumMap<>(NotificationType.class);
 
-    private NotificationPreference(Long memberId, Map<NotificationType, Boolean> isEnabledByNotificationType) {
+    private NotificationPreference(Long memberId, Map<NotificationType, Boolean> preferences) {
         this.memberId = memberId;
-        this.isEnabledByNotificationType = new EnumMap<>(isEnabledByNotificationType);
+        this.preferences = new EnumMap<>(preferences);
     }
 
     public static NotificationPreference of(long memberId) {
@@ -47,8 +47,12 @@ public class NotificationPreference extends SoftDeleteBaseEntity {
         return new NotificationPreference(memberId, defaults);
     }
 
+    public Map<NotificationType, Boolean> getNotificationPreferences() {
+        return new EnumMap<>(preferences);
+    }
+
     public boolean canReceive(NotificationType type) {
-        return isEnabledGlobally && isEnabledByNotificationType.getOrDefault(type, false);
+        return isEnabledGlobally && preferences.getOrDefault(type, false);
     }
 
     public void enableGlobally() {
@@ -60,14 +64,18 @@ public class NotificationPreference extends SoftDeleteBaseEntity {
     }
 
     public boolean isDisabledForType(NotificationType type) {
-        return !isEnabledByNotificationType.getOrDefault(type, false);
+        return !preferences.getOrDefault(type, false);
     }
 
     public void enableForNotificationType(NotificationType type) {
-        isEnabledByNotificationType.put(type, true);
+        preferences.put(type, true);
     }
 
     public void disableForNotificationType(NotificationType type) {
-        isEnabledByNotificationType.put(type, false);
+        preferences.put(type, false);
+    }
+
+    public void updateNotificationPreferences(Map<NotificationType, Boolean> preferences) {
+        this.preferences.putAll(preferences);
     }
 }
