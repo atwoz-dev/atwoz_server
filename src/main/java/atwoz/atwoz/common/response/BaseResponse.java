@@ -14,12 +14,20 @@ public record BaseResponse<T>(
         this(statusType.getStatus(), statusType.getCode(), statusType.getMessage(), null);
     }
 
+    public BaseResponse(StatusType statusType, String message) {
+        this(statusType.getStatus(), statusType.getCode(), message, null);
+    }
+
     public BaseResponse(StatusType statusType, T data) {
         this(statusType.getStatus(), statusType.getCode(), statusType.getMessage(), data);
     }
 
     public static <T> BaseResponse<T> from(StatusType statusType) {
         return new BaseResponse<>(statusType);
+    }
+
+    public static <T> BaseResponse<T> of(StatusType statusType, String message) {
+        return new BaseResponse<>(statusType, message);
     }
 
     public static <T> BaseResponse<T> of(StatusType statusType, T data) {
