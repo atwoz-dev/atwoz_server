@@ -1,7 +1,7 @@
-package atwoz.atwoz.datingexam.command.domain;
+package atwoz.atwoz.datingexam.domain;
 
 import atwoz.atwoz.common.entity.BaseEntity;
-import atwoz.atwoz.datingexam.command.domain.exception.InvalidSubjectNameException;
+import atwoz.atwoz.datingexam.domain.exception.InvalidSubjectNameException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
