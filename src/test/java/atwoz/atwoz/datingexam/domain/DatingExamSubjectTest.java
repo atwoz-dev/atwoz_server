@@ -1,6 +1,6 @@
-package atwoz.atwoz.datingexam.command.domain;
+package atwoz.atwoz.datingexam.domain;
 
-import atwoz.atwoz.datingexam.command.domain.exception.InvalidSubjectNameException;
+import atwoz.atwoz.datingexam.domain.exception.InvalidSubjectNameException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

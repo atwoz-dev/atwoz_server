@@ -1,7 +1,7 @@
-package atwoz.atwoz.datingexam.command.domain;
+package atwoz.atwoz.datingexam.domain;
 
 import atwoz.atwoz.common.entity.BaseEntity;
-import atwoz.atwoz.datingexam.command.domain.exception.InvalidDatingExamQuestionContentException;
+import atwoz.atwoz.datingexam.domain.exception.InvalidDatingExamAnswerContentException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -15,31 +15,31 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Getter
-public class DatingExamQuestion extends BaseEntity {
+public class DatingExamAnswer extends BaseEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    private Long subjectId;
+    private Long questionId;
 
     private String content;
 
-    private DatingExamQuestion(Long subjectId, String content) {
-        setSubjectId(subjectId);
+    private DatingExamAnswer(Long questionId, String content) {
+        setQuestionId(questionId);
         setContent(content);
     }
 
-    public static DatingExamQuestion create(Long subjectId, String content) {
-        return new DatingExamQuestion(subjectId, content);
+    public static DatingExamAnswer create(Long questionId, String content) {
+        return new DatingExamAnswer(questionId, content);
     }
 
-    private void setSubjectId(@NonNull Long subjectId) {
-        this.subjectId = subjectId;
+    private void setQuestionId(@NonNull Long questionId) {
+        this.questionId = questionId;
     }
 
     private void setContent(@NonNull String content) {
         if (content.isBlank()) {
-            throw new InvalidDatingExamQuestionContentException("Question content cannot be null or blank");
+            throw new InvalidDatingExamAnswerContentException("Content cannot be null or blank");
         }
         this.content = content;
     }

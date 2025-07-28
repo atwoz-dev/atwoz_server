@@ -1,4 +1,4 @@
-package atwoz.atwoz.datingexam.command.domain.exception;
+package atwoz.atwoz.datingexam.domain.exception;
 
 public class InvalidDatingExamSubmitAnswersException extends RuntimeException {
     public InvalidDatingExamSubmitAnswersException(String message) {

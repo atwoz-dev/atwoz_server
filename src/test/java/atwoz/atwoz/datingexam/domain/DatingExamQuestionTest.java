@@ -1,6 +1,6 @@
-package atwoz.atwoz.datingexam.command.domain;
+package atwoz.atwoz.datingexam.domain;
 
-import atwoz.atwoz.datingexam.command.domain.exception.InvalidDatingExamQuestionContentException;
+import atwoz.atwoz.datingexam.domain.exception.InvalidDatingExamQuestionContentException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

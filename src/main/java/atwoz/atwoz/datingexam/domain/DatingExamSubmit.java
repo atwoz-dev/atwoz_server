@@ -1,7 +1,8 @@
-package atwoz.atwoz.datingexam.command.domain;
+package atwoz.atwoz.datingexam.domain;
 
 import atwoz.atwoz.common.entity.BaseEntity;
-import atwoz.atwoz.datingexam.command.domain.exception.InvalidDatingExamSubmitAnswersException;
+import atwoz.atwoz.datingexam.domain.dto.DatingExamSubmitRequest;
+import atwoz.atwoz.datingexam.domain.exception.InvalidDatingExamSubmitAnswersException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -22,8 +23,6 @@ public class DatingExamSubmit extends BaseEntity {
 
     private Long memberId;
 
-    private Long preferredSubjectId;
-
     private String requiredSubjectAnswers;
 
     private String preferredSubjectAnswers;
@@ -36,30 +35,33 @@ public class DatingExamSubmit extends BaseEntity {
         return new DatingExamSubmit(memberId);
     }
 
-    public void submitRequiredSubjectAnswers(String requiredSubjectAnswers) {
-        setRequiredSubjectAnswers(requiredSubjectAnswers);
+    public void submitRequiredSubjectAnswers(DatingExamSubmitRequest request, DatingExamAnswerEncoder answerEncoder) {
+        String encodedAnswers = answerEncoder.encode(request);
+        setRequiredSubjectAnswers(encodedAnswers);
     }
 
-    public void submitPreferredSubjectAnswers(Long preferredSubjectId, String preferredSubjectAnswers) {
-        setPreferredSubjectId(preferredSubjectId);
-        setPreferredSubjectAnswers(preferredSubjectAnswers);
+    public void submitPreferredSubjectAnswers(DatingExamSubmitRequest request, DatingExamAnswerEncoder answerEncoder) {
+        String encodedAnswers = answerEncoder.encode(request);
+        setPreferredSubjectAnswers(encodedAnswers);
     }
 
     private void setRequiredSubjectAnswers(final @NonNull String requiredSubjectAnswers) {
+        if (this.requiredSubjectAnswers != null) {
+            throw new InvalidDatingExamSubmitAnswersException("필수 과목 답변이 이미 제출되었습니다");
+        }
         if (requiredSubjectAnswers.isBlank()) {
-            throw new InvalidDatingExamSubmitAnswersException("Answers for required subjects cannot be null or blank");
+            throw new InvalidDatingExamSubmitAnswersException("필수 과목 답변은 null 또는 빈 문자열일 수 없습니다");
         }
         this.requiredSubjectAnswers = requiredSubjectAnswers;
     }
 
     private void setPreferredSubjectAnswers(final @NonNull String preferredSubjectAnswers) {
+        if (this.preferredSubjectAnswers != null) {
+            throw new InvalidDatingExamSubmitAnswersException("선호 과목 답변이 이미 제출되었습니다");
+        }
         if (preferredSubjectAnswers.isBlank()) {
-            throw new InvalidDatingExamSubmitAnswersException("Answers for preferred subjects cannot be null or blank");
+            throw new InvalidDatingExamSubmitAnswersException("선호 과목 답변은 null 또는 빈 문자열일 수 없습니다");
         }
         this.preferredSubjectAnswers = preferredSubjectAnswers;
-    }
-
-    private void setPreferredSubjectId(final @NonNull Long preferredSubjectId) {
-        this.preferredSubjectId = preferredSubjectId;
     }
 }
