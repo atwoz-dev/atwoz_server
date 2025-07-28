@@ -18,10 +18,11 @@ public class DatingExamSubject extends BaseEntity {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(50)")
+    @Column(columnDefinition = "varchar(50)", nullable = false)
     private SubjectType type;
 
     private boolean isPublic;

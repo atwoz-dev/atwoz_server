@@ -2,6 +2,7 @@ package atwoz.atwoz.datingexam.domain;
 
 import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.datingexam.domain.exception.InvalidDatingExamQuestionContentException;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -20,8 +21,10 @@ public class DatingExamQuestion extends BaseEntity {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private Long subjectId;
 
+    @Column(nullable = false)
     private String content;
 
     private DatingExamQuestion(Long subjectId, String content) {
