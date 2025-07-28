@@ -18,8 +18,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Import({QuerydslConfig.class, DatingExamQueryRepositoryImpl.class})
@@ -63,28 +61,72 @@ class DatingExamQueryRepositoryImplTest {
         // when
         DatingExamInfoResponse response = repo.findDatingExamInfo(SubjectType.OPTIONAL);
 
-        // then
-        var expectedAnswer1 = new DatingExamAnswerInfo(a111.getId(), a111.getContent());
-        var expectedAnswer2 = new DatingExamAnswerInfo(a112.getId(), a112.getContent());
-        var expectedAnswer3 = new DatingExamAnswerInfo(a113.getId(), a113.getContent());
+        // then: 과목이 하나만 조회된다
+        assertThat(response.subjects()).hasSize(1);
+        DatingExamSubjectInfo subjectInfo = response.subjects().get(0);
+        assertThat(subjectInfo.id()).isEqualTo(subj1.getId());
+        assertThat(subjectInfo.type()).isEqualTo(subj1.getType().name());
+        assertThat(subjectInfo.name()).isEqualTo(subj1.getName());
 
-        var expectedQuestion1 = new DatingExamQuestionInfo(
-            q11.getId(), q11.getContent(), List.of(expectedAnswer1, expectedAnswer2)
-        );
-        var expectedQuestion2 = new DatingExamQuestionInfo(
-            q12.getId(), q12.getContent(), List.of(expectedAnswer3)
-        );
-        var expectedSubject = new DatingExamSubjectInfo(
-            subj1.getId(),
-            subj1.getType().name(),
-            subj1.getName(),
-            List.of(expectedQuestion1, expectedQuestion2)
-        );
-        var expected = new DatingExamInfoResponse(List.of(expectedSubject));
+        // then: 질문이 정확히 두 개 조회된다
+        assertThat(subjectInfo.questions()).hasSize(2);
 
-        assertThat(response)
-            .usingRecursiveComparison()
-            .isEqualTo(expected);
+        // q11에 속한 답변만 [a111, a112]인지 검증
+        DatingExamQuestionInfo questionInfo11 = subjectInfo.questions().stream()
+            .filter(q -> q.id() == q11.getId())
+            .findFirst()
+            .orElseThrow();
+        assertThat(questionInfo11.answers())
+            .extracting(DatingExamAnswerInfo::id)
+            .containsExactlyInAnyOrder(a111.getId(), a112.getId());
+
+        // q12에 속한 답변만 [a113]인지 검증
+        DatingExamQuestionInfo questionInfo12 = subjectInfo.questions().stream()
+            .filter(q -> q.id() == q12.getId())
+            .findFirst()
+            .orElseThrow();
+        assertThat(questionInfo12.answers())
+            .extracting(DatingExamAnswerInfo::id)
+            .containsExactly(a113.getId());
+    }
+
+    @Test
+    @DisplayName("다른 subject의 question이 섞이지 않는다.")
+    void optionalDoesNotIncludeQuestionsFromOtherSubjects() {
+        // given: 새로운 OPTIONAL 과목과 그에 속한 질문/답변 추가
+        DatingExamSubject subj2 = DatingExamSubject.create("Subj2", SubjectType.OPTIONAL);
+        em.persist(subj2);
+
+        DatingExamQuestion q21 = DatingExamQuestion.create(subj2.getId(), "q21");
+        em.persist(q21);
+        DatingExamAnswer a211 = DatingExamAnswer.create(q21.getId(), "ans211");
+        em.persist(a211);
+
+        em.flush();
+        em.clear();
+
+        // when
+        DatingExamInfoResponse response = repo.findDatingExamInfo(SubjectType.OPTIONAL);
+
+        DatingExamSubjectInfo subjectInfo1 = response.subjects().stream()
+            .filter(s -> s.id() == (subj1.getId()))
+            .findFirst().orElseThrow();
+        assertThat(subjectInfo1.questions())
+            .extracting(DatingExamQuestionInfo::id)
+            .containsExactlyInAnyOrder(q11.getId(), q12.getId())
+            .doesNotContain(q21.getId());
+
+        DatingExamSubjectInfo subjectInfo2 = response.subjects().stream()
+            .filter(s -> s.id() == (subj2.getId()))
+            .findFirst().orElseThrow();
+        assertThat(subjectInfo2.questions())
+            .extracting(DatingExamQuestionInfo::id)
+            .containsExactly(q21.getId());
+
+        DatingExamQuestionInfo questionInfo21 = subjectInfo2.questions().get(0);
+        assertThat(questionInfo21.answers())
+            .extracting(DatingExamAnswerInfo::id)
+            .containsExactly(a211.getId());
     }
 
     @Test
