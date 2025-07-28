@@ -1,17 +1,18 @@
 package atwoz.atwoz.datingexam.adapter.database;
 
-import atwoz.atwoz.datingexam.adapter.webapi.dto.*;
+import atwoz.atwoz.datingexam.adapter.webapi.dto.DatingExamAnswerInfo;
+import atwoz.atwoz.datingexam.adapter.webapi.dto.DatingExamInfoResponse;
+import atwoz.atwoz.datingexam.adapter.webapi.dto.DatingExamQuestionInfo;
+import atwoz.atwoz.datingexam.adapter.webapi.dto.DatingExamSubjectInfo;
 import atwoz.atwoz.datingexam.application.required.DatingExamQueryRepository;
 import atwoz.atwoz.datingexam.domain.SubjectType;
 import com.querydsl.core.Tuple;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static atwoz.atwoz.datingexam.domain.QDatingExamAnswer.datingExamAnswer;
 import static atwoz.atwoz.datingexam.domain.QDatingExamQuestion.datingExamQuestion;
@@ -37,24 +38,29 @@ public class DatingExamQueryRepositoryImpl implements DatingExamQueryRepository 
     }
 
     private Map<Long, DatingExamSubjectInfo> fetchSubjects(SubjectType subjectType) {
-        return queryFactory
-            .select(new QDatingExamSubjectInfo(
+        List<Tuple> subjectTuples = queryFactory
+            .select(
                 datingExamSubject.id,
                 datingExamSubject.type.stringValue(),
-                datingExamSubject.name,
-                Expressions.constant(new ArrayList<DatingExamQuestionInfo>())
-            ))
+                datingExamSubject.name
+            )
             .from(datingExamSubject)
             .where(datingExamSubject.type.eq(subjectType))
             .orderBy(datingExamSubject.id.asc())
-            .fetch()
-            .stream()
-            .collect(Collectors.toMap(
-                DatingExamSubjectInfo::id,
-                subjectInfo -> subjectInfo,
-                (existing, replacement) -> existing,
-                LinkedHashMap::new
-            ));
+            .fetch();
+
+        Map<Long, DatingExamSubjectInfo> subjectInfoMap = new LinkedHashMap<>();
+        for (Tuple row : subjectTuples) {
+            Long id = row.get(datingExamSubject.id);
+            String type = row.get(datingExamSubject.type.stringValue());
+            String name = row.get(datingExamSubject.name);
+
+            DatingExamSubjectInfo subjectInfo =
+                new DatingExamSubjectInfo(id, type, name, new ArrayList<>());
+
+            subjectInfoMap.put(id, subjectInfo);
+        }
+        return subjectInfoMap;
     }
 
     private Map<Long, DatingExamQuestionInfo> fetchAndAttachQuestions(
