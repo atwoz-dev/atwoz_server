@@ -25,8 +25,10 @@ public class DatingExamSubmit extends BaseEntity {
     @Column(nullable = false)
     private Long memberId;
 
+    @Column(length = 1024)
     private String requiredSubjectAnswers;
 
+    @Column(length = 1024)
     private String preferredSubjectAnswers;
 
     private DatingExamSubmit(@NonNull Long memberId) {
