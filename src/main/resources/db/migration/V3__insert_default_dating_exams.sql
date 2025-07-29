@@ -91,7 +91,7 @@ VALUES (@q7, '매일 1:1로 연락하기', @now, @now),
        (@q7, '육체적인 관계', @now, @now);
 
 INSERT INTO dating_exam_question (subject_id, content, created_at, updated_at)
-VALUES (@sub1, '[보기]에서 사랑에 관한 명언 중 가장 나의 마음을 동요하게 만든 명언은?', @now, @now);
+VALUES (@sub1, '다음 중 사랑에 관한 명언 중 가장 나의 마음을 동요하게 만든 명언은?', @now, @now);
 SET
 @q8 = LAST_INSERT_ID();
 INSERT INTO dating_exam_answer (question_id, content, created_at, updated_at)
