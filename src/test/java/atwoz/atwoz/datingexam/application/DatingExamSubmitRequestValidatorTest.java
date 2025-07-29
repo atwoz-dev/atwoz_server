@@ -1,9 +1,9 @@
 package atwoz.atwoz.datingexam.application;
 
-import atwoz.atwoz.datingexam.adapter.webapi.dto.DatingExamAnswerInfo;
-import atwoz.atwoz.datingexam.adapter.webapi.dto.DatingExamInfoResponse;
-import atwoz.atwoz.datingexam.adapter.webapi.dto.DatingExamQuestionInfo;
-import atwoz.atwoz.datingexam.adapter.webapi.dto.DatingExamSubjectInfo;
+import atwoz.atwoz.datingexam.application.dto.DatingExamAnswerInfo;
+import atwoz.atwoz.datingexam.application.dto.DatingExamInfoResponse;
+import atwoz.atwoz.datingexam.application.dto.DatingExamQuestionInfo;
+import atwoz.atwoz.datingexam.application.dto.DatingExamSubjectInfo;
 import atwoz.atwoz.datingexam.application.exception.InvalidDatingExamSubmitRequestException;
 import atwoz.atwoz.datingexam.domain.SubjectType;
 import atwoz.atwoz.datingexam.domain.dto.AnswerSubmitRequest;

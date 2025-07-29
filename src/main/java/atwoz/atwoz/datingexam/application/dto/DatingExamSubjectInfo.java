@@ -1,4 +1,4 @@
-package atwoz.atwoz.datingexam.adapter.webapi.dto;
+package atwoz.atwoz.datingexam.application.dto;
 
 import atwoz.atwoz.datingexam.domain.SubjectType;
 import com.querydsl.core.annotations.QueryProjection;

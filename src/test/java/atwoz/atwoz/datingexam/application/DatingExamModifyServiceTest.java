@@ -1,6 +1,6 @@
 package atwoz.atwoz.datingexam.application;
 
-import atwoz.atwoz.datingexam.adapter.webapi.dto.DatingExamInfoResponse;
+import atwoz.atwoz.datingexam.application.dto.DatingExamInfoResponse;
 import atwoz.atwoz.datingexam.application.exception.InvalidDatingExamSubmitRequestException;
 import atwoz.atwoz.datingexam.application.required.DatingExamQueryRepository;
 import atwoz.atwoz.datingexam.application.required.DatingExamSubmitRepository;

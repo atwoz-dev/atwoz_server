@@ -4,7 +4,7 @@ import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
-import atwoz.atwoz.datingexam.adapter.webapi.dto.DatingExamInfoResponse;
+import atwoz.atwoz.datingexam.application.dto.DatingExamInfoResponse;
 import atwoz.atwoz.datingexam.application.provided.DatingExamFinder;
 import atwoz.atwoz.datingexam.application.provided.DatingExamSubmitter;
 import atwoz.atwoz.datingexam.domain.dto.DatingExamSubmitRequest;
