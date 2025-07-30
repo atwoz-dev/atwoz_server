@@ -14,16 +14,21 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class DatingExamEncoder implements DatingExamAnswerEncoder {
+    private static final String ENCODED_SUBJECTS_KEY = "ss";
+    private static final String ENCODED_SUBJECT_ID_KEY = "s";
+    private static final String ENCODED_ANSWERS_KEY = "as";
+    private static final String ENCODED_QUESTION_ID_KEY = "q";
+    private static final String ENCODED_ANSWER_ID_KEY = "a";
     private final ObjectMapper objectMapper;
 
     @Override
     public String encode(DatingExamSubmitRequest request) {
         Map<String, Object> transformed = Map.of(
-            "ss", request.subjects().stream().map(subject -> Map.of(
-                "s", subject.subjectId(),
-                "as", subject.answers().stream().map(answer -> Map.of(
-                    "q", answer.questionId(),
-                    "a", answer.answerId()
+            ENCODED_SUBJECTS_KEY, request.subjects().stream().map(subject -> Map.of(
+                ENCODED_SUBJECT_ID_KEY, subject.subjectId(),
+                ENCODED_ANSWERS_KEY, subject.answers().stream().map(answer -> Map.of(
+                    ENCODED_QUESTION_ID_KEY, answer.questionId(),
+                    ENCODED_ANSWER_ID_KEY, answer.answerId()
                 )).toList()
             )).toList()
         );
