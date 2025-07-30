@@ -9,7 +9,6 @@ import lombok.NonNull;
 @Entity
 @Table(
     name = "device_registrations",
-    uniqueConstraints = @UniqueConstraint(columnNames = {"deviceId"}),
     indexes = @Index(name = "idx_member_id_active", columnList = "memberId, isActive")
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

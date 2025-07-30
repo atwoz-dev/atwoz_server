@@ -1,0 +1,1 @@
+ALTER TABLE device_registrations DROP INDEX UK744olwqc6hg3k0m94mnaudjv8;
