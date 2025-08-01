@@ -4,6 +4,8 @@ import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.notification.command.application.NotificationPreferenceService;
+import atwoz.atwoz.notification.query.NotificationPreferenceQueryRepository;
+import atwoz.atwoz.notification.query.NotificationPreferenceView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -20,6 +22,16 @@ import static atwoz.atwoz.common.enums.StatusType.OK;
 public class NotificationPreferenceController {
 
     private final NotificationPreferenceService notificationPreferenceService;
+    private final NotificationPreferenceQueryRepository notificationPreferenceQueryRepository;
+
+    @Operation(summary = "알림 설정 전체 조회")
+    @GetMapping
+    public ResponseEntity<BaseResponse<NotificationPreferenceView>> getNotificationPreference(
+        @AuthPrincipal AuthContext authContext
+    ) {
+        var preference = notificationPreferenceQueryRepository.findByMemberId(authContext.getId()).orElseThrow();
+        return ResponseEntity.ok(BaseResponse.of(OK, preference));
+    }
 
     @Operation(summary = "알림 수신 전체 허용")
     @PatchMapping("/enable/global")
