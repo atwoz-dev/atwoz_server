@@ -22,6 +22,8 @@ public record MemberInfo(
     String mbti,
     @Schema(implementation = City.class)
     String city,
+    @Schema(implementation = District.class)
+    String district,
     @Schema(implementation = SmokingStatus.class)
     String smokingStatus,
     @Schema(implementation = DrinkingStatus.class)

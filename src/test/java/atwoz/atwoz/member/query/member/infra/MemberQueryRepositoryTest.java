@@ -573,6 +573,8 @@ class MemberQueryRepositoryTest {
             assertThat(basicMemberInfo.mbti()).isEqualTo(otherMemberProfile.getMbti().toString());
             assertThat(basicMemberInfo.city())
                 .isEqualTo(otherMemberProfile.getRegion().getCity().toString());
+            assertThat(basicMemberInfo.district())
+                .isEqualTo(otherMemberProfile.getRegion().getDistrict().toString());
             assertThat(basicMemberInfo.smokingStatus())
                 .isEqualTo(otherMemberProfile.getSmokingStatus().toString());
             assertThat(basicMemberInfo.drinkingStatus())
