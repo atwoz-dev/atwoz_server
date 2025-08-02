@@ -19,6 +19,7 @@ public record OtherMemberProfileView(
         Set<String> hobbies,
         String mbti,
         String city,
+        String district,
         String smokingStatus,
         String drinkingStatus,
         String highestEducation,
@@ -38,6 +39,7 @@ public record OtherMemberProfileView(
         String profileExchangeStatus
     ) {
         this(new BasicMemberInfo(id, nickname, profileImageUrl, yearOfBirth, gender, height, job, hobbies, mbti, city,
+                district,
                 smokingStatus, drinkingStatus, highestEducation, religion, like),
             matchId == null ? null
                 : new MatchInfo(matchId, requesterId, responderId, requestMessage, responseMessage, matchStatus,

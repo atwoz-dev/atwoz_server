@@ -42,7 +42,7 @@ public class MemberQueryRepository {
             .on(interviewQuestion.id.eq(interviewAnswer.questionId).and(interviewQuestion.isPublic.eq(true)))
             .where(member.id.eq(memberId))
             .transform(groupBy(member.id).as(
-                new QMemberInfoView(member.activityStatus.stringValue(), member.isVip.isTrue(),
+                new QMemberInfoView(member.id, member.activityStatus.stringValue(), member.isVip.isTrue(),
                     member.primaryContactType.stringValue(), member.profile.nickname.value.stringValue(),
                     member.profile.gender.stringValue(), member.kakaoId.value, member.profile.yearOfBirth.value,
                     member.profile.height, member.phoneNumber.value, member.profile.job.stringValue(),
@@ -98,7 +98,8 @@ public class MemberQueryRepository {
                 new QOtherMemberProfileView(member.id, member.profile.nickname.value, profileImage.imageUrl.value,
                     member.profile.yearOfBirth.value, member.profile.gender.stringValue(), member.profile.height,
                     member.profile.job.stringValue(), set(hobby.stringValue()), member.profile.mbti.stringValue(),
-                    member.profile.region.city.stringValue(), member.profile.smokingStatus.stringValue(),
+                    member.profile.region.city.stringValue(), member.profile.region.district.stringValue(),
+                    member.profile.smokingStatus.stringValue(),
                     member.profile.drinkingStatus.stringValue(), member.profile.highestEducation.stringValue(),
                     member.profile.religion.stringValue(), like.level.stringValue(), match.id, match.requesterId,
                     match.responderId, match.requestMessage.value, match.responseMessage.value,

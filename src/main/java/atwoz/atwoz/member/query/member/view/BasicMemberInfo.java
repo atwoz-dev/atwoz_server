@@ -13,6 +13,7 @@ public record BasicMemberInfo(
     Set<String> hobbies,
     String mbti,
     String city,
+    String district,
     String smokingStatus,
     String drinkingStatus,
     String highestEducation,
