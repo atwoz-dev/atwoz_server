@@ -3,6 +3,7 @@ package atwoz.atwoz.member.presentation.member;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.member.exception.*;
+import atwoz.atwoz.member.command.domain.member.exception.MemberNotActiveException;
 import atwoz.atwoz.member.query.member.application.exception.ProfileAccessDeniedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -91,5 +92,13 @@ public class MemberExceptionHandler {
 
         return ResponseEntity.badRequest()
             .body(BaseResponse.from(StatusType.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(MemberNotActiveException.class)
+    public ResponseEntity<BaseResponse<Void>> handleMemberNotActiveException(MemberNotActiveException e) {
+        log.warn("회원의 상태가 부적절합니다. {}", e.getMessage());
+
+        return ResponseEntity.badRequest()
+            .body(BaseResponse.from(StatusType.DORMANT_STATUS));
     }
 }

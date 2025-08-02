@@ -6,6 +6,7 @@ import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartBalance;
 import atwoz.atwoz.member.command.domain.member.event.MemberSettingUpdatedEvent;
 import atwoz.atwoz.member.command.domain.member.event.PurchaseHeartGainedEvent;
+import atwoz.atwoz.member.command.domain.member.exception.MemberAlreadyActiveException;
 import atwoz.atwoz.member.command.domain.member.exception.MemberNotActiveException;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
@@ -100,6 +101,13 @@ public class Member extends SoftDeleteBaseEntity {
             throw new MemberNotActiveException();
         }
         activityStatus = ActivityStatus.DORMANT;
+    }
+
+    public void changeToActive() {
+        if (isActive()) {
+            throw new MemberAlreadyActiveException();
+        }
+        activityStatus = ActivityStatus.ACTIVE;
     }
 
     public void changePrimaryContactTypeToKakao(KakaoId kakaoId) {
