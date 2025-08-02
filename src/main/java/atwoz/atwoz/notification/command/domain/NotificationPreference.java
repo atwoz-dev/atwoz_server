@@ -31,7 +31,7 @@ public class NotificationPreference extends SoftDeleteBaseEntity {
     @CollectionTable(name = "notification_types", joinColumns = @JoinColumn(name = "member_id"))
     @MapKeyEnumerated(STRING)
     @MapKeyColumn(name = "notification_type")
-    @Column(name = "enabled")
+    @Column(name = "is_enabled")
     private Map<NotificationType, Boolean> preferences = new EnumMap<>(NotificationType.class);
 
     private NotificationPreference(Long memberId, Map<NotificationType, Boolean> preferences) {

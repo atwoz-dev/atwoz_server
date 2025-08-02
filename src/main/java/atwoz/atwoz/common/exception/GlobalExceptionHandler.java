@@ -5,20 +5,31 @@ import atwoz.atwoz.common.response.BaseResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<BaseResponse<Void>> handleNoSuchElementException(NoSuchElementException e) {
+        log.warn("No such element exception", e);
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(BaseResponse.from(StatusType.NOT_FOUND));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<BaseResponse<List<String>>> handleMethodArgumentNotValidException(
-        MethodArgumentNotValidException e) {
+        MethodArgumentNotValidException e
+    ) {
         List<String> errors = e.getBindingResult().getFieldErrors().stream()
             .map(error -> error.getField() + ": " + error.getDefaultMessage())
             .toList();
@@ -28,11 +39,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(OptimisticLockingFailureException.class)
-    public ResponseEntity<BaseResponse<List<String>>> handleOptimisticLockingFailureException(
-        OptimisticLockingFailureException e) {
+    public ResponseEntity<BaseResponse<Void>> handleOptimisticLockingFailureException(
+        OptimisticLockingFailureException e
+    ) {
         log.warn("Optimistic locking failure exception", e);
 
-        return ResponseEntity.status(409)
+        return ResponseEntity.status(HttpStatus.CONFLICT)
             .body(BaseResponse.from(StatusType.CONFLICT));
     }
 
@@ -40,7 +52,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<BaseResponse<Void>> handleCannotGetLockException(CannotGetLockException e) {
         log.warn("Can not Get NamedLock Exception", e);
 
-        return ResponseEntity.status(409)
+        return ResponseEntity.status(HttpStatus.CONFLICT)
             .body(BaseResponse.from(StatusType.CONFLICT));
     }
 
