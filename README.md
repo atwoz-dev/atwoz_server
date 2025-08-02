@@ -24,7 +24,8 @@
 ## 시스템 아키텍처
 
 - CI/CD 관련 내용은 [여기](https://github.com/atwoz-dev/atwoz_server/pull/46)를 참고해주세요.
-  <img width="792" alt="atwoz-architecture" src="https://github.com/user-attachments/assets/0d8574cd-80c2-4625-b0e2-4ff98d69cdaa" />
+  <img width="792" src="https://github.com/user-attachments/assets/e38d4208-03cc-45c5-8792-eaac02eecaf8"/>
+
 
 <br>
 

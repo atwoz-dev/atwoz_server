@@ -46,9 +46,10 @@ class MissionTest {
             // Given
             ActionType actionType = null;
             FrequencyType frequencyType = null;
+            TargetGender targetGender = null;
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> Mission.create(actionType, frequencyType, 3, 1, 4, true))
+            Assertions.assertThatThrownBy(() -> Mission.create(actionType, frequencyType, targetGender, 3, 1, 4, true))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -63,7 +64,8 @@ class MissionTest {
 
             // When & Then
             Assertions.assertThatThrownBy(
-                () -> Mission.create(actionType, frequencyType, requiredAttempt, repeatableCount, rewardedHeart,
+                () -> Mission.create(actionType, frequencyType, TargetGender.MALE, requiredAttempt, repeatableCount,
+                    rewardedHeart,
                     isPublic)).isInstanceOf(MustBePositiveException.class);
         }
 
@@ -73,18 +75,21 @@ class MissionTest {
             // Given
             ActionType actionType = ActionType.LIKE;
             FrequencyType frequencyType = FrequencyType.CHALLENGE;
+            TargetGender targetGender = TargetGender.MALE;
             int requiredAttempt = 10;
             int repeatableCount = 5;
             int rewardedHeart = 6;
             boolean isPublic = true;
 
             // When
-            Mission mission = Mission.create(actionType, frequencyType, requiredAttempt, repeatableCount, rewardedHeart,
+            Mission mission = Mission.create(actionType, frequencyType, targetGender, requiredAttempt, repeatableCount,
+                rewardedHeart,
                 isPublic);
 
             // Then
             Assertions.assertThat(mission.getActionType()).isEqualTo(actionType);
             Assertions.assertThat(mission.getFrequencyType()).isEqualTo(frequencyType);
+            Assertions.assertThat(mission.getTargetGender()).isEqualTo(targetGender);
             Assertions.assertThat(mission.getRequiredAttempt()).isEqualTo(requiredAttempt);
             Assertions.assertThat(mission.getRepeatableCount()).isEqualTo(repeatableCount);
             Assertions.assertThat(mission.getRewardedHeart()).isEqualTo(rewardedHeart);

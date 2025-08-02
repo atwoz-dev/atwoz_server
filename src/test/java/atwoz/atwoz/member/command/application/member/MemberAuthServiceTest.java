@@ -13,6 +13,7 @@ import atwoz.atwoz.member.command.application.member.sms.AuthMessageService;
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
+import atwoz.atwoz.member.command.domain.member.exception.MemberNotActiveException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -105,6 +106,24 @@ class MemberAuthServiceTest {
             // When & Then
             Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber, code))
                 .isInstanceOf(MemberDeletedException.class);
+        }
+
+        @Test
+        @DisplayName("활동 상태가 아닌 사용자가 로그인할 경우 예외 처리")
+        void shouldThrowExceptionWhenLoginAttemptedByNotActiveMember() {
+            // Given
+            String phoneNumber = "01012345678";
+            String code = "01012345678";
+            Member inactiveMember = Member.fromPhoneNumber("01012345678");
+            inactiveMember.changeToDormant();
+
+            Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber))
+                .thenReturn(Optional.of(inactiveMember));
+            Mockito.doNothing().when(authMessageService).authenticate(phoneNumber, code);
+
+            // When & Then
+            Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber, code))
+                .isInstanceOf(MemberNotActiveException.class);
         }
 
         @Test

@@ -46,6 +46,7 @@ public class AdminSelfIntroductionQueryRepository {
             .from(selfIntroduction)
             .join(member).on(member.id.eq(selfIntroduction.memberId))
             .where(searchCondition)
+            .orderBy(selfIntroduction.id.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();

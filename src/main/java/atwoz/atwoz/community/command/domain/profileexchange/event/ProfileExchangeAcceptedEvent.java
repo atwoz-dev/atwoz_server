@@ -7,12 +7,12 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ProfileExchangeApprovedEvent extends Event {
+public class ProfileExchangeAcceptedEvent extends Event {
     private final long requesterId;
     private final long responderId;
     private final String senderName;
 
-    public static ProfileExchangeApprovedEvent of(long requesterId, long responderId, String senderName) {
-        return new ProfileExchangeApprovedEvent(requesterId, responderId, senderName);
+    public static ProfileExchangeAcceptedEvent of(long requesterId, long responderId, String senderName) {
+        return new ProfileExchangeAcceptedEvent(requesterId, responderId, senderName);
     }
 }

@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@Table(name = "missions")
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -25,6 +26,10 @@ public class Mission extends BaseEntity {
     @Column(columnDefinition = "varchar(50)")
     private FrequencyType frequencyType;
 
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(50)")
+    private TargetGender targetGender;
+
     private int requiredAttempt;
 
     private int repeatableCount;
@@ -33,7 +38,8 @@ public class Mission extends BaseEntity {
 
     private boolean isPublic;
 
-    private Mission(@NonNull ActionType actionType, @NonNull FrequencyType frequencyType, int requiredAttempt,
+    private Mission(@NonNull ActionType actionType, @NonNull FrequencyType frequencyType,
+        @NonNull TargetGender targetGender, int requiredAttempt,
         int repeatableCount,
         int rewardedHeart, boolean isPublic) {
         setRequiredAttempt(requiredAttempt);
@@ -41,12 +47,15 @@ public class Mission extends BaseEntity {
         setRewardedHeart(rewardedHeart);
         this.actionType = actionType;
         this.frequencyType = frequencyType;
+        this.targetGender = targetGender;
         this.isPublic = isPublic;
     }
 
-    public static Mission create(ActionType actionType, FrequencyType frequencyType, int requiredAttempt,
+    public static Mission create(ActionType actionType, FrequencyType frequencyType, TargetGender targetGender,
+        int requiredAttempt,
         int repeatableCount, int rewardedHeart, boolean isPublic) {
-        return new Mission(actionType, frequencyType, requiredAttempt, repeatableCount, rewardedHeart, isPublic);
+        return new Mission(actionType, frequencyType, targetGender, requiredAttempt, repeatableCount, rewardedHeart,
+            isPublic);
     }
 
     private void setRequiredAttempt(int requiredAttempt) {
