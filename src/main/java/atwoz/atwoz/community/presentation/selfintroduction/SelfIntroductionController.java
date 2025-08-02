@@ -13,6 +13,7 @@ import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionSummary
 import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class SelfIntroductionController {
 
     @Operation(summary = "셀프 소개 작성 API")
     @PostMapping
-    public ResponseEntity<BaseResponse<Void>> write(@RequestBody SelfIntroductionWriteRequest request,
+    public ResponseEntity<BaseResponse<Void>> write(@RequestBody @Valid SelfIntroductionWriteRequest request,
         @AuthPrincipal AuthContext authContext) {
         selfIntroductionService.write(request, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
