@@ -14,6 +14,7 @@ import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,7 +56,7 @@ public class SelfIntroductionController {
     @GetMapping
     public ResponseEntity<BaseResponse<List<SelfIntroductionSummaryView>>> getIntroductions(
         @AuthPrincipal AuthContext authContext,
-        @ModelAttribute SelfIntroductionSearchRequest searchRequest
+        @ParameterObject @ModelAttribute SelfIntroductionSearchRequest searchRequest
     ) {
         SelfIntroductionSearchCondition searchCondition = SelfIntroductionMapper.toSelfIntroductionSearchCondition(
             searchRequest);
