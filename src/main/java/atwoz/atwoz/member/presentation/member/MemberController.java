@@ -2,8 +2,10 @@ package atwoz.atwoz.member.presentation.member;
 
 import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
+import atwoz.atwoz.auth.presentation.RefreshTokenCookieProperties;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
+import atwoz.atwoz.member.command.application.member.MemberAuthService;
 import atwoz.atwoz.member.command.application.member.MemberContactService;
 import atwoz.atwoz.member.command.application.member.MemberProfileService;
 import atwoz.atwoz.member.presentation.member.dto.MemberChangeToActiveRequest;
@@ -18,6 +20,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +33,9 @@ public class MemberController {
     private final MemberContactService memberContactService;
     private final MemberProfileService memberProfileService;
     private final MemberQueryService memberQueryService;
+    private final MemberAuthService memberAuthService;
+
+    private final RefreshTokenCookieProperties refreshTokenCookieProperties;
 
     @Operation(summary = "프로필 정보 업데이트 API")
     @PutMapping("/profile")
@@ -41,8 +48,7 @@ public class MemberController {
     @Operation(summary = "회원(자기 자신) 정보 캐싱용 API")
     @GetMapping("/cache")
     public ResponseEntity<BaseResponse<MemberInfoView>> getMyInfoCache(@AuthPrincipal AuthContext authContext) {
-        return ResponseEntity.ok(
-            BaseResponse.of(StatusType.OK, memberQueryService.getInfoCache(authContext.getId())));
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, memberQueryService.getInfoCache(authContext.getId())));
     }
 
     @Operation(summary = "회원(자기 자신) 프로필 정보 조회 API")
@@ -62,9 +68,15 @@ public class MemberController {
 
     @Operation(summary = "휴면 계정 전환 API")
     @PostMapping("/profile/dormant")
-    public ResponseEntity<BaseResponse<Void>> changeToDormant(@AuthPrincipal AuthContext authContext) {
+    public ResponseEntity<BaseResponse<Void>> changeToDormant(@AuthPrincipal AuthContext authContext,
+        @CookieValue(value = "refresh_token", required = false) String refreshToken) {
         memberProfileService.changeToDormant(authContext.getId());
-        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+        memberAuthService.logout(refreshToken);
+
+        HttpHeaders headers = new HttpHeaders();
+        ResponseCookie deleteCookie = getResponseCookieDeletedRefreshToken();
+        headers.add(HttpHeaders.SET_COOKIE, deleteCookie.toString());
+        return ResponseEntity.ok().headers(headers).body(BaseResponse.from(StatusType.OK));
     }
 
     @Operation(summary = "활동 계정 전환 API")
@@ -102,4 +114,15 @@ public class MemberController {
         return ResponseEntity.ok(
             BaseResponse.of(StatusType.OK, memberQueryService.getHeartBalance(authContext.getId())));
     }
+
+    private ResponseCookie getResponseCookieDeletedRefreshToken() {
+        return ResponseCookie.from(refreshTokenCookieProperties.name(), "")
+            .httpOnly(refreshTokenCookieProperties.httpOnly())
+            .secure(refreshTokenCookieProperties.secure())
+            .sameSite(refreshTokenCookieProperties.sameSite())
+            .path(refreshTokenCookieProperties.path())
+            .maxAge(0)
+            .build();
+    }
+
 }
