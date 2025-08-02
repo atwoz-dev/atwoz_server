@@ -42,7 +42,7 @@ public class MemberQueryRepository {
             .on(interviewQuestion.id.eq(interviewAnswer.questionId).and(interviewQuestion.isPublic.eq(true)))
             .where(member.id.eq(memberId))
             .transform(groupBy(member.id).as(
-                new QMemberInfoView(member.activityStatus.stringValue(), member.isVip.isTrue(),
+                new QMemberInfoView(member.id, member.activityStatus.stringValue(), member.isVip.isTrue(),
                     member.primaryContactType.stringValue(), member.profile.nickname.value.stringValue(),
                     member.profile.gender.stringValue(), member.kakaoId.value, member.profile.yearOfBirth.value,
                     member.profile.height, member.phoneNumber.value, member.profile.job.stringValue(),

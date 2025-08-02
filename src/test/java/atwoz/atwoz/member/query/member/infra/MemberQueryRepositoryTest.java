@@ -142,6 +142,7 @@ class MemberQueryRepositoryTest {
         }
 
         private void assertStatusInfo(StatusInfo statusInfo, Member member) {
+            assertThat(statusInfo.memberId()).isEqualTo(member.getId());
             assertThat(statusInfo.activityStatus()).isEqualTo(member.getActivityStatus().toString());
             assertThat(statusInfo.isVip()).isEqualTo(member.isVip());
             assertThat(statusInfo.primaryContactType()).isEqualTo(member.getPrimaryContactType().toString());

@@ -41,7 +41,7 @@ public class SelfIntroductionController {
     @Operation(summary = "셀프 소개 수정 API")
     @PatchMapping("/{id}")
     public ResponseEntity<BaseResponse<Void>> update(@PathVariable Long id,
-        @RequestBody SelfIntroductionWriteRequest request, @AuthPrincipal AuthContext authContext) {
+        @RequestBody @Valid SelfIntroductionWriteRequest request, @AuthPrincipal AuthContext authContext) {
         selfIntroductionService.update(request, authContext.getId(), id);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
