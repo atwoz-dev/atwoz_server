@@ -142,6 +142,7 @@ class MemberQueryRepositoryTest {
         }
 
         private void assertStatusInfo(StatusInfo statusInfo, Member member) {
+            assertThat(statusInfo.memberId()).isEqualTo(member.getId());
             assertThat(statusInfo.activityStatus()).isEqualTo(member.getActivityStatus().toString());
             assertThat(statusInfo.isVip()).isEqualTo(member.isVip());
             assertThat(statusInfo.primaryContactType()).isEqualTo(member.getPrimaryContactType().toString());
@@ -573,6 +574,8 @@ class MemberQueryRepositoryTest {
             assertThat(basicMemberInfo.mbti()).isEqualTo(otherMemberProfile.getMbti().toString());
             assertThat(basicMemberInfo.city())
                 .isEqualTo(otherMemberProfile.getRegion().getCity().toString());
+            assertThat(basicMemberInfo.district())
+                .isEqualTo(otherMemberProfile.getRegion().getDistrict().toString());
             assertThat(basicMemberInfo.smokingStatus())
                 .isEqualTo(otherMemberProfile.getSmokingStatus().toString());
             assertThat(basicMemberInfo.drinkingStatus())

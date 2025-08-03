@@ -13,7 +13,9 @@ import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionSummary
 import atwoz.atwoz.community.query.selfintroduction.view.SelfIntroductionView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +32,7 @@ public class SelfIntroductionController {
 
     @Operation(summary = "셀프 소개 작성 API")
     @PostMapping
-    public ResponseEntity<BaseResponse<Void>> write(@RequestBody SelfIntroductionWriteRequest request,
+    public ResponseEntity<BaseResponse<Void>> write(@RequestBody @Valid SelfIntroductionWriteRequest request,
         @AuthPrincipal AuthContext authContext) {
         selfIntroductionService.write(request, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
@@ -39,7 +41,7 @@ public class SelfIntroductionController {
     @Operation(summary = "셀프 소개 수정 API")
     @PatchMapping("/{id}")
     public ResponseEntity<BaseResponse<Void>> update(@PathVariable Long id,
-        @RequestBody SelfIntroductionWriteRequest request, @AuthPrincipal AuthContext authContext) {
+        @RequestBody @Valid SelfIntroductionWriteRequest request, @AuthPrincipal AuthContext authContext) {
         selfIntroductionService.update(request, authContext.getId(), id);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
@@ -55,7 +57,7 @@ public class SelfIntroductionController {
     @GetMapping
     public ResponseEntity<BaseResponse<List<SelfIntroductionSummaryView>>> getIntroductions(
         @AuthPrincipal AuthContext authContext,
-        @ModelAttribute SelfIntroductionSearchRequest searchRequest
+        @ParameterObject @ModelAttribute SelfIntroductionSearchRequest searchRequest
     ) {
         SelfIntroductionSearchCondition searchCondition = SelfIntroductionMapper.toSelfIntroductionSearchCondition(
             searchRequest);
