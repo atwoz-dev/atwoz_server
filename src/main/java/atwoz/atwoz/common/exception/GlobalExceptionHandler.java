@@ -12,19 +12,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<BaseResponse<Void>> handleNoSuchElementException(NoSuchElementException e) {
-        log.warn("No such element exception", e);
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(BaseResponse.from(StatusType.NOT_FOUND));
-    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<BaseResponse<List<String>>> handleMethodArgumentNotValidException(
