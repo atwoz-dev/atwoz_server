@@ -68,6 +68,7 @@ auth:
     same-site: None
     secure: true
     http-only: true
+  prefix-code: 008008
 
 springdoc:
   api-docs:
