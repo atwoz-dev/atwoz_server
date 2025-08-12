@@ -37,10 +37,10 @@ public class MemberAuthService {
 
     @Transactional
     public MemberLoginServiceDto login(String phoneNumber, String code) {
-        if (!PRE_FIXED_CODE.equals(code)) {
+        if (PRE_FIXED_CODE == null || !PRE_FIXED_CODE.equals(code)) {
             authMessageService.authenticate(phoneNumber, code);
         }
-        
+
         Member member = createOrFindMemberByPhoneNumber(phoneNumber);
 
         if (member.isDeleted()) {
