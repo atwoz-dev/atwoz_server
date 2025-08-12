@@ -50,6 +50,23 @@ public class SelfIntroductionQueryRepository {
             .fetch();
     }
 
+    public List<SelfIntroductionSummaryView> findMySelfIntroductions(long lastId, long memberId) {
+        BooleanExpression condition = getSearchCondition(null, lastId, memberId);
+
+        return queryFactory
+            .select(
+                new QSelfIntroductionSummaryView(selfIntroduction.id, member.profile.nickname.value,
+                    profileImage.imageUrl.value, member.profile.yearOfBirth.value, selfIntroduction.title)
+            )
+            .from(selfIntroduction)
+            .join(member).on(member.id.eq(selfIntroduction.memberId))
+            .join(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
+            .where(condition)
+            .limit(PAGE_SIZE)
+            .orderBy(selfIntroduction.id.desc())
+            .fetch();
+    }
+
     public Optional<SelfIntroductionView> findSelfIntroductionByIdWithMemberId(Long id, Long memberId) {
         EnumPath<Hobby> hobby = enumPath(Hobby.class, "hobbyAlias");
 
