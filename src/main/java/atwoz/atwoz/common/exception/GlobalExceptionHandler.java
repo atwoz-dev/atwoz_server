@@ -2,6 +2,7 @@ package atwoz.atwoz.common.exception;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -27,6 +28,16 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest()
             .body(BaseResponse.of(StatusType.BAD_REQUEST, errors));
+    }
+
+    @ExceptionHandler(UnrecognizedPropertyException.class)
+    public ResponseEntity<BaseResponse<String>> handleUnrecognizedPropertyException(
+        UnrecognizedPropertyException e
+    ) {
+        String errorMessage = e.getMessage();
+
+        return ResponseEntity.badRequest()
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, errorMessage));
     }
 
     @ExceptionHandler(OptimisticLockingFailureException.class)
