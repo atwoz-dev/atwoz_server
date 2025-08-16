@@ -43,14 +43,14 @@ public class SelfIntroductionQueryRepository {
             )
             .from(selfIntroduction)
             .join(member).on(member.id.eq(selfIntroduction.memberId))
-            .join(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
+            .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
             .where(condition)
             .limit(PAGE_SIZE)
             .orderBy(selfIntroduction.id.desc())
             .fetch();
     }
 
-    public List<SelfIntroductionSummaryView> findMySelfIntroductions(long lastId, long memberId) {
+    public List<SelfIntroductionSummaryView> findMySelfIntroductions(Long lastId, long memberId) {
         BooleanExpression condition = getSearchCondition(null, lastId, memberId);
 
         return queryFactory
@@ -60,7 +60,7 @@ public class SelfIntroductionQueryRepository {
             )
             .from(selfIntroduction)
             .join(member).on(member.id.eq(selfIntroduction.memberId))
-            .join(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
+            .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
             .where(condition)
             .limit(PAGE_SIZE)
             .orderBy(selfIntroduction.id.desc())
@@ -115,6 +115,7 @@ public class SelfIntroductionQueryRepository {
         if (lastId != null) {
             condition = condition.and(selfIntroduction.id.lt(lastId));
         }
+
         condition = addYearOfBirthCondition(condition, searchCondition);
         condition = addGenderCondition(condition, searchCondition);
         condition = addPreferredCityCondition(condition, searchCondition);
@@ -123,6 +124,10 @@ public class SelfIntroductionQueryRepository {
 
     private BooleanExpression addYearOfBirthCondition(BooleanExpression condition,
         SelfIntroductionSearchCondition searchCondition) {
+        if (searchCondition == null) {
+            return condition;
+        }
+
         if (searchCondition.fromYearOfBirth() != null && searchCondition.toYearOfBirth() != null) {
             condition =
                 (condition == null) ? member.profile.yearOfBirth.value.between(searchCondition.fromYearOfBirth(),
@@ -141,6 +146,10 @@ public class SelfIntroductionQueryRepository {
 
     private BooleanExpression addGenderCondition(BooleanExpression condition,
         SelfIntroductionSearchCondition searchCondition) {
+        if (searchCondition == null) {
+            return condition;
+        }
+
         if (searchCondition.gender() != null) {
             condition = (condition == null) ? member.profile.gender.eq(searchCondition.gender())
                 : condition.and(member.profile.gender.eq(searchCondition.gender()));
@@ -150,6 +159,10 @@ public class SelfIntroductionQueryRepository {
 
     private BooleanExpression addPreferredCityCondition(BooleanExpression condition,
         SelfIntroductionSearchCondition searchCondition) {
+        if (searchCondition == null) {
+            return condition;
+        }
+
         if (searchCondition.preferredCities() != null && !searchCondition.preferredCities().isEmpty()) {
             condition =
                 (condition == null) ? member.profile.region.city.stringValue().in(searchCondition.preferredCities())
