@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -33,6 +34,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnrecognizedPropertyException.class)
     public ResponseEntity<BaseResponse<String>> handleUnrecognizedPropertyException(
         UnrecognizedPropertyException e
+    ) {
+        String errorMessage = e.getMessage();
+
+        return ResponseEntity.badRequest()
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, errorMessage));
+    }
+
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<BaseResponse<String>> handleHttpMessageNotReadableException(
+        HttpMessageNotReadableException e
     ) {
         String errorMessage = e.getMessage();
 
