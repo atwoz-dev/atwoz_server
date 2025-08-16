@@ -51,8 +51,11 @@ public class SelfIntroductionQueryRepository {
     }
 
     public List<SelfIntroductionSummaryView> findMySelfIntroductions(Long lastId, long memberId) {
-        BooleanExpression condition = lastId != null ? selfIntroduction.id.lt(lastId) : null;
-
+        BooleanExpression condition = selfIntroduction.deletedAt.isNull()
+            .and(selfIntroduction.memberId.eq(memberId));
+        if (lastId != null) {
+            condition = condition.and(selfIntroduction.id.lt(lastId));
+        }
 
         return queryFactory
             .select(
@@ -62,7 +65,7 @@ public class SelfIntroductionQueryRepository {
             .from(selfIntroduction)
             .join(member).on(member.id.eq(selfIntroduction.memberId))
             .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
-            .where(selfIntroduction.deletedAt.isNull().and(selfIntroduction.memberId.eq(memberId)).and(condition))
+            .where(condition)
             .limit(PAGE_SIZE)
             .orderBy(selfIntroduction.id.desc())
             .fetch();
