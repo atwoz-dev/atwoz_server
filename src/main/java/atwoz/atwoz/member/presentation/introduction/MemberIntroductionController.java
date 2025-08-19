@@ -29,7 +29,7 @@ public class MemberIntroductionController {
     private final TodayCardService todayCardService;
     private final TodayCardQueryService todayCardQueryService;
     private final IntroductionQueryService introductionQueryService;
-    private final MemberIntroductionService memberintroductionService;
+    private final MemberIntroductionService memberIntroductionService;
     private final SoulmateFinder soulmateFinder;
 
     @Operation(summary = "다이아 등급 이성 조회")
@@ -100,7 +100,7 @@ public class MemberIntroductionController {
         @Valid @RequestBody MemberIntroductionCreateRequest request,
         @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
-        memberintroductionService.createGradeIntroduction(memberId, request.introducedMemberId());
+        memberIntroductionService.createGradeIntroduction(memberId, request.introducedMemberId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
@@ -110,7 +110,7 @@ public class MemberIntroductionController {
         @Valid @RequestBody MemberIntroductionCreateRequest request,
         @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
-        memberintroductionService.createHobbyIntroduction(memberId, request.introducedMemberId());
+        memberIntroductionService.createHobbyIntroduction(memberId, request.introducedMemberId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
@@ -120,7 +120,7 @@ public class MemberIntroductionController {
         @Valid @RequestBody MemberIntroductionCreateRequest request,
         @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
-        memberintroductionService.createReligionIntroduction(memberId, request.introducedMemberId());
+        memberIntroductionService.createReligionIntroduction(memberId, request.introducedMemberId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
@@ -130,7 +130,7 @@ public class MemberIntroductionController {
         @Valid @RequestBody MemberIntroductionCreateRequest request,
         @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
-        memberintroductionService.createCityIntroduction(memberId, request.introducedMemberId());
+        memberIntroductionService.createCityIntroduction(memberId, request.introducedMemberId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
@@ -140,7 +140,7 @@ public class MemberIntroductionController {
         @Valid @RequestBody MemberIntroductionCreateRequest request,
         @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
-        memberintroductionService.createRecentIntroduction(memberId, request.introducedMemberId());
+        memberIntroductionService.createRecentIntroduction(memberId, request.introducedMemberId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
@@ -161,7 +161,7 @@ public class MemberIntroductionController {
         @Valid @RequestBody MemberIntroductionCreateRequest request,
         @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
-        memberintroductionService.createSoulmateIntroduction(memberId, request.introducedMemberId());
+        memberIntroductionService.createSoulmateIntroduction(memberId, request.introducedMemberId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 }
