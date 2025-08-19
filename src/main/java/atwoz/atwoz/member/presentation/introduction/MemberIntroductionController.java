@@ -4,6 +4,7 @@ import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
+import atwoz.atwoz.datingexam.application.provided.SoulmateFinder;
 import atwoz.atwoz.member.command.application.introduction.MemberIntroductionService;
 import atwoz.atwoz.member.command.application.introduction.TodayCardService;
 import atwoz.atwoz.member.presentation.introduction.dto.MemberIntroductionCreateRequest;
@@ -29,6 +30,7 @@ public class MemberIntroductionController {
     private final TodayCardQueryService todayCardQueryService;
     private final IntroductionQueryService introductionQueryService;
     private final MemberIntroductionService memberintroductionService;
+    private final SoulmateFinder soulmateFinder;
 
     @Operation(summary = "다이아 등급 이성 조회")
     @GetMapping("/grade")
@@ -139,6 +141,27 @@ public class MemberIntroductionController {
         @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
         memberintroductionService.createRecentIntroduction(memberId, request.introducedMemberId());
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
+
+    @Operation(summary = "소울 메이트 이성 조회")
+    @GetMapping("/soulmate")
+    public ResponseEntity<BaseResponse<List<MemberIntroductionProfileView>>> findSoulmateIntroductions(
+        @AuthPrincipal AuthContext authContext) {
+        long memberId = authContext.getId();
+        Set<Long> soulmateMemberIds = soulmateFinder.findSoulmateIds(memberId);
+        List<MemberIntroductionProfileView> introductionProfileViews = introductionQueryService
+            .findMemberIntroductionProfileViews(memberId, soulmateMemberIds);
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, introductionProfileViews));
+    }
+
+    @Operation(summary = "소울 메이트 이성 프로필 블러 해제")
+    @PostMapping("/soulmate")
+    public ResponseEntity<BaseResponse<Void>> createSoulmateIntroduction(
+        @Valid @RequestBody MemberIntroductionCreateRequest request,
+        @AuthPrincipal AuthContext authContext) {
+        long memberId = authContext.getId();
+        memberintroductionService.createSoulmateIntroduction(memberId, request.introducedMemberId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 }

@@ -43,6 +43,11 @@ public class MemberIntroductionService {
         createIntroduction(memberId, introducedMemberId, IntroductionType.RECENTLY_JOINED);
     }
 
+    @Transactional
+    public void createSoulmateIntroduction(long memberId, long introducedMemberId) {
+        createIntroduction(memberId, introducedMemberId, IntroductionType.SOULMATE);
+    }
+
     private void createIntroduction(long memberId, long introducedMemberId, IntroductionType introductionType) {
         validateIntroduction(memberId, introducedMemberId);
         MemberIntroduction memberIntroduction = MemberIntroduction.of(memberId, introducedMemberId, introductionType);
