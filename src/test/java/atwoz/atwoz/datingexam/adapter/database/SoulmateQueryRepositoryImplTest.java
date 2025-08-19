@@ -58,7 +58,7 @@ class SoulmateQueryRepositoryImplTest {
 
         @Test
         @DisplayName("연애 모의고사 필수 과목 제출 답안이 일치하고, 성별이 다르며, 프로필이 공개 상태이고, 활동 상태가 ACTIVE인 멤버들의 아이디를 조회한다.")
-        void whenNoDatingExamSubmitThenReturnEmptyList() {
+        void findOnlyOppositeGenderPublicActiveMembersWithSameRequiredAnswers() {
             // given
             Gender gender = Gender.MALE;
             boolean isProfilePublic = true;
