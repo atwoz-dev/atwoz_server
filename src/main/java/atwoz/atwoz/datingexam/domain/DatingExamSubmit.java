@@ -68,4 +68,8 @@ public class DatingExamSubmit extends BaseEntity {
         }
         this.preferredSubjectAnswers = preferredSubjectAnswers;
     }
+
+    public boolean isRequiredSubjectSubmitted() {
+        return requiredSubjectAnswers != null && !requiredSubjectAnswers.isBlank();
+    }
 }
