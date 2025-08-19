@@ -56,6 +56,6 @@ public class MemberIntroductionExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(400)
-            .body(BaseResponse.of(StatusType.CONFLICT, e.getMessage()));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 }
