@@ -73,6 +73,16 @@ public class IntroductionQueryService {
             memberIntroductionProfileQueryResults, interviewAnswerQueryResults);
     }
 
+    public List<MemberIntroductionProfileView> findMemberIntroductionProfileViews(long memberId, Set<Long> memberIds) {
+        List<MemberIntroductionProfileQueryResult> memberIntroductionProfileQueryResults =
+            introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId,
+                memberIds);
+        List<InterviewAnswerQueryResult> interviewAnswerQueryResults =
+            introductionQueryRepository.findAllInterviewAnswerInfoByMemberIds(memberIds);
+        return MemberIntroductionProfileViewMapper.mapWithDefaultTag(
+            memberIntroductionProfileQueryResults, interviewAnswerQueryResults);
+    }
+
     private Set<Long> getDiamondGradeIntroductionMemberIds(long memberId) {
         return introductionMemberIdFetcher.fetch(
             memberId,
