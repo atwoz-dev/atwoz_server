@@ -34,8 +34,9 @@ public class SoulmateQueryRepositoryImpl implements SoulmateQueryRepository {
                 .and(member.profile.gender.eq(gender.getOpposite()))
                 .and(member.isProfilePublic.isTrue())
                 .and(member.activityStatus.eq(ActivityStatus.ACTIVE))
+                .and(datingExamSubmit.memberId.ne(memberId))
             )
-            .where(datingExamSubmit.memberId.ne(memberId))
+            .orderBy(member.id.desc())
             .fetch()
             .stream()
             .collect(Collectors.toSet());
