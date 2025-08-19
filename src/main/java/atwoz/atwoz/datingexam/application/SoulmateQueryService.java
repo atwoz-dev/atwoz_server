@@ -22,6 +22,7 @@ public class SoulmateQueryService implements SoulmateFinder {
     private final SoulmateQueryRepository soulmateQueryRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public Set<Long> findSoulmateIds(Long memberId) {
         DatingExamSubmit datingExamSubmit = getDatingExamSubmit(memberId);
         validateDatingExamSubmit(datingExamSubmit);
