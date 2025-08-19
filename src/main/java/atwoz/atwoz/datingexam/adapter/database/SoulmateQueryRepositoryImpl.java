@@ -26,6 +26,10 @@ public class SoulmateQueryRepositoryImpl implements SoulmateQueryRepository {
             .where(member.id.eq(memberId))
             .fetchOne();
 
+        if (gender == null) {
+            throw new IllegalStateException("멤버의 성별이 null입니다. 멤버 ID: " + memberId);
+        }
+
         return queryFactory
             .select(datingExamSubmit.memberId)
             .from(datingExamSubmit)
