@@ -66,6 +66,16 @@ public class SelfIntroductionController {
                 authContext.getId())));
     }
 
+    @Operation(summary = "자신의 셀프 소개 목록 조회 API")
+    @GetMapping("/my")
+    public ResponseEntity<BaseResponse<List<SelfIntroductionSummaryView>>> getMyIntroductions(
+        @AuthPrincipal AuthContext authContext,
+        @RequestParam(required = false) Long lastId
+    ) {
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK,
+            selfIntroductionQueryRepository.findMySelfIntroductions(lastId, authContext.getId())));
+    }
+
     @Operation(summary = "셀프 소개 상세 조회 API")
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<SelfIntroductionView>> getIntroduction(@PathVariable Long id,

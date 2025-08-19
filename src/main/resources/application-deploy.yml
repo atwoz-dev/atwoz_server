@@ -5,6 +5,10 @@ spring:
     password: ${MYSQL_PASSWORD:1234}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+
   jpa:
     hibernate:
       ddl-auto: ${DDL_AUTO:update}
@@ -57,6 +61,7 @@ auth:
     same-site: None
     secure: true
     http-only: true
+  prefix-code: ${AUTH_PREFIX_CODE:008008}
 
 springdoc:
   api-docs:

@@ -45,7 +45,7 @@ public class MemberQueryService {
         List<InterviewResultView> interviewResultViews = memberQueryRepository.findInterviewsByMemberId(otherMemberId);
 
         return new MemberProfileResponse(MemberMapper.toBasicInfo(profileView.basicMemberInfo()),
-            profileView.matchInfo(), interviewResultViews);
+            profileView.matchInfo(), profileView.profileExchangeInfo(), interviewResultViews);
     }
 
     private void validateProfileAccessView(ProfileAccessView profileAccessView, Long memberId) {

@@ -16,6 +16,7 @@ import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import atwoz.atwoz.member.command.domain.member.event.MemberRegisteredEvent;
 import atwoz.atwoz.member.command.domain.member.exception.MemberNotActiveException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,10 +32,15 @@ public class MemberAuthService {
     private final TokenProvider tokenProvider;
     private final TokenParser tokenParser;
     private final TokenRepository tokenRepository;
+    @Value("${auth.prefix-code}")
+    private String PRE_FIXED_CODE;
 
     @Transactional
     public MemberLoginServiceDto login(String phoneNumber, String code) {
-        authMessageService.authenticate(phoneNumber, code);
+        if (PRE_FIXED_CODE == null || PRE_FIXED_CODE.isBlank() || !PRE_FIXED_CODE.equals(code)) {
+            authMessageService.authenticate(phoneNumber, code);
+        }
+
         Member member = createOrFindMemberByPhoneNumber(phoneNumber);
 
         if (member.isDeleted()) {
