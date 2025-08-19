@@ -2,6 +2,7 @@ package atwoz.atwoz.common.exception;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -55,5 +56,29 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.internalServerError()
             .body(BaseResponse.from(StatusType.INTERNAL_SERVER_ERROR));
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<BaseResponse<Void>> handleEntityNotFoundException(EntityNotFoundException e) {
+        log.warn("Entity not found exception", e);
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<BaseResponse<Void>> handleIllegalArgumentException(IllegalArgumentException e) {
+        log.warn("Illegal argument exception", e);
+
+        return ResponseEntity.badRequest()
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<BaseResponse<Void>> handleIllegalStateException(IllegalStateException e) {
+        log.warn("Illegal state exception", e);
+
+        return ResponseEntity.badRequest()
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 }
