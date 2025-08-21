@@ -91,7 +91,7 @@ class AdminMemberQueryRepositoryTest {
     }
 
     private Warning createWarning(long adminId, long memberId) {
-        final Warning warning = Warning.issue(adminId, memberId, 0, WarningReasonType.INAPPROPRIATE_CONTENT);
+        var warning = Warning.issue(adminId, memberId, 0, List.of(WarningReasonType.INAPPROPRIATE_CONTENT));
         entityManager.persist(warning);
         return warning;
     }

@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static jakarta.persistence.EnumType.STRING;
 
 @Entity
@@ -26,18 +29,23 @@ public class Warning {
 
     private Long memberId;
 
+    @ElementCollection(targetClass = WarningReasonType.class)
     @Enumerated(STRING)
-    @Column(columnDefinition = "varchar(50)")
-    private WarningReasonType reasonType;
+    @CollectionTable(name = "warning_reasons", joinColumns = @JoinColumn(name = "warning_id"))
+    @Column(name = "reason_type", columnDefinition = "varchar(50)")
+    private List<WarningReasonType> reasonTypes;
 
-    private Warning(long adminId, long memberId, @NonNull WarningReasonType reasonType) {
+    private Warning(long adminId, long memberId, @NonNull List<WarningReasonType> reasonTypes) {
         this.adminId = adminId;
         this.memberId = memberId;
-        this.reasonType = reasonType;
+        this.reasonTypes = reasonTypes;
     }
 
-    public static Warning issue(long adminId, long memberId, long warningCount, WarningReasonType reasonType) {
-        Events.raise(WarningIssuedEvent.of(adminId, memberId, warningCount, reasonType.toString()));
-        return new Warning(adminId, memberId, reasonType);
+    public static Warning issue(long adminId, long memberId, long warningCount, List<WarningReasonType> reasonTypes) {
+        String reasonTypesString = reasonTypes.stream()
+            .map(Enum::toString)
+            .collect(Collectors.joining(", "));
+        Events.raise(WarningIssuedEvent.of(adminId, memberId, warningCount, reasonTypesString));
+        return new Warning(adminId, memberId, reasonTypes);
     }
 }

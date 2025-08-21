@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static atwoz.atwoz.admin.command.application.warning.WarningMapper.toWarningReasonType;
+import static atwoz.atwoz.admin.command.application.warning.WarningMapper.toWarningReasonTypes;
 
 @Slf4j
 @Service
@@ -24,7 +24,7 @@ public class WarningService {
             adminId,
             memberId,
             warningCommandRepository.countByMemberId(memberId) + 1,
-            toWarningReasonType(request.reasonType())
+            toWarningReasonTypes(request.reasonTypes())
         );
         warningCommandRepository.save(warning);
         log.info("멤버(id: {})에 경고(id: {}) 발행", memberId, warning.getId());

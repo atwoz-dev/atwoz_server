@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
@@ -19,16 +21,16 @@ class WarningTest {
             long adminId = 1L;
             long memberId = 2L;
             long warningCount = 1;
-            var reason = WarningReasonType.INAPPROPRIATE_CONTENT;
+            var reasons = List.of(WarningReasonType.INAPPROPRIATE_CONTENT);
 
             // when
-            var warning = Warning.issue(adminId, memberId, warningCount, reason);
+            var warning = Warning.issue(adminId, memberId, warningCount, reasons);
 
             // then
             eventsMock.verify(() -> Events.raise(any(WarningIssuedEvent.class)));
             assertEquals(adminId, warning.getAdminId());
             assertEquals(memberId, warning.getMemberId());
-            assertEquals(reason, warning.getReasonType());
+            assertEquals(reasons, warning.getReasonTypes());
         }
     }
 }

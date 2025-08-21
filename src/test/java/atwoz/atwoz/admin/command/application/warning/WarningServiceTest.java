@@ -10,6 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,7 +29,7 @@ class WarningServiceTest {
         // given
         long adminId = 1L;
         long memberId = 2L;
-        var request = new WarningCreateRequest(memberId, "INAPPROPRIATE_CONTENT");
+        var request = new WarningCreateRequest(memberId, List.of("INAPPROPRIATE_CONTENT"));
 
         when(warningCommandRepository.countByMemberId(memberId)).thenReturn(1L);
 
