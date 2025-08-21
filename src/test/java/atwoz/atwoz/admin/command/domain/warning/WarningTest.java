@@ -21,7 +21,7 @@ class WarningTest {
             long adminId = 1L;
             long memberId = 2L;
             long warningCount = 1;
-            var reasons = List.of(WarningReasonType.INAPPROPRIATE_CONTENT);
+            var reasons = List.of(WarningReasonType.INAPPROPRIATE_INTERVIEW);
 
             // when
             var warning = Warning.issue(adminId, memberId, warningCount, reasons);

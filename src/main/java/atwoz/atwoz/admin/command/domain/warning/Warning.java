@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static jakarta.persistence.EnumType.STRING;
 
@@ -42,10 +41,9 @@ public class Warning {
     }
 
     public static Warning issue(long adminId, long memberId, long warningCount, List<WarningReasonType> reasonTypes) {
-        String reasonTypesString = reasonTypes.stream()
-            .map(Enum::toString)
-            .collect(Collectors.joining(", "));
-        Events.raise(WarningIssuedEvent.of(adminId, memberId, warningCount, reasonTypesString));
+        reasonTypes.forEach(reasonType ->
+            Events.raise(WarningIssuedEvent.of(adminId, memberId, warningCount, reasonType.toString()))
+        );
         return new Warning(adminId, memberId, reasonTypes);
     }
 }

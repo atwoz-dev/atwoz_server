@@ -29,7 +29,7 @@ class WarningServiceTest {
         // given
         long adminId = 1L;
         long memberId = 2L;
-        var request = new WarningCreateRequest(memberId, List.of("INAPPROPRIATE_CONTENT"));
+        var request = new WarningCreateRequest(memberId, List.of("INAPPROPRIATE_INTERVIEW"));
 
         when(warningCommandRepository.countByMemberId(memberId)).thenReturn(1L);
 
