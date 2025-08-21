@@ -24,7 +24,7 @@ class WarningTest {
             var reasons = List.of(WarningReasonType.INAPPROPRIATE_INTERVIEW);
 
             // when
-            var warning = Warning.issue(adminId, memberId, warningCount, reasons);
+            var warning = Warning.issue(adminId, memberId, warningCount, reasons, true);
 
             // then
             eventsMock.verify(() -> Events.raise(any(WarningIssuedEvent.class)));

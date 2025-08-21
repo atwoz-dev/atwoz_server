@@ -91,7 +91,7 @@ class AdminMemberQueryRepositoryTest {
     }
 
     private Warning createWarning(long adminId, long memberId) {
-        var warning = Warning.issue(adminId, memberId, 0, List.of(WarningReasonType.INAPPROPRIATE_INTERVIEW));
+        var warning = Warning.issue(adminId, memberId, 0, List.of(WarningReasonType.INAPPROPRIATE_INTERVIEW), true);
         entityManager.persist(warning);
         return warning;
     }

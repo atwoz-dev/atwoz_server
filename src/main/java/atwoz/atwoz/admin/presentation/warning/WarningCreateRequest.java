@@ -11,6 +11,9 @@ public record WarningCreateRequest(
 
     @Schema(implementation = WarningReasonType.class)
     @NotEmpty
-    List<String> reasonTypes
+    List<String> reasonTypes,
+
+    @Schema(description = "경고 여부 (true: 경고, false: 권고)")
+    boolean isCritical
 ) {
 }

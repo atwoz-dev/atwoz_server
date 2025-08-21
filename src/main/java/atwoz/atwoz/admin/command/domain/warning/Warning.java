@@ -34,16 +34,25 @@ public class Warning {
     @Column(name = "reason_type", columnDefinition = "varchar(50)")
     private List<WarningReasonType> reasonTypes;
 
-    private Warning(long adminId, long memberId, @NonNull List<WarningReasonType> reasonTypes) {
+    private boolean isCritical;
+
+    private Warning(long adminId, long memberId, @NonNull List<WarningReasonType> reasonTypes, boolean isCritical) {
         this.adminId = adminId;
         this.memberId = memberId;
         this.reasonTypes = reasonTypes;
+        this.isCritical = isCritical;
     }
 
-    public static Warning issue(long adminId, long memberId, long warningCount, List<WarningReasonType> reasonTypes) {
+    public static Warning issue(
+        long adminId,
+        long memberId,
+        long warningCount,
+        List<WarningReasonType> reasonTypes,
+        boolean isCritical
+    ) {
         reasonTypes.forEach(reasonType ->
-            Events.raise(WarningIssuedEvent.of(adminId, memberId, warningCount, reasonType.toString()))
+            Events.raise(WarningIssuedEvent.of(adminId, memberId, warningCount, reasonType.toString(), isCritical))
         );
-        return new Warning(adminId, memberId, reasonTypes);
+        return new Warning(adminId, memberId, reasonTypes, isCritical);
     }
 }
