@@ -10,7 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
+import java.util.Set;
 
 import static org.mockito.Mockito.*;
 
@@ -29,15 +29,15 @@ class WarningServiceTest {
         // given
         long adminId = 1L;
         long memberId = 2L;
-        var request = new WarningCreateRequest(memberId, List.of("INAPPROPRIATE_INTERVIEW"), true);
+        var request = new WarningCreateRequest(memberId, Set.of("INAPPROPRIATE_INTERVIEW"), true);
 
-        when(warningCommandRepository.countByMemberId(memberId)).thenReturn(1L);
+        when(warningCommandRepository.countByMemberIdAndIsCriticalTrue(memberId)).thenReturn(1L);
 
         // when
         warningService.issue(adminId, request);
 
         // then
-        verify(warningCommandRepository).countByMemberId(memberId);
+        verify(warningCommandRepository).countByMemberIdAndIsCriticalTrue(memberId);
         verify(warningCommandRepository).save(any(Warning.class));
     }
 }

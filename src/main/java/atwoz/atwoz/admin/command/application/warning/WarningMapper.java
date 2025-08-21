@@ -3,17 +3,18 @@ package atwoz.atwoz.admin.command.application.warning;
 import atwoz.atwoz.admin.command.domain.warning.WarningReasonType;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
 public class WarningMapper {
 
-    public static List<WarningReasonType> toWarningReasonTypes(List<String> reasonTypes) {
+    public static Set<WarningReasonType> toWarningReasonTypes(Set<String> reasonTypes) {
         return reasonTypes.stream()
             .map(WarningMapper::toWarningReasonType)
-            .toList();
+            .collect(Collectors.toSet());
     }
 
     private static WarningReasonType toWarningReasonType(String reasonType) {

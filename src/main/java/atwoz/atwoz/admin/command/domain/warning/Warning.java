@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-import java.util.List;
+import java.util.Set;
 
 import static jakarta.persistence.EnumType.STRING;
 
@@ -32,11 +32,11 @@ public class Warning {
     @Enumerated(STRING)
     @CollectionTable(name = "warning_reasons", joinColumns = @JoinColumn(name = "warning_id"))
     @Column(name = "reason_type", columnDefinition = "varchar(50)")
-    private List<WarningReasonType> reasonTypes;
+    private Set<WarningReasonType> reasonTypes;
 
     private boolean isCritical;
 
-    private Warning(long adminId, long memberId, @NonNull List<WarningReasonType> reasonTypes, boolean isCritical) {
+    private Warning(long adminId, long memberId, @NonNull Set<WarningReasonType> reasonTypes, boolean isCritical) {
         this.adminId = adminId;
         this.memberId = memberId;
         this.reasonTypes = reasonTypes;
@@ -47,7 +47,7 @@ public class Warning {
         long adminId,
         long memberId,
         long warningCount,
-        List<WarningReasonType> reasonTypes,
+        Set<WarningReasonType> reasonTypes,
         boolean isCritical
     ) {
         reasonTypes.forEach(reasonType ->

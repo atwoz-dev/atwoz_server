@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
-import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -21,7 +21,7 @@ class WarningTest {
             long adminId = 1L;
             long memberId = 2L;
             long warningCount = 1;
-            var reasons = List.of(WarningReasonType.INAPPROPRIATE_INTERVIEW);
+            var reasons = Set.of(WarningReasonType.INAPPROPRIATE_INTERVIEW);
 
             // when
             var warning = Warning.issue(adminId, memberId, warningCount, reasons, true);

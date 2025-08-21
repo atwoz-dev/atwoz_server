@@ -21,7 +21,7 @@ public class WarningService {
     public void issue(long adminId, WarningCreateRequest request) {
         long memberId = request.memberId();
 
-        long currentWarningCount = warningCommandRepository.countByMemberId(memberId);
+        long currentWarningCount = warningCommandRepository.countByMemberIdAndIsCriticalTrue(memberId);
         if (request.isCritical()) {
             currentWarningCount += 1;
         }
