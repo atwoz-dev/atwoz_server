@@ -28,7 +28,7 @@ public class Warning {
 
     private Long memberId;
 
-    @ElementCollection(targetClass = WarningReasonType.class)
+    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(STRING)
     @CollectionTable(name = "warning_reasons", joinColumns = @JoinColumn(name = "warning_id"))
     @Column(name = "reason_type", columnDefinition = "varchar(50)")
