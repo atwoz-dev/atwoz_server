@@ -93,7 +93,7 @@ public class MemberAuthController {
     }
 
     @Operation(summary = "휴대폰 번호 인증 코드 발송")
-    @GetMapping("/code")
+    @PostMapping("/code")
     public ResponseEntity<BaseResponse<Void>> getCode(@RequestBody @Valid MemberCodeRequest request) {
         memberAuthService.sendAuthCode(request.phoneNumber());
         return ResponseEntity.ok()
