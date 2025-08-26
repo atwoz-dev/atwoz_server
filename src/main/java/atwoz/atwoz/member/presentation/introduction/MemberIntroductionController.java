@@ -4,6 +4,7 @@ import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
+import atwoz.atwoz.datingexam.application.provided.SoulmateFinder;
 import atwoz.atwoz.member.command.application.introduction.MemberIntroductionService;
 import atwoz.atwoz.member.command.application.introduction.TodayCardService;
 import atwoz.atwoz.member.presentation.introduction.dto.MemberIntroductionCreateRequest;
@@ -28,7 +29,8 @@ public class MemberIntroductionController {
     private final TodayCardService todayCardService;
     private final TodayCardQueryService todayCardQueryService;
     private final IntroductionQueryService introductionQueryService;
-    private final MemberIntroductionService memberintroductionService;
+    private final MemberIntroductionService memberIntroductionService;
+    private final SoulmateFinder soulmateFinder;
 
     @Operation(summary = "다이아 등급 이성 조회")
     @GetMapping("/grade")
@@ -98,7 +100,7 @@ public class MemberIntroductionController {
         @Valid @RequestBody MemberIntroductionCreateRequest request,
         @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
-        memberintroductionService.createGradeIntroduction(memberId, request.introducedMemberId());
+        memberIntroductionService.createGradeIntroduction(memberId, request.introducedMemberId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
@@ -108,7 +110,7 @@ public class MemberIntroductionController {
         @Valid @RequestBody MemberIntroductionCreateRequest request,
         @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
-        memberintroductionService.createHobbyIntroduction(memberId, request.introducedMemberId());
+        memberIntroductionService.createHobbyIntroduction(memberId, request.introducedMemberId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
@@ -118,7 +120,7 @@ public class MemberIntroductionController {
         @Valid @RequestBody MemberIntroductionCreateRequest request,
         @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
-        memberintroductionService.createReligionIntroduction(memberId, request.introducedMemberId());
+        memberIntroductionService.createReligionIntroduction(memberId, request.introducedMemberId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
@@ -128,7 +130,7 @@ public class MemberIntroductionController {
         @Valid @RequestBody MemberIntroductionCreateRequest request,
         @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
-        memberintroductionService.createCityIntroduction(memberId, request.introducedMemberId());
+        memberIntroductionService.createCityIntroduction(memberId, request.introducedMemberId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 
@@ -138,7 +140,28 @@ public class MemberIntroductionController {
         @Valid @RequestBody MemberIntroductionCreateRequest request,
         @AuthPrincipal AuthContext authContext) {
         long memberId = authContext.getId();
-        memberintroductionService.createRecentIntroduction(memberId, request.introducedMemberId());
+        memberIntroductionService.createRecentIntroduction(memberId, request.introducedMemberId());
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
+
+    @Operation(summary = "소울 메이트 이성 조회")
+    @GetMapping("/soulmate")
+    public ResponseEntity<BaseResponse<List<MemberIntroductionProfileView>>> findSoulmateIntroductions(
+        @AuthPrincipal AuthContext authContext) {
+        long memberId = authContext.getId();
+        Set<Long> soulmateMemberIds = soulmateFinder.findSoulmateIds(memberId);
+        List<MemberIntroductionProfileView> introductionProfileViews = introductionQueryService
+            .findMemberIntroductionProfileViews(memberId, soulmateMemberIds);
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, introductionProfileViews));
+    }
+
+    @Operation(summary = "소울 메이트 이성 프로필 블러 해제")
+    @PostMapping("/soulmate")
+    public ResponseEntity<BaseResponse<Void>> createSoulmateIntroduction(
+        @Valid @RequestBody MemberIntroductionCreateRequest request,
+        @AuthPrincipal AuthContext authContext) {
+        long memberId = authContext.getId();
+        memberIntroductionService.createSoulmateIntroduction(memberId, request.introducedMemberId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 }

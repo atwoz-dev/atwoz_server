@@ -1,5 +1,7 @@
 package atwoz.atwoz.member.command.application.introduction;
 
+import atwoz.atwoz.datingexam.application.required.DatingExamSubmitRepository;
+import atwoz.atwoz.datingexam.domain.DatingExamSubmit;
 import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotActiveException;
 import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotFoundException;
 import atwoz.atwoz.member.command.application.introduction.exception.MemberIntroductionAlreadyExistsException;
@@ -8,6 +10,7 @@ import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroductionCommandRepository;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberIntroductionService {
     private final MemberCommandRepository memberCommandRepository;
     private final MemberIntroductionCommandRepository memberIntroductionCommandRepository;
+    private final DatingExamSubmitRepository datingExamSubmitRepository;
 
     @Transactional
     public void createGradeIntroduction(long memberId, long introducedMemberId) {
@@ -41,6 +45,27 @@ public class MemberIntroductionService {
     @Transactional
     public void createRecentIntroduction(long memberId, long introducedMemberId) {
         createIntroduction(memberId, introducedMemberId, IntroductionType.RECENTLY_JOINED);
+    }
+
+    @Transactional
+    public void createSoulmateIntroduction(long memberId, long introducedMemberId) {
+        validateSoulmateIntroduction(memberId, introducedMemberId);
+        createIntroduction(memberId, introducedMemberId, IntroductionType.SOULMATE);
+    }
+
+    private void validateSoulmateIntroduction(long memberId, long introducedMemberId) {
+        String memberAnswers = getDatingExamSubmitAnswers(memberId);
+        String introducedMemberAnswers = getDatingExamSubmitAnswers(introducedMemberId);
+        if (!memberAnswers.equals(introducedMemberAnswers)) {
+            throw new IllegalStateException("연애 모의고사 답안이 일치하지 않습니다. " +
+                "회원 ID: " + memberId + ", 소개된 회원 ID: " + introducedMemberId);
+        }
+    }
+
+    private String getDatingExamSubmitAnswers(long memberId) {
+        DatingExamSubmit datingExamSubmit = datingExamSubmitRepository.findByMemberId(memberId)
+            .orElseThrow(() -> new EntityNotFoundException("연애 모의고사 제출 기록이 없습니다. 회원 ID: " + memberId));
+        return datingExamSubmit.getRequiredSubjectAnswers();
     }
 
     private void createIntroduction(long memberId, long introducedMemberId, IntroductionType introductionType) {
