@@ -87,8 +87,6 @@ public class NotificationEventHandler {
         notificationSendService.send(request);
     }
 
-    // TODO: 프로필 이미지 변경 요청, 인터뷰 작성 요청
-
     @Async
     @TransactionalEventListener(value = WarningIssuedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handleWarningIssuedEvent(WarningIssuedEvent event) {

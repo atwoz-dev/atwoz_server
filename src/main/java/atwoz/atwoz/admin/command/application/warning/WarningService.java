@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static atwoz.atwoz.admin.command.application.warning.WarningMapper.toWarningReasonType;
+import static atwoz.atwoz.admin.command.application.warning.WarningMapper.toWarningReasonTypes;
 
 @Slf4j
 @Service
@@ -19,14 +19,22 @@ public class WarningService {
 
     @Transactional
     public void issue(long adminId, WarningCreateRequest request) {
-        final long memberId = request.memberId();
+        long memberId = request.memberId();
+
+        long currentWarningCount = warningCommandRepository.countByMemberIdAndIsCriticalTrue(memberId);
+        if (request.isCritical()) {
+            currentWarningCount += 1;
+        }
         var warning = Warning.issue(
             adminId,
             memberId,
-            warningCommandRepository.countByMemberId(memberId) + 1,
-            toWarningReasonType(request.reasonType())
+            currentWarningCount,
+            toWarningReasonTypes(request.reasonTypes()),
+            request.isCritical()
         );
+
         warningCommandRepository.save(warning);
+
         log.info("멤버(id: {})에 경고(id: {}) 발행", memberId, warning.getId());
     }
 }

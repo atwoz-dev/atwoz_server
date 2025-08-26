@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+import java.util.Set;
+
 import static jakarta.persistence.EnumType.STRING;
 
 @Entity
@@ -26,18 +28,31 @@ public class Warning {
 
     private Long memberId;
 
+    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(STRING)
-    @Column(columnDefinition = "varchar(50)")
-    private WarningReasonType reasonType;
+    @CollectionTable(name = "warning_reasons", joinColumns = @JoinColumn(name = "warning_id"))
+    @Column(name = "reason_type", columnDefinition = "varchar(50)")
+    private Set<WarningReasonType> reasonTypes;
 
-    private Warning(long adminId, long memberId, @NonNull WarningReasonType reasonType) {
+    private boolean isCritical;
+
+    private Warning(long adminId, long memberId, @NonNull Set<WarningReasonType> reasonTypes, boolean isCritical) {
         this.adminId = adminId;
         this.memberId = memberId;
-        this.reasonType = reasonType;
+        this.reasonTypes = reasonTypes;
+        this.isCritical = isCritical;
     }
 
-    public static Warning issue(long adminId, long memberId, long warningCount, WarningReasonType reasonType) {
-        Events.raise(WarningIssuedEvent.of(adminId, memberId, warningCount, reasonType.toString()));
-        return new Warning(adminId, memberId, reasonType);
+    public static Warning issue(
+        long adminId,
+        long memberId,
+        long warningCount,
+        Set<WarningReasonType> reasonTypes,
+        boolean isCritical
+    ) {
+        reasonTypes.forEach(reasonType ->
+            Events.raise(WarningIssuedEvent.of(adminId, memberId, warningCount, reasonType.toString(), isCritical))
+        );
+        return new Warning(adminId, memberId, reasonTypes, isCritical);
     }
 }

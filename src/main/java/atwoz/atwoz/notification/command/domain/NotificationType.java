@@ -17,8 +17,10 @@ public enum NotificationType {
     PROFILE_IMAGE_CHANGE_REQUEST("프로필 이미지 변경 요청"),
     INTERVIEW_WRITE_REQUEST("인터뷰 작성 요청"),
 
-    INAPPROPRIATE_POST_WARNING("부적절한 게시물 경고"),
-    INAPPROPRIATE_PROFILE_WARNING("부적절한 프로필 경고"),
+    INAPPROPRIATE_PROFILE("부적절한 프로필 경고"),
+    INAPPROPRIATE_PROFILE_IMAGE("부적절한 프로필 사진 경고"),
+    INAPPROPRIATE_INTERVIEW("부적절한 인터뷰 경고"),
+    INAPPROPRIATE_SELF_INTRODUCTION("부적절한 셀프소개 게시글 경고"),
 
     INACTIVITY_REMINDER("장기 미로그인 알림");
 
