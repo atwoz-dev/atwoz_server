@@ -28,7 +28,7 @@ public class NotificationPreference extends SoftDeleteBaseEntity {
     private boolean isEnabledGlobally = true;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "notification_types", joinColumns = @JoinColumn(name = "member_id"))
+    @CollectionTable(name = "member_notification_preferences", joinColumns = @JoinColumn(name = "member_id"))
     @MapKeyEnumerated(STRING)
     @MapKeyColumn(name = "notification_type")
     @Column(name = "is_enabled")
