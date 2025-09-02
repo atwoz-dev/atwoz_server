@@ -17,7 +17,7 @@ import static atwoz.atwoz.common.enums.StatusType.OK;
 
 @Tag(name = "알림 설정 API")
 @RestController
-@RequestMapping("/notifications/preferences")
+@RequestMapping("/notification-preferences")
 @RequiredArgsConstructor
 public class NotificationPreferenceController {
 
