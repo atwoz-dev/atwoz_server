@@ -1,5 +1,6 @@
 package atwoz.atwoz.admin.command.domain.warning;
 
+import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.common.event.Events;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -18,7 +19,7 @@ import static jakarta.persistence.EnumType.STRING;
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Warning {
+public class Warning extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
