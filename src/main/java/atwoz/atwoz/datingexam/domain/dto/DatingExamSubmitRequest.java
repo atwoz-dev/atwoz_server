@@ -7,7 +7,9 @@ import java.util.List;
 
 public record DatingExamSubmitRequest(
     @NotNull
+    Long subjectId,
+    @NotNull
     @NotEmpty
-    List<SubjectSubmitRequest> subjects
+    List<AnswerSubmitRequest> answers
 ) {
 }

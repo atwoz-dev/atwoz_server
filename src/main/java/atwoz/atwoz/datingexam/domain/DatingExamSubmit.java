@@ -2,11 +2,7 @@ package atwoz.atwoz.datingexam.domain;
 
 import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.datingexam.domain.dto.DatingExamSubmitRequest;
-import atwoz.atwoz.datingexam.domain.exception.InvalidDatingExamSubmitAnswersException;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -17,6 +13,9 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Getter
+@Table(
+    uniqueConstraints = @UniqueConstraint(columnNames = {"memberId", "subjectId"})
+)
 public class DatingExamSubmit extends BaseEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -25,51 +24,25 @@ public class DatingExamSubmit extends BaseEntity {
     @Column(nullable = false)
     private Long memberId;
 
-    @Column(length = 1024)
-    private String requiredSubjectAnswers;
+    @Column(nullable = false)
+    private Long subjectId;
 
-    @Column(length = 1024)
-    private String preferredSubjectAnswers;
+    @Column(nullable = false)
+    private String answers;
 
-    private DatingExamSubmit(@NonNull Long memberId) {
+    private DatingExamSubmit(@NonNull Long memberId, @NonNull Long subjectId, @NonNull String answers) {
         this.memberId = memberId;
+        this.subjectId = subjectId;
+        this.answers = answers;
     }
 
-    public static DatingExamSubmit from(@NonNull Long memberId) {
-        return new DatingExamSubmit(memberId);
-    }
-
-    public void submitRequiredSubjectAnswers(DatingExamSubmitRequest request, DatingExamAnswerEncoder answerEncoder) {
+    public static DatingExamSubmit from(
+        DatingExamSubmitRequest request,
+        DatingExamAnswerEncoder answerEncoder,
+        Long memberId
+    ) {
+        Long subjectId = request.subjectId();
         String encodedAnswers = answerEncoder.encode(request);
-        setRequiredSubjectAnswers(encodedAnswers);
-    }
-
-    public void submitPreferredSubjectAnswers(DatingExamSubmitRequest request, DatingExamAnswerEncoder answerEncoder) {
-        String encodedAnswers = answerEncoder.encode(request);
-        setPreferredSubjectAnswers(encodedAnswers);
-    }
-
-    private void setRequiredSubjectAnswers(final @NonNull String requiredSubjectAnswers) {
-        if (this.requiredSubjectAnswers != null) {
-            throw new InvalidDatingExamSubmitAnswersException("필수 과목 답변이 이미 제출되었습니다");
-        }
-        if (requiredSubjectAnswers.isBlank()) {
-            throw new InvalidDatingExamSubmitAnswersException("필수 과목 답변은 null 또는 빈 문자열일 수 없습니다");
-        }
-        this.requiredSubjectAnswers = requiredSubjectAnswers;
-    }
-
-    private void setPreferredSubjectAnswers(final @NonNull String preferredSubjectAnswers) {
-        if (this.preferredSubjectAnswers != null) {
-            throw new InvalidDatingExamSubmitAnswersException("선호 과목 답변이 이미 제출되었습니다");
-        }
-        if (preferredSubjectAnswers.isBlank()) {
-            throw new InvalidDatingExamSubmitAnswersException("선호 과목 답변은 null 또는 빈 문자열일 수 없습니다");
-        }
-        this.preferredSubjectAnswers = preferredSubjectAnswers;
-    }
-
-    public boolean isRequiredSubjectSubmitted() {
-        return requiredSubjectAnswers != null && !requiredSubjectAnswers.isBlank();
+        return new DatingExamSubmit(memberId, subjectId, encodedAnswers);
     }
 }

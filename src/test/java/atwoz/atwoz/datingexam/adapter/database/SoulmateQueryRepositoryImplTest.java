@@ -1,7 +1,9 @@
 package atwoz.atwoz.datingexam.adapter.database;
 
 import atwoz.atwoz.QuerydslConfig;
+import atwoz.atwoz.datingexam.domain.DatingExamAnswerEncoder;
 import atwoz.atwoz.datingexam.domain.DatingExamSubmit;
+import atwoz.atwoz.datingexam.domain.dto.DatingExamSubmitRequest;
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Gender;
 import atwoz.atwoz.member.command.domain.member.Member;
@@ -17,7 +19,8 @@ import org.springframework.context.annotation.Import;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @Import({QuerydslConfig.class, SoulmateQueryRepositoryImpl.class})
 @DataJpaTest
@@ -31,6 +34,7 @@ class SoulmateQueryRepositoryImplTest {
     @Nested
     @DisplayName("소울 메이트 아이디 목록을 조회할 때,")
     class FindSoulmateIds {
+        private final DatingExamAnswerEncoder encoder = mock(DatingExamAnswerEncoder.class);
 
         private Member createMemberAndSubmit(String phoneNumber, Gender gender, boolean isProfilePublic,
             ActivityStatus activityStatus, String answer) {
@@ -47,12 +51,13 @@ class SoulmateQueryRepositoryImplTest {
             em.persist(member);
             em.flush();
 
-            DatingExamSubmit datingExamSubmit = DatingExamSubmit.from(member.getId());
-            setField(datingExamSubmit, "requiredSubjectAnswers", answer);
+            DatingExamSubmitRequest request = mock(DatingExamSubmitRequest.class);
+            when(request.subjectId()).thenReturn(100L);
+            when(encoder.encode(request)).thenReturn(answer);
+            DatingExamSubmit datingExamSubmit = DatingExamSubmit.from(request, encoder, member.getId());
 
             em.persist(datingExamSubmit);
             em.flush();
-
             return member;
         }
 
@@ -68,6 +73,9 @@ class SoulmateQueryRepositoryImplTest {
             // 소울 메이트 아이디 조회 요청한 멤버
             Member requester = createMemberAndSubmit("01000000000", gender, isProfilePublic, activityStatus,
                 sameAnswer);
+            requester.markDatingExamSubmitted();
+            em.persist(requester);
+            em.flush();
 
             // 소울 메이트로 조회될 멤버
             Member soulmateMember = createMemberAndSubmit("01000000001", gender.getOpposite(), isProfilePublic,
@@ -90,10 +98,26 @@ class SoulmateQueryRepositoryImplTest {
                 ActivityStatus.DORMANT, sameAnswer);
 
             // when
-            Set<Long> soulmateIds = soulmateQueryRepository.findSoulmateIds(requester.getId(), sameAnswer);
+            Set<Long> soulmateIds = soulmateQueryRepository.findSameAnswerMemberIds(requester.getId());
 
             // then
             assertThat(soulmateIds).containsOnly(soulmateMember.getId());
+        }
+
+        @Test
+        @DisplayName("연애 모의고사 필수 과목 제출 기록이 없다면 예외를 던진다.")
+        void throwsExceptionWhenNoDatingExamSubmit() {
+            // given
+            Member member = Member.fromPhoneNumber("01000000000");
+            em.persist(member);
+            em.flush();
+
+            // when & then
+            try {
+                soulmateQueryRepository.findSameAnswerMemberIds(member.getId());
+            } catch (IllegalStateException e) {
+                assertThat(e.getMessage()).contains("연애 모의고사 제출 기록이 없습니다");
+            }
         }
     }
 }
