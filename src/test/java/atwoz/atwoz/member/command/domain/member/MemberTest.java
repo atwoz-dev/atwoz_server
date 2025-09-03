@@ -163,7 +163,7 @@ class MemberTest {
             HeartBalance expectedHeartBalance = HeartBalance.init().gainMissionHeart(missionHeartAmount);
 
             // When
-            member.gainMissionHeart(missionHeartAmount);
+            member.gainMissionHeart(missionHeartAmount, "Daily Login");
 
             // Then
             Assertions.assertThat(member.getHeartBalance()).isEqualTo(expectedHeartBalance);

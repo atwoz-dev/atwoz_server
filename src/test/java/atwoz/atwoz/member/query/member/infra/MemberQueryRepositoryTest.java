@@ -726,7 +726,7 @@ class MemberQueryRepositoryTest {
             HeartAmount purchaseHeartAmount = HeartAmount.from(10L);
             member.gainPurchaseHeart(purchaseHeartAmount);
             HeartAmount missionHeartAmount = HeartAmount.from(5L);
-            member.gainMissionHeart(missionHeartAmount);
+            member.gainMissionHeart(missionHeartAmount, "연애 모의고사 최초 제출");
             entityManager.persist(member);
             entityManager.flush();
 

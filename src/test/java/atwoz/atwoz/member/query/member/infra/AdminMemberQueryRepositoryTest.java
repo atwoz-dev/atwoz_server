@@ -69,7 +69,7 @@ class AdminMemberQueryRepositoryTest {
             member.changeToDormant();
         }
         member.gainPurchaseHeart(HeartAmount.from(100L));
-        member.gainMissionHeart(HeartAmount.from(50L));
+        member.gainMissionHeart(HeartAmount.from(50L), "연애고사 제출");
         member.updateGrade(grade);
         MemberProfile memberProfile = MemberProfile.builder()
             .nickname(Nickname.from(nickname))
