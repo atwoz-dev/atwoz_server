@@ -1,7 +1,6 @@
 package atwoz.atwoz.member.command.application.introduction;
 
-import atwoz.atwoz.datingexam.application.required.DatingExamSubmitRepository;
-import atwoz.atwoz.datingexam.domain.DatingExamSubmit;
+import atwoz.atwoz.datingexam.application.required.SoulmateQueryRepository;
 import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotActiveException;
 import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotFoundException;
 import atwoz.atwoz.member.command.application.introduction.exception.MemberIntroductionAlreadyExistsException;
@@ -15,12 +14,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class MemberIntroductionService {
     private final MemberCommandRepository memberCommandRepository;
     private final MemberIntroductionCommandRepository memberIntroductionCommandRepository;
-    private final DatingExamSubmitRepository datingExamSubmitRepository;
+    private final SoulmateQueryRepository soulmateQueryRepository;
 
     @Transactional
     public void createGradeIntroduction(long memberId, long introducedMemberId) {
@@ -53,19 +54,33 @@ public class MemberIntroductionService {
         createIntroduction(memberId, introducedMemberId, IntroductionType.SOULMATE);
     }
 
+    @Transactional
+    public void createSameAnswerIntroduction(long memberId, long introducedMemberId) {
+        validateSameAnswerIntroduction(memberId, introducedMemberId);
+        createIntroduction(memberId, introducedMemberId, IntroductionType.SAME_ANSWER);
+    }
+
     private void validateSoulmateIntroduction(long memberId, long introducedMemberId) {
-        String memberAnswers = getDatingExamSubmitAnswers(memberId);
-        String introducedMemberAnswers = getDatingExamSubmitAnswers(introducedMemberId);
-        if (!memberAnswers.equals(introducedMemberAnswers)) {
-            throw new IllegalStateException("연애 모의고사 답안이 일치하지 않습니다. " +
-                "회원 ID: " + memberId + ", 소개된 회원 ID: " + introducedMemberId);
+        Member member = getMember(memberId);
+        if (member.hasSubmittedDatingExam() == false) {
+            throw new IllegalStateException("연애 모의고사를 제출하지 않은 회원은 소울메이트 소개를 받을 수 없습니다. memberId: " + memberId);
+        }
+        Set<Long> soulmateIds = soulmateQueryRepository.findSameAnswerMemberIds(memberId);
+        if (!soulmateIds.contains(introducedMemberId)) {
+            throw new IllegalArgumentException("소울메이트가 아닙니다. introducedMemberId: " + introducedMemberId);
         }
     }
 
-    private String getDatingExamSubmitAnswers(long memberId) {
-        DatingExamSubmit datingExamSubmit = datingExamSubmitRepository.findByMemberId(memberId)
-            .orElseThrow(() -> new EntityNotFoundException("연애 모의고사 제출 기록이 없습니다. 회원 ID: " + memberId));
-        return datingExamSubmit.getRequiredSubjectAnswers();
+    private void validateSameAnswerIntroduction(long memberId, long introducedMemberId) {
+        Set<Long> soulmateIds = soulmateQueryRepository.findSameAnswerMemberIds(memberId);
+        if (!soulmateIds.contains(introducedMemberId)) {
+            throw new IllegalArgumentException("같은 답안을 제출한 멤버가 아닙니다. introducedMemberId: " + introducedMemberId);
+        }
+    }
+
+    private Member getMember(long memberId) {
+        return memberCommandRepository.findById(memberId)
+            .orElseThrow(() -> new EntityNotFoundException("회원이 존재하지 않습니다. memberId: " + memberId));
     }
 
     private void createIntroduction(long memberId, long introducedMemberId, IntroductionType introductionType) {
