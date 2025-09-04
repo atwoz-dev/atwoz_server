@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 
 @Component
 @RequiredArgsConstructor
@@ -24,7 +25,7 @@ public class DatingExamEncoder implements DatingExamAnswerEncoder {
         var answers = request.answers().stream()
             .sorted(Comparator.comparingLong(answer -> answer.questionId()))
             .map(answer -> {
-                var linkedHashMap = new java.util.LinkedHashMap<String, Object>();
+                var linkedHashMap = new LinkedHashMap<String, Object>();
                 linkedHashMap.put(ENCODED_QUESTION_ID_KEY, answer.questionId());
                 linkedHashMap.put(ENCODED_ANSWER_ID_KEY, answer.answerId());
                 return linkedHashMap;
