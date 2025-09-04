@@ -10,6 +10,8 @@ import atwoz.atwoz.match.command.domain.match.MatchStatus;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import atwoz.atwoz.match.presentation.dto.MatchRequestDto;
 import atwoz.atwoz.match.presentation.dto.MatchResponseDto;
+import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,21 +19,30 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class MatchService {
+
     private static final String LOCK_PREFIX = "MATCH:";
+
+    private final MemberCommandRepository memberCommandRepository;
     private final MatchRepository matchRepository;
     private final LockRepository lockRepository;
 
     @Transactional
-    public void request(Long requesterId, MatchRequestDto requestDto) {
-        String key = generateKey(requesterId, requestDto.responderId());
+    public void request(Long requesterId, MatchRequestDto request) {
+        long responderId = request.responderId();
+        String requesterName = findNickname(requesterId);
 
+        String key = generateKey(requesterId, responderId);
         lockRepository.withNamedLock(key, () -> {
-            if (existsMutualMatch(requesterId, requestDto.responderId())) {
+            if (existsMutualMatch(requesterId, responderId)) {
                 throw new ExistsMatchException();
             }
 
-            Match match = Match.request(requesterId, requestDto.responderId(),
-                Message.from(requestDto.requestMessage()));
+            Match match = Match.request(
+                requesterId,
+                responderId,
+                Message.from(request.requestMessage()),
+                requesterName
+            );
             matchRepository.save(match);
         });
     }
@@ -39,19 +50,29 @@ public class MatchService {
     @Transactional
     public void approve(Long matchId, Long responderId, MatchResponseDto respondDto) {
         Match match = getWaitingMatchByIdAndResponderId(matchId, responderId);
-        match.approve(Message.from(respondDto.responseMessage()));
+        String responderName = findNickname(responderId);
+        match.approve(Message.from(respondDto.responseMessage()), responderName);
     }
 
     @Transactional
     public void reject(Long matchId, Long responderId) {
         Match match = getWaitingMatchByIdAndResponderId(matchId, responderId);
-        match.reject();
+        String responderName = findNickname(responderId);
+        match.reject(responderName);
     }
 
     @Transactional
     public void rejectCheck(Long requesterId, Long matchId) {
         Match match = getRejectedMatchByIdAndRequesterId(matchId, requesterId);
         match.checkRejected();
+    }
+
+    private String findNickname(long memberId) {
+        return memberCommandRepository.findById(memberId)
+            .orElseThrow(() -> new EntityNotFoundException("Member not found. id: " + memberId))
+            .getProfile()
+            .getNickname()
+            .getValue();
     }
 
     private boolean existsMutualMatch(Long requesterId, Long responderId) {
