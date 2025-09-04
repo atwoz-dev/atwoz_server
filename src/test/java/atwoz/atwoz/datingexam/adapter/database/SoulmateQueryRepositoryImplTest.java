@@ -74,7 +74,6 @@ class SoulmateQueryRepositoryImplTest {
             Member requester = createMemberAndSubmit("01000000000", gender, isProfilePublic, activityStatus,
                 sameAnswer);
             requester.markDatingExamSubmitted();
-            em.persist(requester);
             em.flush();
 
             // 소울 메이트로 조회될 멤버
