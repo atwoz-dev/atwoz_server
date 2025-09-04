@@ -36,6 +36,9 @@ public class DatingExamSubmit extends BaseEntity {
     private DatingExamSubmit(@NonNull Long memberId, @NonNull Long subjectId, @NonNull String answers) {
         this.memberId = memberId;
         this.subjectId = subjectId;
+        if (answers.isBlank()) {
+            throw new IllegalArgumentException("연애고사 답변은 비어있을 수 없습니다.");
+        }
         this.answers = answers;
     }
 
