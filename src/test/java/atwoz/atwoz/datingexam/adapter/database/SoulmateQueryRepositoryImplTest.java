@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Import;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -112,11 +113,8 @@ class SoulmateQueryRepositoryImplTest {
             em.flush();
 
             // when & then
-            try {
-                soulmateQueryRepository.findSameAnswerMemberIds(member.getId());
-            } catch (IllegalStateException e) {
-                assertThat(e.getMessage()).contains("연애 모의고사 제출 기록이 없습니다");
-            }
+            assertThatThrownBy(() -> soulmateQueryRepository.findSameAnswerMemberIds(member.getId()))
+                .isInstanceOf(IllegalStateException.class);
         }
     }
 }
