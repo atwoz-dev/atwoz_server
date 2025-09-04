@@ -14,7 +14,10 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @Getter
 @Table(
-    uniqueConstraints = @UniqueConstraint(columnNames = {"memberId", "subjectId"})
+    uniqueConstraints = @UniqueConstraint(
+        name = "uk_dating_exam_submit_member_subject",
+        columnNames = {"memberId", "subjectId"}
+    )
 )
 public class DatingExamSubmit extends BaseEntity {
     @Id
