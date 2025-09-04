@@ -108,16 +108,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<BaseResponse<Void>> handleDataAccessException(DataAccessException e) {
-        Throwable cause = e.getCause();
+        Throwable cause = e.getMostSpecificCause();
 
-        if (cause != null && cause.getClass().equals(IllegalStateException.class)) {
+        if (cause instanceof IllegalStateException) {
             log.warn("Illegal state exception", cause);
-
             return ResponseEntity.badRequest()
                 .body(BaseResponse.of(StatusType.BAD_REQUEST, cause.getMessage()));
         }
-        log.error("Data access exception", e);
 
+        log.error("Data access exception", e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(BaseResponse.from(StatusType.INTERNAL_SERVER_ERROR));
     }
