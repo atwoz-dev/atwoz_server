@@ -2,7 +2,6 @@ package atwoz.atwoz.datingexam.adapter.encoding;
 
 import atwoz.atwoz.datingexam.domain.dto.AnswerSubmitRequest;
 import atwoz.atwoz.datingexam.domain.dto.DatingExamSubmitRequest;
-import atwoz.atwoz.datingexam.domain.dto.SubjectSubmitRequest;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -23,11 +22,9 @@ class DatingExamEncoderTest {
         DatingExamEncoder encoder = new DatingExamEncoder(realMapper);
 
         // given
-        var request = new DatingExamSubmitRequest(List.of(
-            new SubjectSubmitRequest(1L, List.of(
-                new AnswerSubmitRequest(11L, 111L),
-                new AnswerSubmitRequest(12L, 113L)
-            ))
+        var request = new DatingExamSubmitRequest(1L, List.of(
+            new AnswerSubmitRequest(11L, 111L),
+            new AnswerSubmitRequest(12L, 113L)
         ));
 
         // when
@@ -38,17 +35,11 @@ class DatingExamEncoderTest {
         TypeReference<Map<String, Object>> typeRef = new TypeReference<>() {};
         Map<String, Object> map = realMapper.readValue(json, typeRef);
 
-        assertThat(map).containsKey("ss");
 
-        var ssList = (List<?>) map.get("ss");
-        assertThat(ssList).hasSize(1);
-
-        var subjMap = (Map<String, Object>) ssList.get(0);
-        assertThat(subjMap)
-            .containsEntry("s", 1)
+        assertThat(map)
             .containsKey("as");
 
-        var asList = (List<?>) subjMap.get("as");
+        var asList = (List<?>) map.get("as");
         assertThat(asList).hasSize(2);
 
         var ansMap1 = (Map<String, Object>) asList.get(0);

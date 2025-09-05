@@ -1,6 +1,7 @@
 package atwoz.atwoz.member.command.application.introduction;
 
 
+import atwoz.atwoz.datingexam.application.required.SoulmateQueryRepository;
 import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotActiveException;
 import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotFoundException;
 import atwoz.atwoz.member.command.application.introduction.exception.MemberIntroductionAlreadyExistsException;
@@ -18,6 +19,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -33,6 +35,9 @@ class MemberIntroductionServiceTest {
 
     @Mock
     private MemberCommandRepository memberCommandRepository;
+
+    @Mock
+    private SoulmateQueryRepository soulmateQueryRepository;
 
     @Test
     @DisplayName("소개받은 멤버가 존재하지 않으면 예외를 던진다.")
@@ -107,5 +112,56 @@ class MemberIntroductionServiceTest {
             // then
             verify(memberIntroductionCommandRepository).save(memberIntroduction);
         }
+    }
+
+    @Test
+    @DisplayName("소울 메이트 소개 생성에서, 연애고사 미제출 회원은 예외를 던진다")
+    void throwsExceptionWhenMemberNotSubmittedDatingExam() {
+        // given
+        long memberId = 1L;
+        long introducedMemberId = 2L;
+
+        Member member = mock(Member.class);
+        when(member.hasSubmittedDatingExam()).thenReturn(false);
+        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(member));
+
+        // when & then
+        assertThatThrownBy(() -> memberIntroductionService.createSoulmateIntroduction(memberId, introducedMemberId))
+            .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    @DisplayName("소울 메이트 소개 생성에서, 소울메이트가 아닌 회원은 예외를 던진다")
+    void throwsExceptionWhenNotSoulmate() {
+        // given
+        long memberId = 1L;
+        long introducedMemberId = 2L;
+
+        Member member = mock(Member.class);
+        when(member.hasSubmittedDatingExam()).thenReturn(true);
+        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(soulmateQueryRepository.findSameAnswerMemberIds(memberId)).thenReturn(
+            Set.of(3L, 4L, 5L)
+        );
+
+        // when & then
+        assertThatThrownBy(() -> memberIntroductionService.createSoulmateIntroduction(memberId, introducedMemberId))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("같은 답안 소개 생성에서, 같은 답안을 제출한 회원이 아니라면 예외를 던진다")
+    void throwsExceptionWhenNotSameAnswerMember() {
+        // given
+        long memberId = 1L;
+        long introducedMemberId = 2L;
+
+        when(soulmateQueryRepository.findSameAnswerMemberIds(memberId)).thenReturn(
+            Set.of(3L, 4L, 5L)
+        );
+
+        // when & then
+        assertThatThrownBy(() -> memberIntroductionService.createSameAnswerIntroduction(memberId, introducedMemberId))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 }

@@ -23,23 +23,13 @@ public class DatingExamApi {
     private final DatingExamSubmitter datingExamSubmitter;
     private final DatingExamFinder datingExamFinder;
 
-    @Operation(summary = "필수 과목 제출 API")
-    @PostMapping("/required/submit")
+    @Operation(summary = "과목 답안 제출 API")
+    @PostMapping("/submit")
     public ResponseEntity<BaseResponse<Void>> submitRequiredExam(
         @RequestBody @Valid DatingExamSubmitRequest datingExamSubmitRequest,
         @AuthPrincipal AuthContext authContext
     ) {
-        datingExamSubmitter.submitRequiredSubject(datingExamSubmitRequest, authContext.getId());
-        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
-    }
-
-    @Operation(summary = "선택 과목 제출 API")
-    @PostMapping("/optional/submit")
-    public ResponseEntity<BaseResponse<Void>> submitOptionalExam(
-        @RequestBody @Valid DatingExamSubmitRequest datingExamSubmitRequest,
-        @AuthPrincipal AuthContext authContext
-    ) {
-        datingExamSubmitter.submitOptionalSubject(datingExamSubmitRequest, authContext.getId());
+        datingExamSubmitter.submitSubject(datingExamSubmitRequest, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
 

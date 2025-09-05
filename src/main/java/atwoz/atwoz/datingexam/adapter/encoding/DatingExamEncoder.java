@@ -8,14 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class DatingExamEncoder implements DatingExamAnswerEncoder {
-    private static final String ENCODED_SUBJECTS_KEY = "ss";
-    private static final String ENCODED_SUBJECT_ID_KEY = "s";
     private static final String ENCODED_ANSWERS_KEY = "as";
     private static final String ENCODED_QUESTION_ID_KEY = "q";
     private static final String ENCODED_ANSWER_ID_KEY = "a";
@@ -23,17 +22,21 @@ public class DatingExamEncoder implements DatingExamAnswerEncoder {
 
     @Override
     public String encode(DatingExamSubmitRequest request) {
-        Map<String, Object> transformed = Map.of(
-            ENCODED_SUBJECTS_KEY, request.subjects().stream().map(subject -> Map.of(
-                ENCODED_SUBJECT_ID_KEY, subject.subjectId(),
-                ENCODED_ANSWERS_KEY, subject.answers().stream().map(answer -> Map.of(
-                    ENCODED_QUESTION_ID_KEY, answer.questionId(),
-                    ENCODED_ANSWER_ID_KEY, answer.answerId()
-                )).toList()
-            )).toList()
-        );
+        var answers = request.answers().stream()
+            .sorted(Comparator.comparingLong(answer -> answer.questionId()))
+            .map(answer -> {
+                var linkedHashMap = new LinkedHashMap<String, Object>();
+                linkedHashMap.put(ENCODED_QUESTION_ID_KEY, answer.questionId());
+                linkedHashMap.put(ENCODED_ANSWER_ID_KEY, answer.answerId());
+                return linkedHashMap;
+            })
+            .toList();
+
+        var resultMap = new java.util.LinkedHashMap<String, Object>();
+        resultMap.put(ENCODED_ANSWERS_KEY, answers);
+
         try {
-            return objectMapper.writeValueAsString(transformed);
+            return objectMapper.writeValueAsString(resultMap);
         } catch (IOException e) {
             throw new DatingExamEncodingFailedException("답안 인코딩에 실패했습니다. " + e.getMessage());
         }

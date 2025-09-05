@@ -164,4 +164,14 @@ public class MemberIntroductionController {
         memberIntroductionService.createSoulmateIntroduction(memberId, request.introducedMemberId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
+
+    @Operation(summary = "연애고사에서 같은 답안을 제출한 이성 프로필 블러 해제")
+    @PostMapping("/same-answer")
+    public ResponseEntity<BaseResponse<Void>> createSameAnswerIntroduction(
+        @Valid @RequestBody MemberIntroductionCreateRequest request,
+        @AuthPrincipal AuthContext authContext) {
+        long memberId = authContext.getId();
+        memberIntroductionService.createSameAnswerIntroduction(memberId, request.introducedMemberId());
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
 }

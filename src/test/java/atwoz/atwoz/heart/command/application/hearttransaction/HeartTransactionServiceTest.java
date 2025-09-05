@@ -42,4 +42,29 @@ class HeartTransactionServiceTest {
                 heartTransaction.getHeartBalance().getPurchaseHeartBalance().equals(purchaseHeartBalance)
         ));
     }
+
+    @Test
+    @DisplayName("하트 미션 트랜잭션을 생성합니다.")
+    void createHeartMissionTransaction() {
+        // given
+        Long memberId = 1L;
+        Long amount = 50L;
+        Long missionHeartBalance = 150L;
+        Long purchaseHeartBalance = 100L;
+        String actionType = "Daily Login";
+
+        // when
+        heartTransactionService.createHeartMissionTransaction(memberId, amount, missionHeartBalance,
+            purchaseHeartBalance, actionType);
+
+        // then
+        verify(heartTransactionCommandRepository).save(argThat(heartTransaction ->
+            heartTransaction.getMemberId().equals(memberId) &&
+                heartTransaction.getTransactionType() == TransactionType.MISSION &&
+                heartTransaction.getContent().equals(actionType) &&
+                heartTransaction.getHeartAmount().getAmount().equals(amount) &&
+                heartTransaction.getHeartBalance().getMissionHeartBalance().equals(missionHeartBalance) &&
+                heartTransaction.getHeartBalance().getPurchaseHeartBalance().equals(purchaseHeartBalance)
+        ));
+    }
 }

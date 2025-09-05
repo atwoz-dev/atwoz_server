@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -43,8 +44,15 @@ public class MemberMissionService {
     }
 
     private List<Mission> getMission(String actionType, String targetGender) {
-        return missionCommandRepository.findByActionTypeAndTargetGender(ActionType.from(actionType),
+        List<Mission> mission = missionCommandRepository.findByActionTypeAndTargetGender(
+            ActionType.from(actionType),
             TargetGender.from(targetGender));
+
+        List<Mission> allGenderMission = missionCommandRepository.findByActionTypeAndTargetGender(
+            ActionType.from(actionType),
+            TargetGender.ALL);
+
+        return Stream.concat(mission.stream(), allGenderMission.stream()).toList();
     }
 
     private Member getMember(Long memberId) {

@@ -90,6 +90,9 @@ public class MemberMissionServiceTest {
             Mockito.when(missionCommandRepository.findByActionTypeAndTargetGender(mission.getActionType(),
                     mission.getTargetGender()))
                 .thenReturn(List.of(mission));
+            Mockito.when(missionCommandRepository.findByActionTypeAndTargetGender(mission.getActionType(),
+                    TargetGender.ALL))
+                .thenReturn(List.of());
             Mockito.when(memberCommandRepository.findById(memberId))
                 .thenReturn(Optional.of(member));
             Mockito.when(memberMissionCommandRepository.findByMemberIdAndMissionIdOnToday(memberId, missionId))
@@ -111,6 +114,9 @@ public class MemberMissionServiceTest {
             Mockito.when(missionCommandRepository.findByActionTypeAndTargetGender(mission.getActionType(),
                     mission.getTargetGender()))
                 .thenReturn(List.of(mission));
+            Mockito.when(missionCommandRepository.findByActionTypeAndTargetGender(mission.getActionType(),
+                    TargetGender.ALL))
+                .thenReturn(List.of());
             Mockito.when(memberCommandRepository.findById(memberId))
                 .thenReturn(Optional.of(member));
             Mockito.when(memberMissionCommandRepository.findByMemberIdAndMissionIdOnToday(memberId, missionId))
@@ -131,6 +137,9 @@ public class MemberMissionServiceTest {
             Mockito.when(missionCommandRepository.findByActionTypeAndTargetGender(mission.getActionType(),
                     mission.getTargetGender()))
                 .thenReturn(List.of(mission));
+            Mockito.when(missionCommandRepository.findByActionTypeAndTargetGender(mission.getActionType(),
+                    TargetGender.ALL))
+                .thenReturn(List.of());
             Mockito.when(memberCommandRepository.findById(memberId))
                 .thenReturn(Optional.of(member));
             Mockito.when(memberMissionCommandRepository.findByMemberIdAndMissionIdOnToday(memberId, missionId))

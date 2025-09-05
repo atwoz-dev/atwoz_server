@@ -5,10 +5,8 @@ import atwoz.atwoz.datingexam.application.dto.DatingExamInfoResponse;
 import atwoz.atwoz.datingexam.application.dto.DatingExamQuestionInfo;
 import atwoz.atwoz.datingexam.application.dto.DatingExamSubjectInfo;
 import atwoz.atwoz.datingexam.application.exception.InvalidDatingExamSubmitRequestException;
-import atwoz.atwoz.datingexam.domain.SubjectType;
 import atwoz.atwoz.datingexam.domain.dto.AnswerSubmitRequest;
 import atwoz.atwoz.datingexam.domain.dto.DatingExamSubmitRequest;
-import atwoz.atwoz.datingexam.domain.dto.SubjectSubmitRequest;
 import lombok.NoArgsConstructor;
 
 import java.util.Map;
@@ -17,18 +15,13 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class DatingExamSubmitRequestValidator {
-    public static void validateSubmit(DatingExamSubmitRequest request, DatingExamInfoResponse info,
-        SubjectType subjectType) {
-        Map<Long, Map<Long, Set<Long>>> validMap = toValidMap(info, subjectType);
-        if (subjectType.equals(SubjectType.REQUIRED)) {
-            validateRequiredSubject(request, validMap);
-        }
+    public static void validateSubmit(DatingExamSubmitRequest request, DatingExamInfoResponse info) {
+        Map<Long, Map<Long, Set<Long>>> validMap = toValidMap(info);
         validateSubject(request, validMap);
     }
 
-    private static Map<Long, Map<Long, Set<Long>>> toValidMap(DatingExamInfoResponse info, SubjectType subjectType) {
+    private static Map<Long, Map<Long, Set<Long>>> toValidMap(DatingExamInfoResponse info) {
         return info.subjects().stream()
-            .filter(subject -> subject.type().equals(subjectType.name()))
             .collect(Collectors.toMap(
                 DatingExamSubjectInfo::id,
                 subjectInfo -> subjectInfo.questions().stream()
@@ -41,43 +34,22 @@ public class DatingExamSubmitRequestValidator {
             ));
     }
 
-    private static void validateRequiredSubject(
-        DatingExamSubmitRequest request,
-        Map<Long, Map<Long, Set<Long>>> validMap
-    ) {
-        if (request.subjects().size() != validMap.size()) {
-            throw new InvalidDatingExamSubmitRequestException("제출한 필수 과목의 수가 올바르지 않습니다.");
-        }
-        validateSubject(request, validMap);
-    }
-
     private static void validateSubject(
         DatingExamSubmitRequest request,
         Map<Long, Map<Long, Set<Long>>> validMap
     ) {
-        boolean hasDuplicates = request.subjects().stream()
-            .map(SubjectSubmitRequest::subjectId)
-            .distinct()
-            .count() < request.subjects().size();
-
-        if (hasDuplicates) {
-            throw new InvalidDatingExamSubmitRequestException("제출한 subjectId에 중복이 존재합니다.");
+        Long subjectId = request.subjectId();
+        Map<Long, Set<Long>> questionsMap = validMap.get(subjectId);
+        if (questionsMap == null) {
+            throw new InvalidDatingExamSubmitRequestException(
+                "존재하지 않는 subjectId 입니다: " + subjectId
+            );
         }
-
-        for (SubjectSubmitRequest subjectRequest : request.subjects()) {
-            Long subjectId = subjectRequest.subjectId();
-            Map<Long, Set<Long>> questionsMap = validMap.get(subjectId);
-            if (questionsMap == null) {
-                throw new InvalidDatingExamSubmitRequestException(
-                    "존재하지 않는 subjectId 입니다: " + subjectId
-                );
-            }
-            validateQuestion(subjectRequest, questionsMap);
-        }
+        validateQuestion(request, questionsMap);
     }
 
     private static void validateQuestion(
-        SubjectSubmitRequest subjectRequest,
+        DatingExamSubmitRequest subjectRequest,
         Map<Long, Set<Long>> questionsMap
     ) {
         boolean hasDuplicates = subjectRequest.answers().stream()

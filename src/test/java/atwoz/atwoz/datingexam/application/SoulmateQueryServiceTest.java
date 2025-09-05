@@ -1,9 +1,6 @@
 package atwoz.atwoz.datingexam.application;
 
-import atwoz.atwoz.datingexam.application.required.DatingExamSubmitRepository;
 import atwoz.atwoz.datingexam.application.required.SoulmateQueryRepository;
-import atwoz.atwoz.datingexam.domain.DatingExamSubmit;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,10 +9,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
+import java.util.Set;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,41 +21,24 @@ class SoulmateQueryServiceTest {
     private SoulmateQueryService soulmateQueryService;
 
     @Mock
-    private DatingExamSubmitRepository datingExamSubmitRepository;
-
-    @Mock
     private SoulmateQueryRepository soulmateQueryRepository;
 
     @Nested
     @DisplayName("소울 메이트 아이디 목록을 조회할 때,")
     class FindSoulmateIds {
-
         @Test
-        @DisplayName("유저의 연애 모의고사 제출 기록이 없다면, EntityNotFoundException을 던진다.")
-        void whenNoDatingExamSubmitThenThrowEntityNotFoundException() {
-            // given
+        @DisplayName("soulmateQueryRepository에서 조회된 아이디 목록을 반환한다.")
+        void findSoulmateIds_Success() {
+            // Given
             Long memberId = 1L;
-            when(datingExamSubmitRepository.findByMemberId(memberId))
-                .thenReturn(Optional.empty());
+            Set<Long> expectedSoulmateIds = Set.of(3L, 4L, 5L);
+            when(soulmateQueryRepository.findSameAnswerMemberIds(memberId)).thenReturn(expectedSoulmateIds);
 
-            // when & then
-            assertThatThrownBy(() -> soulmateQueryService.findSoulmateIds(memberId)
-            ).isInstanceOf(EntityNotFoundException.class);
-        }
+            // When
+            Set<Long> soulmateIds = soulmateQueryService.findSoulmateIds(memberId);
 
-        @Test
-        @DisplayName("유저의 연애 모의고사 제출 기록이 있지만 필수 과목이 제출되지 않았다면, IllegalStateException을 던진다.")
-        void whenDatingExamSubmitExistsButNotRequiredThenThrowIllegalStateException() {
-            // given
-            Long memberId = 1L;
-            DatingExamSubmit datingExamSubmit = mock(DatingExamSubmit.class);
-            when(datingExamSubmitRepository.findByMemberId(memberId))
-                .thenReturn(Optional.of(datingExamSubmit));
-            when(datingExamSubmit.isRequiredSubjectSubmitted()).thenReturn(false);
-
-            // when & then
-            assertThatThrownBy(() -> soulmateQueryService.findSoulmateIds(memberId)
-            ).isInstanceOf(IllegalStateException.class);
+            // Then
+            assertThat(soulmateIds).isEqualTo(expectedSoulmateIds);
         }
     }
 }

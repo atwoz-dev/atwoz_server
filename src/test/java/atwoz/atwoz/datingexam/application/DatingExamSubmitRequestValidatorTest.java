@@ -8,7 +8,6 @@ import atwoz.atwoz.datingexam.application.exception.InvalidDatingExamSubmitReque
 import atwoz.atwoz.datingexam.domain.SubjectType;
 import atwoz.atwoz.datingexam.domain.dto.AnswerSubmitRequest;
 import atwoz.atwoz.datingexam.domain.dto.DatingExamSubmitRequest;
-import atwoz.atwoz.datingexam.domain.dto.SubjectSubmitRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -39,163 +38,95 @@ class DatingExamSubmitRequestValidatorTest {
     }
 
     @Test
-    @DisplayName("OPTIONAL 타입은 유효한 단일 과목을 제출하면, 예외를 던지지 않는다.")
-    void optionalValidSingleSubject() {
+    @DisplayName("유효한 과목을 제출하면, 예외를 던지지 않는다.")
+    void validSubject() {
         var info = buildInfo(SubjectType.OPTIONAL);
-        var request = new DatingExamSubmitRequest(List.of(
-            new SubjectSubmitRequest(1L, List.of(
-                new AnswerSubmitRequest(11L, 111L),
-                new AnswerSubmitRequest(12L, 113L)
-            ))
+        var request = new DatingExamSubmitRequest(1L, List.of(
+            new AnswerSubmitRequest(11L, 111L),
+            new AnswerSubmitRequest(12L, 113L)
+
         ));
 
         assertThatCode(() ->
-            DatingExamSubmitRequestValidator.validateSubmit(request, info, SubjectType.OPTIONAL)
+            DatingExamSubmitRequestValidator.validateSubmit(request, info)
         ).doesNotThrowAnyException();
     }
 
     @Test
-    @DisplayName("REQUIRED 타입은 모든 과목을 제출하면, 예외를 던지지 않는다.")
-    void requiredValidAllSubjects() {
-        var info = buildInfo(SubjectType.REQUIRED);
-        var request = new DatingExamSubmitRequest(List.of(
-            new SubjectSubmitRequest(1L, List.of(
-                new AnswerSubmitRequest(11L, 111L),
-                new AnswerSubmitRequest(12L, 113L)
-            )),
-            new SubjectSubmitRequest(2L, List.of(
-                new AnswerSubmitRequest(21L, 211L)
-            ))
-        ));
-
-        assertThatCode(() ->
-            DatingExamSubmitRequestValidator.validateSubmit(request, info, SubjectType.REQUIRED)
-        ).doesNotThrowAnyException();
-    }
-
-    @Test
-    @DisplayName("OPTIONAL 타입은 subjectId가 중복되면, 예외를 던진다.")
-    void duplicateSubjectIdsShouldFailOptional() {
+    @DisplayName("존재하지 않는 subjectId를 제출하면, 예외를 던진다.")
+    void missingSubjectIdShouldFail() {
         var info = buildInfo(SubjectType.OPTIONAL);
-        var request = new DatingExamSubmitRequest(List.of(
-            new SubjectSubmitRequest(1L, List.of(
-                new AnswerSubmitRequest(11L, 111L)
-            )),
-            new SubjectSubmitRequest(1L, List.of(
-                new AnswerSubmitRequest(12L, 113L)
-            ))
+        var request = new DatingExamSubmitRequest(3L, List.of(
+            new AnswerSubmitRequest(11L, 111L)
         ));
 
         assertThatThrownBy(() ->
-            DatingExamSubmitRequestValidator.validateSubmit(request, info, SubjectType.OPTIONAL)
-        )
-            .isInstanceOf(InvalidDatingExamSubmitRequestException.class)
-            .hasMessageContaining("중복");
-    }
-
-    @Test
-    @DisplayName("OPTIONAL 타입은 존재하지 않는 subjectId를 제출하면, 예외를 던진다.")
-    void missingSubjectIdShouldFailOptional() {
-        var info = buildInfo(SubjectType.OPTIONAL);
-        var request = new DatingExamSubmitRequest(List.of(
-            new SubjectSubmitRequest(3L, List.of(
-                new AnswerSubmitRequest(11L, 111L)
-            ))
-        ));
-
-        assertThatThrownBy(() ->
-            DatingExamSubmitRequestValidator.validateSubmit(request, info, SubjectType.OPTIONAL)
+            DatingExamSubmitRequestValidator.validateSubmit(request, info)
         )
             .isInstanceOf(InvalidDatingExamSubmitRequestException.class)
             .hasMessageContaining("존재하지 않는 subjectId");
     }
 
     @Test
-    @DisplayName("OPTIONAL 타입은 질문ID가 중복되면, 예외를 던진다.")
-    void duplicateQuestionIdsShouldFailOptional() {
+    @DisplayName("질문ID가 중복되면, 예외를 던진다.")
+    void duplicateQuestionIdsShouldFail() {
         var info = buildInfo(SubjectType.OPTIONAL);
-        var request = new DatingExamSubmitRequest(List.of(
-            new SubjectSubmitRequest(1L, List.of(
-                new AnswerSubmitRequest(11L, 111L),
-                new AnswerSubmitRequest(11L, 112L)
-            ))
+        var request = new DatingExamSubmitRequest(1L, List.of(
+            new AnswerSubmitRequest(11L, 111L),
+            new AnswerSubmitRequest(11L, 112L)
         ));
 
         assertThatThrownBy(() ->
-            DatingExamSubmitRequestValidator.validateSubmit(request, info, SubjectType.OPTIONAL)
+            DatingExamSubmitRequestValidator.validateSubmit(request, info)
         )
             .isInstanceOf(InvalidDatingExamSubmitRequestException.class)
             .hasMessageContaining("중복된 questionId");
     }
 
     @Test
-    @DisplayName("OPTIONAL 타입은 답변 개수가 올바르지 않으면, 예외를 던진다.")
-    void wrongAnswerCountShouldFailOptional() {
+    @DisplayName("답변 개수가 올바르지 않으면, 예외를 던진다.")
+    void wrongAnswerCountShouldFail() {
         var info = buildInfo(SubjectType.OPTIONAL);
-        var request = new DatingExamSubmitRequest(List.of(
-            new SubjectSubmitRequest(1L, List.of(
-                new AnswerSubmitRequest(11L, 111L)
-            ))
+        var request = new DatingExamSubmitRequest(1L, List.of(
+            new AnswerSubmitRequest(11L, 111L)
         ));
 
         assertThatThrownBy(() ->
-            DatingExamSubmitRequestValidator.validateSubmit(request, info, SubjectType.OPTIONAL)
+            DatingExamSubmitRequestValidator.validateSubmit(request, info)
         )
             .isInstanceOf(InvalidDatingExamSubmitRequestException.class)
             .hasMessageContaining("속하는 questionId의 수가 올바르지 않습니다");
     }
 
     @Test
-    @DisplayName("OPTIONAL 타입은 존재하지 않는 questionId를 제출하면, 예외를 던진다.")
-    void missingQuestionIdShouldFailOptional() {
+    @DisplayName("존재하지 않는 questionId를 제출하면, 예외를 던진다.")
+    void missingQuestionIdShouldFail() {
         var info = buildInfo(SubjectType.OPTIONAL);
-        var request = new DatingExamSubmitRequest(List.of(
-            new SubjectSubmitRequest(1L, List.of(
-                new AnswerSubmitRequest(99L, 111L),
-                new AnswerSubmitRequest(12L, 113L)
-            ))
+        var request = new DatingExamSubmitRequest(1L, List.of(
+            new AnswerSubmitRequest(99L, 111L),
+            new AnswerSubmitRequest(12L, 113L)
         ));
 
         assertThatThrownBy(() ->
-            DatingExamSubmitRequestValidator.validateSubmit(request, info, SubjectType.OPTIONAL)
+            DatingExamSubmitRequestValidator.validateSubmit(request, info)
         )
             .isInstanceOf(InvalidDatingExamSubmitRequestException.class)
             .hasMessageContaining("속하지 않은 questionId");
     }
 
     @Test
-    @DisplayName("OPTIONAL 타입은 존재하지 않는 answerId를 제출하면, 예외를 던진다.")
-    void missingAnswerIdShouldFailOptional() {
+    @DisplayName("존재하지 않는 answerId를 제출하면, 예외를 던진다.")
+    void missingAnswerIdShouldFail() {
         var info = buildInfo(SubjectType.OPTIONAL);
-        var request = new DatingExamSubmitRequest(List.of(
-            new SubjectSubmitRequest(1L, List.of(
-                new AnswerSubmitRequest(11L, 999L),
-                new AnswerSubmitRequest(12L, 113L)
-            ))
+        var request = new DatingExamSubmitRequest(1L, List.of(
+            new AnswerSubmitRequest(11L, 999L),
+            new AnswerSubmitRequest(12L, 113L)
         ));
 
         assertThatThrownBy(() ->
-            DatingExamSubmitRequestValidator.validateSubmit(request, info, SubjectType.OPTIONAL)
+            DatingExamSubmitRequestValidator.validateSubmit(request, info)
         )
             .isInstanceOf(InvalidDatingExamSubmitRequestException.class)
             .hasMessageContaining("속하지 않은 answerId");
-    }
-
-    @Test
-    @DisplayName("REQUIRED 타입은 과목 수가 일치하지 않으면, 예외를 던진다.")
-    void requiredSubjectCountMismatchShouldFail() {
-        var info = buildInfo(SubjectType.REQUIRED);
-        var request = new DatingExamSubmitRequest(List.of(
-            new SubjectSubmitRequest(1L, List.of(
-                new AnswerSubmitRequest(11L, 111L),
-                new AnswerSubmitRequest(12L, 113L)
-            ))
-        ));
-
-        assertThatThrownBy(() ->
-            DatingExamSubmitRequestValidator.validateSubmit(request, info, SubjectType.REQUIRED)
-        )
-            .isInstanceOf(InvalidDatingExamSubmitRequestException.class)
-            .hasMessageContaining("필수 과목의 수가 올바르지 않습니다");
     }
 }
