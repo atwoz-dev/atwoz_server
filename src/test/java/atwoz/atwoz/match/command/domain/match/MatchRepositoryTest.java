@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Import;
 
 @Import({MatchRepositoryImpl.class, LockRepository.class})
 @DataJpaTest
-public class MatchRepositoryTest {
+class MatchRepositoryTest {
 
     private static MockedStatic<Events> mockedEvents;
     @Autowired
@@ -46,7 +46,7 @@ public class MatchRepositoryTest {
         Long requesterId = 2L;
         String requestMessage = "매치를 신청합니다.";
 
-        Match match = Match.request(requesterId, responderId, Message.from(requestMessage));
+        Match match = Match.request(requesterId, responderId, Message.from(requestMessage), "testUser");
 
         entityManager.persist(match);
         entityManager.flush();
@@ -85,7 +85,7 @@ public class MatchRepositoryTest {
 
         String requestMessage = "매치를 신청합니다.";
 
-        Match match = Match.request(requesterId, responderId, Message.from(requestMessage));
+        Match match = Match.request(requesterId, responderId, Message.from(requestMessage), "testUser");
         match.expire();
 
         entityManager.persist(match);
@@ -109,8 +109,8 @@ public class MatchRepositoryTest {
 
         String requestMessage = "매치를 신청합니다.";
 
-        Match match = Match.request(requesterId, responderId, Message.from(requestMessage));
-        match.reject();
+        Match match = Match.request(requesterId, responderId, Message.from(requestMessage), "testUser");
+        match.reject("testUser");
         match.checkRejected();
 
         entityManager.persist(match);

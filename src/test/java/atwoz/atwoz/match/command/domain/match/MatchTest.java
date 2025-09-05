@@ -27,7 +27,7 @@ public class MatchTest {
             Message requestMessage = Message.from("매칭을 요청합니다!");
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> Match.request(requesterId, responderId, requestMessage))
+            Assertions.assertThatThrownBy(() -> Match.request(requesterId, responderId, requestMessage, "testUser"))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -40,7 +40,7 @@ public class MatchTest {
             Message requestMessage = Message.from("매칭을 요청합니다!");
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> Match.request(requesterId, responderId, requestMessage))
+            Assertions.assertThatThrownBy(() -> Match.request(requesterId, responderId, requestMessage, "testUser"))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -53,7 +53,7 @@ public class MatchTest {
             Message requestMessage = null;
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> Match.request(requesterId, responderId, requestMessage))
+            Assertions.assertThatThrownBy(() -> Match.request(requesterId, responderId, requestMessage, "testUser"))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -65,10 +65,9 @@ public class MatchTest {
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
 
-
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
                 // When
-                Match match = Match.request(requesterId, responderId, requestMessage);
+                Match match = Match.request(requesterId, responderId, requestMessage, "testUser");
 
                 // Then
                 Assertions.assertThat(match.getRequesterId()).isEqualTo(requesterId);
@@ -93,13 +92,12 @@ public class MatchTest {
             Message responseMessage = Message.from("매칭을 수락합니다.");
             Match match;
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                match = Match.request(requesterId, responderId, requestMessage);
+                match = Match.request(requesterId, responderId, requestMessage, "testUser");
                 match.expire();
             }
 
-
             // When & Then
-            Assertions.assertThatThrownBy(() -> match.approve(responseMessage))
+            Assertions.assertThatThrownBy(() -> match.approve(responseMessage, "testUser"))
                 .isInstanceOf(InvalidMatchStatusChangeException.class);
         }
 
@@ -114,10 +112,10 @@ public class MatchTest {
 
             Match match;
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                match = Match.request(requesterId, responderId, requestMessage);
+                match = Match.request(requesterId, responderId, requestMessage, "testUser");
 
                 // When
-                match.approve(responseMessage);
+                match.approve(responseMessage, "testUser");
             }
 
             // Then
@@ -135,7 +133,7 @@ public class MatchTest {
             Match match;
 
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                match = Match.request(requesterId, responderId, requestMessage);
+                match = Match.request(requesterId, responderId, requestMessage, "testUser");
             }
 
             // When & Then
@@ -150,15 +148,12 @@ public class MatchTest {
             Long requesterId = 1L;
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
-            Message responseMessage = Message.from("매칭을 거절합니다.");
-
 
             Match match;
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                match = Match.request(requesterId, responderId, requestMessage);
-                match.reject();
+                match = Match.request(requesterId, responderId, requestMessage, "testUser");
+                match.reject("testUser");
             }
-
 
             // When
             match.checkRejected();

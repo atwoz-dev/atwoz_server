@@ -1,9 +1,7 @@
 package atwoz.atwoz.match.command.domain.match;
 
 import atwoz.atwoz.common.event.Events;
-import atwoz.atwoz.match.command.domain.match.event.MatchRequestCompletedEvent;
-import atwoz.atwoz.match.command.domain.match.event.MatchRequestedEvent;
-import atwoz.atwoz.match.command.domain.match.event.MatchRespondedEvent;
+import atwoz.atwoz.match.command.domain.match.event.*;
 import atwoz.atwoz.match.command.domain.match.exception.InvalidMatchStatusChangeException;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import jakarta.persistence.*;
@@ -45,30 +43,34 @@ public class Match {
     @Column(columnDefinition = "varchar(50)")
     private MatchStatus status;
 
-    public static Match request(long requesterId, long responderId, @NonNull Message requestMessage) {
-        // TODO: requester name 추가 필요
-        Events.raise(MatchRequestedEvent.of(requesterId, "requesterName", responderId));
-        Events.raise(MatchRequestCompletedEvent.of(requesterId, responderId));
-
-        return Match.builder()
+    public static Match request(long requesterId, long responderId, @NonNull Message requestMessage,
+        String requesterName) {
+        Match match = Match.builder()
             .requesterId(requesterId)
             .responderId(responderId)
             .requestMessage(requestMessage)
             .status(MatchStatus.WAITING)
             .build();
+
+        Events.raise(MatchRequestedEvent.of(requesterId, requesterName, responderId));
+        Events.raise(MatchRequestCompletedEvent.of(requesterId, responderId));
+
+        return match;
     }
 
-    public void approve(@NonNull Message message) {
+    public void approve(@NonNull Message message, String responderName) {
         validateChangeStatus();
         status = MatchStatus.MATCHED;
         responseMessage = message;
         Events.raise(MatchRespondedEvent.of(requesterId, responderId, status));
+        Events.raise(MatchAcceptedEvent.of(requesterId, responderId, responderName));
     }
 
-    public void reject() {
+    public void reject(String responderName) {
         validateChangeStatus();
         status = MatchStatus.REJECTED;
         Events.raise(MatchRespondedEvent.of(requesterId, responderId, status));
+        Events.raise(MatchRejectedEvent.of(requesterId, responderId, responderName));
     }
 
     public void expire() {

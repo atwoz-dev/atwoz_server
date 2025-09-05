@@ -5,6 +5,8 @@ import atwoz.atwoz.community.command.domain.profileexchange.event.ProfileExchang
 import atwoz.atwoz.community.command.domain.profileexchange.event.ProfileExchangeRejectedEvent;
 import atwoz.atwoz.community.command.domain.profileexchange.event.ProfileExchangeRequestedEvent;
 import atwoz.atwoz.like.command.domain.LikeSentEvent;
+import atwoz.atwoz.match.command.domain.match.event.MatchAcceptedEvent;
+import atwoz.atwoz.match.command.domain.match.event.MatchRejectedEvent;
 import atwoz.atwoz.match.command.domain.match.event.MatchRequestedEvent;
 import atwoz.atwoz.notification.command.application.NotificationSendRequest;
 import atwoz.atwoz.notification.command.application.NotificationSendService;
@@ -43,7 +45,33 @@ public class NotificationEventHandler {
         notificationSendService.send(request);
     }
 
-    // TODO: MatchAcceptedEvent, MatchRejectedEvent
+    @Async
+    @TransactionalEventListener(value = MatchAcceptedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
+    public void handleMatchAcceptedEvent(MatchAcceptedEvent event) {
+        var request = new NotificationSendRequest(
+            SenderType.MEMBER,
+            event.getResponderId(),
+            event.getRequesterId(),
+            NotificationType.MATCH_ACCEPT,
+            Map.of(SENDER_NAME, event.getResponderName()),
+            ChannelType.PUSH
+        );
+        notificationSendService.send(request);
+    }
+
+    @Async
+    @TransactionalEventListener(value = MatchRejectedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
+    public void handleMatchRejectedEvent(MatchRejectedEvent event) {
+        var request = new NotificationSendRequest(
+            SenderType.MEMBER,
+            event.getResponderId(),
+            event.getRequesterId(),
+            NotificationType.MATCH_REJECT,
+            Map.of(SENDER_NAME, event.getResponderName()),
+            ChannelType.PUSH
+        );
+        notificationSendService.send(request);
+    }
 
     @Async
     @TransactionalEventListener(value = ProfileExchangeRequestedEvent.class, phase = TransactionPhase.AFTER_COMMIT)

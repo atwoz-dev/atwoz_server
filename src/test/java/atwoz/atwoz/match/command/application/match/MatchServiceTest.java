@@ -11,18 +11,22 @@ import atwoz.atwoz.match.command.domain.match.MatchStatus;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import atwoz.atwoz.match.presentation.dto.MatchRequestDto;
 import atwoz.atwoz.match.presentation.dto.MatchResponseDto;
+import atwoz.atwoz.member.command.domain.member.Member;
+import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
+import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
+import atwoz.atwoz.member.command.domain.member.vo.Nickname;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -35,19 +39,33 @@ class MatchServiceTest {
     @Mock
     private LockRepository lockRepository;
 
+    @Mock
+    private MemberCommandRepository memberCommandRepository;
+
     @InjectMocks
     private MatchService matchService;
 
     @BeforeEach
     void setUp() {
-        mockedEvents = Mockito.mockStatic(Events.class);
-        mockedEvents.when(() -> Events.raise(Mockito.any()))
+        mockedEvents = mockStatic(Events.class);
+        mockedEvents.when(() -> Events.raise(any()))
             .thenAnswer(invocation -> null);
     }
 
     @AfterEach
     void tearDown() {
         mockedEvents.close();
+    }
+
+    private void mockMember(Long memberId, String nickname) {
+        Member member = mock(Member.class);
+        MemberProfile profile = mock(MemberProfile.class);
+        Nickname nicknameObj = mock(Nickname.class);
+
+        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(member.getProfile()).thenReturn(profile);
+        when(profile.getNickname()).thenReturn(nicknameObj);
+        when(nicknameObj.getValue()).thenReturn(nickname);
     }
 
     @Nested
@@ -62,14 +80,16 @@ class MatchServiceTest {
             String requestMessage = "매칭을 요청합니다!";
             MatchRequestDto requestDto = new MatchRequestDto(responderId, requestMessage);
 
-            Mockito.doAnswer(invocation -> {
+            doAnswer(invocation -> {
                 Runnable runnable = invocation.getArgument(1);
                 runnable.run();
                 return null;
             }).when(lockRepository).withNamedLock(any(), any());
 
-            Mockito.when(matchRepository.existsActiveMatchBetween(requesterId, requestDto.responderId()))
+            when(matchRepository.existsActiveMatchBetween(requesterId, requestDto.responderId()))
                 .thenReturn(true);
+
+            mockMember(requesterId, "testUser");
 
             // When & Then
             Assertions.assertThatThrownBy(() -> matchService.request(requesterId, requestDto))
@@ -86,22 +106,24 @@ class MatchServiceTest {
             String requestMessage = "매칭을 요청합니다!";
             MatchRequestDto requestDto = new MatchRequestDto(responderId, requestMessage);
 
-            Mockito.doAnswer(invocation -> {
+            doAnswer(invocation -> {
                 Runnable runnable = invocation.getArgument(1);
                 runnable.run();
                 return null;
             }).when(lockRepository).withNamedLock(any(), any());
 
-            Mockito.when(matchRepository.existsActiveMatchBetween(requesterId, requestDto.responderId()))
+            when(matchRepository.existsActiveMatchBetween(requesterId, requestDto.responderId()))
                 .thenReturn(false);
+
+            mockMember(requesterId, "testUser");
 
             // When
             matchService.request(requesterId, requestDto);
 
 
             // Then
-            Mockito.verify(matchRepository).save(
-                Mockito.argThat(match -> match.getRequesterId().equals(requesterId) &&
+            verify(matchRepository).save(
+                argThat(match -> match.getRequesterId().equals(requesterId) &&
                     match.getResponderId().equals(responderId) &&
                     match.getRequestMessage().getValue().equals(requestMessage))
             );
@@ -121,7 +143,7 @@ class MatchServiceTest {
             String responseMessage = "매치 수락할게요";
             MatchResponseDto responseDto = new MatchResponseDto(responseMessage);
 
-            Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
+            when(matchRepository.findByIdAndResponderId(matchId, responderId))
                 .thenReturn(Optional.empty());
 
             // When & Then
@@ -139,10 +161,10 @@ class MatchServiceTest {
             String responseMessage = "매치 수락할게요";
             MatchResponseDto responseDto = new MatchResponseDto(responseMessage);
 
-            Match match = Match.request(requesterId, responderId, Message.from(responseMessage));
-            match.reject();
+            Match match = Match.request(requesterId, responderId, Message.from(responseMessage), "name");
+            match.reject("name");
 
-            Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
+            when(matchRepository.findByIdAndResponderId(matchId, responderId))
                 .thenReturn(Optional.of(match));
 
             // When & Then
@@ -158,13 +180,14 @@ class MatchServiceTest {
             Long responderId = 2L;
             Long matchId = 3L;
             String responseMessage = "매치 수락할게요";
-            Match match = Match.request(requesterId, responderId, Message.from(responseMessage));
-
+            Match match = Match.request(requesterId, responderId, Message.from(responseMessage), "name");
 
             MatchResponseDto responseDto = new MatchResponseDto(responseMessage);
 
-            Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
+            when(matchRepository.findByIdAndResponderId(matchId, responderId))
                 .thenReturn(Optional.of(match));
+
+            mockMember(responderId, "responderName");
 
             // When
             matchService.approve(matchId, responderId, responseDto);
@@ -187,7 +210,7 @@ class MatchServiceTest {
             Long responderId = 1L;
             Long matchId = 1L;
 
-            Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
+            when(matchRepository.findByIdAndResponderId(matchId, responderId))
                 .thenReturn(Optional.empty());
 
             // When & Then
@@ -204,11 +227,10 @@ class MatchServiceTest {
             Long matchId = 3L;
             String responseMessage = "매치 수락할게요";
 
-            Match match = Match.request(requesterId, responderId, Message.from(responseMessage));
-            match.approve(Message.from(responseMessage));
+            Match match = Match.request(requesterId, responderId, Message.from(responseMessage), "name");
+            match.approve(Message.from(responseMessage), "name");
 
-
-            Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
+            when(matchRepository.findByIdAndResponderId(matchId, responderId))
                 .thenReturn(Optional.of(match));
 
             // When & Then
@@ -226,10 +248,12 @@ class MatchServiceTest {
             String requestMessage = "매치 신청할게요";
             Match match;
 
-            match = Match.request(requesterId, responderId, Message.from(requestMessage));
+            match = Match.request(requesterId, responderId, Message.from(requestMessage), "name");
 
-            Mockito.when(matchRepository.findByIdAndResponderId(matchId, responderId))
+            when(matchRepository.findByIdAndResponderId(matchId, responderId))
                 .thenReturn(Optional.of(match));
+
+            mockMember(responderId, "responderName");
 
             // When
             matchService.reject(matchId, responderId);
@@ -253,9 +277,9 @@ class MatchServiceTest {
             Long matchId = 3L;
             String requestMessage = "매치 신청할게요";
 
-            Match match = Match.request(requesterId, responderId, Message.from(requestMessage));
+            Match match = Match.request(requesterId, responderId, Message.from(requestMessage), "name");
 
-            Mockito.when(matchRepository.findByIdAndRequesterId(matchId, requesterId))
+            when(matchRepository.findByIdAndRequesterId(matchId, requesterId))
                 .thenReturn(Optional.of(match));
 
             // When & Then
@@ -270,7 +294,7 @@ class MatchServiceTest {
             Long requesterId = 2L;
             Long matchId = 3L;
 
-            Mockito.when(matchRepository.findByIdAndRequesterId(matchId, requesterId))
+            when(matchRepository.findByIdAndRequesterId(matchId, requesterId))
                 .thenReturn(Optional.empty());
 
             // When & Then
@@ -287,11 +311,10 @@ class MatchServiceTest {
             Long matchId = 3L;
             String requestMessage = "매치 신청할게요";
 
-            Match match = Match.request(requesterId, responderId, Message.from(requestMessage));
-            match.reject();
+            Match match = Match.request(requesterId, responderId, Message.from(requestMessage), "name");
+            match.reject("name");
 
-
-            Mockito.when(matchRepository.findByIdAndRequesterId(matchId, requesterId))
+            when(matchRepository.findByIdAndRequesterId(matchId, requesterId))
                 .thenReturn(Optional.of(match));
 
             // When
