@@ -1,10 +1,13 @@
 package atwoz.atwoz.datingexam.application;
 
+import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.datingexam.application.dto.AllRequiredSubjectSubmittedEvent;
 import atwoz.atwoz.datingexam.application.dto.DatingExamInfoResponse;
-import atwoz.atwoz.datingexam.application.exception.InvalidDatingExamSubmitRequestException;
 import atwoz.atwoz.datingexam.application.required.DatingExamQueryRepository;
+import atwoz.atwoz.datingexam.application.required.DatingExamSubjectRepository;
 import atwoz.atwoz.datingexam.application.required.DatingExamSubmitRepository;
 import atwoz.atwoz.datingexam.domain.DatingExamAnswerEncoder;
+import atwoz.atwoz.datingexam.domain.DatingExamSubject;
 import atwoz.atwoz.datingexam.domain.DatingExamSubmit;
 import atwoz.atwoz.datingexam.domain.SubjectType;
 import atwoz.atwoz.datingexam.domain.dto.DatingExamSubmitRequest;
@@ -17,6 +20,9 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+import java.util.Set;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
@@ -25,6 +31,9 @@ class DatingExamModifyServiceTest {
 
     @InjectMocks
     private DatingExamModifyService datingExamModifyService;
+
+    @Mock
+    private DatingExamSubjectRepository datingExamSubjectRepository;
 
     @Mock
     private DatingExamSubmitRepository datingExamSubmitRepository;
@@ -36,16 +45,24 @@ class DatingExamModifyServiceTest {
     private DatingExamAnswerEncoder answerEncoder;
 
     @Nested
-    @DisplayName("submitRequiredSubject 메서드 테스트")
-    class SubmitRequiredSubjectTests {
+    @DisplayName("submitSubject 메서드 테스트")
+    class SubmitSubjectTests {
 
         @Test
-        @DisplayName("필수 과목 제출 기록이 없고 유효한 제출 요청이 주어지면, 모의고사 제출을 생성하고 필수 과목 제출을 호출하고 저장한다.")
-        void submitRequiredSubject_Success() {
+        @DisplayName("과목 제출 기록이 없고 유효한 제출 요청이 주어지면, 모의고사 제출을 생성하고 저장한다.")
+        void submitSubject_Success() {
             // Given
             Long memberId = 1L;
+            Long subjectId = 2L;
             DatingExamSubmitRequest request = mock(DatingExamSubmitRequest.class);
-            when(datingExamSubmitRepository.existsByMemberId(memberId)).thenReturn(false);
+            when(request.subjectId()).thenReturn(subjectId);
+
+            DatingExamSubject subject = mock(DatingExamSubject.class);
+            when(subject.getType()).thenReturn(SubjectType.REQUIRED);
+            when(datingExamSubjectRepository.findById(subjectId)).thenReturn(Optional.of(subject));
+
+            when(datingExamSubmitRepository.existsByMemberIdAndSubjectId(memberId, subjectId)).thenReturn(false);
+
             DatingExamInfoResponse infoResponse = mock(DatingExamInfoResponse.class);
             when(datingExamQueryRepository.findDatingExamInfo(SubjectType.REQUIRED)).thenReturn(infoResponse);
 
@@ -54,76 +71,100 @@ class DatingExamModifyServiceTest {
                     DatingExamSubmitRequestValidator.class)
             ) {
                 DatingExamSubmit mockSubmit = mock(DatingExamSubmit.class);
-                mockedDatingExamSubmit.when(() -> DatingExamSubmit.from(memberId)).thenReturn(mockSubmit);
+                mockedDatingExamSubmit.when(() -> DatingExamSubmit.from(request, answerEncoder, memberId))
+                    .thenReturn(mockSubmit);
                 mockedValidator.when(
-                        () -> DatingExamSubmitRequestValidator.validateSubmit(request, infoResponse, SubjectType.REQUIRED))
+                        () -> DatingExamSubmitRequestValidator.validateSubmit(request, infoResponse))
                     .thenAnswer(invocation -> null);
 
                 // When
-                datingExamModifyService.submitRequiredSubject(request, memberId);
+                datingExamModifyService.submitSubject(request, memberId);
 
                 // Then
-                verify(mockSubmit).submitRequiredSubjectAnswers(request, answerEncoder);
-                mockedDatingExamSubmit.verify(() -> DatingExamSubmit.from(memberId));
+                mockedDatingExamSubmit.verify(() -> DatingExamSubmit.from(request, answerEncoder, memberId));
                 verify(datingExamSubmitRepository).save(mockSubmit);
             }
         }
 
         @Test
-        @DisplayName("이미 필수 과목 제출 기록이 있는 경우 예외를 던진다.")
-        void submitRequiredSubject_AlreadySubmitted() {
+        @DisplayName("존재하지 않는 과목 ID가 주어지면 예외를 던진다.")
+        void throwIfSubjectNotFound() {
             // Given
             Long memberId = 1L;
+            Long subjectId = 2L;
             DatingExamSubmitRequest request = mock(DatingExamSubmitRequest.class);
-            when(datingExamSubmitRepository.existsByMemberId(memberId)).thenReturn(true);
+            when(request.subjectId()).thenReturn(subjectId);
+            when(datingExamSubjectRepository.findById(subjectId)).thenReturn(Optional.empty());
 
             // When & Then
-            assertThatThrownBy(() -> datingExamModifyService.submitRequiredSubject(request, memberId))
-                .isInstanceOf(InvalidDatingExamSubmitRequestException.class);
+            assertThatThrownBy(() -> datingExamModifyService.submitSubject(request, memberId))
+                .isInstanceOf(IllegalArgumentException.class);
         }
-    }
-
-    @Nested
-    @DisplayName("submitOptionalSubject 메서드 테스트")
-    class SubmitOptionalSubjectTests {
 
         @Test
-        @DisplayName("필수 과목 제출 후 유효한 선택 과목 제출 요청이 주어지면, 선택 과목 제출을 호출하고 저장한다.")
-        void submitOptionalSubject_Success() {
+        @DisplayName("이미 과목 제출 기록이 있는 경우 예외를 던진다.")
+        void throwIfAlreadySubmitted() {
             // Given
             Long memberId = 1L;
+            Long subjectId = 2L;
             DatingExamSubmitRequest request = mock(DatingExamSubmitRequest.class);
-            DatingExamSubmit existingSubmit = mock(DatingExamSubmit.class);
-            when(datingExamSubmitRepository.findByMemberId(memberId)).thenReturn(java.util.Optional.of(existingSubmit));
-            DatingExamInfoResponse infoResponse = mock(DatingExamInfoResponse.class);
-            when(datingExamQueryRepository.findDatingExamInfo(SubjectType.OPTIONAL)).thenReturn(infoResponse);
+            when(request.subjectId()).thenReturn(subjectId);
 
-            try (MockedStatic<DatingExamSubmitRequestValidator> mockedValidator = mockStatic(
-                DatingExamSubmitRequestValidator.class)) {
+            DatingExamSubject subject = mock(DatingExamSubject.class);
+            when(datingExamSubjectRepository.findById(subjectId)).thenReturn(Optional.of(subject));
+
+            when(datingExamSubmitRepository.existsByMemberIdAndSubjectId(memberId, subjectId)).thenReturn(true);
+
+            // When & Then
+            assertThatThrownBy(() -> datingExamModifyService.submitSubject(request, memberId))
+                .isInstanceOf(IllegalStateException.class);
+        }
+
+        @Test
+        @DisplayName("필수 과목 제출 후 모든 필수 과목이 제출된 경우 이벤트를 발행한다.")
+        void publishEventWhenAllRequiredSubjectsSubmitted() {
+            // Given
+            Long memberId = 1L;
+            Long subjectId = 2L;
+            DatingExamSubmitRequest request = mock(DatingExamSubmitRequest.class);
+            when(request.subjectId()).thenReturn(subjectId);
+
+            DatingExamSubject subject = mock(DatingExamSubject.class);
+            when(subject.getType()).thenReturn(SubjectType.REQUIRED);
+            when(subject.isRequired()).thenReturn(true);
+            when(subject.getId()).thenReturn(subjectId);
+            when(datingExamSubjectRepository.findById(subjectId)).thenReturn(Optional.of(subject));
+
+            when(datingExamSubmitRepository.existsByMemberIdAndSubjectId(memberId, subjectId)).thenReturn(false);
+
+            DatingExamInfoResponse infoResponse = mock(DatingExamInfoResponse.class);
+            when(datingExamQueryRepository.findDatingExamInfo(SubjectType.REQUIRED)).thenReturn(infoResponse);
+
+            try (MockedStatic<DatingExamSubmit> mockedDatingExamSubmit = mockStatic(DatingExamSubmit.class);
+                MockedStatic<DatingExamSubmitRequestValidator> mockedValidator = mockStatic(
+                    DatingExamSubmitRequestValidator.class);
+                MockedStatic<Events> mockedEvents = mockStatic(Events.class)) {
+
+                DatingExamSubmit mockSubmit = mock(DatingExamSubmit.class);
+                when(mockSubmit.getSubjectId()).thenReturn(subjectId);
+                mockedDatingExamSubmit.when(() -> DatingExamSubmit.from(request, answerEncoder, memberId))
+                    .thenReturn(mockSubmit);
                 mockedValidator.when(
-                        () -> DatingExamSubmitRequestValidator.validateSubmit(request, infoResponse, SubjectType.OPTIONAL))
+                        () -> DatingExamSubmitRequestValidator.validateSubmit(request, infoResponse))
                     .thenAnswer(invocation -> null);
+                when(datingExamSubjectRepository.findAllByType(SubjectType.REQUIRED))
+                    .thenReturn(Set.of(subject));
+
+                when(datingExamSubmitRepository.findAllByMemberId(memberId)).thenReturn(Set.of(mockSubmit));
 
                 // When
-                datingExamModifyService.submitOptionalSubject(request, memberId);
+                datingExamModifyService.submitSubject(request, memberId);
 
                 // Then
-                verify(existingSubmit).submitPreferredSubjectAnswers(request, answerEncoder);
-                verify(datingExamSubmitRepository).save(existingSubmit);
+                mockedDatingExamSubmit.verify(() -> DatingExamSubmit.from(request, answerEncoder, memberId));
+                verify(datingExamSubmitRepository).save(mockSubmit);
+                mockedEvents.verify(() -> Events.raise(eq(AllRequiredSubjectSubmittedEvent.of(memberId))));
             }
-        }
-
-        @Test
-        @DisplayName("필수 과목 제출 기록이 없는 경우 예외를 던진다.")
-        void submitOptionalSubject_NoRequiredSubmission() {
-            // Given
-            Long memberId = 1L;
-            DatingExamSubmitRequest request = mock(DatingExamSubmitRequest.class);
-            when(datingExamSubmitRepository.findByMemberId(memberId)).thenReturn(java.util.Optional.empty());
-
-            // When & Then
-            assertThatThrownBy(() -> datingExamModifyService.submitOptionalSubject(request, memberId))
-                .isInstanceOf(InvalidDatingExamSubmitRequestException.class);
         }
     }
 }

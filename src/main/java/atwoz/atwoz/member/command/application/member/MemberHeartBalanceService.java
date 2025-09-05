@@ -20,6 +20,13 @@ public class MemberHeartBalanceService {
         member.gainPurchaseHeart(heartAmount);
     }
 
+    @Transactional
+    public void grantMissionHearts(Long memberId, Long amount, String actionType) {
+        Member member = getMemberById(memberId);
+        HeartAmount heartAmount = HeartAmount.from(amount);
+        member.gainMissionHeart(heartAmount, actionType);
+    }
+
     private Member getMemberById(Long memberId) {
         return memberCommandRepository.findById(memberId)
             .orElseThrow(() -> new MemberNotFoundException());

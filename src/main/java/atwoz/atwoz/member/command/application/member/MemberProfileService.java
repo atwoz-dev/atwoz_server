@@ -76,6 +76,12 @@ public class MemberProfileService {
         }
     }
 
+    @Transactional
+    public void markDatingExamSubmitted(Long memberId) {
+        Member member = getMemberById(memberId);
+        member.markDatingExamSubmitted();
+    }
+
     private void publish(Member member) {
         member.publishProfile();
     }

@@ -7,14 +7,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class MemberMissionCompletedEvent extends Event {
-
     private final long memberId;
-    private final String memberName;
-    private final int rewardedHeart;
+    private final long rewardHeartAmount;
+    private final String memberNickname;
     private final String actionType;
 
-    public static MemberMissionCompletedEvent from(long memberId, String memberName, int rewardedHeart,
+    public static MemberMissionCompletedEvent from(long memberId, String memberNickname, long rewardedHeart,
         String actionType) {
-        return new MemberMissionCompletedEvent(memberId, memberName, rewardedHeart, actionType);
+        return new MemberMissionCompletedEvent(memberId, rewardedHeart, memberNickname, actionType);
     }
 }

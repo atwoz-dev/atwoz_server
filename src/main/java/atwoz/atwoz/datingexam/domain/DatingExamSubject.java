@@ -47,4 +47,8 @@ public class DatingExamSubject extends BaseEntity {
     private void setType(@NonNull SubjectType type) {
         this.type = type;
     }
+
+    public boolean isRequired() {
+        return this.type == SubjectType.REQUIRED;
+    }
 }

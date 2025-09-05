@@ -1,30 +1,37 @@
 package atwoz.atwoz.mission.command.infra.memberMission;
 
+import atwoz.atwoz.datingexam.application.dto.AllRequiredSubjectSubmittedEvent;
 import atwoz.atwoz.interview.command.domain.answer.event.FirstInterviewSubmittedEvent;
 import atwoz.atwoz.like.command.domain.LikeSentEvent;
 import atwoz.atwoz.mission.command.application.memberMission.MemberMissionService;
+import atwoz.atwoz.mission.command.domain.mission.ActionType;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
-@Service
-@RequiredArgsConstructor
+@Component
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberMissionEventHandler {
     private final MemberMissionService memberMissionService;
 
-    /**
-     * Notice : 미션의 항목이 추가될 때마다 해당 핸들링이 필요합니다.
-     * 또는 공통 처리를 위한 이벤트 상속을 할 수 있을 것 같습니다.
-     */
+    @Async
+    @EventListener(value = AllRequiredSubjectSubmittedEvent.class)
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handle(AllRequiredSubjectSubmittedEvent event) {
+        memberMissionService.executeMissionsByAction(event.getMemberId(), ActionType.FIRST_DATE_EXAM.name());
+    }
+
     @EventListener(value = LikeSentEvent.class)
     public void handle(LikeSentEvent event) {
-        memberMissionService.executeMissionsByAction(event.getSenderId(), "LIKE");
+        memberMissionService.executeMissionsByAction(event.getSenderId(), ActionType.LIKE.name());
     }
 
     @EventListener(value = FirstInterviewSubmittedEvent.class)
     public void handle(FirstInterviewSubmittedEvent event) {
-        memberMissionService.executeMissionsByAction(event.getMemberId(), "INTERVIEW");
+        memberMissionService.executeMissionsByAction(event.getMemberId(), ActionType.INTERVIEW.name());
     }
-
-    // TODO : 인호님 변경 사항에 맞추어서 모의고사 완료 이벤트 핸들링.
 }

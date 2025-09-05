@@ -3,12 +3,12 @@ package atwoz.atwoz.datingexam.application.required;
 import atwoz.atwoz.datingexam.domain.DatingExamSubmit;
 import org.springframework.data.repository.Repository;
 
-import java.util.Optional;
+import java.util.Set;
 
 public interface DatingExamSubmitRepository extends Repository<DatingExamSubmit, Long> {
     DatingExamSubmit save(DatingExamSubmit datingExamSubmit);
 
-    boolean existsByMemberId(Long memberId);
+    boolean existsByMemberIdAndSubjectId(Long memberId, Long subjectId);
 
-    Optional<DatingExamSubmit> findByMemberId(Long memberId);
+    Set<DatingExamSubmit> findAllByMemberId(Long memberId);
 }

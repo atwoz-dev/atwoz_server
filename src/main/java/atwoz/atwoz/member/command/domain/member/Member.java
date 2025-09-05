@@ -5,6 +5,7 @@ import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartBalance;
 import atwoz.atwoz.member.command.domain.member.event.MemberSettingUpdatedEvent;
+import atwoz.atwoz.member.command.domain.member.event.MissionHeartGainedEvent;
 import atwoz.atwoz.member.command.domain.member.event.PurchaseHeartGainedEvent;
 import atwoz.atwoz.member.command.domain.member.exception.MemberAlreadyActiveException;
 import atwoz.atwoz.member.command.domain.member.exception.MemberNotActiveException;
@@ -63,6 +64,10 @@ public class Member extends SoftDeleteBaseEntity {
     @Embedded
     @Getter
     private HeartBalance heartBalance;
+
+    @Getter
+    @Builder.Default
+    private boolean isDatingExamSubmitted = false;
 
     public static Member fromPhoneNumber(@NonNull String phoneNumber) {
         return Member.builder()
@@ -142,8 +147,10 @@ public class Member extends SoftDeleteBaseEntity {
             heartBalance.getPurchaseHeartBalance()));
     }
 
-    public void gainMissionHeart(HeartAmount heartAmount) {
+    public void gainMissionHeart(HeartAmount heartAmount, String actionType) {
         heartBalance = heartBalance.gainMissionHeart(heartAmount);
+        Events.raise(MissionHeartGainedEvent.of(id, heartAmount.getAmount(), heartBalance.getMissionHeartBalance(),
+            heartBalance.getPurchaseHeartBalance(), actionType));
     }
 
     public void updateGrade(@NonNull Grade grade) {
@@ -174,5 +181,16 @@ public class Member extends SoftDeleteBaseEntity {
 
     public void changeActivityStatus(@NonNull ActivityStatus activityStatus) {
         this.activityStatus = activityStatus;
+    }
+
+    public void markDatingExamSubmitted() {
+        if (isDatingExamSubmitted) {
+            throw new IllegalStateException("이미 연애 모의고사를 제출한 멤버입니다. member id: " + id);
+        }
+        isDatingExamSubmitted = true;
+    }
+
+    public boolean hasSubmittedDatingExam() {
+        return isDatingExamSubmitted;
     }
 }

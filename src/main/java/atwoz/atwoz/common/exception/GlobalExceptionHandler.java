@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -103,5 +104,20 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest()
             .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<BaseResponse<Void>> handleDataAccessException(DataAccessException e) {
+        Throwable cause = e.getMostSpecificCause();
+
+        if (cause instanceof IllegalStateException) {
+            log.warn("Illegal state exception", cause);
+            return ResponseEntity.badRequest()
+                .body(BaseResponse.of(StatusType.BAD_REQUEST, cause.getMessage()));
+        }
+
+        log.error("Data access exception", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(BaseResponse.from(StatusType.INTERNAL_SERVER_ERROR));
     }
 }
