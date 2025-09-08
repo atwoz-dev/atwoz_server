@@ -25,12 +25,16 @@ public class MemberMissionEventHandler {
         memberMissionService.executeMissionsByAction(event.getMemberId(), ActionType.FIRST_DATE_EXAM.name());
     }
 
+    @Async
     @EventListener(value = LikeSentEvent.class)
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(LikeSentEvent event) {
         memberMissionService.executeMissionsByAction(event.getSenderId(), ActionType.LIKE.name());
     }
 
+    @Async
     @EventListener(value = FirstInterviewSubmittedEvent.class)
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(FirstInterviewSubmittedEvent event) {
         memberMissionService.executeMissionsByAction(event.getMemberId(), ActionType.INTERVIEW.name());
     }
