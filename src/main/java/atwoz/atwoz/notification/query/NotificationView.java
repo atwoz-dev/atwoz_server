@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record NotificationView(
     long notificationId,
     long senderId,
+    long receiverId,
     @Schema(implementation = NotificationType.class)
     String notificationType,
     String title,
