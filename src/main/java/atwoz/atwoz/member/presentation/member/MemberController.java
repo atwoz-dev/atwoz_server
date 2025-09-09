@@ -81,7 +81,7 @@ public class MemberController {
 
     @Operation(summary = "활동 계정 전환 API")
     @PostMapping("/profile/active")
-    public ResponseEntity<BaseResponse<Void>> changeToActive(@Valid MemberChangeToActiveRequest request) {
+    public ResponseEntity<BaseResponse<Void>> changeToActive(@Valid @RequestBody MemberChangeToActiveRequest request) {
         memberProfileService.changeToActive(request.phoneNumber());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
