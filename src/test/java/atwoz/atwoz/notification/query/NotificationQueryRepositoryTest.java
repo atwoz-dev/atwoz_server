@@ -28,7 +28,7 @@ class NotificationQueryRepositoryTest {
     void findUnreadNotifications() {
         // given
         var unread = Notification.create(SYSTEM, 1L, 2L, LIKE, "t1", "b1");
-        var read = Notification.create(SYSTEM, 1L, 2L, LIKE, "t2", "b2");
+        var read = Notification.create(SYSTEM, 2L, 3L, LIKE, "t2", "b2");
         read.markAsRead();
         em.persist(unread);
         em.persist(read);
@@ -40,6 +40,7 @@ class NotificationQueryRepositoryTest {
 
         // then
         assertThat(results).hasSize(1);
+        assertThat(results.getFirst().receiverId()).isEqualTo(2L);
         assertThat(results.getFirst().title()).isEqualTo("t1");
     }
 
