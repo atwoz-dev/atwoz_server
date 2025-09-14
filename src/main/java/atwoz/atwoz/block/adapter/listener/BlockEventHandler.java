@@ -23,6 +23,9 @@ public class BlockEventHandler {
         Long blockedId = event.getReporteeId();
         try {
             blockCommander.createBlock(blockerId, blockedId);
+        } catch (IllegalStateException | IllegalArgumentException exception) {
+            log.info("신고 이벤트로 인한 차단 처리 중 오류가 발생했습니다. blockerId: {}, blockedId: {}, message: {}", blockerId,
+                blockedId, exception.getMessage());
         } catch (Exception exception) {
             log.warn("신고 이벤트로 인한 차단 처리 중 오류가 발생했습니다. blockerId: {}, blockedId: {}", blockerId, blockedId, exception);
         }
