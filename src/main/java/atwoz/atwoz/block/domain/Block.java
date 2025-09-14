@@ -20,8 +20,10 @@ public class Block extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private Long blockerId;
 
+    @Column(nullable = false)
     private Long blockedId;
 
     private Block(@NonNull Long blockerId, @NonNull Long blockedId) {
