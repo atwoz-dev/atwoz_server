@@ -13,9 +13,11 @@ public class NotificationReadService {
     private final NotificationCommandRepository notificationCommandRepository;
 
     @Transactional
-    public void markAsRead(long notificationId) {
-        Notification notification = getNotification(notificationId);
-        notification.markAsRead();
+    public void markAsRead(NotificationReadRequest request) {
+        request.notificationIds().forEach(notificationId -> {
+            Notification notification = getNotification(notificationId);
+            notification.markAsRead();
+        });
     }
 
     private Notification getNotification(long notificationId) {

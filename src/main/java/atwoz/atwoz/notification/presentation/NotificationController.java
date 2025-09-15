@@ -3,6 +3,7 @@ package atwoz.atwoz.notification.presentation;
 import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.response.BaseResponse;
+import atwoz.atwoz.notification.command.application.NotificationReadRequest;
 import atwoz.atwoz.notification.command.application.NotificationReadService;
 import atwoz.atwoz.notification.command.application.NotificationSendRequest;
 import atwoz.atwoz.notification.command.application.NotificationSendService;
@@ -31,9 +32,9 @@ public class NotificationController {
     private final NotificationSendService notificationSendService;
 
     @Operation(summary = "알림 읽기")
-    @PatchMapping("/{notificationId}")
-    public ResponseEntity<BaseResponse<Void>> markAsRead(@PathVariable long notificationId) {
-        notificationReadService.markAsRead(notificationId);
+    @PatchMapping
+    public ResponseEntity<BaseResponse<Void>> markAsRead(@RequestBody NotificationReadRequest request) {
+        notificationReadService.markAsRead(request);
         return ResponseEntity.ok(BaseResponse.from(OK));
     }
 
