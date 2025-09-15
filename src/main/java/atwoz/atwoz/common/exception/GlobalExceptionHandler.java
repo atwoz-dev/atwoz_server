@@ -72,16 +72,6 @@ public class GlobalExceptionHandler {
             .body(BaseResponse.from(StatusType.CONFLICT));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<BaseResponse<Void>> handleGlobalException(Exception exception, HttpServletRequest request) {
-        String requestInfo = "Request URI: " + request.getRequestURI() + ", Method: " + request.getMethod();
-        log.error("Unexpected error occurred. RequestInfo: {}, ExceptionMessage: {}", requestInfo,
-            exception.getMessage(), exception);
-
-        return ResponseEntity.internalServerError()
-            .body(BaseResponse.from(StatusType.INTERNAL_SERVER_ERROR));
-    }
-
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<BaseResponse<Void>> handleEntityNotFoundException(EntityNotFoundException e) {
         log.warn("Entity not found exception", e);
@@ -118,6 +108,16 @@ public class GlobalExceptionHandler {
 
         log.error("Data access exception", e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(BaseResponse.from(StatusType.INTERNAL_SERVER_ERROR));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<BaseResponse<Void>> handleGlobalException(Exception exception, HttpServletRequest request) {
+        String requestInfo = "Request URI: " + request.getRequestURI() + ", Method: " + request.getMethod();
+        log.error("Unexpected error occurred. RequestInfo: {}, ExceptionMessage: {}", requestInfo,
+            exception.getMessage(), exception);
+
+        return ResponseEntity.internalServerError()
             .body(BaseResponse.from(StatusType.INTERNAL_SERVER_ERROR));
     }
 }

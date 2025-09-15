@@ -1,10 +1,10 @@
 package atwoz.atwoz.notification.command.application;
 
-import lombok.NonNull;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
 
 public record NotificationReadRequest(
-    @NonNull List<Long> notificationIds
+    @NotEmpty List<Long> notificationIds
 ) {
 }

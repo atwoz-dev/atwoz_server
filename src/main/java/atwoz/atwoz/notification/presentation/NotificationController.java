@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class NotificationController {
 
     @Operation(summary = "알림 읽기")
     @PatchMapping
-    public ResponseEntity<BaseResponse<Void>> markAsRead(@RequestBody NotificationReadRequest request) {
+    public ResponseEntity<BaseResponse<Void>> markAsRead(@Validated @RequestBody NotificationReadRequest request) {
         notificationReadService.markAsRead(request);
         return ResponseEntity.ok(BaseResponse.from(OK));
     }
