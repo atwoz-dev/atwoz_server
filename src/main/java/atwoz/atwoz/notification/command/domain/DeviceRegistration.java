@@ -21,8 +21,10 @@ public class DeviceRegistration {
 
     private Long memberId;
 
+    /** 기기 고유 식별자 (Android Device ID, iOS IDFV 등) */
     private String deviceId;
 
+    /** FCM(Firebase Cloud Messaging) 등록 토큰 */
     private String registrationToken;
 
     private boolean isActive = true;
