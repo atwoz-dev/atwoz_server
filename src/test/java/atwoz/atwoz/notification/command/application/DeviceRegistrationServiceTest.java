@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
@@ -26,8 +27,8 @@ class DeviceRegistrationServiceTest {
     DeviceRegistrationService service;
 
     @Test
-    @DisplayName("신규 디바이스 등록 시 저장 호출")
-    void registerSavesNewRegistration() {
+    @DisplayName("신규 디바이스 등록 시 기존 디바이스 삭제 후 저장")
+    void registerDeletesExistingDevicesAndSavesNewRegistration() {
         // given
         long memberId = 1L;
         var request = new DeviceRegisterRequest("device-123", "token-abc");
@@ -38,6 +39,7 @@ class DeviceRegistrationServiceTest {
         service.register(memberId, request);
 
         // then
+        verify(repository).deleteByMemberId(memberId);
         verify(repository).save(argThat(reg ->
             reg.getRegistrationToken().equals(request.registrationToken()) && reg.isActive()
         ));
@@ -58,6 +60,7 @@ class DeviceRegistrationServiceTest {
 
         // then
         verify(existing).refreshRegistrationToken(request.registrationToken());
+        verify(repository, never()).deleteByMemberId(anyLong());
         verify(repository, never()).save(any());
         assertThat(existing.getRegistrationToken()).isEqualTo(request.registrationToken());
         assertThat(existing.isActive()).isTrue();
