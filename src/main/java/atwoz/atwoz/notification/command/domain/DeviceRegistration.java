@@ -9,7 +9,6 @@ import lombok.NonNull;
 @Entity
 @Table(
     name = "device_registrations",
-    indexes = @Index(name = "idx_member_id_active", columnList = "memberId, isActive"),
     uniqueConstraints = @UniqueConstraint(name = "uk_member_id", columnNames = "memberId")
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,10 +21,14 @@ public class DeviceRegistration {
 
     private Long memberId;
 
-    /** 기기 고유 식별자 (Android Device ID, iOS IDFV 등) */
+    /**
+     * 기기 고유 식별자
+     */
     private String deviceId;
 
-    /** FCM(Firebase Cloud Messaging) 등록 토큰 */
+    /**
+     * FCM(Firebase Cloud Messaging) 등록 토큰
+     */
     private String registrationToken;
 
     private boolean isActive = true;
