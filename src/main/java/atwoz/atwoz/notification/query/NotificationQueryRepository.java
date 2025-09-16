@@ -22,7 +22,8 @@ public class NotificationQueryRepository {
                 notification.receiverId,
                 notification.type.stringValue(),
                 notification.title,
-                notification.body
+                notification.body,
+                notification.createdAt
             ))
             .from(notification)
             .where(

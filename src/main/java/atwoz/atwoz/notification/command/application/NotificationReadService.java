@@ -13,13 +13,8 @@ public class NotificationReadService {
     private final NotificationCommandRepository notificationCommandRepository;
 
     @Transactional
-    public void markAsRead(long notificationId) {
-        Notification notification = getNotification(notificationId);
-        notification.markAsRead();
-    }
-
-    private Notification getNotification(long notificationId) {
-        return notificationCommandRepository.findById(notificationId)
-            .orElseThrow(() -> new NotificationNotFoundException(notificationId));
+    public void markAsRead(NotificationReadRequest request) {
+        notificationCommandRepository.findAllById(request.notificationIds())
+            .forEach(Notification::markAsRead);
     }
 }
