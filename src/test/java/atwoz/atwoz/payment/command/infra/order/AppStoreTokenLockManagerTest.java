@@ -37,7 +37,7 @@ class AppStoreTokenLockManagerTest {
         void whenLockAcquiredSuccessfully_executesOperationAndReturnsResult() throws InterruptedException {
             // given
             when(redissonClient.getLock("app_store:jwt_token:creating")).thenReturn(lock);
-            when(lock.tryLock(5L, 10L, TimeUnit.SECONDS)).thenReturn(true);
+            when(lock.tryLock(1L, 2L, TimeUnit.SECONDS)).thenReturn(true);
             when(lock.isHeldByCurrentThread()).thenReturn(true);
 
             Supplier<String> operation = () -> OPERATION_RESULT;
@@ -47,7 +47,7 @@ class AppStoreTokenLockManagerTest {
 
             // then
             assertThat(result).isEqualTo(OPERATION_RESULT);
-            verify(lock).tryLock(5, 10, TimeUnit.SECONDS);
+            verify(lock).tryLock(1, 2, TimeUnit.SECONDS);
             verify(lock).unlock();
         }
 
@@ -56,7 +56,7 @@ class AppStoreTokenLockManagerTest {
         void whenLockAcquisitionFails_throwsRuntimeException() throws InterruptedException {
             // given
             when(redissonClient.getLock("app_store:jwt_token:creating")).thenReturn(lock);
-            when(lock.tryLock(5, 10, TimeUnit.SECONDS)).thenReturn(false);
+            when(lock.tryLock(1, 2, TimeUnit.SECONDS)).thenReturn(false);
 
             Supplier<String> operation = () -> OPERATION_RESULT;
 
@@ -65,7 +65,7 @@ class AppStoreTokenLockManagerTest {
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("토큰 생성 락 획득 실패 - 다른 프로세스가 토큰을 생성 중입니다");
 
-            verify(lock).tryLock(5, 10, TimeUnit.SECONDS);
+            verify(lock).tryLock(1, 2, TimeUnit.SECONDS);
             verify(lock, never()).unlock();
         }
 
@@ -74,7 +74,7 @@ class AppStoreTokenLockManagerTest {
         void whenInterruptedDuringLockWait_throwsRuntimeException() throws InterruptedException {
             // given
             when(redissonClient.getLock("app_store:jwt_token:creating")).thenReturn(lock);
-            when(lock.tryLock(5, 10, TimeUnit.SECONDS))
+            when(lock.tryLock(1, 2, TimeUnit.SECONDS))
                 .thenThrow(new InterruptedException("Thread interrupted"));
 
             Supplier<String> operation = () -> OPERATION_RESULT;
@@ -92,7 +92,7 @@ class AppStoreTokenLockManagerTest {
         void whenOperationThrowsException_releasesLock() throws InterruptedException {
             // given
             when(redissonClient.getLock("app_store:jwt_token:creating")).thenReturn(lock);
-            when(lock.tryLock(5L, 10L, TimeUnit.SECONDS)).thenReturn(true);
+            when(lock.tryLock(1L, 2L, TimeUnit.SECONDS)).thenReturn(true);
             when(lock.isHeldByCurrentThread()).thenReturn(true);
 
             Supplier<String> operation = () -> {
@@ -112,7 +112,7 @@ class AppStoreTokenLockManagerTest {
         void whenLockNotHeldByCurrentThread_doesNotUnlock() throws InterruptedException {
             // given
             when(redissonClient.getLock("app_store:jwt_token:creating")).thenReturn(lock);
-            when(lock.tryLock(5L, 10L, TimeUnit.SECONDS)).thenReturn(true);
+            when(lock.tryLock(1L, 2L, TimeUnit.SECONDS)).thenReturn(true);
             when(lock.isHeldByCurrentThread()).thenReturn(false);
 
             Supplier<String> operation = () -> OPERATION_RESULT;
@@ -130,7 +130,7 @@ class AppStoreTokenLockManagerTest {
         void whenUnlockThrowsException_ignoresException() throws InterruptedException {
             // given
             when(redissonClient.getLock("app_store:jwt_token:creating")).thenReturn(lock);
-            when(lock.tryLock(5L, 10L, TimeUnit.SECONDS)).thenReturn(true);
+            when(lock.tryLock(1L, 2L, TimeUnit.SECONDS)).thenReturn(true);
             when(lock.isHeldByCurrentThread()).thenReturn(true);
             doThrow(new RuntimeException("Unlock failed")).when(lock).unlock();
 
