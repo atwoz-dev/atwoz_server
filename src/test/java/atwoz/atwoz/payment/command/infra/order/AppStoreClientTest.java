@@ -180,8 +180,9 @@ class AppStoreClientTest {
         @Test
         void when400Error_throwsInvalidTransactionIdException() {
             // given
-            FeignException badRequestException = mock(FeignException.class);
-            when(badRequestException.status()).thenReturn(400);
+            FeignException badRequestException = new FeignException.BadRequest(
+                "Bad Request", mock(feign.Request.class), null, null
+            );
 
             // when & then
             assertThatThrownBy(
@@ -194,8 +195,9 @@ class AppStoreClientTest {
         @Test
         void when404Error_throwsInvalidTransactionIdException() {
             // given
-            FeignException notFoundException = mock(FeignException.class);
-            when(notFoundException.status()).thenReturn(404);
+            FeignException notFoundException = new FeignException.NotFound(
+                "Not Found", mock(feign.Request.class), null, null
+            );
 
             // when & then
             assertThatThrownBy(
@@ -208,8 +210,9 @@ class AppStoreClientTest {
         @Test
         void when500Error_throwsAppStoreClientException() {
             // given
-            FeignException serverException = mock(FeignException.class);
-            when(serverException.status()).thenReturn(500);
+            FeignException serverException = new FeignException.InternalServerError(
+                "Internal Server Error", mock(feign.Request.class), null, null
+            );
 
             // when & then
             assertThatThrownBy(() -> appStoreClient.getTransactionDecodedPayloadFallback(APP_RECEIPT, serverException))
