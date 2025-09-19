@@ -17,7 +17,7 @@ import java.time.Duration;
 public class AppStoreQueryResilienceConfig implements ResiliencePolicyConfigurer {
     public static final String RETRY_POLICY_NAME = "appStoreQueryRetry";
     public static final String CIRCUIT_BREAKER_POLICY_NAME = "appStoreQueryCircuitBreaker";
-    private static final int RETRY_ATTEMPTS = 1;
+    private static final int RETRY_ATTEMPTS = 2; // 최초 1회 + 재시도 1회
     private static final int RETRY_WAIT_DURATION_MILLIS = 200;
 
     @Override
