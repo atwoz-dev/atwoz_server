@@ -55,15 +55,15 @@ public class AppStoreQueryResilienceConfig implements ResiliencePolicyConfigurer
     private CircuitBreakerConfig circuitBreakerConfig() {
         return CircuitBreakerConfig.custom()
             .slidingWindowType(CircuitBreakerConfig.SlidingWindowType.TIME_BASED)
-            .slidingWindowSize(10)
-            .minimumNumberOfCalls(4)
-            .failureRateThreshold(50f)
-            .slowCallRateThreshold(50f)
-            .slowCallDurationThreshold(Duration.ofMillis(100))
-            .waitDurationInOpenState(Duration.ofMillis(2000))
-            .automaticTransitionFromOpenToHalfOpenEnabled(true)
-            .permittedNumberOfCallsInHalfOpenState(2)
-            .maxWaitDurationInHalfOpenState(Duration.ofMillis(3000))
+            .slidingWindowSize(30)                                          // 30초 시간 윈도우
+            .minimumNumberOfCalls(10)                                        // 최소 10회 호출 후 실패율 계산
+            .failureRateThreshold(50f)                                      // 실패율 50% 이상시 차단
+            .slowCallRateThreshold(50f)                                     // 느린 응답 50% 이상시 차단
+            .slowCallDurationThreshold(Duration.ofMillis(500))              // 500ms 이상을 느린 응답으로 판단
+            .waitDurationInOpenState(Duration.ofMillis(5000))               // OPEN 상태에서 5초 대기
+            .automaticTransitionFromOpenToHalfOpenEnabled(true)             // HALF_OPEN 상태로 자동 전환
+            .permittedNumberOfCallsInHalfOpenState(5)                       // HALF_OPEN에서 5회 테스트 호출 허용
+            .maxWaitDurationInHalfOpenState(Duration.ofMillis(10000))        // HALF_OPEN에서 최대 10초 대기
             .recordExceptions(
                 FeignException.TooManyRequests.class,       // 429: 요청 한도 초과
                 FeignException.InternalServerError.class,   // 500: 서버 오류
