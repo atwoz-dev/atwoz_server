@@ -15,8 +15,10 @@ import java.time.Duration;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class AppStoreTokenCacheManager {
     private static final String APP_STORE_JWT_TOKEN_CACHE_KEY = "app_store:jwt_token";
+    private static final String APP_STORE_TOKEN_EVENT_LOCK_KEY = "app_store:jwt_token:event_published";
     private static final long TOKEN_VALIDITY_SECONDS = 3600; // 1시간 (hard TTL)
     private static final long TOKEN_SOFT_TTL_SECONDS = 3000; // 50분 (soft TTL)
+    private static final long EVENT_PUBLISH_INTERVAL_SECONDS = 10; // 이벤트 발행 간격
 
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -62,6 +64,15 @@ public class AppStoreTokenCacheManager {
     }
 
     private void publishTokenExpiredEvent(Long currentTtl) {
+        Duration eventLockDuration = Duration.ofSeconds(EVENT_PUBLISH_INTERVAL_SECONDS);
+        Boolean lockAcquired = redisTemplate.opsForValue()
+            .setIfAbsent(APP_STORE_TOKEN_EVENT_LOCK_KEY, "published", eventLockDuration);
+
+        if (Boolean.FALSE.equals(lockAcquired)) {
+            log.debug("토큰 갱신 이벤트 발행 제한 - {}초 이내에 이미 발행됨", EVENT_PUBLISH_INTERVAL_SECONDS);
+            return;
+        }
+
         log.debug("토큰 soft TTL 만료 감지, 현재 TTL: {}초", currentTtl);
         log.info("App Store JWT 토큰 soft TTL 만료, 갱신 이벤트 발행");
         Events.raise(new AppStoreTokenExpiredEvent(APP_STORE_JWT_TOKEN_CACHE_KEY));

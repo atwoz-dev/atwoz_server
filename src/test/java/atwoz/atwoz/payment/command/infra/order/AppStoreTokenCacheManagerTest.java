@@ -25,6 +25,7 @@ import static org.mockito.Mockito.*;
 class AppStoreTokenCacheManagerTest {
 
     private static final String CACHE_KEY = "app_store:jwt_token";
+    private static final String EVENT_LOCK_KEY = "app_store:jwt_token:event_published";
     private static final String TOKEN = "test.jwt.token";
     @Mock
     private RedisTemplate<String, String> redisTemplate;
@@ -79,6 +80,8 @@ class AppStoreTokenCacheManagerTest {
             when(redisTemplate.opsForValue()).thenReturn(valueOperations);
             when(valueOperations.get(CACHE_KEY)).thenReturn(TOKEN);
             when(redisTemplate.getExpire(CACHE_KEY)).thenReturn(2000L); // soft TTL 만료 (3000초 미만)
+            when(valueOperations.setIfAbsent(eq(EVENT_LOCK_KEY), eq("published"),
+                eq(Duration.ofSeconds(10)))).thenReturn(true);
 
             try (MockedStatic<Events> eventsMock = mockStatic(Events.class)) {
                 // when
@@ -87,6 +90,26 @@ class AppStoreTokenCacheManagerTest {
                 // then
                 assertThat(result).isEqualTo(TOKEN);
                 eventsMock.verify(() -> Events.raise(any(AppStoreTokenExpiredEvent.class)));
+            }
+        }
+
+        @DisplayName("토큰이 있고 soft TTL이 만료되었지만 최근에 이벤트가 발행되었으면 이벤트를 발행하지 않는다")
+        @Test
+        void getCachedTokenWithSoftTtlCheck_WhenEventRecentlyPublished_DoesNotPublishEvent() {
+            // given
+            when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+            when(valueOperations.get(CACHE_KEY)).thenReturn(TOKEN);
+            when(redisTemplate.getExpire(CACHE_KEY)).thenReturn(2000L); // soft TTL 만료 (3000초 미만)
+            when(valueOperations.setIfAbsent(eq(EVENT_LOCK_KEY), eq("published"),
+                eq(Duration.ofSeconds(10)))).thenReturn(false);
+
+            try (MockedStatic<Events> eventsMock = mockStatic(Events.class)) {
+                // when
+                String result = cacheManager.getCachedTokenWithSoftTtlCheck();
+
+                // then
+                assertThat(result).isEqualTo(TOKEN);
+                eventsMock.verifyNoInteractions();
             }
         }
 
