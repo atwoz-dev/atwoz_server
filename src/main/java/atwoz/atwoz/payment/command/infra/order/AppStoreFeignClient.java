@@ -11,7 +11,7 @@ import java.time.Duration;
 
 @FeignClient(
     name = "appStoreApiClient",
-    url = "#{@appStoreApiConfig.baseUrl}",
+    url = "${payment.app-store.base-url}",
     configuration = AppStoreFeignClient.Config.class
 )
 public interface AppStoreFeignClient {
