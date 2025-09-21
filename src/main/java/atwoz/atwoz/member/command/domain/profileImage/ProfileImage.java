@@ -46,18 +46,13 @@ public class ProfileImage extends BaseEntity {
         return order;
     }
 
-    private void setOrder(int order) {
+    public void setOrder(int order) {
         validateOrder(order);
         this.order = order;
     }
 
     public Boolean isPrimary() {
         return isPrimary;
-    }
-
-    public void updateOrderAndPrimary(int order, boolean isPrimary) {
-        setOrder(order);
-        setPrimary(isPrimary);
     }
 
     public void updateUrl(String imageUrl) {
