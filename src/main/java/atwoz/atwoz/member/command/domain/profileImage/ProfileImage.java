@@ -13,6 +13,7 @@ import lombok.*;
     })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 public class ProfileImage extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,25 +26,22 @@ public class ProfileImage extends BaseEntity {
     @Embedded
     private ImageUrl imageUrl;
 
-    private boolean isPrimary;
+    @Setter
+    private Boolean isPrimary;
 
     @Column(name = "profile_order")
-    private int order;
+    private Integer order;
 
     @Builder
     private ProfileImage(Long memberId, ImageUrl imageUrl, int order, boolean isPrimary) {
         setMemberId(memberId);
         setImageUrl(imageUrl);
         setOrder(order);
-        setPrimary(isPrimary);
+        setIsPrimary(isPrimary);
     }
 
     public String getUrl() {
         return imageUrl.getValue();
-    }
-
-    public Integer getOrder() {
-        return order;
     }
 
     public void setOrder(int order) {
@@ -63,10 +61,6 @@ public class ProfileImage extends BaseEntity {
 
     private void setMemberId(@NonNull Long memberId) {
         this.memberId = memberId;
-    }
-
-    private void setPrimary(boolean isPrimary) {
-        this.isPrimary = isPrimary;
     }
 
     private void setImageUrl(ImageUrl imageUrl) {

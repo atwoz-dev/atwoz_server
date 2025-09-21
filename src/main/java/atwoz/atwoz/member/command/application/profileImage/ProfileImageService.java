@@ -50,10 +50,6 @@ public class ProfileImageService {
 
         List<ProfileImage> profileImages = profileImageCommandRepository.findByMemberId(memberId);
 
-        for (ProfileImageUploadRequest request : updatedOrUploadRequests) {
-            log.info("{} {} {} {} {}", request.getId(), request.getImage(), request.getUrl(), request.getOrder(),
-                request.getIsDeleted());
-        }
         // 비동기로 s3 요청.
         List<CompletableFuture<ProfileImage>> futures = updatedOrUploadRequests.stream()
             .map(request -> handleImageUpload(request, memberId, profileImages))
@@ -62,6 +58,11 @@ public class ProfileImageService {
 
         // 비동기 결과 병합 (기존 엔티티 + 새롭게 추가된 엔티티).
         List<ProfileImage> profileImageList = gatherProfileImages(futures);
+
+        // 대표이미지 설정.
+        profileImageList.forEach(p -> {
+            p.setIsPrimary(p.getOrder() == 0);
+        });
 
         // DB 반영.
         profileImageCommandRepository.saveAll(profileImageList);
@@ -81,11 +82,8 @@ public class ProfileImageService {
 
     private List<ProfileImage> gatherProfileImages(List<CompletableFuture<ProfileImage>> futures) {
         try {
-            return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
-                .thenApply(v -> futures.stream()
-                    .map(CompletableFuture::join)
-                    .toList())
-                .join();
+            CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+            return futures.stream().map(CompletableFuture::join).toList();
         } catch (CompletionException ex) {
             if (ex.getCause() instanceof ProfileImageNotFoundException e) {
                 throw e;
@@ -123,7 +121,6 @@ public class ProfileImageService {
 
     private ProfileImage processUploadedImage(ProfileImageUploadRequest request, Long memberId,
         List<ProfileImage> profileImages, String imageUrl) {
-        System.out.println("작동");
         if (isReplacedImage(request, imageUrl)) { // 기존 프로필 이미지의 파일을 교체하는 경우.
             ProfileImage profileImage = findById(request.getId(), profileImages, memberId);
             s3Uploader.deleteFile(profileImage.getUrl()); // 기존 이미지 삭제.
