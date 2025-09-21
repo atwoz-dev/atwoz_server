@@ -41,7 +41,7 @@ public class ProfileImageCommandRepositoryImpl implements ProfileImageCommandRep
 
     @Override
     public void delete(List<Long> ids) {
-
+        profileImageJpaRepository.deleteInIds(ids);
     }
 
     @Override

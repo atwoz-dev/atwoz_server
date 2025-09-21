@@ -2,7 +2,6 @@ package atwoz.atwoz.member.command.application.profileImage;
 
 import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadResponse;
 import atwoz.atwoz.member.command.application.profileImage.exception.EmptyImageUploadException;
-import atwoz.atwoz.member.command.application.profileImage.exception.ProfileImageMemberIdMismatchException;
 import atwoz.atwoz.member.command.application.profileImage.exception.ProfileImageNotFoundException;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImageCommandRepository;
@@ -10,17 +9,21 @@ import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.command.infra.profileImage.S3Uploader;
 import atwoz.atwoz.member.presentation.profileimage.dto.ProfileImageUploadRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProfileImageService {
 
     private final ProfileImageCommandRepository profileImageCommandRepository;
@@ -41,12 +44,16 @@ public class ProfileImageService {
         ).toList();
 
         // Order 재정렬.
-        setOrderFromRequests(updatedOrUploadRequests);
+        reOrderFromRequests(updatedOrUploadRequests);
 
         validateImageUploadRequest(updatedOrUploadRequests);
 
         List<ProfileImage> profileImages = profileImageCommandRepository.findByMemberId(memberId);
 
+        for (ProfileImageUploadRequest request : updatedOrUploadRequests) {
+            log.info("{} {} {} {} {}", request.getId(), request.getImage(), request.getUrl(), request.getOrder(),
+                request.getIsDeleted());
+        }
         // 비동기로 s3 요청.
         List<CompletableFuture<ProfileImage>> futures = updatedOrUploadRequests.stream()
             .map(request -> handleImageUpload(request, memberId, profileImages))
@@ -73,11 +80,18 @@ public class ProfileImageService {
     }
 
     private List<ProfileImage> gatherProfileImages(List<CompletableFuture<ProfileImage>> futures) {
-        return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
-            .thenApply(v -> futures.stream()
-                .map(CompletableFuture::join)
-                .toList())
-            .join();
+        try {
+            return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
+                .thenApply(v -> futures.stream()
+                    .map(CompletableFuture::join)
+                    .toList())
+                .join();
+        } catch (CompletionException ex) {
+            if (ex.getCause() instanceof ProfileImageNotFoundException e) {
+                throw e;
+            }
+            throw ex;
+        }
     }
 
     private void validateImageUploadRequest(List<ProfileImageUploadRequest> requests) {
@@ -89,17 +103,16 @@ public class ProfileImageService {
         });
     }
 
-    private ProfileImage findByIdAndMemberId(Long profileImageId, Long memberId) {
-        ProfileImage profileImage = profileImageCommandRepository.findById(profileImageId)
-            .orElseThrow(ProfileImageNotFoundException::new);
-        if (!profileImage.getMemberId().equals(memberId)) {
-            throw new ProfileImageMemberIdMismatchException();
+    private ProfileImage findById(Long profileImageId, List<ProfileImage> profileImages, Long memberId) {
+        ProfileImage profileImage = profileImages.stream()
+            .filter(p -> p.getId().equals(profileImageId))
+            .findFirst()
+            .orElse(null);
+        if (profileImage == null || !Objects.equals(profileImage.getMemberId(), memberId)) {
+            throw new ProfileImageNotFoundException();
         }
-        return profileImage;
-    }
 
-    private ProfileImage findById(Long profileImageId, List<ProfileImage> profileImages) {
-        return profileImages.stream().filter(p -> p.getId().equals(profileImageId)).findFirst().orElse(null);
+        return profileImage;
     }
 
     private CompletableFuture<ProfileImage> handleImageUpload(ProfileImageUploadRequest request, Long memberId,
@@ -110,16 +123,17 @@ public class ProfileImageService {
 
     private ProfileImage processUploadedImage(ProfileImageUploadRequest request, Long memberId,
         List<ProfileImage> profileImages, String imageUrl) {
+        System.out.println("작동");
         if (isReplacedImage(request, imageUrl)) { // 기존 프로필 이미지의 파일을 교체하는 경우.
-            ProfileImage profileImage = findById(request.getId(), profileImages);
+            ProfileImage profileImage = findById(request.getId(), profileImages, memberId);
             s3Uploader.deleteFile(profileImage.getUrl()); // 기존 이미지 삭제.
             profileImage.updateUrl(imageUrl);
             profileImage.setOrder(request.getOrder());
             return profileImage;
         } else if (request.getId() != null) { // 기존 프로필 이미지를 유지하는 경우.
-            ProfileImage profileImage = findById(request.getId(), profileImages);
+            ProfileImage profileImage = findById(request.getId(), profileImages, memberId);
             profileImage.setOrder(request.getOrder());
-            return findById(request.getId(), profileImages);
+            return profileImage;
         } else { // 새로운 프로필 이미지를 추가하는 경우.
             return createNewProfileImage(request, memberId, imageUrl);
         }
@@ -137,7 +151,7 @@ public class ProfileImageService {
             .build();
     }
 
-    private void setOrderFromRequests(List<ProfileImageUploadRequest> requests) {
+    private void reOrderFromRequests(List<ProfileImageUploadRequest> requests) {
         for (int i = 0; i < requests.size(); i++) {
             requests.get(i).setOrder(i);
         }
