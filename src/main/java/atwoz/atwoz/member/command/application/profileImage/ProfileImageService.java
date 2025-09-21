@@ -32,16 +32,17 @@ public class ProfileImageService {
     @Transactional
     public List<ProfileImageUploadResponse> save(Long memberId, List<ProfileImageUploadRequest> requests) {
         // 삭제 되상이 될 프로필 이미지 리스트.
-        List<ProfileImageUploadRequest> deleteRequest = requests.stream().filter(
-            ProfileImageUploadRequest::getIsDeleted).toList();
+        List<ProfileImageUploadRequest> deleteRequest = requests.stream()
+            .filter(r -> Boolean.TRUE.equals(r.getIsDeleted()))
+            .toList();
 
         // 삭제 처리.
         delete(deleteRequest);
 
         // 업로드 대상이 될 프로필 이미지 리스트.
-        List<ProfileImageUploadRequest> updatedOrUploadRequests = requests.stream().filter(
-            request -> !request.getIsDeleted()
-        ).toList();
+        List<ProfileImageUploadRequest> updatedOrUploadRequests = requests.stream()
+            .filter(r -> !Boolean.TRUE.equals(r.getIsDeleted()))
+            .toList();
 
         // Order 재정렬.
         reOrderFromRequests(updatedOrUploadRequests);
