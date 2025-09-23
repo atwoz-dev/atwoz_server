@@ -68,10 +68,12 @@ public class MemberController {
 
     @Operation(summary = "휴면 계정 전환 API")
     @PostMapping("/profile/dormant")
-    public ResponseEntity<BaseResponse<Void>> changeToDormant(@AuthPrincipal AuthContext authContext,
-        @CookieValue(value = "refresh_token", required = false) String refreshToken) {
+    public ResponseEntity<BaseResponse<Void>> changeToDormant(
+        @AuthPrincipal AuthContext authContext,
+        @CookieValue(value = "refresh_token", required = false) String refreshToken
+    ) {
         memberProfileService.changeToDormant(authContext.getId());
-        memberAuthService.logout(refreshToken);
+        memberAuthService.logout(authContext.getId(), refreshToken);
 
         HttpHeaders headers = new HttpHeaders();
         ResponseCookie deleteCookie = getResponseCookieDeletedRefreshToken();

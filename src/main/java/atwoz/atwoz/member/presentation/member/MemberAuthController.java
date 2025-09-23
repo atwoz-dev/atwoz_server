@@ -64,8 +64,10 @@ public class MemberAuthController {
     @Operation(summary = "멤버 로그아웃")
     @GetMapping("/logout")
     public ResponseEntity<BaseResponse<Void>> logout(
-        @CookieValue(value = "refresh_token", required = false) String refreshToken) {
-        memberAuthService.logout(refreshToken);
+        @AuthPrincipal AuthContext authContext,
+        @CookieValue(value = "refresh_token", required = false) String refreshToken
+    ) {
+        memberAuthService.logout(authContext.getId(), refreshToken);
 
         HttpHeaders headers = new HttpHeaders();
         ResponseCookie deleteCookie = getResponseCookieDeletedRefreshToken();
