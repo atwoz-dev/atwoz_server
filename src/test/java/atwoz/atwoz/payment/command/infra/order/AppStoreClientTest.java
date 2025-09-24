@@ -29,8 +29,7 @@ class AppStoreClientTest {
 
     private static final String APP_RECEIPT = "test.app.receipt";
     private static final String TRANSACTION_ID = "test.transaction.id";
-    private static final String JWT_TOKEN = "test.jwt.token";
-    private static final String BEARER_TOKEN = "Bearer " + JWT_TOKEN;
+    private static final String BEARER_TOKEN = "Bearer test.jwt.token";
     private static final String SIGNED_TRANSACTION_INFO = "signed.transaction.info";
 
     @Mock
@@ -63,7 +62,7 @@ class AppStoreClientTest {
         void whenSuccessful_returnsDecodedPayload() throws IOException, VerificationException {
             // given
             when(receiptUtil.extractTransactionIdFromAppReceipt(APP_RECEIPT)).thenReturn(TRANSACTION_ID);
-            when(appStoreTokenService.generateToken()).thenReturn(JWT_TOKEN);
+            when(appStoreTokenService.generateToken()).thenReturn(BEARER_TOKEN);
             when(feignClient.getTransactionInfo(TRANSACTION_ID, BEARER_TOKEN)).thenReturn(transactionResponse);
             when(transactionResponse.getSignedTransactionInfo()).thenReturn(SIGNED_TRANSACTION_INFO);
             when(signedDataVerifier.verifyAndDecodeTransaction(SIGNED_TRANSACTION_INFO)).thenReturn(decodedPayload);
@@ -127,7 +126,7 @@ class AppStoreClientTest {
             FeignException unauthorizedException = mock(FeignException.class);
             when(unauthorizedException.status()).thenReturn(401);
             when(receiptUtil.extractTransactionIdFromAppReceipt(APP_RECEIPT)).thenReturn(TRANSACTION_ID);
-            when(appStoreTokenService.generateToken()).thenReturn(JWT_TOKEN);
+            when(appStoreTokenService.generateToken()).thenReturn(BEARER_TOKEN);
             when(feignClient.getTransactionInfo(TRANSACTION_ID, BEARER_TOKEN)).thenThrow(unauthorizedException);
 
             // when & then
@@ -144,7 +143,7 @@ class AppStoreClientTest {
             FeignException serverException = mock(FeignException.class);
             when(serverException.status()).thenReturn(500);
             when(receiptUtil.extractTransactionIdFromAppReceipt(APP_RECEIPT)).thenReturn(TRANSACTION_ID);
-            when(appStoreTokenService.generateToken()).thenReturn(JWT_TOKEN);
+            when(appStoreTokenService.generateToken()).thenReturn(BEARER_TOKEN);
             when(feignClient.getTransactionInfo(TRANSACTION_ID, BEARER_TOKEN)).thenThrow(serverException);
 
             // when & then
@@ -160,7 +159,7 @@ class AppStoreClientTest {
             // given
             VerificationException cause = mock(VerificationException.class);
             when(receiptUtil.extractTransactionIdFromAppReceipt(APP_RECEIPT)).thenReturn(TRANSACTION_ID);
-            when(appStoreTokenService.generateToken()).thenReturn(JWT_TOKEN);
+            when(appStoreTokenService.generateToken()).thenReturn(BEARER_TOKEN);
             when(feignClient.getTransactionInfo(TRANSACTION_ID, BEARER_TOKEN)).thenReturn(transactionResponse);
             when(transactionResponse.getSignedTransactionInfo()).thenReturn(SIGNED_TRANSACTION_INFO);
             when(signedDataVerifier.verifyAndDecodeTransaction(SIGNED_TRANSACTION_INFO)).thenThrow(cause);

@@ -21,6 +21,8 @@ class AppStoreTokenServiceTest {
 
     private static final String EXISTING_TOKEN = "existing.jwt.token";
     private static final String NEW_TOKEN = "new.jwt.token";
+    private static final String BEARER_EXISTING_TOKEN = "Bearer " + EXISTING_TOKEN;
+    private static final String BEARER_NEW_TOKEN = "Bearer " + NEW_TOKEN;
 
     @Mock
     private AppStoreJwtTokenBuilder jwtTokenBuilder;
@@ -48,7 +50,7 @@ class AppStoreTokenServiceTest {
             String result = tokenService.generateToken();
 
             // then
-            assertThat(result).isEqualTo(EXISTING_TOKEN);
+            assertThat(result).isEqualTo(BEARER_EXISTING_TOKEN);
             verify(lockManager, never()).executeWithLock(any());
             verify(jwtTokenBuilder, never()).buildToken();
         }
@@ -71,7 +73,7 @@ class AppStoreTokenServiceTest {
             String result = tokenService.generateToken();
 
             // then
-            assertThat(result).isEqualTo(NEW_TOKEN);
+            assertThat(result).isEqualTo(BEARER_NEW_TOKEN);
             verify(lockManager, times(1)).executeWithLock(any());
             verify(jwtTokenBuilder, times(1)).buildToken();
             verify(cacheManager, times(1)).cacheToken(NEW_TOKEN);
@@ -95,7 +97,7 @@ class AppStoreTokenServiceTest {
             String result = tokenService.generateToken();
 
             // then
-            assertThat(result).isEqualTo(EXISTING_TOKEN);
+            assertThat(result).isEqualTo(BEARER_EXISTING_TOKEN);
             verify(lockManager, times(1)).executeWithLock(any());
             verify(jwtTokenBuilder, never()).buildToken();
             verify(cacheManager, never()).cacheToken(anyString());
@@ -116,7 +118,7 @@ class AppStoreTokenServiceTest {
             String result = tokenService.forceRefreshToken();
 
             // then
-            assertThat(result).isEqualTo(NEW_TOKEN);
+            assertThat(result).isEqualTo(BEARER_NEW_TOKEN);
             verify(lockManager, never()).executeWithLock(any());
             verify(jwtTokenBuilder, times(1)).buildToken();
             verify(cacheManager, times(1)).cacheToken(NEW_TOKEN);
@@ -142,7 +144,7 @@ class AppStoreTokenServiceTest {
             String result = tokenService.refreshToken();
 
             // then
-            assertThat(result).isEqualTo(EXISTING_TOKEN);
+            assertThat(result).isEqualTo(BEARER_EXISTING_TOKEN);
             verify(lockManager, times(1)).executeWithLock(any());
             verify(jwtTokenBuilder, never()).buildToken();
             verify(cacheManager, never()).cacheToken(anyString());
@@ -165,7 +167,7 @@ class AppStoreTokenServiceTest {
             String result = tokenService.refreshToken();
 
             // then
-            assertThat(result).isEqualTo(NEW_TOKEN);
+            assertThat(result).isEqualTo(BEARER_NEW_TOKEN);
             verify(lockManager, times(1)).executeWithLock(any());
             verify(jwtTokenBuilder, times(1)).buildToken();
             verify(cacheManager, times(1)).cacheToken(NEW_TOKEN);
@@ -187,7 +189,7 @@ class AppStoreTokenServiceTest {
             String result = tokenService.refreshToken();
 
             // then
-            assertThat(result).isEqualTo(NEW_TOKEN);
+            assertThat(result).isEqualTo(BEARER_NEW_TOKEN);
             verify(lockManager, times(1)).executeWithLock(any());
             verify(jwtTokenBuilder, times(1)).buildToken();
             verify(cacheManager, times(1)).cacheToken(NEW_TOKEN);

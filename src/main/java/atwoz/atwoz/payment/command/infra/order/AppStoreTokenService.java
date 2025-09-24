@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class AppStoreTokenService {
 
+    private static final String BEARER_PREFIX = "Bearer ";
+
     private final AppStoreJwtTokenBuilder jwtTokenBuilder;
     private final AppStoreTokenCacheManager cacheManager;
     private final AppStoreTokenLockManager lockManager;
@@ -17,18 +19,25 @@ public class AppStoreTokenService {
     public String generateToken() {
         String cachedToken = cacheManager.getCachedTokenWithSoftTtlCheck();
         if (cacheManager.hasCachedToken(cachedToken)) {
-            return cachedToken;
+            return addBearerPrefix(cachedToken);
         }
 
-        return lockManager.executeWithLock(this::generateTokenIfNotCached);
+        String token = lockManager.executeWithLock(this::generateTokenIfNotCached);
+        return addBearerPrefix(token);
     }
 
     public String forceRefreshToken() {
-        return generateAndCacheToken();
+        String token = generateAndCacheToken();
+        return addBearerPrefix(token);
     }
 
     public String refreshToken() {
-        return lockManager.executeWithLock(this::generateTokenIfSoftTtlExpired);
+        String token = lockManager.executeWithLock(this::generateTokenIfSoftTtlExpired);
+        return addBearerPrefix(token);
+    }
+
+    private String addBearerPrefix(String token) {
+        return BEARER_PREFIX + token;
     }
 
     private String generateTokenIfNotCached() {

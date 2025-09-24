@@ -49,16 +49,12 @@ public class AppStoreClient {
 
     private AppStoreTransactionResponse fetchTransactionFromAppStore(String transactionId) {
         try {
-            String bearerToken = createBearerToken();
+            String bearerToken = appStoreTokenService.generateToken();
             return feignClient.getTransactionInfo(transactionId, bearerToken);
         } catch (FeignException exception) {
             handleTokenExpirationIfNeeded(exception);
             throw exception;
         }
-    }
-
-    private String createBearerToken() {
-        return "Bearer " + appStoreTokenService.generateToken();
     }
 
     private void handleTokenExpirationIfNeeded(FeignException exception) {
