@@ -21,8 +21,6 @@ public class MockEventsExtension implements BeforeEachCallback, AfterEachCallbac
 
     @Override
     public void afterEach(ExtensionContext context) {
-        if (mockedEvents != null) {
-            mockedEvents.close();
-        }
+        mockedEvents.close();
     }
 }
