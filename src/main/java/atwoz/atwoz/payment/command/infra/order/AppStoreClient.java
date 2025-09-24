@@ -26,7 +26,7 @@ public class AppStoreClient {
     private final SignedDataVerifier signedDataVerifier;
 
     @Retry(name = AppStoreQueryResilienceConfig.RETRY_POLICY_NAME, fallbackMethod = "getTransactionDecodedPayloadFallback")
-    @CircuitBreaker(name = AppStoreQueryResilienceConfig.CIRCUIT_BREAKER_POLICY_NAME, fallbackMethod = "getTransactionDecodedPayloadFallback")
+    @CircuitBreaker(name = AppStoreQueryResilienceConfig.CIRCUIT_BREAKER_POLICY_NAME)
     public JWSTransactionDecodedPayload getTransactionDecodedPayload(@NonNull String appReceipt) {
         String transactionId = extractTransactionIdFromReceipt(appReceipt);
         AppStoreTransactionResponse response = fetchTransactionFromAppStore(transactionId);
