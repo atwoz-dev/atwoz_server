@@ -81,6 +81,7 @@ public class S3Uploader {
         return CompletableFuture.completedFuture(imageUrl);
     }
 
+    @Async
     public void deleteFile(String url) {
         String key = getKey(url);
         s3Client.deleteObject(bucket, key);
