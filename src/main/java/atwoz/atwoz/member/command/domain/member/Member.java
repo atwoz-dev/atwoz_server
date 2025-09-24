@@ -5,8 +5,6 @@ import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartBalance;
 import atwoz.atwoz.member.command.domain.member.event.*;
-import atwoz.atwoz.member.command.domain.member.exception.MemberAlreadyActiveException;
-import atwoz.atwoz.member.command.domain.member.exception.MemberNotActiveException;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.PhoneNumber;
@@ -100,17 +98,11 @@ public class Member extends SoftDeleteBaseEntity {
     }
 
     public void changeToDormant() {
-        if (!isActive()) {
-            throw new MemberNotActiveException();
-        }
         activityStatus = ActivityStatus.DORMANT;
         Events.raise(MemberBecameDormantEvent.from(id));
     }
 
     public void changeToActive() {
-        if (isActive()) {
-            throw new MemberAlreadyActiveException();
-        }
         activityStatus = ActivityStatus.ACTIVE;
         Events.raise(MemberActivatedEvent.from(id));
     }

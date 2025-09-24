@@ -15,7 +15,6 @@ import static atwoz.atwoz.notification.command.domain.ChannelType.PUSH;
 import static atwoz.atwoz.notification.command.domain.NotificationStatus.*;
 import static atwoz.atwoz.notification.command.domain.NotificationType.LIKE;
 import static atwoz.atwoz.notification.command.domain.SenderType.SYSTEM;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
@@ -41,21 +40,24 @@ class NotificationSendServiceTest {
     NotificationSendService service;
 
     @Test
-    @DisplayName("send(): 템플릿 없으면 예외 발생")
-    void sendThrowsWhenTemplateMissing() {
+    @DisplayName("send(): 템플릿 없으면 FAILED_TEMPLATE_NOT_FOUND 상태로 저장")
+    void sendSavesFailedTemplate() {
         // given
         var req = new NotificationSendRequest(SYSTEM, 1L, 2L, LIKE, Map.of(), PUSH);
         when(notificationTemplateCommandRepository.findByType(LIKE))
             .thenReturn(Optional.empty());
 
-        // when && then
-        assertThatThrownBy(() -> service.send(req))
-            .isInstanceOf(InvalidNotificationTypeException.class);
+        // when
+        service.send(req);
+
+        // then
+        verify(notificationCommandRepository)
+            .save(argThat(n -> n.getStatus() == FAILED_TEMPLATE_NOT_FOUND));
     }
 
     @Test
-    @DisplayName("send(): 수신 설정 없으면 예외 발생")
-    void sendThrowsWhenPreferenceMissing() {
+    @DisplayName("send(): 수신 설정 없으면 FAILED_PREFERENCE_NOT_FOUND 상태로 저장")
+    void sendSavesFailedPreference() {
         // given
         var req = new NotificationSendRequest(SYSTEM, 1L, 99L, LIKE, Map.of(), PUSH);
         when(notificationTemplateCommandRepository.findByType(LIKE))
@@ -63,13 +65,16 @@ class NotificationSendServiceTest {
         when(notificationPreferenceCommandRepository.findByMemberId(99L))
             .thenReturn(Optional.empty());
 
-        // when && then
-        assertThatThrownBy(() -> service.send(req))
-            .isInstanceOf(ReceiverNotificationPreferenceNotFoundException.class);
+        // when
+        service.send(req);
+
+        // then
+        verify(notificationCommandRepository)
+            .save(argThat(n -> n.getStatus() == FAILED_PREFERENCE_NOT_FOUND));
     }
 
     @Test
-    @DisplayName("send(): 수신 거부 시 REJECTED 상태로 저장")
+    @DisplayName("send(): 수신 거부 시 REJECTED_BY_PREFERENCE 상태로 저장")
     void sendSavesRejectedNotification() {
         // given
         var req = new NotificationSendRequest(SYSTEM, 1L, 1L, LIKE, Map.of(), PUSH);
@@ -86,7 +91,7 @@ class NotificationSendServiceTest {
 
         // then
         verify(notificationCommandRepository)
-            .save(argThat(n -> n.getStatus() == REJECTED));
+            .save(argThat(n -> n.getStatus() == REJECTED_BY_PREFERENCE));
     }
 
     @Test
@@ -138,6 +143,26 @@ class NotificationSendServiceTest {
         // then
         verify(notificationCommandRepository)
             .save(argThat(n -> n.getStatus() == FAILED_EXCEPTION));
+    }
+
+    @Test
+    @DisplayName("send(): 디바이스 없으면 FAILED_DEVICE_NOT_FOUND 상태로 저장")
+    void sendSavesFailedDevice() {
+        // given
+        var req = new NotificationSendRequest(SYSTEM, 1L, 30L, LIKE, Map.of(), PUSH);
+        when(notificationTemplateCommandRepository.findByType(LIKE))
+            .thenReturn(Optional.of(NotificationTemplate.of(LIKE, "", "")));
+        when(notificationPreferenceCommandRepository.findByMemberId(30L))
+            .thenReturn(Optional.of(NotificationPreference.of(30L)));
+        when(deviceRegistrationCommandRepository.findByMemberIdAndIsActiveTrue(30L))
+            .thenReturn(Optional.empty());
+
+        // when
+        service.send(req);
+
+        // then
+        verify(notificationCommandRepository)
+            .save(argThat(n -> n.getStatus() == FAILED_DEVICE_NOT_FOUND));
     }
 
     @Test
