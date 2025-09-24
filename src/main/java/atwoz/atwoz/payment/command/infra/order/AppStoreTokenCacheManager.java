@@ -77,5 +77,4 @@ public class AppStoreTokenCacheManager {
         log.info("App Store JWT 토큰 soft TTL 만료, 갱신 이벤트 발행");
         Events.raise(new AppStoreTokenExpiredEvent(APP_STORE_JWT_TOKEN_CACHE_KEY));
     }
-
 }
