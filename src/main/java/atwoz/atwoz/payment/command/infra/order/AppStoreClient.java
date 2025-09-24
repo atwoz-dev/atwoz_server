@@ -58,8 +58,7 @@ public class AppStoreClient {
     }
 
     private void handleTokenExpirationIfNeeded(FeignException exception) {
-        boolean isUnauthorized = exception.status() == 401;
-        if (isUnauthorized) {
+        if (exception instanceof FeignException.Unauthorized) {
             appStoreTokenService.forceRefreshToken();
         }
     }
@@ -75,12 +74,11 @@ public class AppStoreClient {
     }
 
     public JWSTransactionDecodedPayload getTransactionDecodedPayloadFallback(String appReceipt, Exception exception) {
-        if (exception instanceof FeignException feignEx) {
-            int statusCode = feignEx.status();
-            if (statusCode == 400 || statusCode == 404) {
-                throw new InvalidTransactionIdException(feignEx);
+        if (exception instanceof FeignException) {
+            if (exception instanceof FeignException.BadRequest || exception instanceof FeignException.NotFound) {
+                throw new InvalidTransactionIdException(exception);
             }
-            throw new AppStoreClientException(feignEx);
+            throw new AppStoreClientException(exception);
         }
         throw new AppStoreClientException(exception);
     }

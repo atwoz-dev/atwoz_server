@@ -123,8 +123,7 @@ class AppStoreClientTest {
         @Test
         void whenUnauthorizedError_forcesTokenRefresh() throws IOException {
             // given
-            FeignException unauthorizedException = mock(FeignException.class);
-            when(unauthorizedException.status()).thenReturn(401);
+            FeignException.Unauthorized unauthorizedException = mock(FeignException.Unauthorized.class);
             when(receiptUtil.extractTransactionIdFromAppReceipt(APP_RECEIPT)).thenReturn(TRANSACTION_ID);
             when(appStoreTokenService.generateToken()).thenReturn(BEARER_TOKEN);
             when(feignClient.getTransactionInfo(TRANSACTION_ID, BEARER_TOKEN)).thenThrow(unauthorizedException);
@@ -140,8 +139,7 @@ class AppStoreClientTest {
         @Test
         void whenNonUnauthorizedError_doesNotRefreshToken() throws IOException {
             // given
-            FeignException serverException = mock(FeignException.class);
-            when(serverException.status()).thenReturn(500);
+            FeignException.InternalServerError serverException = mock(FeignException.InternalServerError.class);
             when(receiptUtil.extractTransactionIdFromAppReceipt(APP_RECEIPT)).thenReturn(TRANSACTION_ID);
             when(appStoreTokenService.generateToken()).thenReturn(BEARER_TOKEN);
             when(feignClient.getTransactionInfo(TRANSACTION_ID, BEARER_TOKEN)).thenThrow(serverException);
