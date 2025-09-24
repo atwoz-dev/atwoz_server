@@ -104,7 +104,7 @@ public class Member extends SoftDeleteBaseEntity {
 
     public void changeToActive() {
         activityStatus = ActivityStatus.ACTIVE;
-        Events.raise(MemberActivatedEvent.from(id));
+        Events.raise(MemberBecameActiveEvent.from(id));
     }
 
     public void changePrimaryContactTypeToKakao(KakaoId kakaoId) {

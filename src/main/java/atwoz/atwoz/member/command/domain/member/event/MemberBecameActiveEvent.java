@@ -7,11 +7,11 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class MemberActivatedEvent extends Event {
+public class MemberBecameActiveEvent extends Event {
 
     private final long memberId;
 
-    public static MemberActivatedEvent from(long memberId) {
-        return new MemberActivatedEvent(memberId);
+    public static MemberBecameActiveEvent from(long memberId) {
+        return new MemberBecameActiveEvent(memberId);
     }
 }

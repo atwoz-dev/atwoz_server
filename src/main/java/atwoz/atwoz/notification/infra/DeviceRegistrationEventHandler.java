@@ -1,6 +1,6 @@
 package atwoz.atwoz.notification.infra;
 
-import atwoz.atwoz.member.command.domain.member.event.MemberActivatedEvent;
+import atwoz.atwoz.member.command.domain.member.event.MemberBecameActiveEvent;
 import atwoz.atwoz.member.command.domain.member.event.MemberBecameDormantEvent;
 import atwoz.atwoz.member.command.domain.member.event.MemberLoggedInEvent;
 import atwoz.atwoz.member.command.domain.member.event.MemberLoggedOutEvent;
@@ -36,8 +36,8 @@ public class DeviceRegistrationEventHandler {
         log.info("사용자(id: {})의 디바이스 등록 비활성화 (휴면)", event.getMemberId());
     }
 
-    @TransactionalEventListener(value = MemberActivatedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
-    public void handleMemberActivatedEvent(MemberActivatedEvent event) {
+    @TransactionalEventListener(value = MemberBecameActiveEvent.class, phase = TransactionPhase.AFTER_COMMIT)
+    public void handleMemberActivatedEvent(MemberBecameActiveEvent event) {
         deviceRegistrationService.activateByMemberId(event.getMemberId());
         log.info("사용자(id: {})의 디바이스 등록 활성화 (휴면 해제)", event.getMemberId());
     }
