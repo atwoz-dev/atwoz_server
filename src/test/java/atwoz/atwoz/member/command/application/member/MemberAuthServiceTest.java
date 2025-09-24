@@ -3,6 +3,7 @@ package atwoz.atwoz.member.command.application.member;
 import atwoz.atwoz.auth.domain.TokenParser;
 import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.auth.infra.JwtProvider;
+import atwoz.atwoz.common.MockEventsExtension;
 import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
 import atwoz.atwoz.member.command.application.member.exception.MemberDeletedException;
@@ -31,7 +32,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.time.Instant;
 import java.util.Optional;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, MockEventsExtension.class})
 class MemberAuthServiceTest {
 
     @Mock
@@ -115,6 +116,7 @@ class MemberAuthServiceTest {
             String phoneNumber = "01012345678";
             String code = "01012345678";
             Member inactiveMember = Member.fromPhoneNumber("01012345678");
+            ReflectionTestUtils.setField(inactiveMember, "id", 3L);
             inactiveMember.changeToDormant();
 
             Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber))
