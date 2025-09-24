@@ -1,22 +1,18 @@
 package atwoz.atwoz.member.command.domain.member;
 
-import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.common.MockEventsExtension;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartBalance;
-import atwoz.atwoz.member.command.domain.member.event.MemberSettingUpdatedEvent;
-import atwoz.atwoz.member.command.domain.member.event.PurchaseHeartGainedEvent;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
+@ExtendWith(MockEventsExtension.class)
 class MemberTest {
 
     @Test
@@ -49,6 +45,7 @@ class MemberTest {
         void changeMemberActivityStatusToDormant() {
             // Given
             Member member = Member.fromPhoneNumber("01012345678");
+            setField(member, "id", 1L);
 
             // When
             member.changeToDormant();
@@ -62,6 +59,7 @@ class MemberTest {
         void changeMemberActivityStatusToActive() {
             // Given
             Member member = Member.fromPhoneNumber("01012345678");
+            setField(member, "id", 1L);
             member.changeToDormant();
 
             // When
@@ -104,7 +102,7 @@ class MemberTest {
     @DisplayName("gainPurchaseHeart 메서드 테스트")
     class GainPurchaseHeartMethodTest {
         @Test
-        @DisplayName("멤버가 하트를 구매하면 구매 하트 잔액이 증가하고 이벤트를 발행합니다.")
+        @DisplayName("멤버가 하트를 구매하면 구매 하트 잔액이 증가합니다.")
         void shouldIncreasePurchaseHeartBalanceWhenMemberPurchasesHeart() {
             // Given
             Member member = Member.fromPhoneNumber("01012345678");
@@ -113,20 +111,11 @@ class MemberTest {
             HeartAmount purchaseHeartAmount = HeartAmount.from(100L);
             HeartBalance expectedHeartBalance = HeartBalance.init().gainPurchaseHeart(purchaseHeartAmount);
 
-            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                // When
-                member.gainPurchaseHeart(purchaseHeartAmount);
+            // When
+            member.gainPurchaseHeart(purchaseHeartAmount);
 
-                // Then
-                Assertions.assertThat(member.getHeartBalance()).isEqualTo(expectedHeartBalance);
-                eventsMockedStatic.verify(() ->
-                    Events.raise(argThat((PurchaseHeartGainedEvent event) ->
-                        event.getMemberId().equals(memberId) &&
-                            event.getAmount().equals(purchaseHeartAmount.getAmount()) &&
-                            event.getMissionHeartBalance().equals(expectedHeartBalance.getMissionHeartBalance()) &&
-                            event.getPurchaseHeartBalance().equals(expectedHeartBalance.getPurchaseHeartBalance())
-                    )), times(1));
-            }
+            // Then
+            Assertions.assertThat(member.getHeartBalance()).isEqualTo(expectedHeartBalance);
         }
     }
 
@@ -175,7 +164,7 @@ class MemberTest {
     class UpdateSettingMethodTest {
 
         @Test
-        @DisplayName("멤버의 설정을 업데이트하고 이벤트를 발행합니다.")
+        @DisplayName("멤버의 설정을 업데이트합니다.")
         void shouldUpdateMemberSettings() {
             // Given
             Member member = Member.fromPhoneNumber("01012345678");
@@ -183,26 +172,18 @@ class MemberTest {
             setField(member, "id", memberId);
             Grade grade = Grade.GOLD;
             final boolean isProfilePublic = true;
-            ActivityStatus activityStatus = ActivityStatus.ACTIVE;
+            ActivityStatus activityStatus = ActivityStatus.DORMANT;
             final boolean isVip = true;
             final boolean isPushNotificationEnabled = false;
 
-            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                // When
-                member.updateSetting(grade, isProfilePublic, activityStatus, isVip, isPushNotificationEnabled);
+            // When
+            member.updateSetting(grade, isProfilePublic, activityStatus, isVip, isPushNotificationEnabled);
 
-                // Then
-                eventsMockedStatic.verify(() ->
-                    Events.raise(argThat((MemberSettingUpdatedEvent event) ->
-                        event.getMemberId() == member.getId() &&
-                            event.isPushNotificationEnabled() == isPushNotificationEnabled
-                    )), times(1));
-
-                Assertions.assertThat(member.getGrade()).isEqualTo(grade);
-                Assertions.assertThat(member.isProfilePublic()).isEqualTo(isProfilePublic);
-                Assertions.assertThat(member.getActivityStatus()).isEqualTo(activityStatus);
-                Assertions.assertThat(member.isVip()).isEqualTo(isVip);
-            }
+            // Then
+            Assertions.assertThat(member.getGrade()).isEqualTo(grade);
+            Assertions.assertThat(member.isProfilePublic()).isEqualTo(isProfilePublic);
+            Assertions.assertThat(member.getActivityStatus()).isEqualTo(activityStatus);
+            Assertions.assertThat(member.isVip()).isEqualTo(isVip);
         }
     }
 

@@ -1,6 +1,7 @@
 package atwoz.atwoz.datingexam.adapter.database;
 
 import atwoz.atwoz.QuerydslConfig;
+import atwoz.atwoz.common.MockEventsExtension;
 import atwoz.atwoz.datingexam.domain.DatingExamAnswerEncoder;
 import atwoz.atwoz.datingexam.domain.DatingExamSubmit;
 import atwoz.atwoz.datingexam.domain.dto.DatingExamSubmitRequest;
@@ -11,6 +12,7 @@ import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -24,6 +26,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Import({QuerydslConfig.class, SoulmateQueryRepositoryImpl.class})
+@ExtendWith(MockEventsExtension.class)
 @DataJpaTest
 class SoulmateQueryRepositoryImplTest {
     @Autowired
@@ -47,10 +50,13 @@ class SoulmateQueryRepositoryImplTest {
             if (isProfilePublic) {
                 member.publishProfile();
             }
-            member.changeActivityStatus(activityStatus);
 
             em.persist(member);
             em.flush();
+
+            if (activityStatus == ActivityStatus.DORMANT && member.isActive()) {
+                member.changeToDormant();
+            }
 
             DatingExamSubmitRequest request = mock(DatingExamSubmitRequest.class);
             when(request.subjectId()).thenReturn(100L);

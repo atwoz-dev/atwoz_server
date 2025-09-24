@@ -13,6 +13,8 @@ import atwoz.atwoz.member.command.application.member.exception.PermanentlySuspen
 import atwoz.atwoz.member.command.application.member.sms.AuthMessageService;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
+import atwoz.atwoz.member.command.domain.member.event.MemberLoggedInEvent;
+import atwoz.atwoz.member.command.domain.member.event.MemberLoggedOutEvent;
 import atwoz.atwoz.member.command.domain.member.event.MemberRegisteredEvent;
 import atwoz.atwoz.member.command.domain.member.exception.MemberNotActiveException;
 import lombok.RequiredArgsConstructor;
@@ -59,6 +61,8 @@ public class MemberAuthService {
         String refreshToken = tokenProvider.createRefreshToken(member.getId(), Role.MEMBER, Instant.now());
         tokenRepository.save(refreshToken);
 
+        Events.raise(MemberLoggedInEvent.from(member.getId()));
+
         return new MemberLoginServiceDto(accessToken, refreshToken, member.isProfileSettingNeeded());
     }
 
@@ -85,7 +89,8 @@ public class MemberAuthService {
         return new MemberLoginServiceDto(accessToken, refreshToken, member.isProfileSettingNeeded());
     }
 
-    public void logout(String token) {
+    public void logout(long memberId, String token) {
+        Events.raise(MemberLoggedOutEvent.from(memberId));
         deleteToken(token);
     }
 

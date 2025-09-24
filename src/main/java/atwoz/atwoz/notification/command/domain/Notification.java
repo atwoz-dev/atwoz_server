@@ -60,6 +60,24 @@ public class Notification extends SoftDeleteBaseEntity {
         status = NotificationStatus.CREATED;
     }
 
+    private Notification(
+        SenderType senderType,
+        Long senderId,
+        Long receiverId,
+        NotificationType type,
+        String title,
+        String body,
+        NotificationStatus status
+    ) {
+        this.senderType = senderType;
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+        this.type = type;
+        this.title = title;
+        this.body = body;
+        this.status = status;
+    }
+
     public static Notification create(
         @NonNull SenderType senderType,
         long senderId,
@@ -69,6 +87,18 @@ public class Notification extends SoftDeleteBaseEntity {
         String body
     ) {
         return new Notification(senderType, senderId, receiverId, type, title, body);
+    }
+
+    public static Notification createFailed(
+        @NonNull SenderType senderType,
+        long senderId,
+        long receiverId,
+        @NonNull NotificationType type,
+        String title,
+        String body,
+        @NonNull NotificationStatus status
+    ) {
+        return new Notification(senderType, senderId, receiverId, type, title, body, status);
     }
 
     public boolean isRead() {
@@ -84,17 +114,5 @@ public class Notification extends SoftDeleteBaseEntity {
 
     public void markAsSent() {
         status = NotificationStatus.SENT;
-    }
-
-    public void markAsFailedDueToUnsupportedChannel() {
-        status = NotificationStatus.FAILED_UNSUPPORTED_CHANNEL;
-    }
-
-    public void markAsFailedDueToException() {
-        status = NotificationStatus.FAILED_EXCEPTION;
-    }
-
-    public void markAsRejectedByPreference() {
-        status = NotificationStatus.REJECTED;
     }
 }

@@ -43,6 +43,12 @@ public class DeviceRegistration {
         return new DeviceRegistration(memberId, deviceId, registrationToken);
     }
 
+    public void update(@NonNull String deviceId, @NonNull String registrationToken) {
+        this.deviceId = deviceId;
+        this.registrationToken = registrationToken;
+        activate();
+    }
+
     public void refreshRegistrationToken(@NonNull String registrationToken) {
         this.registrationToken = registrationToken;
         isActive = true;

@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static atwoz.atwoz.notification.command.domain.NotificationStatus.*;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -19,50 +21,80 @@ public class NotificationSendService {
 
     @Transactional
     public void send(NotificationSendRequest request) {
-        var notification = buildNotification(request);
-
-        if (!canSendByPreference(notification)) {
-            notification.markAsRejectedByPreference();
-            save(notification);
+        // 1. 알림 생성
+        var notification = createNotificationWithTemplate(request);
+        if (notification == null) {
             return;
         }
 
-        var deviceRegistration = getReceiverDeviceRegistration(notification.getReceiverId());
+        // 2. 수신자 설정 확인
+        if (!canSendByPreference(notification)) {
+            return;
+        }
 
-        notificationSenderResolver.resolve(request.channelType())
-            .ifPresentOrElse(
-                sender -> dispatch(sender, notification, deviceRegistration),
-                () -> handleUnsupportedChannel(notification, request)
-            );
+        // 3. 수신자 기기 조회
+        var device = findReceiversActiveDevice(notification);
+        if (device == null) {
+            return;
+        }
 
-        save(notification);
+        // 4. 전송
+        sendNotification(notification, device, request);
     }
 
-    private Notification buildNotification(NotificationSendRequest request) {
-        NotificationTemplate template = notificationTemplateRepository.findByType(request.notificationType())
-            .orElseThrow(() -> new InvalidNotificationTypeException(request.notificationType().name()));
-
-        String title = template.generateTitle(request.params());
-        String body = template.generateBody(request.params());
-
-        return Notification.create(
-            request.senderType(),
-            request.senderId(),
-            request.receiverId(),
-            request.notificationType(),
-            title, body
-        );
+    private Notification createNotificationWithTemplate(NotificationSendRequest request) {
+        return notificationTemplateRepository.findByType(request.notificationType())
+            .map(template -> Notification.create(
+                request.senderType(),
+                request.senderId(),
+                request.receiverId(),
+                request.notificationType(),
+                template.generateTitle(request.params()),
+                template.generateBody(request.params())
+            ))
+            .orElseGet(() -> {
+                log.error("[알림 템플릿 조회 실패] type={}, receiverId={}", request.notificationType(), request.receiverId());
+                saveFailedNotification(request, FAILED_TEMPLATE_NOT_FOUND);
+                return null;
+            });
     }
 
     private boolean canSendByPreference(Notification notification) {
-        NotificationPreference pref = notificationPreferenceRepository.findByMemberId(notification.getReceiverId())
-            .orElseThrow(() -> new ReceiverNotificationPreferenceNotFoundException(notification.getReceiverId()));
-        return pref.canReceive(notification.getType());
+        return notificationPreferenceRepository.findByMemberId(notification.getReceiverId())
+            .map(pref -> {
+                boolean canSend = pref.canReceive(notification.getType());
+                if (!canSend) {
+                    saveFailedNotification(notification, REJECTED_BY_PREFERENCE);
+                }
+                return canSend;
+            })
+            .orElseGet(() -> {
+                log.warn("[알림 설정 조회 실패] receiverId={}", notification.getReceiverId());
+                saveFailedNotification(notification, FAILED_PREFERENCE_NOT_FOUND);
+                return false;
+            });
     }
 
-    private DeviceRegistration getReceiverDeviceRegistration(long receiverId) {
-        return deviceRegistrationCommandRepository.findByMemberIdAndIsActiveTrue(receiverId)
-            .orElseThrow(() -> new DeviceRegistrationNotFoundException(receiverId));
+    private DeviceRegistration findReceiversActiveDevice(Notification notification) {
+        return deviceRegistrationCommandRepository.findByMemberIdAndIsActiveTrue(notification.getReceiverId())
+            .orElseGet(() -> {
+                log.warn("[디바이스 정보 조회 실패] receiverId={}", notification.getReceiverId());
+                saveFailedNotification(notification, FAILED_DEVICE_NOT_FOUND);
+                return null;
+            });
+    }
+
+    private void sendNotification(
+        Notification notification,
+        DeviceRegistration device,
+        NotificationSendRequest request
+    ) {
+        notificationSenderResolver.resolve(request.channelType())
+            .ifPresentOrElse(
+                sender -> dispatch(sender, notification, device),
+                () -> handleUnsupportedChannel(notification, request)
+            );
+        save(notification);
     }
 
     private void dispatch(NotificationSender sender, Notification notification, DeviceRegistration deviceRegistration) {
@@ -70,14 +102,40 @@ public class NotificationSendService {
             sender.send(notification, deviceRegistration);
             notification.markAsSent();
         } catch (NotificationSendFailureException e) {
-            log.error("receiverId={} 알림 전송 중 에러", notification.getReceiverId(), e);
-            notification.markAsFailedDueToException();
+            log.error("[알림 전송 실패] receiverId={}", notification.getReceiverId(), e);
+            saveFailedNotification(notification, FAILED_EXCEPTION);
         }
     }
 
     private void handleUnsupportedChannel(Notification notification, NotificationSendRequest request) {
-        log.warn("지원하지 않는 채널({}) 요청: receiverId={}", request.channelType(), request.receiverId());
-        notification.markAsFailedDueToUnsupportedChannel();
+        log.warn("[지원하지 않는 채널] channel={}, receiverId={}", request.channelType(), request.receiverId());
+        saveFailedNotification(notification, FAILED_UNSUPPORTED_CHANNEL);
+    }
+
+    private void saveFailedNotification(NotificationSendRequest request, NotificationStatus status) {
+        var failedNotification = Notification.createFailed(
+            request.senderType(),
+            request.senderId(),
+            request.receiverId(),
+            request.notificationType(),
+            "알림 전송 실패",
+            "알림 전송에 실패했습니다.",
+            status
+        );
+        save(failedNotification);
+    }
+
+    private void saveFailedNotification(Notification notification, NotificationStatus status) {
+        var failedNotification = Notification.createFailed(
+            notification.getSenderType(),
+            notification.getSenderId(),
+            notification.getReceiverId(),
+            notification.getType(),
+            notification.getTitle(),
+            notification.getBody(),
+            status
+        );
+        save(failedNotification);
     }
 
     private void save(Notification notification) {

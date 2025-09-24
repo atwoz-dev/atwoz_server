@@ -3,7 +3,7 @@ package atwoz.atwoz.member.query.member.infra;
 import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.admin.command.domain.warning.Warning;
 import atwoz.atwoz.admin.command.domain.warning.WarningReasonType;
-import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.common.MockEventsExtension;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.interview.command.domain.answer.InterviewAnswer;
 import atwoz.atwoz.interview.command.domain.question.InterviewCategory;
@@ -17,11 +17,12 @@ import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.query.member.condition.AdminMemberSearchCondition;
 import atwoz.atwoz.member.query.member.view.*;
 import atwoz.atwoz.notification.command.domain.NotificationPreference;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -39,10 +40,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
 @DataJpaTest
+@ExtendWith(MockEventsExtension.class)
 @Import({QuerydslConfig.class, AdminMemberQueryRepository.class})
 class AdminMemberQueryRepositoryTest {
-
-    private static MockedStatic<Events> mockedEvents;
 
     @Autowired
     private AdminMemberQueryRepository adminMemberQueryRepository;
@@ -50,24 +50,9 @@ class AdminMemberQueryRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
 
-    @BeforeEach
-    void setUp() {
-        mockedEvents = Mockito.mockStatic(Events.class);
-        mockedEvents.when(() -> Events.raise(Mockito.any()))
-            .thenAnswer(invocation -> null);
-    }
-
-    @AfterEach
-    void tearDown() {
-        mockedEvents.close();
-    }
-
     private Member createMember(String phoneNumber, String nickname, ActivityStatus activityStatus, Gender gender,
         Grade grade) {
         Member member = Member.fromPhoneNumber(phoneNumber);
-        if (activityStatus.equals(ActivityStatus.DORMANT)) {
-            member.changeToDormant();
-        }
         member.gainPurchaseHeart(HeartAmount.from(100L));
         member.gainMissionHeart(HeartAmount.from(50L), "연애고사 제출");
         member.updateGrade(grade);
@@ -86,7 +71,11 @@ class AdminMemberQueryRepositoryTest {
             .yearOfBirth(1997)
             .build();
         member.updateProfile(memberProfile);
-        entityManager.persist(member);
+        entityManager.persistAndFlush(member);
+
+        if (activityStatus.equals(ActivityStatus.DORMANT)) {
+            member.changeToDormant();
+        }
         return member;
     }
 

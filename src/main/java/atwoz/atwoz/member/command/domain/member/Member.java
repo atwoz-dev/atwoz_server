@@ -4,11 +4,7 @@ import atwoz.atwoz.common.entity.SoftDeleteBaseEntity;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartBalance;
-import atwoz.atwoz.member.command.domain.member.event.MemberSettingUpdatedEvent;
-import atwoz.atwoz.member.command.domain.member.event.MissionHeartGainedEvent;
-import atwoz.atwoz.member.command.domain.member.event.PurchaseHeartGainedEvent;
-import atwoz.atwoz.member.command.domain.member.exception.MemberAlreadyActiveException;
-import atwoz.atwoz.member.command.domain.member.exception.MemberNotActiveException;
+import atwoz.atwoz.member.command.domain.member.event.*;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.PhoneNumber;
@@ -102,17 +98,13 @@ public class Member extends SoftDeleteBaseEntity {
     }
 
     public void changeToDormant() {
-        if (!isActive()) {
-            throw new MemberNotActiveException();
-        }
         activityStatus = ActivityStatus.DORMANT;
+        Events.raise(MemberBecameDormantEvent.from(id));
     }
 
     public void changeToActive() {
-        if (isActive()) {
-            throw new MemberAlreadyActiveException();
-        }
         activityStatus = ActivityStatus.ACTIVE;
+        Events.raise(MemberBecameActiveEvent.from(id));
     }
 
     public void changePrimaryContactTypeToKakao(KakaoId kakaoId) {
@@ -166,7 +158,7 @@ public class Member extends SoftDeleteBaseEntity {
     ) {
         this.grade = grade;
         this.isProfilePublic = isProfilePublic;
-        this.activityStatus = activityStatus;
+        changeActivityStatus(activityStatus);
         this.isVip = isVip;
         Events.raise(MemberSettingUpdatedEvent.of(id, isPushNotificationEnabled));
     }
@@ -180,7 +172,11 @@ public class Member extends SoftDeleteBaseEntity {
     }
 
     public void changeActivityStatus(@NonNull ActivityStatus activityStatus) {
-        this.activityStatus = activityStatus;
+        switch (activityStatus) {
+            case ActivityStatus.DORMANT -> changeToDormant();
+            case ActivityStatus.ACTIVE -> changeToActive();
+            default -> this.activityStatus = activityStatus;
+        }
     }
 
     public void markDatingExamSubmitted() {

@@ -83,41 +83,32 @@ class NotificationTest {
     }
 
     @Test
-    @DisplayName("markAsFailedDueToUnsupportedChannel 호출 시 status가 FAILED_UNSUPPORTED_CHANNEL로 변경됨")
-    void markAsFailedUnsupportedChannelSetsStatus() {
-        // given
-        var notification = Notification.create(MEMBER, 1L, 2L, LIKE, "t", "b");
-
+    @DisplayName("createFailed로 FAILED_UNSUPPORTED_CHANNEL 생성 시 status가 FAILED_UNSUPPORTED_CHANNEL로 설정됨")
+    void createFailedUnsupportedChannelSetsStatus() {
         // when
-        notification.markAsFailedDueToUnsupportedChannel();
+        var notification = Notification.createFailed(MEMBER, 1L, 2L, LIKE, "제목", "내용", FAILED_UNSUPPORTED_CHANNEL);
 
         // then
         assertThat(notification.getStatus()).isEqualTo(FAILED_UNSUPPORTED_CHANNEL);
     }
 
     @Test
-    @DisplayName("markAsFailedDueToException 호출 시 status가 FAILED_EXCEPTION로 변경됨")
-    void markAsFailedExceptionSetsStatus() {
-        // given
-        var notification = Notification.create(MEMBER, 1L, 2L, LIKE, "t", "b");
-
+    @DisplayName("createFailed로 FAILED_EXCEPTION 생성 시 status가 FAILED_EXCEPTION로 설정됨")
+    void createFailedExceptionSetsStatus() {
         // when
-        notification.markAsFailedDueToException();
+        var notification = Notification.createFailed(MEMBER, 1L, 2L, LIKE, "제목", "내용", FAILED_EXCEPTION);
 
         // then
         assertThat(notification.getStatus()).isEqualTo(FAILED_EXCEPTION);
     }
 
     @Test
-    @DisplayName("markAsRejectedByPreference 호출 시 status가 REJECTED로 변경됨")
-    void markAsRejectedByPreferenceSetsStatus() {
-        // given
-        var notification = Notification.create(MEMBER, 1L, 2L, LIKE, "t", "b");
-
+    @DisplayName("createFailed로 REJECTED_BY_PREFERENCE 생성 시 status가 REJECTED_BY_PREFERENCE로 설정됨")
+    void createFailedRejectedByPreferenceSetsStatus() {
         // when
-        notification.markAsRejectedByPreference();
+        var notification = Notification.createFailed(MEMBER, 1L, 2L, LIKE, "제목", "내용", REJECTED_BY_PREFERENCE);
 
         // then
-        assertThat(notification.getStatus()).isEqualTo(REJECTED);
+        assertThat(notification.getStatus()).isEqualTo(REJECTED_BY_PREFERENCE);
     }
 }
