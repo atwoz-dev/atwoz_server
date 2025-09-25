@@ -72,7 +72,8 @@ public class AppStoreQueryResilienceConfig implements ResiliencePolicyConfigurer
             .ignoreExceptions(
                 FeignException.BadRequest.class,            // 400: 잘못된 요청
                 FeignException.Unauthorized.class,          // 401: 인증 실패 (토큰 재발급 후 재시도)
-                FeignException.NotFound.class               // 404: 트랜잭션 없음
+                FeignException.NotFound.class,               // 404: 트랜잭션 없음
+                InvalidAppReceiptException.class           // 잘못된 영수증
             )
             .build();
     }
