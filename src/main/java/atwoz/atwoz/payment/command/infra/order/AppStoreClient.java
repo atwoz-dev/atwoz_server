@@ -3,13 +3,13 @@ package atwoz.atwoz.payment.command.infra.order;
 import atwoz.atwoz.payment.command.infra.order.exception.AppStoreClientException;
 import atwoz.atwoz.payment.command.infra.order.exception.InvalidAppReceiptException;
 import atwoz.atwoz.payment.command.infra.order.exception.InvalidTransactionIdException;
-import com.apple.itunes.storekit.client.APIException;
-import com.apple.itunes.storekit.client.AppStoreServerAPIClient;
 import com.apple.itunes.storekit.migration.ReceiptUtility;
 import com.apple.itunes.storekit.model.JWSTransactionDecodedPayload;
-import com.apple.itunes.storekit.model.TransactionInfoResponse;
 import com.apple.itunes.storekit.verification.SignedDataVerifier;
 import com.apple.itunes.storekit.verification.VerificationException;
+import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,51 +20,66 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class AppStoreClient {
 
-    private final AppStoreServerAPIClient client;
+    private final AppStoreFeignClient feignClient;
+    private final AppStoreTokenService appStoreTokenService;
     private final ReceiptUtility receiptUtil;
     private final SignedDataVerifier signedDataVerifier;
 
+    @Retry(name = AppStoreQueryResilienceConfig.RETRY_POLICY_NAME, fallbackMethod = "getTransactionDecodedPayloadFallback")
+    @CircuitBreaker(name = AppStoreQueryResilienceConfig.CIRCUIT_BREAKER_POLICY_NAME)
     public JWSTransactionDecodedPayload getTransactionDecodedPayload(@NonNull String appReceipt) {
-        try {
-            String transactionId = getTransactionId(appReceipt);
-            TransactionInfoResponse transactionInfoResponse = client.getTransactionInfo(transactionId);
-            return getPayload(transactionInfoResponse);
-        } catch (APIException e) {
-            handleAPIException(e);
-            throw new AppStoreClientException(e);
-        } catch (IOException e) {
-            throw new AppStoreClientException(e);
-        }
+        String transactionId = extractTransactionIdFromReceipt(appReceipt);
+        AppStoreTransactionResponse response = fetchTransactionFromAppStore(transactionId);
+        return decodeTransactionPayload(response);
     }
 
-    private String getTransactionId(String appReceipt) {
+    private String extractTransactionIdFromReceipt(String appReceipt) {
         try {
-            final String transactionId = receiptUtil.extractTransactionIdFromAppReceipt(appReceipt);
+            String transactionId = receiptUtil.extractTransactionIdFromAppReceipt(appReceipt);
             if (transactionId == null) {
                 throw new InvalidAppReceiptException("앱 영수증에 TransactionId가 없습니다.");
             }
             return transactionId;
-        } catch (IllegalArgumentException e) {
-            throw new InvalidAppReceiptException(e);
-        } catch (IOException e) {
-            throw new AppStoreClientException(e);
+        } catch (IllegalArgumentException exception) {
+            throw new InvalidAppReceiptException(exception);
+        } catch (IOException exception) {
+            throw new AppStoreClientException(exception);
         }
     }
 
-    private JWSTransactionDecodedPayload getPayload(TransactionInfoResponse transactionInfoResponse) {
-        String signedTransactionInfo = transactionInfoResponse.getSignedTransactionInfo();
+    private AppStoreTransactionResponse fetchTransactionFromAppStore(String transactionId) {
+        try {
+            String bearerToken = appStoreTokenService.generateToken();
+            return feignClient.getTransactionInfo(transactionId, bearerToken);
+        } catch (FeignException exception) {
+            handleTokenExpirationIfNeeded(exception);
+            throw exception;
+        }
+    }
+
+    private void handleTokenExpirationIfNeeded(FeignException exception) {
+        if (exception instanceof FeignException.Unauthorized) {
+            appStoreTokenService.forceRefreshToken();
+        }
+    }
+
+
+    private JWSTransactionDecodedPayload decodeTransactionPayload(AppStoreTransactionResponse response) {
+        String signedTransactionInfo = response.getSignedTransactionInfo();
         try {
             return signedDataVerifier.verifyAndDecodeTransaction(signedTransactionInfo);
-        } catch (VerificationException e) {
-            throw new AppStoreClientException(e);
+        } catch (VerificationException exception) {
+            throw new AppStoreClientException(exception);
         }
     }
 
-
-    private void handleAPIException(APIException e) {
-        int statusCode = e.getHttpStatusCode();
-        if (statusCode == 400 || statusCode == 404) {
-            throw new InvalidTransactionIdException(e);
+    public JWSTransactionDecodedPayload getTransactionDecodedPayloadFallback(String appReceipt, Exception exception) {
+        if (exception instanceof FeignException) {
+            if (exception instanceof FeignException.BadRequest || exception instanceof FeignException.NotFound) {
+                throw new InvalidTransactionIdException(exception);
+            }
+            throw new AppStoreClientException(exception);
         }
+        throw new AppStoreClientException(exception);
     }
 }
