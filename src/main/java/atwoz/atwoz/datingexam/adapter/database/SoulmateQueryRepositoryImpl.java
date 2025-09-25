@@ -28,6 +28,10 @@ public class SoulmateQueryRepositoryImpl implements SoulmateQueryRepository {
 
         equalAnswerMemberIds.removeAll(excludedMemberIds);
 
+        if (equalAnswerMemberIds.isEmpty()) {
+            return Collections.emptySet();
+        }
+
         Gender gender = queryFactory
             .select(member.profile.gender)
             .from(member)
