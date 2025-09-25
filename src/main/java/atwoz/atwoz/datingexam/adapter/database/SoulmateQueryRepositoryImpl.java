@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static atwoz.atwoz.block.domain.QBlock.block;
 import static atwoz.atwoz.datingexam.domain.QDatingExamSubmit.datingExamSubmit;
@@ -65,11 +66,10 @@ public class SoulmateQueryRepositoryImpl implements SoulmateQueryRepository {
             .where(block.blockedId.eq(memberId))
             .fetch();
 
-        Set<Long> excludedIds = new HashSet<>();
-        excludedIds.addAll(blockedIds);
-        excludedIds.addAll(blockerIds);
-        excludedIds.add(memberId);
-        return excludedIds;
+        return Stream.concat(
+            Stream.concat(blockedIds.stream(), blockerIds.stream()),
+            Stream.of(memberId)
+        ).collect(Collectors.toSet());
     }
 
     private Set<Long> getEqualAnswerMemberIds(Long memberId) {
