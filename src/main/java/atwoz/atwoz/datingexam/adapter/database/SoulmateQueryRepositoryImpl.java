@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static atwoz.atwoz.block.domain.QBlock.block;
 import static atwoz.atwoz.datingexam.domain.QDatingExamSubmit.datingExamSubmit;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
 
@@ -22,6 +23,9 @@ public class SoulmateQueryRepositoryImpl implements SoulmateQueryRepository {
     @Override
     public Set<Long> findSameAnswerMemberIds(Long memberId) {
         Set<Long> equalAnswerMemberIds = getEqualAnswerMemberIds(memberId);
+        Set<Long> excludedMemberIds = getExcludedMemberIds(memberId);
+
+        equalAnswerMemberIds.removeAll(excludedMemberIds);
 
         Gender gender = queryFactory
             .select(member.profile.gender)
@@ -46,6 +50,26 @@ public class SoulmateQueryRepositoryImpl implements SoulmateQueryRepository {
             .fetch()
             .stream()
             .collect(Collectors.toSet());
+    }
+
+    private Set<Long> getExcludedMemberIds(Long memberId) {
+        List<Long> blockedIds = queryFactory
+            .select(block.blockedId)
+            .from(block)
+            .where(block.blockerId.eq(memberId))
+            .fetch();
+
+        List<Long> blockerIds = queryFactory
+            .select(block.blockerId)
+            .from(block)
+            .where(block.blockedId.eq(memberId))
+            .fetch();
+
+        return new HashSet<>() {{
+            addAll(blockedIds);
+            addAll(blockerIds);
+            add(memberId);
+        }};
     }
 
     private Set<Long> getEqualAnswerMemberIds(Long memberId) {
