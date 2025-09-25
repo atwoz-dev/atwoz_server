@@ -44,6 +44,29 @@ class TodayCardMemberIdFetcherTest {
     @Mock
     private MemberIdealCommandRepository memberIdealCommandRepository;
 
+    private Set<Long> getExcludedMemberIds(Long memberId) {
+        Set<Long> matchedRequestedMemberIds = Set.of(memberId, 12L);
+        when(introductionQueryRepository.findAllMatchRequestedMemberId(memberId)).thenReturn(matchedRequestedMemberIds);
+        Set<Long> matchedRequestingMemberIds = Set.of(memberId, 12L);
+        when(introductionQueryRepository.findAllMatchRequestingMemberId(memberId)).thenReturn(
+            matchedRequestingMemberIds);
+        Set<Long> introducedMemberIds = Set.of(memberId, 13L);
+        when(introductionQueryRepository.findAllIntroducedMemberId(memberId)).thenReturn(introducedMemberIds);
+        Set<Long> blockedMemberIds = Set.of(memberId, 14L);
+        when(introductionQueryRepository.findAllBlockedMemberId(memberId)).thenReturn(blockedMemberIds);
+        Set<Long> blockingMemberIds = Set.of(memberId, 15L);
+        when(introductionQueryRepository.findAllBlockingMemberId(memberId)).thenReturn(blockingMemberIds);
+
+        Set<Long> excludedMemberIds = new HashSet<>(Set.of(memberId));
+        excludedMemberIds.addAll(matchedRequestedMemberIds);
+        excludedMemberIds.addAll(matchedRequestingMemberIds);
+        excludedMemberIds.addAll(introducedMemberIds);
+        excludedMemberIds.addAll(blockedMemberIds);
+        excludedMemberIds.addAll(blockingMemberIds);
+
+        return excludedMemberIds;
+    }
+
     @Test
     @DisplayName("캐시된 값이 있으면 캐시된 값을 반환한다.")
     void returnCachedIdsWhenRedisHasValue() {
@@ -115,18 +138,7 @@ class TodayCardMemberIdFetcherTest {
         Gender memberGender = Gender.MALE;
         when(member.getGender()).thenReturn(memberGender);
 
-        Set<Long> matchedRequestedMemberIds = Set.of(memberId, 12L);
-        when(introductionQueryRepository.findAllMatchRequestedMemberId(memberId)).thenReturn(matchedRequestedMemberIds);
-        Set<Long> matchedRequestingMemberIds = Set.of(memberId, 12L);
-        when(introductionQueryRepository.findAllMatchRequestingMemberId(memberId)).thenReturn(
-            matchedRequestingMemberIds);
-        Set<Long> introducedMemberIds = Set.of(memberId, 13L);
-        when(introductionQueryRepository.findAllIntroducedMemberId(memberId)).thenReturn(introducedMemberIds);
-
-        Set<Long> excludedMemberIds = new HashSet<>(Set.of(memberId));
-        excludedMemberIds.addAll(matchedRequestedMemberIds);
-        excludedMemberIds.addAll(matchedRequestingMemberIds);
-        excludedMemberIds.addAll(introducedMemberIds);
+        Set<Long> excludedMemberIds = getExcludedMemberIds(memberId);
 
         try (MockedStatic<IntroductionSearchCondition> conditionMockedStatic = mockStatic(
             IntroductionSearchCondition.class)) {
@@ -166,18 +178,7 @@ class TodayCardMemberIdFetcherTest {
         Gender memberGender = Gender.MALE;
         when(member.getGender()).thenReturn(memberGender);
 
-        Set<Long> matchedRequestedMemberIds = Set.of(memberId, 12L);
-        when(introductionQueryRepository.findAllMatchRequestedMemberId(memberId)).thenReturn(matchedRequestedMemberIds);
-        Set<Long> matchedRequestingMemberIds = Set.of(memberId, 12L);
-        when(introductionQueryRepository.findAllMatchRequestingMemberId(memberId)).thenReturn(
-            matchedRequestingMemberIds);
-        Set<Long> introducedMemberIds = Set.of(memberId, 13L);
-        when(introductionQueryRepository.findAllIntroducedMemberId(memberId)).thenReturn(introducedMemberIds);
-
-        Set<Long> excludedMemberIds = new HashSet<>(Set.of(memberId));
-        excludedMemberIds.addAll(matchedRequestedMemberIds);
-        excludedMemberIds.addAll(matchedRequestingMemberIds);
-        excludedMemberIds.addAll(introducedMemberIds);
+        Set<Long> excludedMemberIds = getExcludedMemberIds(memberId);
 
         try (MockedStatic<IntroductionSearchCondition> conditionMockedStatic = mockStatic(
             IntroductionSearchCondition.class);

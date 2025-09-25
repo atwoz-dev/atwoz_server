@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static atwoz.atwoz.block.domain.QBlock.block;
 import static atwoz.atwoz.interview.command.domain.answer.QInterviewAnswer.interviewAnswer;
 import static atwoz.atwoz.like.command.domain.QLike.like;
 import static atwoz.atwoz.match.command.domain.match.QMatch.match;
@@ -195,5 +196,21 @@ public class IntroductionQueryRepository {
                 .where(hobby.stringValue().in(condition.getHobbies()))
                 .distinct();
         }
+    }
+
+    public Set<Long> findAllBlockedMemberId(long memberId) {
+        return new HashSet<>(queryFactory
+            .select(block.blockedId)
+            .from(block)
+            .where(block.blockerId.eq(memberId))
+            .fetch());
+    }
+
+    public Set<Long> findAllBlockingMemberId(long memberId) {
+        return new HashSet<>(queryFactory
+            .select(block.blockerId)
+            .from(block)
+            .where(block.blockedId.eq(memberId))
+            .fetch());
     }
 }

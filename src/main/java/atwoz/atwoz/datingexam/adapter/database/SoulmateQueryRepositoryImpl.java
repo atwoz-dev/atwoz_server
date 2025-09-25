@@ -10,7 +10,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static atwoz.atwoz.block.domain.QBlock.block;
 import static atwoz.atwoz.datingexam.domain.QDatingExamSubmit.datingExamSubmit;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
 
@@ -22,6 +24,13 @@ public class SoulmateQueryRepositoryImpl implements SoulmateQueryRepository {
     @Override
     public Set<Long> findSameAnswerMemberIds(Long memberId) {
         Set<Long> equalAnswerMemberIds = getEqualAnswerMemberIds(memberId);
+        Set<Long> excludedMemberIds = getExcludedMemberIds(memberId);
+
+        equalAnswerMemberIds.removeAll(excludedMemberIds);
+
+        if (equalAnswerMemberIds.isEmpty()) {
+            return Collections.emptySet();
+        }
 
         Gender gender = queryFactory
             .select(member.profile.gender)
@@ -48,6 +57,25 @@ public class SoulmateQueryRepositoryImpl implements SoulmateQueryRepository {
             .collect(Collectors.toSet());
     }
 
+    private Set<Long> getExcludedMemberIds(Long memberId) {
+        List<Long> blockedIds = queryFactory
+            .select(block.blockedId)
+            .from(block)
+            .where(block.blockerId.eq(memberId))
+            .fetch();
+
+        List<Long> blockerIds = queryFactory
+            .select(block.blockerId)
+            .from(block)
+            .where(block.blockedId.eq(memberId))
+            .fetch();
+
+        return Stream.concat(
+            Stream.concat(blockedIds.stream(), blockerIds.stream()),
+            Stream.of(memberId)
+        ).collect(Collectors.toSet());
+    }
+
     private Set<Long> getEqualAnswerMemberIds(Long memberId) {
         List<DatingExamSubmit> submits = queryFactory.select(datingExamSubmit)
             .from(datingExamSubmit)
@@ -58,8 +86,8 @@ public class SoulmateQueryRepositoryImpl implements SoulmateQueryRepository {
             throw new IllegalStateException("연애 모의고사 제출 기록이 없습니다. memberId: " + memberId);
         }
 
-        List<Set<Long>> equalAnswerMemberIdSets = submits.stream().map(submit -> {
-            return new HashSet<>(queryFactory
+        List<Set<Long>> equalAnswerMemberIdSets = submits.stream().map(submit ->
+            new HashSet<>(queryFactory
                 .select(datingExamSubmit.memberId)
                 .from(datingExamSubmit)
                 .where(datingExamSubmit.subjectId.eq(submit.getSubjectId())
@@ -67,8 +95,8 @@ public class SoulmateQueryRepositoryImpl implements SoulmateQueryRepository {
                 )
                 .fetch())
                 .stream()
-                .collect(Collectors.toSet());
-        }).toList();
+                .collect(Collectors.toSet())
+        ).toList();
 
         return equalAnswerMemberIdSets.stream()
             .sorted(Comparator.comparingInt(Set::size))

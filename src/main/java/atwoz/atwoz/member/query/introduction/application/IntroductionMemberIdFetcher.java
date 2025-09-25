@@ -53,6 +53,8 @@ public class IntroductionMemberIdFetcher {
         excludedMemberIds.addAll(introductionQueryRepository.findAllMatchRequestedMemberId(memberId));
         excludedMemberIds.addAll(introductionQueryRepository.findAllMatchRequestingMemberId(memberId));
         excludedMemberIds.addAll(introductionQueryRepository.findAllIntroducedMemberId(memberId));
+        excludedMemberIds.addAll(introductionQueryRepository.findAllBlockedMemberId(memberId));
+        excludedMemberIds.addAll(introductionQueryRepository.findAllBlockingMemberId(memberId));
         return excludedMemberIds;
     }
 

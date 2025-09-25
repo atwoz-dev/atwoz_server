@@ -44,6 +44,29 @@ class IntroductionMemberIdFetcherTest {
     @Mock
     private MemberIdealCommandRepository memberIdealCommandRepository;
 
+    private Set<Long> getExcludedMemberIds(Long memberId) {
+        Set<Long> matchedRequestedMemberIds = Set.of(memberId, 12L);
+        when(introductionQueryRepository.findAllMatchRequestedMemberId(memberId)).thenReturn(matchedRequestedMemberIds);
+        Set<Long> matchedRequestingMemberIds = Set.of(memberId, 12L);
+        when(introductionQueryRepository.findAllMatchRequestingMemberId(memberId)).thenReturn(
+            matchedRequestingMemberIds);
+        Set<Long> introducedMemberIds = Set.of(memberId, 13L);
+        when(introductionQueryRepository.findAllIntroducedMemberId(memberId)).thenReturn(introducedMemberIds);
+        Set<Long> blockedMemberIds = Set.of(memberId, 14L);
+        when(introductionQueryRepository.findAllBlockedMemberId(memberId)).thenReturn(blockedMemberIds);
+        Set<Long> blockingMemberIds = Set.of(memberId, 15L);
+        when(introductionQueryRepository.findAllBlockingMemberId(memberId)).thenReturn(blockingMemberIds);
+
+        Set<Long> excludedMemberIds = new HashSet<>(Set.of(memberId));
+        excludedMemberIds.addAll(matchedRequestedMemberIds);
+        excludedMemberIds.addAll(matchedRequestingMemberIds);
+        excludedMemberIds.addAll(introducedMemberIds);
+        excludedMemberIds.addAll(blockedMemberIds);
+        excludedMemberIds.addAll(blockingMemberIds);
+
+        return excludedMemberIds;
+    }
+
     @Test
     @DisplayName("Redis에 저장된 값이 있을 때 fetch 메서드가 캐시된 값을 반환한다.")
     void returnCachedIdsWhenRedisHasValue() {
@@ -77,18 +100,7 @@ class IntroductionMemberIdFetcherTest {
         when(introductionRedisRepository.findIntroductionMemberIds(key))
             .thenReturn(Set.of());
 
-        Set<Long> matchedRequestedMemberIds = Set.of(memberId, 12L);
-        when(introductionQueryRepository.findAllMatchRequestedMemberId(memberId)).thenReturn(matchedRequestedMemberIds);
-        Set<Long> matchedRequestingMemberIds = Set.of(memberId, 12L);
-        when(introductionQueryRepository.findAllMatchRequestingMemberId(memberId)).thenReturn(
-            matchedRequestingMemberIds);
-        Set<Long> introducedMemberIds = Set.of(memberId, 13L);
-        when(introductionQueryRepository.findAllIntroducedMemberId(memberId)).thenReturn(introducedMemberIds);
-
-        Set<Long> excludedMemberIds = new HashSet<>(Set.of(memberId));
-        excludedMemberIds.addAll(matchedRequestedMemberIds);
-        excludedMemberIds.addAll(matchedRequestingMemberIds);
-        excludedMemberIds.addAll(introducedMemberIds);
+        Set<Long> excludedMemberIds = getExcludedMemberIds(memberId);
 
         MemberIdeal memberIdeal = mock(MemberIdeal.class);
         when(memberIdealCommandRepository.findByMemberId(memberId)).thenReturn(Optional.of(memberIdeal));
@@ -124,18 +136,7 @@ class IntroductionMemberIdFetcherTest {
         when(introductionRedisRepository.findIntroductionMemberIds(key))
             .thenReturn(Set.of());
 
-        Set<Long> matchedRequestedMemberIds = Set.of(memberId, 12L);
-        when(introductionQueryRepository.findAllMatchRequestedMemberId(memberId)).thenReturn(matchedRequestedMemberIds);
-        Set<Long> matchedRequestingMemberIds = Set.of(memberId, 12L);
-        when(introductionQueryRepository.findAllMatchRequestingMemberId(memberId)).thenReturn(
-            matchedRequestingMemberIds);
-        Set<Long> introducedMemberIds = Set.of(memberId, 13L);
-        when(introductionQueryRepository.findAllIntroducedMemberId(memberId)).thenReturn(introducedMemberIds);
-
-        Set<Long> excludedMemberIds = new HashSet<>(Set.of(memberId));
-        excludedMemberIds.addAll(matchedRequestedMemberIds);
-        excludedMemberIds.addAll(matchedRequestingMemberIds);
-        excludedMemberIds.addAll(introducedMemberIds);
+        Set<Long> excludedMemberIds = getExcludedMemberIds(memberId);
 
         MemberIdeal memberIdeal = mock(MemberIdeal.class);
         when(memberIdealCommandRepository.findByMemberId(memberId)).thenReturn(Optional.of(memberIdeal));
@@ -163,18 +164,7 @@ class IntroductionMemberIdFetcherTest {
         when(introductionRedisRepository.findIntroductionMemberIds(key))
             .thenReturn(Set.of());
 
-        Set<Long> matchedRequestedMemberIds = Set.of(memberId, 12L);
-        when(introductionQueryRepository.findAllMatchRequestedMemberId(memberId)).thenReturn(matchedRequestedMemberIds);
-        Set<Long> matchedRequestingMemberIds = Set.of(memberId, 12L);
-        when(introductionQueryRepository.findAllMatchRequestingMemberId(memberId)).thenReturn(
-            matchedRequestingMemberIds);
-        Set<Long> introducedMemberIds = Set.of(memberId, 13L);
-        when(introductionQueryRepository.findAllIntroducedMemberId(memberId)).thenReturn(introducedMemberIds);
-
-        Set<Long> excludedMemberIds = new HashSet<>(Set.of(memberId));
-        excludedMemberIds.addAll(matchedRequestedMemberIds);
-        excludedMemberIds.addAll(matchedRequestingMemberIds);
-        excludedMemberIds.addAll(introducedMemberIds);
+        Set<Long> excludedMemberIds = getExcludedMemberIds(memberId);
 
         when(memberIdealCommandRepository.findByMemberId(memberId)).thenReturn(Optional.empty());
 
