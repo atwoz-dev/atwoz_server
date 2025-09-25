@@ -65,11 +65,11 @@ public class SoulmateQueryRepositoryImpl implements SoulmateQueryRepository {
             .where(block.blockedId.eq(memberId))
             .fetch();
 
-        return new HashSet<>() {{
-            addAll(blockedIds);
-            addAll(blockerIds);
-            add(memberId);
-        }};
+        Set<Long> excludedIds = new HashSet<>();
+        excludedIds.addAll(blockedIds);
+        excludedIds.addAll(blockerIds);
+        excludedIds.add(memberId);
+        return excludedIds;
     }
 
     private Set<Long> getEqualAnswerMemberIds(Long memberId) {
@@ -82,8 +82,8 @@ public class SoulmateQueryRepositoryImpl implements SoulmateQueryRepository {
             throw new IllegalStateException("연애 모의고사 제출 기록이 없습니다. memberId: " + memberId);
         }
 
-        List<Set<Long>> equalAnswerMemberIdSets = submits.stream().map(submit -> {
-            return new HashSet<>(queryFactory
+        List<Set<Long>> equalAnswerMemberIdSets = submits.stream().map(submit ->
+            new HashSet<>(queryFactory
                 .select(datingExamSubmit.memberId)
                 .from(datingExamSubmit)
                 .where(datingExamSubmit.subjectId.eq(submit.getSubjectId())
@@ -91,8 +91,8 @@ public class SoulmateQueryRepositoryImpl implements SoulmateQueryRepository {
                 )
                 .fetch())
                 .stream()
-                .collect(Collectors.toSet());
-        }).toList();
+                .collect(Collectors.toSet())
+        ).toList();
 
         return equalAnswerMemberIdSets.stream()
             .sorted(Comparator.comparingInt(Set::size))
