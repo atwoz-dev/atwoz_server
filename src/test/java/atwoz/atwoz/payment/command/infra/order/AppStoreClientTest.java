@@ -3,19 +3,15 @@ package atwoz.atwoz.payment.command.infra.order;
 import atwoz.atwoz.payment.command.infra.order.exception.AppStoreClientException;
 import atwoz.atwoz.payment.command.infra.order.exception.InvalidAppReceiptException;
 import atwoz.atwoz.payment.command.infra.order.exception.InvalidTransactionIdException;
-import com.apple.itunes.storekit.client.APIException;
-import com.apple.itunes.storekit.client.AppStoreServerAPIClient;
 import com.apple.itunes.storekit.migration.ReceiptUtility;
 import com.apple.itunes.storekit.model.JWSTransactionDecodedPayload;
-import com.apple.itunes.storekit.model.TransactionInfoResponse;
 import com.apple.itunes.storekit.verification.SignedDataVerifier;
 import com.apple.itunes.storekit.verification.VerificationException;
-import com.apple.itunes.storekit.verification.VerificationStatus;
+import feign.FeignException;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -24,16 +20,23 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("AppStoreClient 단위 테스트")
 class AppStoreClientTest {
 
-    @InjectMocks
-    private AppStoreClient appStoreClient;
+    private static final String APP_RECEIPT = "test.app.receipt";
+    private static final String TRANSACTION_ID = "test.transaction.id";
+    private static final String BEARER_TOKEN = "Bearer test.jwt.token";
+    private static final String SIGNED_TRANSACTION_INFO = "signed.transaction.info";
 
     @Mock
-    private AppStoreServerAPIClient appStoreServerAPIClient;
+    private AppStoreFeignClient feignClient;
+
+    @Mock
+    private AppStoreTokenService appStoreTokenService;
 
     @Mock
     private ReceiptUtility receiptUtil;
@@ -41,143 +44,189 @@ class AppStoreClientTest {
     @Mock
     private SignedDataVerifier signedDataVerifier;
 
-    @Test
-    @DisplayName("API 요청이 성공하면 TransactionInfoResponse를 반환한다")
-    void successWhenApiRequestResponseStatusIsOk() throws Exception {
-        // given
-        String appReceipt = "appReceipt";
+    @Mock
+    private AppStoreTransactionResponse transactionResponse;
 
-        String transactionId = "transactionId";
-        when(receiptUtil.extractTransactionIdFromAppReceipt(appReceipt)).thenReturn(transactionId);
+    @Mock
+    private JWSTransactionDecodedPayload decodedPayload;
 
-        TransactionInfoResponse transactionInfoResponse = mock(TransactionInfoResponse.class);
-        when(appStoreServerAPIClient.getTransactionInfo(transactionId)).thenReturn(transactionInfoResponse);
+    @InjectMocks
+    private AppStoreClient appStoreClient;
 
-        String signedTransactionInfo = "signedTransactionInfo";
-        when(transactionInfoResponse.getSignedTransactionInfo()).thenReturn(signedTransactionInfo);
+    @Nested
+    @DisplayName("getTransactionDecodedPayload 메서드는")
+    class GetTransactionDecodedPayloadTests {
 
-        JWSTransactionDecodedPayload decodedPayload = mock(JWSTransactionDecodedPayload.class);
-        when(signedDataVerifier.verifyAndDecodeTransaction(signedTransactionInfo)).thenReturn(decodedPayload);
+        @DisplayName("정상적으로 트랜잭션 정보를 조회하고 디코딩된 페이로드를 반환한다")
+        @Test
+        void whenSuccessful_returnsDecodedPayload() throws IOException, VerificationException {
+            // given
+            when(receiptUtil.extractTransactionIdFromAppReceipt(APP_RECEIPT)).thenReturn(TRANSACTION_ID);
+            when(appStoreTokenService.generateToken()).thenReturn(BEARER_TOKEN);
+            when(feignClient.getTransactionInfo(TRANSACTION_ID, BEARER_TOKEN)).thenReturn(transactionResponse);
+            when(transactionResponse.getSignedTransactionInfo()).thenReturn(SIGNED_TRANSACTION_INFO);
+            when(signedDataVerifier.verifyAndDecodeTransaction(SIGNED_TRANSACTION_INFO)).thenReturn(decodedPayload);
 
-        // when
-        JWSTransactionDecodedPayload result = appStoreClient.getTransactionDecodedPayload(appReceipt);
+            // when
+            JWSTransactionDecodedPayload result = appStoreClient.getTransactionDecodedPayload(APP_RECEIPT);
 
-        // then
-        assertThat(result).isEqualTo(decodedPayload);
+            // then
+            assertThat(result).isEqualTo(decodedPayload);
+            verify(receiptUtil).extractTransactionIdFromAppReceipt(APP_RECEIPT);
+            verify(appStoreTokenService).generateToken();
+            verify(feignClient).getTransactionInfo(TRANSACTION_ID, BEARER_TOKEN);
+            verify(signedDataVerifier).verifyAndDecodeTransaction(SIGNED_TRANSACTION_INFO);
+        }
+
+        @DisplayName("앱 영수증에서 트랜잭션 ID 추출 시 null이 반환되면 InvalidAppReceiptException을 던진다")
+        @Test
+        void whenTransactionIdIsNull_throwsInvalidAppReceiptException() throws IOException {
+            // given
+            when(receiptUtil.extractTransactionIdFromAppReceipt(APP_RECEIPT)).thenReturn(null);
+
+            // when & then
+            assertThatThrownBy(() -> appStoreClient.getTransactionDecodedPayload(APP_RECEIPT))
+                .isInstanceOf(InvalidAppReceiptException.class)
+                .hasMessage("앱 영수증에 TransactionId가 없습니다.");
+
+            verify(appStoreTokenService, never()).generateToken();
+            verify(feignClient, never()).getTransactionInfo(anyString(), anyString());
+        }
+
+        @DisplayName("앱 영수증에서 트랜잭션 ID 추출 시 IllegalArgumentException이 발생하면 InvalidAppReceiptException을 던진다")
+        @Test
+        void whenIllegalArgumentExceptionOccurs_throwsInvalidAppReceiptException() throws IOException {
+            // given
+            IllegalArgumentException cause = new IllegalArgumentException("Invalid receipt format");
+            when(receiptUtil.extractTransactionIdFromAppReceipt(APP_RECEIPT)).thenThrow(cause);
+
+            // when & then
+            assertThatThrownBy(() -> appStoreClient.getTransactionDecodedPayload(APP_RECEIPT))
+                .isInstanceOf(InvalidAppReceiptException.class)
+                .hasCause(cause);
+        }
+
+        @DisplayName("앱 영수증에서 트랜잭션 ID 추출 시 IOException이 발생하면 AppStoreClientException을 던진다")
+        @Test
+        void whenIOExceptionOccurs_throwsAppStoreClientException() throws IOException {
+            // given
+            IOException cause = new IOException("IO error");
+            when(receiptUtil.extractTransactionIdFromAppReceipt(APP_RECEIPT)).thenThrow(cause);
+
+            // when & then
+            assertThatThrownBy(() -> appStoreClient.getTransactionDecodedPayload(APP_RECEIPT))
+                .isInstanceOf(AppStoreClientException.class)
+                .hasCause(cause);
+        }
+
+        @DisplayName("Feign 클라이언트에서 401 에러가 발생하면 토큰을 강제 갱신한다")
+        @Test
+        void whenUnauthorizedError_forcesTokenRefresh() throws IOException {
+            // given
+            FeignException.Unauthorized unauthorizedException = mock(FeignException.Unauthorized.class);
+            when(receiptUtil.extractTransactionIdFromAppReceipt(APP_RECEIPT)).thenReturn(TRANSACTION_ID);
+            when(appStoreTokenService.generateToken()).thenReturn(BEARER_TOKEN);
+            when(feignClient.getTransactionInfo(TRANSACTION_ID, BEARER_TOKEN)).thenThrow(unauthorizedException);
+
+            // when & then
+            assertThatThrownBy(() -> appStoreClient.getTransactionDecodedPayload(APP_RECEIPT))
+                .isInstanceOf(FeignException.class);
+
+            verify(appStoreTokenService).forceRefreshToken();
+        }
+
+        @DisplayName("Feign 클라이언트에서 401이 아닌 에러가 발생하면 토큰 갱신하지 않는다")
+        @Test
+        void whenNonUnauthorizedError_doesNotRefreshToken() throws IOException {
+            // given
+            FeignException.InternalServerError serverException = mock(FeignException.InternalServerError.class);
+            when(receiptUtil.extractTransactionIdFromAppReceipt(APP_RECEIPT)).thenReturn(TRANSACTION_ID);
+            when(appStoreTokenService.generateToken()).thenReturn(BEARER_TOKEN);
+            when(feignClient.getTransactionInfo(TRANSACTION_ID, BEARER_TOKEN)).thenThrow(serverException);
+
+            // when & then
+            assertThatThrownBy(() -> appStoreClient.getTransactionDecodedPayload(APP_RECEIPT))
+                .isInstanceOf(FeignException.class);
+
+            verify(appStoreTokenService, never()).forceRefreshToken();
+        }
+
+        @DisplayName("트랜잭션 정보 검증 중 VerificationException이 발생하면 AppStoreClientException을 던진다")
+        @Test
+        void whenVerificationExceptionOccurs_throwsAppStoreClientException() throws IOException, VerificationException {
+            // given
+            VerificationException cause = mock(VerificationException.class);
+            when(receiptUtil.extractTransactionIdFromAppReceipt(APP_RECEIPT)).thenReturn(TRANSACTION_ID);
+            when(appStoreTokenService.generateToken()).thenReturn(BEARER_TOKEN);
+            when(feignClient.getTransactionInfo(TRANSACTION_ID, BEARER_TOKEN)).thenReturn(transactionResponse);
+            when(transactionResponse.getSignedTransactionInfo()).thenReturn(SIGNED_TRANSACTION_INFO);
+            when(signedDataVerifier.verifyAndDecodeTransaction(SIGNED_TRANSACTION_INFO)).thenThrow(cause);
+
+            // when & then
+            assertThatThrownBy(() -> appStoreClient.getTransactionDecodedPayload(APP_RECEIPT))
+                .isInstanceOf(AppStoreClientException.class)
+                .hasCause(cause);
+        }
     }
 
-    @Test
-    @DisplayName("app receipt에서 transactionId를 추출할 때 IllegalArgumentException이 발생하면 InvalidAppReceiptException을 던진다")
-    void testGetTransactionDecodedPayloadFailureWhenExtractTransactionIdFromAppReceipt() throws Exception {
-        // given
-        String appReceipt = "appReceipt";
+    @Nested
+    @DisplayName("getTransactionDecodedPayloadFallback 메서드는")
+    class GetTransactionDecodedPayloadFallbackTests {
 
-        when(receiptUtil.extractTransactionIdFromAppReceipt(appReceipt)).thenThrow(
-            new IllegalArgumentException("Invalid receipt"));
+        @DisplayName("400 에러가 발생하면 InvalidTransactionIdException을 던진다")
+        @Test
+        void when400Error_throwsInvalidTransactionIdException() {
+            // given
+            FeignException badRequestException = new FeignException.BadRequest(
+                "Bad Request", mock(feign.Request.class), null, null
+            );
 
-        // when && then
-        assertThatThrownBy(() -> appStoreClient.getTransactionDecodedPayload(appReceipt))
-            .isInstanceOf(InvalidAppReceiptException.class);
-    }
+            // when & then
+            assertThatThrownBy(
+                () -> appStoreClient.getTransactionDecodedPayloadFallback(APP_RECEIPT, badRequestException))
+                .isInstanceOf(InvalidTransactionIdException.class)
+                .hasCause(badRequestException);
+        }
 
-    @Test
-    @DisplayName("app receipt에서 transactionId를 추출할 때 IOException이 발생하면 AppStoreClientException을 던진다")
-    void testGetTransactionDecodedPayloadFailureWhenExtractTransactionIdFromAppReceiptIOException()
-        throws Exception {
-        // given
-        String appReceipt = "appReceipt";
+        @DisplayName("404 에러가 발생하면 InvalidTransactionIdException을 던진다")
+        @Test
+        void when404Error_throwsInvalidTransactionIdException() {
+            // given
+            FeignException notFoundException = new FeignException.NotFound(
+                "Not Found", mock(feign.Request.class), null, null
+            );
 
-        when(receiptUtil.extractTransactionIdFromAppReceipt(appReceipt)).thenThrow(new IOException("IO error"));
+            // when & then
+            assertThatThrownBy(
+                () -> appStoreClient.getTransactionDecodedPayloadFallback(APP_RECEIPT, notFoundException))
+                .isInstanceOf(InvalidTransactionIdException.class)
+                .hasCause(notFoundException);
+        }
 
-        // when && then
-        assertThatThrownBy(() -> appStoreClient.getTransactionDecodedPayload(appReceipt))
-            .isInstanceOf(AppStoreClientException.class);
+        @DisplayName("500 에러가 발생하면 AppStoreClientException을 던진다")
+        @Test
+        void when500Error_throwsAppStoreClientException() {
+            // given
+            FeignException serverException = new FeignException.InternalServerError(
+                "Internal Server Error", mock(feign.Request.class), null, null
+            );
 
-        verify(appStoreServerAPIClient, never()).getTransactionInfo(any());
-    }
+            // when & then
+            assertThatThrownBy(() -> appStoreClient.getTransactionDecodedPayloadFallback(APP_RECEIPT, serverException))
+                .isInstanceOf(AppStoreClientException.class)
+                .hasCause(serverException);
+        }
 
-    @Test
-    @DisplayName("app receipt에서 추출한 transactionId가 null이면 InvalidAppReceiptException을 던진다")
-    void testGetTransactionDecodedPayloadFailureWhenExtractTransactionIdFromAppReceiptIsNull()
-        throws Exception {
-        // given
-        String appReceipt = "appReceipt";
+        @DisplayName("FeignException이 아닌 예외가 발생하면 AppStoreClientException을 던진다")
+        @Test
+        void whenNonFeignException_throwsAppStoreClientException() {
+            // given
+            RuntimeException generalException = new RuntimeException("General error");
 
-        when(receiptUtil.extractTransactionIdFromAppReceipt(appReceipt)).thenReturn(null);
-
-        // when && then
-        assertThatThrownBy(() -> appStoreClient.getTransactionDecodedPayload(appReceipt))
-            .isInstanceOf(InvalidAppReceiptException.class);
-
-        verify(appStoreServerAPIClient, never()).getTransactionInfo(any());
-    }
-
-    @Test
-    @DisplayName("API 요청이 400으로 실패하면 InvalidTransactionIdException 던진다")
-    void testGetTransactionDecodedPayloadFailure() throws Exception {
-        // given
-        String appReceipt = "appReceipt";
-        String transactionId = "transactionId";
-        when(receiptUtil.extractTransactionIdFromAppReceipt(appReceipt)).thenReturn(transactionId);
-
-        int statusCode = 400;
-        when(appStoreServerAPIClient.getTransactionInfo(transactionId)).thenThrow(new APIException(statusCode));
-
-        // when && then
-        assertThatThrownBy(() -> appStoreClient.getTransactionDecodedPayload(appReceipt))
-            .isInstanceOf(InvalidTransactionIdException.class);
-    }
-
-    @Test
-    @DisplayName("API 요청이 404로 실패하면 InvalidTransactionIdException 던진다")
-    void throwInvalidTransactionIdExceptionWhenApiRequestFailWith404() throws Exception {
-        // given
-        String appReceipt = "appReceipt";
-        String transactionId = "transactionId";
-        when(receiptUtil.extractTransactionIdFromAppReceipt(appReceipt)).thenReturn(transactionId);
-
-        int statusCode = 404;
-        when(appStoreServerAPIClient.getTransactionInfo(transactionId)).thenThrow(new APIException(statusCode));
-
-        // when && then
-        assertThatThrownBy(() -> appStoreClient.getTransactionDecodedPayload(appReceipt))
-            .isInstanceOf(InvalidTransactionIdException.class);
-    }
-
-    @ParameterizedTest
-    @ValueSource(ints = {401, 429, 500})
-    @DisplayName("API 요청이 401, 429, 500으로 실패하면 AppStoreClientException 던진다")
-    void throwAppStoreClientExceptionWhenApiRequestFailWith401or429or500(int statusCode) throws Exception {
-        // given
-        String appReceipt = "appReceipt";
-        String transactionId = "transactionId";
-        when(receiptUtil.extractTransactionIdFromAppReceipt(appReceipt)).thenReturn(transactionId);
-        when(appStoreServerAPIClient.getTransactionInfo(transactionId)).thenThrow(new APIException(statusCode));
-
-        // when && then
-        assertThatThrownBy(() -> appStoreClient.getTransactionDecodedPayload(appReceipt))
-            .isInstanceOf(AppStoreClientException.class);
-    }
-
-    @Test
-    @DisplayName("signedTransactionInfo를 verify하고 decode할 때 VerificationException이 발생하면 AppStoreClientException을 던진다")
-    void testGetTransactionDecodedPayloadFailureWhenVerifyAndDecodeTransaction() throws Exception {
-        // given
-        String appReceipt = "appReceipt";
-        String transactionId = "transactionId";
-        when(receiptUtil.extractTransactionIdFromAppReceipt(appReceipt)).thenReturn(transactionId);
-
-        TransactionInfoResponse transactionInfoResponse = mock(TransactionInfoResponse.class);
-        when(appStoreServerAPIClient.getTransactionInfo(transactionId)).thenReturn(transactionInfoResponse);
-
-        String signedTransactionInfo = "signedTransactionInfo";
-        when(transactionInfoResponse.getSignedTransactionInfo()).thenReturn(signedTransactionInfo);
-
-        when(signedDataVerifier.verifyAndDecodeTransaction(signedTransactionInfo))
-            .thenThrow(new VerificationException(VerificationStatus.VERIFICATION_FAILURE));
-
-        // when && then
-        assertThatThrownBy(() -> appStoreClient.getTransactionDecodedPayload(appReceipt))
-            .isInstanceOf(AppStoreClientException.class);
+            // when & then
+            assertThatThrownBy(() -> appStoreClient.getTransactionDecodedPayloadFallback(APP_RECEIPT, generalException))
+                .isInstanceOf(AppStoreClientException.class)
+                .hasCause(generalException);
+        }
     }
 }
