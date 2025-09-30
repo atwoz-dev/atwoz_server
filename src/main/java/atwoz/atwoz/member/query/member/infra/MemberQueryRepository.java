@@ -43,7 +43,8 @@ public class MemberQueryRepository {
             .where(member.id.eq(memberId))
             .transform(groupBy(member.id).as(
                 new QMemberInfoView(member.id, member.activityStatus.stringValue(), member.isVip.isTrue(),
-                    member.primaryContactType.stringValue(), member.profile.nickname.value.stringValue(),
+                    member.primaryContactType.stringValue(), member.isDatingExamSubmitted.isTrue(),
+                    member.profile.nickname.value.stringValue(),
                     member.profile.gender.stringValue(), member.kakaoId.value, member.profile.yearOfBirth.value,
                     member.profile.height, member.phoneNumber.value, member.profile.job.stringValue(),
                     member.profile.highestEducation.stringValue(), member.profile.region.city.stringValue(),
