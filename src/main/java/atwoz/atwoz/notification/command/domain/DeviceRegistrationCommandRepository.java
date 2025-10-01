@@ -10,5 +10,7 @@ public interface DeviceRegistrationCommandRepository extends JpaRepository<Devic
 
     Optional<DeviceRegistration> findByMemberIdAndIsActiveTrue(long memberId);
 
+    Optional<DeviceRegistration> findByMemberId(long memberId);
+
     void deleteByMemberId(long memberId);
 }
