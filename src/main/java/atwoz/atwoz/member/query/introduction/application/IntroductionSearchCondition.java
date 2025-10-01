@@ -177,7 +177,7 @@ public class IntroductionSearchCondition {
         );
     }
 
-    public static IntroductionSearchCondition ofTodayCard(
+    public static IntroductionSearchCondition ofIdeal(
         Set<Long> excludedMemberIds,
         MemberIdeal memberIdeal,
         Gender gender
@@ -240,25 +240,6 @@ public class IntroductionSearchCondition {
             memberGrade,
             gender,
             joinedAfter
-        );
-    }
-
-    public static IntroductionSearchCondition ofIdeal(
-        Set<Long> excludedMemberIds,
-        MemberIdeal memberIdeal,
-        Gender gender
-    ) {
-        return new IntroductionSearchCondition(
-            excludedMemberIds,
-            memberIdeal.getAgeRange(),
-            memberIdeal.getHobbies(),
-            memberIdeal.getCities(),
-            memberIdeal.getReligion(),
-            memberIdeal.getSmokingStatus(),
-            memberIdeal.getDrinkingStatus(),
-            null,
-            gender,
-            null
         );
     }
 }
