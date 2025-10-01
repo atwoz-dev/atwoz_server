@@ -186,7 +186,7 @@ class TodayCardMemberIdFetcherTest {
                 IntroductionSearchConditionCombinator.class)
         ) {
             IntroductionSearchCondition baseCondition = mock(IntroductionSearchCondition.class);
-            conditionMockedStatic.when(() -> IntroductionSearchCondition.ofTodayCard(excludedMemberIds, memberIdeal,
+            conditionMockedStatic.when(() -> IntroductionSearchCondition.ofIdeal(excludedMemberIds, memberIdeal,
                 memberGender.getOpposite())).thenReturn(baseCondition);
 
             IntroductionSearchCondition combinationCondition1 = mock(IntroductionSearchCondition.class);

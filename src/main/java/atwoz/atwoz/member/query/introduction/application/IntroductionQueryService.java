@@ -83,6 +83,17 @@ public class IntroductionQueryService {
             memberIntroductionProfileQueryResults, interviewAnswerQueryResults);
     }
 
+    public List<MemberIntroductionProfileView> findIdealIntroductions(long memberId) {
+        Set<Long> introductionMemberIds = getIdealIntroductionMemberIds(memberId);
+        List<MemberIntroductionProfileQueryResult> memberIntroductionProfileQueryResults =
+            introductionQueryRepository.findAllMemberIntroductionProfileQueryResultByMemberIds(memberId,
+                introductionMemberIds);
+        List<InterviewAnswerQueryResult> interviewAnswerQueryResults =
+            introductionQueryRepository.findAllInterviewAnswerInfoByMemberIds(introductionMemberIds);
+        return MemberIntroductionProfileViewMapper.mapWithDefaultTag(
+            memberIntroductionProfileQueryResults, interviewAnswerQueryResults);
+    }
+
     private Set<Long> getDiamondGradeIntroductionMemberIds(long memberId) {
         return introductionMemberIdFetcher.fetch(
             memberId,
@@ -134,6 +145,16 @@ public class IntroductionQueryService {
             (excluded, ideal, member, unused) ->
                 IntroductionSearchCondition.ofJoinDate(excluded, ideal, member.getGender().getOpposite(),
                     getRecentlyJoinedCutoffDate())
+        );
+    }
+
+    private Set<Long> getIdealIntroductionMemberIds(long memberId) {
+        return introductionMemberIdFetcher.fetch(
+            memberId,
+            IntroductionCacheKeyPrefix.IDEAL,
+            null,
+            (excluded, ideal, member, unused) ->
+                IntroductionSearchCondition.ofIdeal(excluded, ideal, member.getGender().getOpposite())
         );
     }
 

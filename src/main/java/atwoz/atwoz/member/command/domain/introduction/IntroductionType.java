@@ -10,7 +10,8 @@ public enum IntroductionType {
     RECENTLY_JOINED("최근 가입한 회원"),
     TODAY_CARD("오늘의 카드"),
     SOULMATE("소울 메이트"),
-    SAME_ANSWER("연애 고사 답변 일치");
+    SAME_ANSWER("연애 고사 답변 일치"),
+    IDEAL("이상형");
 
     @Getter
     private final String description;

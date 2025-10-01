@@ -174,4 +174,24 @@ public class MemberIntroductionController {
         memberIntroductionService.createSameAnswerIntroduction(memberId, request.introducedMemberId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
+
+    @Operation(summary = "이상형 이성 조회")
+    @GetMapping("/ideal")
+    public ResponseEntity<BaseResponse<List<MemberIntroductionProfileView>>> findIdealIntroductions(
+        @AuthPrincipal AuthContext authContext) {
+        long memberId = authContext.getId();
+        List<MemberIntroductionProfileView> introductionProfileViews = introductionQueryService.findIdealIntroductions(
+            memberId);
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, introductionProfileViews));
+    }
+
+    @Operation(summary = "이상형 이성 프로필 블러 해제")
+    @PostMapping("/ideal")
+    public ResponseEntity<BaseResponse<Void>> createIdealIntroduction(
+        @Valid @RequestBody MemberIntroductionCreateRequest request,
+        @AuthPrincipal AuthContext authContext) {
+        long memberId = authContext.getId();
+        memberIntroductionService.createIdealIntroduction(memberId, request.introducedMemberId());
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
 }

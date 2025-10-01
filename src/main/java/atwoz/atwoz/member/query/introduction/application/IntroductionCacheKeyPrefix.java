@@ -9,7 +9,8 @@ public enum IntroductionCacheKeyPrefix {
     SAME_RELIGION("religion:"),
     SAME_CITY("city:"),
     RECENTLY_JOINED("recentlyJoined:"),
-    TODAY_CARD("todayCard:");
+    TODAY_CARD("todayCard:"),
+    IDEAL("ideal:");
 
     private final String prefix;
 

@@ -177,7 +177,7 @@ public class IntroductionSearchCondition {
         );
     }
 
-    public static IntroductionSearchCondition ofTodayCard(
+    public static IntroductionSearchCondition ofIdeal(
         Set<Long> excludedMemberIds,
         MemberIdeal memberIdeal,
         Gender gender

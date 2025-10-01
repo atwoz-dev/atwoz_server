@@ -54,7 +54,7 @@ public class TodayCardMemberIdFetcher {
             return List.of(
                 IntroductionSearchCondition.ofTodayCardDefault(excludedMemberIds, oppositeGender, member));
         }
-        final IntroductionSearchCondition baseCondition = IntroductionSearchCondition.ofTodayCard(excludedMemberIds,
+        final IntroductionSearchCondition baseCondition = IntroductionSearchCondition.ofIdeal(excludedMemberIds,
             memberIdeal, oppositeGender);
         return IntroductionSearchConditionCombinator.generateCombinations(baseCondition,
             COMBINATION_NONE_SELECTABLE_SIZE);
