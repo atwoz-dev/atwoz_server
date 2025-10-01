@@ -148,7 +148,8 @@ public class AdminMemberQueryRepository {
                     new QAdminMemberStatusInfo(
                         member.primaryContactType.stringValue(),
                         constant(hasInterviewAnswers),
-                        constant(warningCount)
+                        constant(warningCount),
+                        member.isDatingExamSubmitted.isTrue()
                     ),
                     member.profile.nickname.value,
                     member.profile.gender.stringValue(),
