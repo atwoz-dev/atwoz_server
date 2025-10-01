@@ -11,6 +11,9 @@ import lombok.NonNull;
     name = "blocks",
     uniqueConstraints = {
         @UniqueConstraint(name = "unique_blocker_id_blocked_id", columnNames = {"blockerId", "blockedId"})
+    },
+    indexes = {
+        @Index(name = "idx_block_blocked_id", columnList = "blockedId")
     }
 )
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)

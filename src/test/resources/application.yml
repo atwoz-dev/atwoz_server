@@ -68,6 +68,7 @@ payment:
     environment: "Sandbox"
     app-apple-id: 0000000000
     root-ca-paths: certs/appstore/AppleRootCA-G2.pem,certs/appstore/AppleRootCA-G3.pem
+    base-url: https://api.storekit-sandbox.itunes.apple.com
 
 bizgo:
   api-url: api-url
