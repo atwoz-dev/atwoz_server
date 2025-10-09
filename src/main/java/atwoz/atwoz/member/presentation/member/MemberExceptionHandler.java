@@ -114,7 +114,7 @@ public class MemberExceptionHandler {
 
     @ExceptionHandler(MemberWaitingStatusException.class)
     public ResponseEntity<BaseResponse<Void>> handleMemberWaitingStatusException(MemberWaitingStatusException e) {
-        log.warn("로그인에 실패하였습니다.", e.getMessage());
+        log.warn("로그인에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.status(403)
             .body(BaseResponse.from(StatusType.WAITING_STATUS));
