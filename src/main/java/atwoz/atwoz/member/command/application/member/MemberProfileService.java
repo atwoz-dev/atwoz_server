@@ -34,6 +34,21 @@ public class MemberProfileService {
     }
 
     @Transactional
+    public void changeToActive(Long memberId) {
+        getMemberById(memberId).changeToActive();
+    }
+
+    @Transactional
+    public void changeToWaiting(Long memberId) {
+        getMemberById(memberId).changeToWaiting();
+    }
+
+    @Transactional
+    public void changeToRejected(Long memberId) {
+        getMemberById(memberId).changeToRejected();
+    }
+
+    @Transactional
     public void changeToActive(String phoneNumber) {
         Member member = getMemberByPhoneNumber(phoneNumber);
         validateMemberStatusForActive(member);

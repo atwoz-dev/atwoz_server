@@ -197,6 +197,13 @@ class MemberAuthServiceTest {
             Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber, code))
                 .isInstanceOf(MemberLoginConflictException.class);
         }
+
+        @Test
+        @DisplayName("심사 대기중일 경우, 예외 반환")
+        void shouldThrowExceptionWhenMemberIsWaitingToScreening() {
+            // Given
+            Member member = Member.fromPhoneNumber("01012345678");
+        }
     }
 
     @Nested
@@ -231,6 +238,4 @@ class MemberAuthServiceTest {
             Assertions.assertThat(member.isDeleted()).isTrue();
         }
     }
-
-
 }

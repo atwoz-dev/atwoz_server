@@ -31,7 +31,7 @@ class MemberTest {
         Assertions.assertThat(member.getPhoneNumber()).isEqualTo(phoneNumber);
         Assertions.assertThat(member.getPrimaryContactType()).isEqualTo(PrimaryContactType.NONE);
         Assertions.assertThat(member.getHeartBalance()).isEqualTo(HeartBalance.init());
-        Assertions.assertThat(member.getActivityStatus()).isEqualTo(ActivityStatus.ACTIVE);
+        Assertions.assertThat(member.getActivityStatus()).isEqualTo(ActivityStatus.INITIAL);
         Assertions.assertThat(member.isVip()).isFalse();
         Assertions.assertThat(member.isProfilePublic()).isFalse();
     }

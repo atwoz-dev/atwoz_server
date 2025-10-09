@@ -11,12 +11,14 @@ import atwoz.atwoz.member.command.application.member.exception.MemberLoginConfli
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.application.member.exception.PermanentlySuspendedMemberException;
 import atwoz.atwoz.member.command.application.member.sms.AuthMessageService;
+import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import atwoz.atwoz.member.command.domain.member.event.MemberLoggedInEvent;
 import atwoz.atwoz.member.command.domain.member.event.MemberLoggedOutEvent;
 import atwoz.atwoz.member.command.domain.member.event.MemberRegisteredEvent;
 import atwoz.atwoz.member.command.domain.member.exception.MemberNotActiveException;
+import atwoz.atwoz.member.command.domain.member.exception.MemberWaitingStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -44,21 +46,11 @@ public class MemberAuthService {
         }
 
         Member member = createOrFindMemberByPhoneNumber(phoneNumber);
+        validateMemberLoginPermission(member);
+        Role role = getRoleFromMember(member);
 
-        if (member.isDeleted()) {
-            throw new MemberDeletedException();
-        }
-
-        if (member.isPermanentlySuspended()) {
-            throw new PermanentlySuspendedMemberException();
-        }
-
-        if (!member.isActive()) {
-            throw new MemberNotActiveException();
-        }
-
-        String accessToken = tokenProvider.createAccessToken(member.getId(), Role.MEMBER, Instant.now());
-        String refreshToken = tokenProvider.createRefreshToken(member.getId(), Role.MEMBER, Instant.now());
+        String accessToken = tokenProvider.createAccessToken(member.getId(), role, Instant.now());
+        String refreshToken = tokenProvider.createRefreshToken(member.getId(), role, Instant.now());
         tokenRepository.save(refreshToken);
 
         Events.raise(MemberLoggedInEvent.from(member.getId()));
@@ -128,5 +120,32 @@ public class MemberAuthService {
         } catch (DataIntegrityViolationException e) {
             throw new MemberLoginConflictException(phoneNumber);
         }
+    }
+
+    private void validateMemberLoginPermission(Member member) {
+        if (member.isDeleted()) { // 회원이 삭제된 경우.
+            throw new MemberDeletedException();
+        }
+
+        if (member.isPermanentlySuspended()) { // 회원이 영구 정지인 경우.
+            throw new PermanentlySuspendedMemberException();
+        }
+
+        ActivityStatus activityStatus = member.getActivityStatus();
+
+        if (activityStatus == ActivityStatus.WAITING_SCREENING) { // 심사 대기중일 경우.
+            throw new MemberWaitingStatus();
+        } else if (activityStatus != ActivityStatus.ACTIVE && activityStatus != ActivityStatus.INITIAL) { // 활동중이 아닐 경우.
+            throw new MemberNotActiveException();
+        }
+    }
+
+    private Role getRoleFromMember(Member member) {
+        ActivityStatus status = member.getActivityStatus();
+
+        if (status == ActivityStatus.INITIAL) {
+            return Role.INITIAL_MEMBER;
+        }
+        return Role.MEMBER;
     }
 }
