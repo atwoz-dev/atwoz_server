@@ -6,10 +6,7 @@ import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
-import atwoz.atwoz.member.command.application.member.exception.MemberDeletedException;
-import atwoz.atwoz.member.command.application.member.exception.MemberLoginConflictException;
-import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
-import atwoz.atwoz.member.command.application.member.exception.PermanentlySuspendedMemberException;
+import atwoz.atwoz.member.command.application.member.exception.*;
 import atwoz.atwoz.member.command.application.member.sms.AuthMessageService;
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
@@ -18,7 +15,6 @@ import atwoz.atwoz.member.command.domain.member.event.MemberLoggedInEvent;
 import atwoz.atwoz.member.command.domain.member.event.MemberLoggedOutEvent;
 import atwoz.atwoz.member.command.domain.member.event.MemberRegisteredEvent;
 import atwoz.atwoz.member.command.domain.member.exception.MemberNotActiveException;
-import atwoz.atwoz.member.command.domain.member.exception.MemberWaitingStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -127,14 +123,14 @@ public class MemberAuthService {
             throw new MemberDeletedException();
         }
 
-        if (member.isPermanentlySuspended()) { // 회원이 영구 정지인 경우.
-            throw new PermanentlySuspendedMemberException();
-        }
-
         ActivityStatus activityStatus = member.getActivityStatus();
 
         if (activityStatus == ActivityStatus.WAITING_SCREENING) { // 심사 대기중일 경우.
-            throw new MemberWaitingStatus();
+            throw new MemberWaitingStatusException();
+        } else if (activityStatus == ActivityStatus.SUSPENDED_PERMANENTLY) { // 영구 정지일 경우.
+            throw new PermanentlySuspendedMemberException();
+        } else if (activityStatus == ActivityStatus.SUSPENDED_TEMPORARILY) { // 일시 정지일 경우.
+            throw new TemporarilySuspendedMemberException();
         } else if (activityStatus != ActivityStatus.ACTIVE && activityStatus != ActivityStatus.INITIAL) { // 활동중이 아닐 경우.
             throw new MemberNotActiveException();
         }

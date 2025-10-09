@@ -4,7 +4,6 @@ import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.member.exception.*;
 import atwoz.atwoz.member.command.domain.member.exception.MemberNotActiveException;
-import atwoz.atwoz.member.command.domain.member.exception.MemberWaitingStatus;
 import atwoz.atwoz.member.query.member.application.exception.ProfileAccessDeniedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -26,6 +25,16 @@ public class MemberExceptionHandler {
 
         return ResponseEntity.status(403)
             .body(BaseResponse.from(StatusType.FORBIDDEN));
+    }
+
+    @ExceptionHandler(TemporarilySuspendedMemberException.class)
+    public ResponseEntity<BaseResponse<Void>> handleTemporarilySuspendedMemberException(
+        TemporarilySuspendedMemberException e
+    ) {
+        log.warn("멤버 로그인에 실패하였습니다. {}", e.getMessage());
+
+        return ResponseEntity.status(403)
+            .body(BaseResponse.from(StatusType.TEMPORARILY_FORBIDDEN));
     }
 
     @ExceptionHandler(MemberDeletedException.class)
@@ -103,11 +112,11 @@ public class MemberExceptionHandler {
             .body(BaseResponse.from(StatusType.DORMANT_STATUS));
     }
 
-    @ExceptionHandler(MemberWaitingStatus.class)
-    public ResponseEntity<BaseResponse<Void>> handleMemberWaitingStatusException(MemberWaitingStatus e) {
+    @ExceptionHandler(MemberWaitingStatusException.class)
+    public ResponseEntity<BaseResponse<Void>> handleMemberWaitingStatusException(MemberWaitingStatusException e) {
         log.warn("로그인에 실패하였습니다.", e.getMessage());
 
-        return ResponseEntity.badRequest()
+        return ResponseEntity.status(403)
             .body(BaseResponse.from(StatusType.WAITING_STATUS));
     }
 }

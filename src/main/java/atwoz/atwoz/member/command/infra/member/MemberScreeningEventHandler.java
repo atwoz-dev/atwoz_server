@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -18,6 +19,7 @@ public class MemberScreeningEventHandler {
     private final MemberProfileService memberProfileService;
 
     @Async
+    @Transactional
     @TransactionalEventListener(value = ScreeningApprovedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handle(ScreeningApprovedEvent event) {
         try {
@@ -29,6 +31,7 @@ public class MemberScreeningEventHandler {
     }
 
     @Async
+    @Transactional
     @TransactionalEventListener(value = ScreeningRejectedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handle(ScreeningRejectedEvent event) {
         try {
@@ -40,6 +43,7 @@ public class MemberScreeningEventHandler {
     }
 
     @Async
+    @Transactional
     @TransactionalEventListener(value = ScreeningWaitingEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handle(ScreeningWaitingEvent event) {
         try {
