@@ -60,6 +60,11 @@ public class MemberIntroductionService {
         createIntroduction(memberId, introducedMemberId, IntroductionType.SAME_ANSWER);
     }
 
+    @Transactional
+    public void createIdealIntroduction(long memberId, long introducedMemberId) {
+        createIntroduction(memberId, introducedMemberId, IntroductionType.IDEAL);
+    }
+
     private void validateSoulmateIntroduction(long memberId, long introducedMemberId) {
         Member member = getMember(memberId);
         if (member.hasSubmittedDatingExam() == false) {
