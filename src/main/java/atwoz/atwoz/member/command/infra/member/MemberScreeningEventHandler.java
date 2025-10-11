@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -19,36 +18,30 @@ public class MemberScreeningEventHandler {
     private final MemberProfileService memberProfileService;
 
     @Async
-    @Transactional
     @TransactionalEventListener(value = ScreeningApprovedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handle(ScreeningApprovedEvent event) {
         try {
-            memberProfileService.changeProfilePublishStatus(event.getMemberId(), true);
-            memberProfileService.changeToActive(event.getMemberId());
+            memberProfileService.changeActive(event.getMemberId());
         } catch (Exception e) {
             log.error("Member(id: {})의 프로필 업데이트 중 예외가 발생했습니다.", event.getMemberId(), e);
         }
     }
 
     @Async
-    @Transactional
     @TransactionalEventListener(value = ScreeningRejectedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handle(ScreeningRejectedEvent event) {
         try {
-            memberProfileService.changeProfilePublishStatus(event.getMemberId(), false);
-            memberProfileService.changeToRejected(event.getMemberId());
+            memberProfileService.changeReject(event.getMemberId());
         } catch (Exception e) {
             log.error("Member(id: {})의 프로필 업데이트 중 예외가 발생했습니다.", event.getMemberId(), e);
         }
     }
 
     @Async
-    @Transactional
     @TransactionalEventListener(value = ScreeningWaitingEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handle(ScreeningWaitingEvent event) {
         try {
-            memberProfileService.changeProfilePublishStatus(event.getMemberId(), false);
-            memberProfileService.changeToWaiting(event.getMemberId());
+            memberProfileService.changeWaiting(event.getMemberId());
         } catch (Exception e) {
             log.error("Member(id: {})의 프로필 업데이트 중 예외가 발생했습니다.", event.getMemberId(), e);
         }
