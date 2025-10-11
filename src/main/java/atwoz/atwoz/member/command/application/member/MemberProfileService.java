@@ -32,7 +32,7 @@ public class MemberProfileService {
     public void changeToDormant(Long memberId) {
         getMemberById(memberId).changeToDormant();
     }
-
+    
     @Transactional
     public void changeToActive(String phoneNumber) {
         Member member = getMemberByPhoneNumber(phoneNumber);
@@ -51,6 +51,27 @@ public class MemberProfileService {
         if (getMemberById(memberId).getPrimaryContactType() == PrimaryContactType.NONE) {
             throw new PrimaryContactTypeSettingNeededException();
         }
+    }
+
+    @Transactional
+    public void changeActive(Long memberId) {
+        Member member = getMemberById(memberId);
+        member.changeToActive();
+        changeProfilePublishStatus(memberId, true);
+    }
+
+    @Transactional
+    public void changeReject(Long memberId) {
+        Member member = getMemberById(memberId);
+        member.changeToRejected();
+        changeProfilePublishStatus(memberId, false);
+    }
+
+    @Transactional
+    public void changeWaiting(Long memberId) {
+        Member member = getMemberById(memberId);
+        member.changeToWaiting();
+        changeProfilePublishStatus(memberId, false);
     }
 
     @Transactional

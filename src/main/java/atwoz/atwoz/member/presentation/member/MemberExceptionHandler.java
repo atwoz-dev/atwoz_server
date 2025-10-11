@@ -27,6 +27,16 @@ public class MemberExceptionHandler {
             .body(BaseResponse.from(StatusType.FORBIDDEN));
     }
 
+    @ExceptionHandler(TemporarilySuspendedMemberException.class)
+    public ResponseEntity<BaseResponse<Void>> handleTemporarilySuspendedMemberException(
+        TemporarilySuspendedMemberException e
+    ) {
+        log.warn("멤버 로그인에 실패하였습니다. {}", e.getMessage());
+
+        return ResponseEntity.status(403)
+            .body(BaseResponse.from(StatusType.TEMPORARILY_FORBIDDEN));
+    }
+
     @ExceptionHandler(MemberDeletedException.class)
     public ResponseEntity<BaseResponse<Void>> handleMemberDeletedException(MemberDeletedException e) {
         log.warn("멤버 로그인에 실패하였습니다. {}", e.getMessage());
@@ -100,5 +110,13 @@ public class MemberExceptionHandler {
 
         return ResponseEntity.badRequest()
             .body(BaseResponse.from(StatusType.DORMANT_STATUS));
+    }
+
+    @ExceptionHandler(MemberWaitingStatusException.class)
+    public ResponseEntity<BaseResponse<Void>> handleMemberWaitingStatusException(MemberWaitingStatusException e) {
+        log.warn("로그인에 실패하였습니다. {}", e.getMessage());
+
+        return ResponseEntity.status(403)
+            .body(BaseResponse.from(StatusType.WAITING_STATUS));
     }
 }
