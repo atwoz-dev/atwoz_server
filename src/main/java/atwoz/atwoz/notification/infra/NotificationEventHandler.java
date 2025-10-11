@@ -92,8 +92,8 @@ public class NotificationEventHandler {
     public void handleProfileExchangeAcceptedEvent(ProfileExchangeAcceptedEvent event) {
         NotificationSendRequest request = new NotificationSendRequest(
             SenderType.MEMBER,
-            event.getRequesterId(),
             event.getResponderId(),
+            event.getRequesterId(),
             NotificationType.PROFILE_EXCHANGE_ACCEPT,
             Map.of(SENDER_NAME, event.getSenderName()),
             ChannelType.PUSH
@@ -106,8 +106,8 @@ public class NotificationEventHandler {
     public void handleProfileExchangeRejectedEvent(ProfileExchangeRejectedEvent event) {
         NotificationSendRequest request = new NotificationSendRequest(
             SenderType.MEMBER,
-            event.getRequesterId(),
             event.getResponderId(),
+            event.getRequesterId(),
             NotificationType.PROFILE_EXCHANGE_REJECT,
             Map.of(SENDER_NAME, event.getSenderName()),
             ChannelType.PUSH
