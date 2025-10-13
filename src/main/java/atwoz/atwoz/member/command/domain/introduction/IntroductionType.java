@@ -23,4 +23,8 @@ public enum IntroductionType {
     public boolean isFreeIntroduction() {
         return this == TODAY_CARD || this == SOULMATE;
     }
+
+    public boolean isSoulmateIntroduction() {
+        return this == SOULMATE;
+    }
 }
