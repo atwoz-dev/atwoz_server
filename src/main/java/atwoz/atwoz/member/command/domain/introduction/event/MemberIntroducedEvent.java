@@ -10,8 +10,9 @@ import lombok.RequiredArgsConstructor;
 public class MemberIntroducedEvent extends Event {
     private final Long memberId;
     private final String content;
+    private final String introductionType;
 
-    public static MemberIntroducedEvent of(Long memberId, String content) {
-        return new MemberIntroducedEvent(memberId, content);
+    public static MemberIntroducedEvent of(Long memberId, String content, String introductionType) {
+        return new MemberIntroducedEvent(memberId, content, introductionType);
     }
 }
