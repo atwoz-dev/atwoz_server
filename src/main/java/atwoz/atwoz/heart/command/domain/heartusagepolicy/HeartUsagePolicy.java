@@ -3,6 +3,7 @@ package atwoz.atwoz.heart.command.domain.heartusagepolicy;
 
 import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.heart.command.domain.hearttransaction.exception.InvalidHeartTransactionTypeException;
+import atwoz.atwoz.heart.command.domain.hearttransaction.vo.TransactionSubtype;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.TransactionType;
 import atwoz.atwoz.member.command.domain.member.Gender;
 import jakarta.persistence.*;
@@ -51,11 +52,21 @@ public class HeartUsagePolicy extends BaseEntity {
         this.transactionType = transactionType;
     }
 
-    public Long getAmount(boolean isVip) {
-        if (isVip) {
+    public Long getAmount(boolean isVip, TransactionSubtype subtype) {
+        if (isFreeEligible(isVip, subtype)) {
             return 0L;
         }
         return this.heartPriceAmount.getAmount();
+    }
+
+    private boolean isFreeEligible(boolean isVip, TransactionSubtype subtype) {
+        if (isVip) {
+            return true;
+        }
+        if (subtype.isFreeEligible(transactionType)) {
+            return true;
+        }
+        return false;
     }
 
     public Long getPrice() {

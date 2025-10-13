@@ -16,11 +16,12 @@ public class HeartUsageEventHandler {
     @EventListener(value = MatchRequestedEvent.class)
     public void handle(MatchRequestedEvent event) {
         heartUsageService.useHeart(event.getRequesterId(), TransactionType.MESSAGE,
-            TransactionType.MESSAGE.getDescription());
+            TransactionType.MESSAGE.getDescription(), event.getMatchType());
     }
 
     @EventListener(value = MemberIntroducedEvent.class)
     public void handle(MemberIntroducedEvent event) {
-        heartUsageService.useHeart(event.getMemberId(), TransactionType.INTRODUCTION, event.getContent());
+        heartUsageService.useHeart(event.getMemberId(), TransactionType.INTRODUCTION, event.getContent(),
+            event.getIntroductionType());
     }
 }
