@@ -11,6 +11,7 @@ import atwoz.atwoz.match.command.domain.match.MatchType;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import atwoz.atwoz.match.presentation.dto.MatchRequestDto;
 import atwoz.atwoz.match.presentation.dto.MatchResponseDto;
+import atwoz.atwoz.member.command.domain.introduction.IntroductionType;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroductionCommandRepository;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
@@ -63,7 +64,7 @@ public class MatchService {
         }
 
         MemberIntroduction introduction = optionalIntroduction.get();
-        if (introduction.getType().isSoulmateIntroduction()) {
+        if (introduction.getType() == IntroductionType.SOULMATE) {
             return MatchType.SOULMATE;
         }
         return MatchType.MATCH;

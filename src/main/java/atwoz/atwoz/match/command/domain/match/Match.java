@@ -44,7 +44,7 @@ public class Match {
     private MatchStatus status;
 
     public static Match request(long requesterId, long responderId, @NonNull Message requestMessage,
-        String requesterName, MatchType type) {
+        @NonNull String requesterName, @NonNull MatchType type) {
         Match match = Match.builder()
             .requesterId(requesterId)
             .responderId(responderId)
