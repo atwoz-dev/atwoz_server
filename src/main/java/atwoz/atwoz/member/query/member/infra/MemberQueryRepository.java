@@ -95,6 +95,8 @@ public class MemberQueryRepository {
             .on(getProfileExchangeJoinCondition(memberId))
             .leftJoin(like)
             .on(like.senderId.eq(memberId).and(like.receiverId.eq(otherMemberId)))
+            .leftJoin(memberIntroduction)
+            .on(memberIntroduction.memberId.eq(memberId).and(memberIntroduction.introducedMemberId.eq(otherMemberId)))
             .where(member.id.eq(otherMemberId))
             .transform(groupBy(member.id).as(
                 new QOtherMemberProfileView(member.id, member.profile.nickname.value, profileImage.imageUrl.value,
@@ -114,7 +116,8 @@ public class MemberQueryRepository {
                     .then(member.kakaoId.value)
                     .otherwise((String) null),
                     profileExchange.id, profileExchange.requesterId, profileExchange.responderId,
-                    profileExchange.status.stringValue())))
+                    profileExchange.status.stringValue(), memberIntroduction.type.stringValue()
+                )))
             .get(otherMemberId);
 
 

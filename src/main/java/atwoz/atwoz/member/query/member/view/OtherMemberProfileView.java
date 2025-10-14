@@ -7,7 +7,8 @@ import java.util.Set;
 public record OtherMemberProfileView(
     BasicMemberInfo basicMemberInfo,
     MatchInfo matchInfo,
-    ProfileExchangeInfo profileExchangeInfo
+    ProfileExchangeInfo profileExchangeInfo,
+    IntroductionInfo introductionInfo
 ) {
     @QueryProjection
     public OtherMemberProfileView(
@@ -36,15 +37,20 @@ public record OtherMemberProfileView(
         Long profileExchangeId,
         Long profileExchangeRequesterId,
         Long profileExchangeResponderId,
-        String profileExchangeStatus
+        String profileExchangeStatus,
+        String introductionType
     ) {
-        this(new BasicMemberInfo(id, nickname, profileImageUrl, yearOfBirth, gender, height, job, hobbies, mbti, city,
-                district,
-                smokingStatus, drinkingStatus, highestEducation, religion, like),
+        this(
+            new BasicMemberInfo(id, nickname, profileImageUrl, yearOfBirth, gender, height, job, hobbies, mbti, city,
+                district, smokingStatus, drinkingStatus, highestEducation, religion, like),
             matchId == null ? null
                 : new MatchInfo(matchId, requesterId, responderId, requestMessage, responseMessage, matchStatus,
-                    contactType, contact), profileExchangeId == null ? null
+                    contactType, contact),
+            profileExchangeId == null ? null
                 : new ProfileExchangeInfo(profileExchangeId, profileExchangeRequesterId, profileExchangeResponderId,
-                    profileExchangeStatus));
+                    profileExchangeStatus),
+            introductionType == null ? null
+                : new IntroductionInfo(introductionType)
+        );
     }
 }
