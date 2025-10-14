@@ -92,7 +92,7 @@ public class MemberQueryRepository {
             .leftJoin(match)
             .on(getMatchJoinCondition(memberId, otherMemberId))
             .leftJoin(profileExchange)
-            .on(getProfileExchangeJoinCondition(memberId))
+            .on(getProfileExchangeJoinCondition(memberId, otherMemberId))
             .leftJoin(like)
             .on(like.senderId.eq(memberId).and(like.receiverId.eq(otherMemberId)))
             .leftJoin(memberIntroduction)
@@ -141,7 +141,7 @@ public class MemberQueryRepository {
             .leftJoin(memberIntroduction)
             .on(memberIntroduction.introducedMemberId.eq(otherMemberId).and(memberIntroduction.memberId.eq(memberId)))
             .leftJoin(profileExchange)
-            .on(getProfileExchangeJoinCondition(otherMemberId))
+            .on(getProfileExchangeJoinCondition(memberId, otherMemberId))
             .leftJoin(match)
             .on(getMatchJoinConditionForProfile(memberId, otherMemberId))
             .leftJoin(like)
@@ -164,9 +164,9 @@ public class MemberQueryRepository {
             .fetch();
     }
 
-    private BooleanExpression getProfileExchangeJoinCondition(Long memberId) {
-        return (profileExchange.requesterId.eq(member.id).and(profileExchange.responderId.eq(memberId)))
-            .or(profileExchange.requesterId.eq(memberId).and(profileExchange.responderId.eq(member.id)));
+    private BooleanExpression getProfileExchangeJoinCondition(Long memberId, Long otherMemberId) {
+        return (profileExchange.requesterId.eq(memberId).and(profileExchange.responderId.eq(otherMemberId)))
+            .or(profileExchange.requesterId.eq(otherMemberId).and(profileExchange.responderId.eq(memberId)));
     }
 
     private BooleanExpression getMatchJoinCondition(Long memberId, Long otherMemberId) {
