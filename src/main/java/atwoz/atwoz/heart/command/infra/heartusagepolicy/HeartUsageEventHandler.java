@@ -27,7 +27,7 @@ public class HeartUsageEventHandler {
             event.getIntroductionType());
     }
 
-    @EventListener(value = MemberIntroducedEvent.class)
+    @EventListener(value = MatchAcceptedEvent.class)
     public void handle(MatchAcceptedEvent event) {
         heartUsageService.useHeart(event.getRequesterId(), TransactionType.MESSAGE_ACCEPTED,
             TransactionType.MESSAGE_ACCEPTED.getDescription(), TransactionSubtype.MATCH_ACCEPTED.name());
