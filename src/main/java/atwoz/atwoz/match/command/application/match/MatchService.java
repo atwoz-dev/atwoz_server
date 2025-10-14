@@ -14,6 +14,7 @@ import atwoz.atwoz.match.presentation.dto.MatchResponseDto;
 import atwoz.atwoz.member.command.domain.introduction.IntroductionType;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroductionCommandRepository;
+import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -73,6 +74,7 @@ public class MatchService {
     @Transactional
     public void approve(Long matchId, Long responderId, MatchResponseDto respondDto) {
         Match match = getWaitingMatchByIdAndResponderId(matchId, responderId);
+        validateMatch(match);
         String responderName = findNickname(responderId);
         match.approve(Message.from(respondDto.responseMessage()), responderName);
     }
@@ -80,6 +82,7 @@ public class MatchService {
     @Transactional
     public void reject(Long matchId, Long responderId) {
         Match match = getWaitingMatchByIdAndResponderId(matchId, responderId);
+        validateMatch(match);
         String responderName = findNickname(responderId);
         match.reject(responderName);
     }
@@ -87,6 +90,7 @@ public class MatchService {
     @Transactional
     public void rejectCheck(Long requesterId, Long matchId) {
         Match match = getRejectedMatchByIdAndRequesterId(matchId, requesterId);
+        validateMatch(match);
         match.checkRejected();
     }
 
@@ -124,5 +128,13 @@ public class MatchService {
             throw new InvalidMatchUpdateException();
         }
         return match;
+    }
+
+    private void validateMatch(Match match) {
+        Member member = memberCommandRepository.findById(match.getRequesterId()).orElseThrow(
+            () -> new EntityNotFoundException("매치 요청자를 찾을 수 없습니다." + match.getRequesterId()));
+        if (!member.isActive()) {
+            throw new IllegalStateException("매치 요청자가 활성 상태가 아닙니다.");
+        }
     }
 }
