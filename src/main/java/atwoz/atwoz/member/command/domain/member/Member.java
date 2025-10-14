@@ -72,6 +72,7 @@ public class Member extends SoftDeleteBaseEntity {
             .heartBalance(HeartBalance.init())
             .isVip(false)
             .primaryContactType(PrimaryContactType.NONE)
+            .grade(Grade.SILVER)
             .build();
     }
 
