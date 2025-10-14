@@ -1,14 +1,19 @@
 package atwoz.atwoz.member.presentation.member;
 
+import atwoz.atwoz.match.command.domain.match.MatchContactType;
+import atwoz.atwoz.match.command.domain.match.MatchStatus;
 import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;
 import atwoz.atwoz.member.command.domain.member.vo.Region;
+import atwoz.atwoz.member.presentation.member.dto.ContactInfo;
 import atwoz.atwoz.member.presentation.member.dto.MemberInfo;
 import atwoz.atwoz.member.presentation.member.dto.MemberMyProfileResponse;
 import atwoz.atwoz.member.presentation.member.dto.MemberProfileUpdateRequest;
 import atwoz.atwoz.member.query.member.AgeConverter;
 import atwoz.atwoz.member.query.member.view.BasicMemberInfo;
+import atwoz.atwoz.member.query.member.view.ContactView;
+import atwoz.atwoz.member.query.member.view.MatchInfo;
 import atwoz.atwoz.member.query.member.view.MemberProfileView;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -52,5 +57,21 @@ public class MemberMapper {
             view.height(),
             view.job(), view.hobbies(), view.mbti(), view.city(), view.district(), view.smokingStatus(),
             view.drinkingStatus(), view.highestEducation(), view.religion());
+    }
+
+    public static ContactInfo toContactInfo(ContactView contactView, MatchInfo matchInfo, Long targetMemberId) {
+        if (contactView == null || matchInfo == null) {
+            return null;
+        }
+        if (matchInfo.matchStatus() == null || MatchStatus.valueOf(matchInfo.matchStatus()) != MatchStatus.MATCHED) {
+            return null;
+        }
+        String contactType = targetMemberId.equals(matchInfo.requesterId()) ? matchInfo.requesterContactType()
+            : matchInfo.responderContactType();
+        String contact = switch (MatchContactType.valueOf(contactType)) {
+            case PHONE_NUMBER -> contactView.phoneNumber();
+            case KAKAO -> contactView.kakaoId();
+        };
+        return new ContactInfo(contactType, contact);
     }
 }

@@ -11,7 +11,7 @@ import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;
 import atwoz.atwoz.like.command.domain.Like;
 import atwoz.atwoz.like.command.domain.LikeLevel;
 import atwoz.atwoz.match.command.domain.match.Match;
-import atwoz.atwoz.match.command.domain.match.MatchStatus;
+import atwoz.atwoz.match.command.domain.match.MatchContactType;
 import atwoz.atwoz.match.command.domain.match.MatchType;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import atwoz.atwoz.member.command.domain.introduction.IntroductionType;
@@ -394,8 +394,9 @@ class MemberQueryRepositoryTest {
         void getBasicInfoWhenExpiredMatchExists() {
             // Given
             MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
             Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."), "testUser",
-                type);
+                type, contactType);
             match.expire();
             entityManager.persist(match);
             entityManager.flush();
@@ -424,8 +425,9 @@ class MemberQueryRepositoryTest {
         void getBasicInfoWhenRejectCheckedMatchExists() {
             // Given
             MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
             Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."), "testUser",
-                type);
+                type, contactType);
             match.reject("testUser");
             match.checkRejected();
             entityManager.persist(match);
@@ -457,8 +459,9 @@ class MemberQueryRepositoryTest {
         void getBasicInfoWithMatchInfoNotIncludingContactWhenWaitingMatchExists() {
             // Given
             MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
             Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."), "testUser",
-                type);
+                type, contactType);
             entityManager.persist(match);
             entityManager.flush();
 
@@ -489,9 +492,10 @@ class MemberQueryRepositoryTest {
         void getBasicInfoWithMatchInfoIncludingContactWhenWaitingMatchNotExists() {
             // Given
             MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
             Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."), "testUser",
-                type);
-            match.approve(Message.from("매치 수락합니다!"), "testUser");
+                type, contactType);
+            match.approve(Message.from("매치 수락합니다!"), "testUser", contactType);
             entityManager.persist(match);
             entityManager.flush();
 
@@ -522,8 +526,9 @@ class MemberQueryRepositoryTest {
         void getBasicInfoWithMatchInfoNotIncludingContactWhenWaitingMatchNotExists() {
             // Given
             MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
             Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."), "testUser",
-                type);
+                type, contactType);
             match.reject("testUser");
             entityManager.persist(match);
             entityManager.flush();
@@ -605,16 +610,7 @@ class MemberQueryRepositoryTest {
                 .isEqualTo(match.getResponseMessage() == null ? null : match.getResponseMessage().getValue());
 
             assertThat(matchInfo.matchStatus()).isEqualTo(match.getStatus().toString());
-            assertThat(matchInfo.contactType()).isEqualTo(otherMember.getPrimaryContactType().toString());
-
-
-            if (!match.getStatus().equals(MatchStatus.MATCHED)) {
-                assertThat(matchInfo.contact()).isNull(); // 매치가 성사되지 않았으므로.
-            } else if (otherMember.getPrimaryContactType().equals(PrimaryContactType.PHONE_NUMBER)) {
-                assertThat(matchInfo.contact()).isEqualTo(otherMember.getPhoneNumber());
-            } else if (otherMember.getPrimaryContactType().equals(PrimaryContactType.KAKAO)) {
-                assertThat(matchInfo.contact()).isEqualTo(otherMember.getKakaoId());
-            }
+            assertThat(matchInfo.requesterContactType()).isEqualTo(match.getRequesterContactType().name());
         }
     }
 
@@ -795,10 +791,11 @@ class MemberQueryRepositoryTest {
 
             // 매치 신청.
             MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
             Match match = Match.request(member.getId(), otherMember1.getId(), Message.from("매치 신청합니다."), "testUser",
-                type);
+                type, contactType);
             Match match2 = Match.request(otherMember2.getId(), member.getId(), Message.from("매치 신청합니다."), "testUser",
-                type);
+                type, contactType);
             entityManager.persist(match);
             entityManager.persist(match2);
             entityManager.flush();

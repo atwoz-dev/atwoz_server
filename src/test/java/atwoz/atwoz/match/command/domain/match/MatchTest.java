@@ -26,10 +26,11 @@ public class MatchTest {
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다!");
             MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
 
             // When & Then
             Assertions.assertThatThrownBy(
-                    () -> Match.request(requesterId, responderId, requestMessage, "testUser", type))
+                    () -> Match.request(requesterId, responderId, requestMessage, "testUser", type, contactType))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -41,10 +42,11 @@ public class MatchTest {
             Long responderId = null;
             Message requestMessage = Message.from("매칭을 요청합니다!");
             MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
 
             // When & Then
             Assertions.assertThatThrownBy(
-                    () -> Match.request(requesterId, responderId, requestMessage, "testUser", type))
+                    () -> Match.request(requesterId, responderId, requestMessage, "testUser", type, contactType))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -56,10 +58,11 @@ public class MatchTest {
             Long responderId = 2L;
             Message requestMessage = null;
             MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
 
             // When & Then
             Assertions.assertThatThrownBy(
-                    () -> Match.request(requesterId, responderId, requestMessage, "testUser", type))
+                    () -> Match.request(requesterId, responderId, requestMessage, "testUser", type, contactType))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -71,10 +74,11 @@ public class MatchTest {
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
             MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
 
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
                 // When
-                Match match = Match.request(requesterId, responderId, requestMessage, "testUser", type);
+                Match match = Match.request(requesterId, responderId, requestMessage, "testUser", type, contactType);
 
                 // Then
                 Assertions.assertThat(match.getRequesterId()).isEqualTo(requesterId);
@@ -99,14 +103,15 @@ public class MatchTest {
             Message responseMessage = Message.from("매칭을 수락합니다.");
             Match match;
             MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
 
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                match = Match.request(requesterId, responderId, requestMessage, "testUser", type);
+                match = Match.request(requesterId, responderId, requestMessage, "testUser", type, contactType);
                 match.expire();
             }
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> match.approve(responseMessage, "testUser"))
+            Assertions.assertThatThrownBy(() -> match.approve(responseMessage, "testUser", contactType))
                 .isInstanceOf(InvalidMatchStatusChangeException.class);
         }
 
@@ -119,13 +124,14 @@ public class MatchTest {
             Message requestMessage = Message.from("매칭을 요청합니다.");
             Message responseMessage = Message.from("매칭을 수락합니다.");
             MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
 
             Match match;
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                match = Match.request(requesterId, responderId, requestMessage, "testUser", type);
+                match = Match.request(requesterId, responderId, requestMessage, "testUser", type, contactType);
 
                 // When
-                match.approve(responseMessage, "testUser");
+                match.approve(responseMessage, "testUser", contactType);
             }
 
             // Then
@@ -142,9 +148,10 @@ public class MatchTest {
             Message requestMessage = Message.from("매칭을 요청합니다.");
             MatchType type = MatchType.MATCH;
             Match match;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
 
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                match = Match.request(requesterId, responderId, requestMessage, "testUser", type);
+                match = Match.request(requesterId, responderId, requestMessage, "testUser", type, contactType);
             }
 
             // When & Then
@@ -160,10 +167,11 @@ public class MatchTest {
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
             MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
 
             Match match;
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                match = Match.request(requesterId, responderId, requestMessage, "testUser", type);
+                match = Match.request(requesterId, responderId, requestMessage, "testUser", type, contactType);
                 match.reject("testUser");
             }
 

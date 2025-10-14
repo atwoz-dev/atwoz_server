@@ -2,7 +2,6 @@ package atwoz.atwoz.member.query.member.infra;
 
 import atwoz.atwoz.match.command.domain.match.MatchStatus;
 import atwoz.atwoz.member.command.domain.member.Hobby;
-import atwoz.atwoz.member.command.domain.member.PrimaryContactType;
 import atwoz.atwoz.member.query.member.view.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.EnumPath;
@@ -103,18 +102,13 @@ public class MemberQueryRepository {
                     member.profile.yearOfBirth.value, member.profile.gender.stringValue(), member.profile.height,
                     member.profile.job.stringValue(), set(hobby.stringValue()), member.profile.mbti.stringValue(),
                     member.profile.region.city.stringValue(), member.profile.region.district.stringValue(),
-                    member.profile.smokingStatus.stringValue(),
-                    member.profile.drinkingStatus.stringValue(), member.profile.highestEducation.stringValue(),
-                    member.profile.religion.stringValue(), like.level.stringValue(), match.id, match.requesterId,
-                    match.responderId, match.requestMessage.value, match.responseMessage.value,
-                    match.status.stringValue(), member.primaryContactType.stringValue(), cases().when(
-                        match.status.eq(MatchStatus.MATCHED)
-                            .and(member.primaryContactType.eq(PrimaryContactType.PHONE_NUMBER)))
-                    .then(member.phoneNumber.value)
-                    .when(match.status.eq(MatchStatus.MATCHED)
-                        .and(member.primaryContactType.eq(PrimaryContactType.KAKAO)))
-                    .then(member.kakaoId.value)
-                    .otherwise((String) null),
+                    member.profile.smokingStatus.stringValue(), member.profile.drinkingStatus.stringValue(),
+                    member.profile.highestEducation.stringValue(), member.profile.religion.stringValue(),
+                    like.level.stringValue(),
+                    match.id, match.requesterId, match.responderId, match.requestMessage.value,
+                    match.responseMessage.value, match.status.stringValue(), match.requesterContactType.stringValue(),
+                    match.responderContactType.stringValue(),
+                    member.phoneNumber.value, member.kakaoId.value,
                     profileExchange.id, profileExchange.requesterId, profileExchange.responderId,
                     profileExchange.status.stringValue(), memberIntroduction.type.stringValue()
                 )))

@@ -176,7 +176,7 @@ class MemberQueryServiceTest {
         void notThrowsExceptionWhenProfileAccessIsAuthorized(ProfileAccessView profileAccessView, String predict) {
             // Given
             OtherMemberProfileView view = new OtherMemberProfileView(mock(BasicMemberInfo.class), mock(MatchInfo.class),
-                mock(ProfileExchangeInfo.class), mock(IntroductionInfo.class));
+                mock(ContactView.class), mock(ProfileExchangeInfo.class), mock(IntroductionInfo.class));
             when(memberQueryRepository.findProfileAccessViewByMemberId(memberId, otherMemberId)).thenReturn(
                 Optional.of(profileAccessView));
             when(memberQueryRepository.findOtherProfileByMemberId(memberId, otherMemberId)).thenReturn(
