@@ -98,13 +98,8 @@ public class NotificationSendService {
     }
 
     private void dispatch(NotificationSender sender, Notification notification, DeviceRegistration deviceRegistration) {
-        try {
-            sender.send(notification, deviceRegistration);
-            notification.markAsSent();
-        } catch (NotificationSendFailureException e) {
-            log.error("[알림 전송 실패] receiverId={}", notification.getReceiverId(), e);
-            saveFailedNotification(notification, FAILED_EXCEPTION);
-        }
+        sender.send(notification, deviceRegistration);
+        notification.markAsSent();
     }
 
     private void handleUnsupportedChannel(Notification notification, NotificationSendRequest request) {

@@ -1,6 +1,6 @@
 package atwoz.atwoz.notification.infra;
 
-import atwoz.atwoz.notification.command.application.NotificationSendFailureException;
+import atwoz.atwoz.notification.command.application.FcmException;
 import atwoz.atwoz.notification.command.domain.*;
 import atwoz.atwoz.notification.command.infra.FcmResilienceConfig;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -28,30 +28,6 @@ public class FcmNotificationSender implements NotificationSender {
     @Retry(name = FcmResilienceConfig.RETRY_POLICY_NAME)
     @CircuitBreaker(name = FcmResilienceConfig.CIRCUIT_BREAKER_POLICY_NAME, fallbackMethod = "sendFallback")
     public void send(Notification notification, DeviceRegistration deviceRegistration) {
-        sendFcmMessage(notification, deviceRegistration);
-    }
-
-    public void sendFallback(Notification notification, DeviceRegistration deviceRegistration, Exception exception) {
-        log.error("FCM 전송 최종 실패 - Fallback 실행: receiverId={}, error={}",
-            notification.getReceiverId(), exception.getMessage(), exception);
-
-        // 실패 상태로 DB 저장 (기존 Service 로직을 여기로 이동)
-        var failedNotification = Notification.createFailed(
-            notification.getSenderType(),
-            notification.getSenderId(),
-            notification.getReceiverId(),
-            notification.getType(),
-            notification.getTitle(),
-            notification.getBody(),
-            NotificationStatus.FAILED_EXCEPTION
-        );
-        notificationCommandRepository.save(failedNotification);
-
-        // Fallback에서는 예외를 발생시키지 않음 (graceful degradation)
-        log.info("실패한 알림을 DB에 저장했습니다: receiverId={}", notification.getReceiverId());
-    }
-
-    private void sendFcmMessage(Notification notification, DeviceRegistration deviceRegistration) {
         var message = Message.builder()
             .setToken(deviceRegistration.getRegistrationToken())
             .setNotification(
@@ -70,8 +46,34 @@ public class FcmNotificationSender implements NotificationSender {
             String messageId = FirebaseMessaging.getInstance().send(message);
             log.info("FCM 전송 성공: messageId={}, receiverId={}", messageId, notification.getReceiverId());
         } catch (FirebaseMessagingException e) {
-            log.error("FCM 전송 실패: receiverId={}, error={}", notification.getReceiverId(), e.getMessage());
-            throw new NotificationSendFailureException(e.getMessage());
+            throw new FcmException(e);
         }
+    }
+
+    public void sendFallback(Notification notification, DeviceRegistration deviceRegistration, Throwable throwable) {
+        String errorType = throwable.getClass().getSimpleName();
+        String errorMessage = throwable.getMessage();
+
+        // FcmException인 경우 원본 FirebaseMessagingException의 에러 코드 로깅
+        if (throwable instanceof FcmException fcmEx) {
+            FirebaseMessagingException fme = fcmEx.getCause();
+            log.error("FCM 전송 실패: receiverId={}, errorType={}, errorCode={}, message={}",
+                notification.getReceiverId(), errorType, fme.getMessagingErrorCode(), errorMessage, throwable);
+        } else {
+            log.error("FCM 전송 실패: receiverId={}, errorType={}, message={}",
+                notification.getReceiverId(), errorType, errorMessage, throwable);
+        }
+
+        notificationCommandRepository.save(
+            Notification.createFailed(
+                notification.getSenderType(),
+                notification.getSenderId(),
+                notification.getReceiverId(),
+                notification.getType(),
+                notification.getTitle(),
+                notification.getBody(),
+                NotificationStatus.FAILED_EXCEPTION
+            )
+        );
     }
 }
