@@ -6,10 +6,7 @@ import atwoz.atwoz.auth.infra.JwtProvider;
 import atwoz.atwoz.common.MockEventsExtension;
 import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
-import atwoz.atwoz.member.command.application.member.exception.MemberDeletedException;
-import atwoz.atwoz.member.command.application.member.exception.MemberLoginConflictException;
-import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
-import atwoz.atwoz.member.command.application.member.exception.PermanentlySuspendedMemberException;
+import atwoz.atwoz.member.command.application.member.exception.*;
 import atwoz.atwoz.member.command.application.member.sms.AuthMessageService;
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
@@ -197,6 +194,24 @@ class MemberAuthServiceTest {
             Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber, code))
                 .isInstanceOf(MemberLoginConflictException.class);
         }
+
+        @Test
+        @DisplayName("심사 대기중일 경우, 예외 반환")
+        void shouldThrowExceptionWhenMemberIsWaitingToScreening() {
+            // Given
+            String phoneNumber = "01012345678";
+            String code = "01012345678";
+            Member waitingMember = Member.fromPhoneNumber(phoneNumber);
+            waitingMember.changeToWaiting();
+
+            Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber))
+                .thenReturn(Optional.of(waitingMember));
+            Mockito.doNothing().when(authMessageService).authenticate(phoneNumber, code);
+
+            // When & Then
+            Assertions.assertThatThrownBy(() -> memberAuthService.login(phoneNumber, code))
+                .isInstanceOf(MemberWaitingStatusException.class);
+        }
     }
 
     @Nested
@@ -231,6 +246,4 @@ class MemberAuthServiceTest {
             Assertions.assertThat(member.isDeleted()).isTrue();
         }
     }
-
-
 }
