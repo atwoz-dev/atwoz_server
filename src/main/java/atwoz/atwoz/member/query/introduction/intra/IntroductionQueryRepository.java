@@ -65,6 +65,7 @@ public class IntroductionQueryRepository {
                 gradeEq(condition.getMemberGrade()),
                 genderEq(condition.getGender()),
                 createdAtGoe(condition.getJoinedAfter()),
+                activityStatusEq(condition.getActivityStatus()),
                 isProfilePublicIsTrue()
             )
             .orderBy(member.id.desc())
@@ -183,6 +184,13 @@ public class IntroductionQueryRepository {
             return null;
         }
         return member.createdAt.goe(createdAt);
+    }
+
+    private BooleanExpression activityStatusEq(String activityStatus) {
+        if (activityStatus == null) {
+            return null;
+        }
+        return member.activityStatus.stringValue().eq(activityStatus);
     }
 
     private BooleanExpression isProfilePublicIsTrue() {

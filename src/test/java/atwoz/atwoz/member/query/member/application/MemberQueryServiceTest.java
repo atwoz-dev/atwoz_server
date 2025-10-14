@@ -2,6 +2,7 @@ package atwoz.atwoz.member.query.member.application;
 
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeStatus;
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
+import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.query.member.application.exception.ProfileAccessDeniedException;
 import atwoz.atwoz.member.query.member.infra.MemberQueryRepository;
 import atwoz.atwoz.member.query.member.view.*;
@@ -106,29 +107,52 @@ class MemberQueryServiceTest {
 
         static Stream<Arguments> authorizedCaseWithDescription() {
             return Stream.of(
-                Arguments.of(new ProfileAccessView(true, null, null, null, null, null, false), "이상형으로 소개받은 경우, 권한 존재."),
-                Arguments.of(new ProfileAccessView(false, 2L, 1L, null, null, null, false), "매치 요청을 받은 경우, 권한 존재."),
                 Arguments.of(
-                    new ProfileAccessView(false, null, null, 2L, 1L, ProfileExchangeStatus.WAITING.name(), false),
+                    new ProfileAccessView(true, null, null, null, null, null, false, false,
+                        ActivityStatus.ACTIVE.name()),
+                    "이상형으로 소개받은 경우, 권한 존재."),
+                Arguments.of(
+                    new ProfileAccessView(false, 2L, 1L, null, null, null, false, false, ActivityStatus.ACTIVE.name()),
+                    "매치 요청을 받은 경우, 권한 존재."),
+                Arguments.of(
+                    new ProfileAccessView(false, null, null, 2L, 1L, ProfileExchangeStatus.WAITING.name(), false, false,
+                        ActivityStatus.ACTIVE.name()),
                     "프로필 교환 요청을 받은 경우, 권한 존재."),
                 Arguments.of(
-                    new ProfileAccessView(false, null, null, 2L, 1L, ProfileExchangeStatus.APPROVE.name(), false),
+                    new ProfileAccessView(false, null, null, 2L, 1L, ProfileExchangeStatus.APPROVE.name(), false, false,
+                        ActivityStatus.ACTIVE.name()),
                     "프로필 교환 요청을 수락 받은 경우, 권한 존재."),
-                Arguments.of(new ProfileAccessView(false, null, null, null, null, null, true), "좋아요를 받은 경우, 권한 존재.")
+                Arguments.of(
+                    new ProfileAccessView(false, null, null, null, null, null, true, false,
+                        ActivityStatus.ACTIVE.name()),
+                    "좋아요를 받은 경우, 권한 존재.")
             );
         }
 
         static Stream<Arguments> notAuthorizedCaseWithDescription() {
             return Stream.of(
-                Arguments.of(new ProfileAccessView(false, 1L, 2L, null, null, null, false),
+                Arguments.of(
+                    new ProfileAccessView(false, 1L, 2L, null, null, null, false, false, ActivityStatus.ACTIVE.name()),
                     "매치 신청을 한 경우, 권한이 존재하지 않는다."),
                 Arguments.of(
-                    new ProfileAccessView(false, null, null, 1L, 2L, ProfileExchangeStatus.WAITING.name(), false),
+                    new ProfileAccessView(false, null, null, 1L, 2L, ProfileExchangeStatus.WAITING.name(), false, false,
+                        ActivityStatus.ACTIVE.name()),
                     "프로필 교환 요청이 대기중인 경우, 권한이 존재하지 않는다."),
                 Arguments.of(
-                    new ProfileAccessView(false, null, null, 1L, 2L, ProfileExchangeStatus.REJECTED.name(), false),
+                    new ProfileAccessView(false, null, null, 1L, 2L, ProfileExchangeStatus.REJECTED.name(), false,
+                        false, ActivityStatus.ACTIVE.name()),
                     "프로필 교환 요청이 거절된 경우, 권한이 존재하지 않는다."),
-                Arguments.of(new ProfileAccessView(false, null, null, null, null, null, false),
+                Arguments.of(
+                    new ProfileAccessView(true, null, null, null, null, null, false, true,
+                        ActivityStatus.ACTIVE.name()),
+                    "차단 당한 경우 권한이 존재하지 않는다."),
+                Arguments.of(
+                    new ProfileAccessView(true, null, null, null, null, null, false, true,
+                        ActivityStatus.DORMANT.name()),
+                    "상대가 Active 상태가 아닌 경우 권한이 존재하지 않는다."),
+                Arguments.of(
+                    new ProfileAccessView(false, null, null, null, null, null, false, false,
+                        ActivityStatus.ACTIVE.name()),
                     "어떠한 케이스도 존재하지 않으면, 권한이 존재하지 않는다.")
             );
         }
@@ -152,8 +176,7 @@ class MemberQueryServiceTest {
         void notThrowsExceptionWhenProfileAccessIsAuthorized(ProfileAccessView profileAccessView, String predict) {
             // Given
             OtherMemberProfileView view = new OtherMemberProfileView(mock(BasicMemberInfo.class), mock(MatchInfo.class),
-                mock(
-                    ProfileExchangeInfo.class));
+                mock(ProfileExchangeInfo.class), mock(IntroductionInfo.class));
             when(memberQueryRepository.findProfileAccessViewByMemberId(memberId, otherMemberId)).thenReturn(
                 Optional.of(profileAccessView));
             when(memberQueryRepository.findOtherProfileByMemberId(memberId, otherMemberId)).thenReturn(

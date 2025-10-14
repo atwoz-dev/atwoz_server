@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import static atwoz.atwoz.block.domain.QBlock.block;
 import static atwoz.atwoz.community.command.domain.profileexchange.QProfileExchange.profileExchange;
 import static atwoz.atwoz.interview.command.domain.answer.QInterviewAnswer.interviewAnswer;
 import static atwoz.atwoz.interview.command.domain.question.QInterviewQuestion.interviewQuestion;
@@ -91,9 +92,11 @@ public class MemberQueryRepository {
             .leftJoin(match)
             .on(getMatchJoinCondition(memberId, otherMemberId))
             .leftJoin(profileExchange)
-            .on(getProfileExchangeJoinCondition(memberId))
+            .on(getProfileExchangeJoinCondition(memberId, otherMemberId))
             .leftJoin(like)
             .on(like.senderId.eq(memberId).and(like.receiverId.eq(otherMemberId)))
+            .leftJoin(memberIntroduction)
+            .on(memberIntroduction.memberId.eq(memberId).and(memberIntroduction.introducedMemberId.eq(otherMemberId)))
             .where(member.id.eq(otherMemberId))
             .transform(groupBy(member.id).as(
                 new QOtherMemberProfileView(member.id, member.profile.nickname.value, profileImage.imageUrl.value,
@@ -113,7 +116,8 @@ public class MemberQueryRepository {
                     .then(member.kakaoId.value)
                     .otherwise((String) null),
                     profileExchange.id, profileExchange.requesterId, profileExchange.responderId,
-                    profileExchange.status.stringValue())))
+                    profileExchange.status.stringValue(), memberIntroduction.type.stringValue()
+                )))
             .get(otherMemberId);
 
 
@@ -129,18 +133,22 @@ public class MemberQueryRepository {
                     profileExchange.requesterId,
                     profileExchange.responderId,
                     profileExchange.status.stringValue(),
-                    cases().when(like.id.isNotNull()).then(true).otherwise(false)
+                    cases().when(like.id.isNotNull()).then(true).otherwise(false),
+                    block.id.isNotNull(),
+                    member.activityStatus.stringValue()
                 ))
             .from(member)
             .leftJoin(memberIntroduction)
             .on(memberIntroduction.introducedMemberId.eq(otherMemberId).and(memberIntroduction.memberId.eq(memberId)))
             .leftJoin(profileExchange)
-            .on(getProfileExchangeJoinCondition(otherMemberId))
+            .on(getProfileExchangeJoinCondition(memberId, otherMemberId))
             .leftJoin(match)
             .on(getMatchJoinConditionForProfile(memberId, otherMemberId))
             .leftJoin(like)
             .on(like.receiverId.eq(memberId).and(like.senderId.eq(otherMemberId)))
-            .where(member.id.eq(memberId))
+            .leftJoin(block)
+            .on(block.blockerId.eq(otherMemberId).and(block.blockedId.eq(memberId)))
+            .where(member.id.eq(otherMemberId))
             .fetchOne();
 
         return Optional.ofNullable(view);
@@ -156,9 +164,9 @@ public class MemberQueryRepository {
             .fetch();
     }
 
-    private BooleanExpression getProfileExchangeJoinCondition(Long memberId) {
-        return (profileExchange.requesterId.eq(member.id).and(profileExchange.responderId.eq(memberId)))
-            .or(profileExchange.requesterId.eq(memberId).and(profileExchange.responderId.eq(member.id)));
+    private BooleanExpression getProfileExchangeJoinCondition(Long memberId, Long otherMemberId) {
+        return (profileExchange.requesterId.eq(memberId).and(profileExchange.responderId.eq(otherMemberId)))
+            .or(profileExchange.requesterId.eq(otherMemberId).and(profileExchange.responderId.eq(memberId)));
     }
 
     private BooleanExpression getMatchJoinCondition(Long memberId, Long otherMemberId) {

@@ -25,6 +25,7 @@ public class IntroductionSearchCondition {
     private final String memberGrade;
     private final String gender;
     private final LocalDateTime joinedAfter;
+    private final String activityStatus = ActivityStatus.ACTIVE.name();
 
     private IntroductionSearchCondition(
         Set<Long> excludedMemberIds,
