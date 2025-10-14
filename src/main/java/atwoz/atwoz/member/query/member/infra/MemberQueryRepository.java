@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import static atwoz.atwoz.block.domain.QBlock.block;
 import static atwoz.atwoz.community.command.domain.profileexchange.QProfileExchange.profileExchange;
 import static atwoz.atwoz.interview.command.domain.answer.QInterviewAnswer.interviewAnswer;
 import static atwoz.atwoz.interview.command.domain.question.QInterviewQuestion.interviewQuestion;
@@ -129,7 +130,9 @@ public class MemberQueryRepository {
                     profileExchange.requesterId,
                     profileExchange.responderId,
                     profileExchange.status.stringValue(),
-                    cases().when(like.id.isNotNull()).then(true).otherwise(false)
+                    cases().when(like.id.isNotNull()).then(true).otherwise(false),
+                    block.id.isNotNull(),
+                    member.activityStatus.stringValue()
                 ))
             .from(member)
             .leftJoin(memberIntroduction)
@@ -140,7 +143,9 @@ public class MemberQueryRepository {
             .on(getMatchJoinConditionForProfile(memberId, otherMemberId))
             .leftJoin(like)
             .on(like.receiverId.eq(memberId).and(like.senderId.eq(otherMemberId)))
-            .where(member.id.eq(memberId))
+            .leftJoin(block)
+            .on(block.blockerId.eq(otherMemberId).and(block.blockedId.eq(memberId)))
+            .where(member.id.eq(otherMemberId))
             .fetchOne();
 
         return Optional.ofNullable(view);

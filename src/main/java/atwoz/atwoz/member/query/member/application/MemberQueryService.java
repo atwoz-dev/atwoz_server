@@ -2,6 +2,7 @@ package atwoz.atwoz.member.query.member.application;
 
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeStatus;
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
+import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.presentation.member.MemberMapper;
 import atwoz.atwoz.member.presentation.member.dto.MemberProfileResponse;
 import atwoz.atwoz.member.query.member.application.exception.ProfileAccessDeniedException;
@@ -49,6 +50,13 @@ public class MemberQueryService {
     }
 
     private void validateProfileAccessView(ProfileAccessView profileAccessView, Long memberId) {
+        if (profileAccessView.isBlocked()) { // 차단 당한 경우.
+            throw new ProfileAccessDeniedException();
+        }
+        if (ActivityStatus.valueOf(profileAccessView.activityStatus())
+            != ActivityStatus.ACTIVE) { // 상대방이 활성화 상태가 아닌 경우.
+            throw new ProfileAccessDeniedException();
+        }
         if (profileAccessView.isIntroduced()) { // 소개를 받은 경우.
             return;
         }
