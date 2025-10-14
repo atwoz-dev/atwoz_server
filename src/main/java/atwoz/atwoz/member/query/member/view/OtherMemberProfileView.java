@@ -7,6 +7,7 @@ import java.util.Set;
 public record OtherMemberProfileView(
     BasicMemberInfo basicMemberInfo,
     MatchInfo matchInfo,
+    ContactView contactView,
     ProfileExchangeInfo profileExchangeInfo,
     IntroductionInfo introductionInfo
 ) {
@@ -32,8 +33,10 @@ public record OtherMemberProfileView(
         String requestMessage,
         String responseMessage,
         String matchStatus,
-        String contactType,
-        String contact,
+        String requesterContactType,
+        String responderContactType,
+        String phoneNumber,
+        String kakaoId,
         Long profileExchangeId,
         Long profileExchangeRequesterId,
         Long profileExchangeResponderId,
@@ -45,7 +48,8 @@ public record OtherMemberProfileView(
                 district, smokingStatus, drinkingStatus, highestEducation, religion, like),
             matchId == null ? null
                 : new MatchInfo(matchId, requesterId, responderId, requestMessage, responseMessage, matchStatus,
-                    contactType, contact),
+                    requesterContactType, responderContactType),
+            new ContactView(phoneNumber, kakaoId),
             profileExchangeId == null ? null
                 : new ProfileExchangeInfo(profileExchangeId, profileExchangeRequesterId, profileExchangeResponderId,
                     profileExchangeStatus),

@@ -7,7 +7,7 @@ public record MatchInfo(
     String requestMessage,
     String responseMessage,
     String matchStatus,
-    String contactType,
-    String contact
+    String requesterContactType,
+    String responderContactType
 ) {
 }

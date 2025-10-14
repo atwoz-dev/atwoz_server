@@ -4,10 +4,7 @@ import atwoz.atwoz.common.repository.LockRepository;
 import atwoz.atwoz.match.command.application.match.exception.ExistsMatchException;
 import atwoz.atwoz.match.command.application.match.exception.InvalidMatchUpdateException;
 import atwoz.atwoz.match.command.application.match.exception.MatchNotFoundException;
-import atwoz.atwoz.match.command.domain.match.Match;
-import atwoz.atwoz.match.command.domain.match.MatchRepository;
-import atwoz.atwoz.match.command.domain.match.MatchStatus;
-import atwoz.atwoz.match.command.domain.match.MatchType;
+import atwoz.atwoz.match.command.domain.match.*;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import atwoz.atwoz.match.presentation.dto.MatchRequestDto;
 import atwoz.atwoz.match.presentation.dto.MatchResponseDto;
@@ -39,6 +36,7 @@ public class MatchService {
         long responderId = request.responderId();
         String requesterName = findNickname(requesterId);
         MatchType matchType = getMatchType(requesterId, responderId);
+        MatchContactType contactType = MatchContactType.valueOf(request.contactType());
 
         String key = generateKey(requesterId, responderId);
         lockRepository.withNamedLock(key, () -> {
@@ -51,7 +49,8 @@ public class MatchService {
                 responderId,
                 Message.from(request.requestMessage()),
                 requesterName,
-                matchType
+                matchType,
+                contactType
             );
             matchRepository.save(match);
         });
@@ -76,7 +75,8 @@ public class MatchService {
         Match match = getWaitingMatchByIdAndResponderId(matchId, responderId);
         validateMatch(match);
         String responderName = findNickname(responderId);
-        match.approve(Message.from(respondDto.responseMessage()), responderName);
+        MatchContactType contactType = MatchContactType.valueOf(respondDto.contactType());
+        match.approve(Message.from(respondDto.responseMessage()), responderName, contactType);
     }
 
     @Transactional
