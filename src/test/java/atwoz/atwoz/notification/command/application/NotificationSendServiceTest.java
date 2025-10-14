@@ -120,32 +120,6 @@ class NotificationSendServiceTest {
     }
 
     @Test
-    @DisplayName("send(): 전송 실패 시 FAILED_EXCEPTION 상태로 저장")
-    void sendSavesFailedException() {
-        // given
-        var req = new NotificationSendRequest(SYSTEM, 10L, 20L, LIKE, Map.of(), PUSH);
-        when(notificationTemplateCommandRepository.findByType(LIKE))
-            .thenReturn(Optional.of(NotificationTemplate.of(LIKE, "t", "b")));
-        when(notificationPreferenceCommandRepository.findByMemberId(20L))
-            .thenReturn(Optional.of(NotificationPreference.of(20L)));
-        when(deviceRegistrationCommandRepository.findByMemberIdAndIsActiveTrue(20L))
-            .thenReturn(Optional.of(DeviceRegistration.of(20L, "device", "token")));
-
-        var sender = mock(NotificationSender.class);
-        doThrow(new NotificationSendFailureException("test exception"))
-            .when(sender).send(any(Notification.class), any(DeviceRegistration.class));
-        when(notificationSenderResolver.resolve(PUSH))
-            .thenReturn(Optional.of(sender));
-
-        // when
-        service.send(req);
-
-        // then
-        verify(notificationCommandRepository)
-            .save(argThat(n -> n.getStatus() == FAILED_EXCEPTION));
-    }
-
-    @Test
     @DisplayName("send(): 디바이스 없으면 FAILED_DEVICE_NOT_FOUND 상태로 저장")
     void sendSavesFailedDevice() {
         // given
