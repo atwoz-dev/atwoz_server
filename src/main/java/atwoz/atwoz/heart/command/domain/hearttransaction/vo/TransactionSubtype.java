@@ -13,7 +13,8 @@ public enum TransactionSubtype {
     SOULMATE("소울 메이트"),
     SAME_ANSWER("연애 고사 답변 일치"),
     IDEAL("이상형"),
-    MATCH("매칭");
+    MATCH("매칭"),
+    MATCH_ACCEPTED("매칭 수락");
 
     private final String description;
 
