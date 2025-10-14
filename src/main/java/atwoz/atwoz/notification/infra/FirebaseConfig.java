@@ -17,6 +17,9 @@ public class FirebaseConfig {
     private void init() throws IOException {
         FirebaseOptions options = FirebaseOptions.builder()
             .setCredentials(GoogleCredentials.getApplicationDefault())
+            .setConnectTimeout(5_000)   // 5초
+            .setReadTimeout(10_000)     // 10초
+            .setWriteTimeout(5_000)     // 5초
             .build();
 
         FirebaseApp.initializeApp(options);
