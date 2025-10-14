@@ -45,8 +45,9 @@ class MatchRepositoryTest {
         Long responderId = 1L;
         Long requesterId = 2L;
         String requestMessage = "매치를 신청합니다.";
+        MatchType type = MatchType.MATCH;
 
-        Match match = Match.request(requesterId, responderId, Message.from(requestMessage), "testUser");
+        Match match = Match.request(requesterId, responderId, Message.from(requestMessage), "testUser", type);
 
         entityManager.persist(match);
         entityManager.flush();
@@ -82,10 +83,10 @@ class MatchRepositoryTest {
         // Given
         Long requesterId = 1L;
         Long responderId = 2L;
-
         String requestMessage = "매치를 신청합니다.";
+        MatchType type = MatchType.MATCH;
 
-        Match match = Match.request(requesterId, responderId, Message.from(requestMessage), "testUser");
+        Match match = Match.request(requesterId, responderId, Message.from(requestMessage), "testUser", type);
         match.expire();
 
         entityManager.persist(match);
@@ -106,10 +107,10 @@ class MatchRepositoryTest {
         // Given
         Long requesterId = 1L;
         Long responderId = 2L;
-
         String requestMessage = "매치를 신청합니다.";
+        MatchType type = MatchType.MATCH;
 
-        Match match = Match.request(requesterId, responderId, Message.from(requestMessage), "testUser");
+        Match match = Match.request(requesterId, responderId, Message.from(requestMessage), "testUser", type);
         match.reject("testUser");
         match.checkRejected();
 

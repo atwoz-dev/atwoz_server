@@ -31,7 +31,7 @@ class MemberIntroductionTest {
     }
 
     @Test
-    @DisplayName("유료 타입으로 소개를 생성하면 MemberIntroducedEvent를 발행하고 MemberIntroduction을 생성한다.")
+    @DisplayName("소개를 생성하면 MemberIntroducedEvent를 발행하고 MemberIntroduction을 생성한다.")
     void createIntroduction() {
         // given
         long memberId = 1L;
@@ -44,7 +44,8 @@ class MemberIntroductionTest {
             MockedStatic<MemberIntroducedEvent> memberIntroducedEventMock = mockStatic(MemberIntroducedEvent.class)
         ) {
             MemberIntroducedEvent memberIntroducedEvent = mock(MemberIntroducedEvent.class);
-            memberIntroducedEventMock.when(() -> MemberIntroducedEvent.of(memberId, type.getDescription()))
+            memberIntroducedEventMock.when(
+                    () -> MemberIntroducedEvent.of(memberId, type.getDescription(), type.name()))
                 .thenReturn(memberIntroducedEvent);
 
             // when
@@ -52,27 +53,6 @@ class MemberIntroductionTest {
 
             // then
             eventsMock.verify(() -> Events.raise(memberIntroducedEvent));
-            assertThat(memberIntroduction.getMemberId()).isEqualTo(memberId);
-            assertThat(memberIntroduction.getIntroducedMemberId()).isEqualTo(introducedMemberId);
-        }
-    }
-
-    @Test
-    @DisplayName("무료 소개 타입인 경우 이벤틀르 발행하지 않는다.")
-    void createIntroductionWithFreeType() {
-        // given
-        long memberId = 1L;
-        long introducedMemberId = 2L;
-        IntroductionType type = mock(IntroductionType.class);
-        when(type.isFreeIntroduction()).thenReturn(true);
-        when(type.getDescription()).thenReturn("free");
-
-        try (MockedStatic<Events> eventsMock = mockStatic(Events.class)) {
-            // when
-            MemberIntroduction memberIntroduction = MemberIntroduction.of(memberId, introducedMemberId, type);
-
-            // then
-            eventsMock.verifyNoInteractions();
             assertThat(memberIntroduction.getMemberId()).isEqualTo(memberId);
             assertThat(memberIntroduction.getIntroducedMemberId()).isEqualTo(introducedMemberId);
         }

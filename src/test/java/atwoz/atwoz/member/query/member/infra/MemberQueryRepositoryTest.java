@@ -12,6 +12,7 @@ import atwoz.atwoz.like.command.domain.Like;
 import atwoz.atwoz.like.command.domain.LikeLevel;
 import atwoz.atwoz.match.command.domain.match.Match;
 import atwoz.atwoz.match.command.domain.match.MatchStatus;
+import atwoz.atwoz.match.command.domain.match.MatchType;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import atwoz.atwoz.member.command.domain.introduction.IntroductionType;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
@@ -392,7 +393,9 @@ class MemberQueryRepositoryTest {
         @DisplayName("상대방과의 매치가 만료된 경우, 기본 정보만 조회")
         void getBasicInfoWhenExpiredMatchExists() {
             // Given
-            Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."), "testUser");
+            MatchType type = MatchType.MATCH;
+            Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."), "testUser",
+                type);
             match.expire();
             entityManager.persist(match);
             entityManager.flush();
@@ -420,7 +423,9 @@ class MemberQueryRepositoryTest {
         @DisplayName("상대방과의 매치를 거절 확인한 경우, 기본 정보만 조회")
         void getBasicInfoWhenRejectCheckedMatchExists() {
             // Given
-            Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."), "testUser");
+            MatchType type = MatchType.MATCH;
+            Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."), "testUser",
+                type);
             match.reject("testUser");
             match.checkRejected();
             entityManager.persist(match);
@@ -451,7 +456,9 @@ class MemberQueryRepositoryTest {
         @DisplayName("상대방에게 매치를 요청한 경우, 기본 정보와 연락처를 제외한 매치 정보를 함께 조회.")
         void getBasicInfoWithMatchInfoNotIncludingContactWhenWaitingMatchExists() {
             // Given
-            Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."), "testUser");
+            MatchType type = MatchType.MATCH;
+            Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."), "testUser",
+                type);
             entityManager.persist(match);
             entityManager.flush();
 
@@ -481,7 +488,9 @@ class MemberQueryRepositoryTest {
         @DisplayName("상대방이 매치를 수락한 경우, 기본 정보와 연락처를 포함한 매치 정보를 조회.")
         void getBasicInfoWithMatchInfoIncludingContactWhenWaitingMatchNotExists() {
             // Given
-            Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."), "testUser");
+            MatchType type = MatchType.MATCH;
+            Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."), "testUser",
+                type);
             match.approve(Message.from("매치 수락합니다!"), "testUser");
             entityManager.persist(match);
             entityManager.flush();
@@ -512,7 +521,9 @@ class MemberQueryRepositoryTest {
         @DisplayName("상대방이 매치를 거절한 경우, 기본 정보와 연락처를 제외한 매치 정보를 함께 조회.")
         void getBasicInfoWithMatchInfoNotIncludingContactWhenWaitingMatchNotExists() {
             // Given
-            Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."), "testUser");
+            MatchType type = MatchType.MATCH;
+            Match match = Match.request(member.getId(), otherMember.getId(), Message.from("매치 신청합니다."), "testUser",
+                type);
             match.reject("testUser");
             entityManager.persist(match);
             entityManager.flush();
@@ -783,8 +794,11 @@ class MemberQueryRepositoryTest {
             entityManager.flush();
 
             // 매치 신청.
-            Match match = Match.request(member.getId(), otherMember1.getId(), Message.from("매치 신청합니다."), "testUser");
-            Match match2 = Match.request(otherMember2.getId(), member.getId(), Message.from("매치 신청합니다."), "testUser");
+            MatchType type = MatchType.MATCH;
+            Match match = Match.request(member.getId(), otherMember1.getId(), Message.from("매치 신청합니다."), "testUser",
+                type);
+            Match match2 = Match.request(otherMember2.getId(), member.getId(), Message.from("매치 신청합니다."), "testUser",
+                type);
             entityManager.persist(match);
             entityManager.persist(match2);
             entityManager.flush();

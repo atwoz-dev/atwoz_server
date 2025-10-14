@@ -7,14 +7,20 @@ import atwoz.atwoz.match.command.application.match.exception.MatchNotFoundExcept
 import atwoz.atwoz.match.command.domain.match.Match;
 import atwoz.atwoz.match.command.domain.match.MatchRepository;
 import atwoz.atwoz.match.command.domain.match.MatchStatus;
+import atwoz.atwoz.match.command.domain.match.MatchType;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import atwoz.atwoz.match.presentation.dto.MatchRequestDto;
 import atwoz.atwoz.match.presentation.dto.MatchResponseDto;
+import atwoz.atwoz.member.command.domain.introduction.IntroductionType;
+import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
+import atwoz.atwoz.member.command.domain.introduction.MemberIntroductionCommandRepository;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +29,7 @@ public class MatchService {
     private static final String LOCK_PREFIX = "MATCH:";
 
     private final MemberCommandRepository memberCommandRepository;
+    private final MemberIntroductionCommandRepository introductionCommandRepository;
     private final MatchRepository matchRepository;
     private final LockRepository lockRepository;
 
@@ -30,6 +37,7 @@ public class MatchService {
     public void request(Long requesterId, MatchRequestDto request) {
         long responderId = request.responderId();
         String requesterName = findNickname(requesterId);
+        MatchType matchType = getMatchType(requesterId, responderId);
 
         String key = generateKey(requesterId, responderId);
         lockRepository.withNamedLock(key, () -> {
@@ -41,10 +49,25 @@ public class MatchService {
                 requesterId,
                 responderId,
                 Message.from(request.requestMessage()),
-                requesterName
+                requesterName,
+                matchType
             );
             matchRepository.save(match);
         });
+    }
+
+    private MatchType getMatchType(Long requesterId, Long responderId) {
+        Optional<MemberIntroduction> optionalIntroduction = introductionCommandRepository.findByMemberIdAndIntroducedMemberId(
+            requesterId, responderId);
+        if (optionalIntroduction.isEmpty()) {
+            return MatchType.MATCH;
+        }
+
+        MemberIntroduction introduction = optionalIntroduction.get();
+        if (introduction.getType() == IntroductionType.SOULMATE) {
+            return MatchType.SOULMATE;
+        }
+        return MatchType.MATCH;
     }
 
     @Transactional
