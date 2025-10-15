@@ -94,12 +94,17 @@ public class NotificationSendService {
                 sender -> dispatch(sender, notification, device),
                 () -> handleUnsupportedChannel(notification, request)
             );
-        save(notification);
     }
 
     private void dispatch(NotificationSender sender, Notification notification, DeviceRegistration deviceRegistration) {
-        sender.send(notification, deviceRegistration);
-        notification.markAsSent();
+        try {
+            sender.send(notification, deviceRegistration);
+            notification.markAsSent();
+            save(notification);
+        } catch (NotificationSendFailedException e) {
+            log.warn("[알림 전송 실패] receiverId={}, type={}", notification.getReceiverId(), notification.getType());
+            saveFailedNotification(notification, FAILED_EXCEPTION);
+        }
     }
 
     private void handleUnsupportedChannel(Notification notification, NotificationSendRequest request) {

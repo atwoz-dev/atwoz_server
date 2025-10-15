@@ -1,23 +1,23 @@
 package atwoz.atwoz.notification.infra;
 
 import atwoz.atwoz.notification.command.application.FcmException;
-import atwoz.atwoz.notification.command.domain.*;
+import atwoz.atwoz.notification.command.application.NotificationSendFailedException;
+import atwoz.atwoz.notification.command.domain.ChannelType;
+import atwoz.atwoz.notification.command.domain.DeviceRegistration;
+import atwoz.atwoz.notification.command.domain.Notification;
+import atwoz.atwoz.notification.command.domain.NotificationSender;
 import atwoz.atwoz.notification.command.infra.FcmResilienceConfig;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class FcmNotificationSender implements NotificationSender {
-
-    private final NotificationCommandRepository notificationCommandRepository;
 
     @Override
     public ChannelType channel() {
@@ -64,16 +64,6 @@ public class FcmNotificationSender implements NotificationSender {
                 notification.getReceiverId(), errorType, errorMessage, throwable);
         }
 
-        notificationCommandRepository.save(
-            Notification.createFailed(
-                notification.getSenderType(),
-                notification.getSenderId(),
-                notification.getReceiverId(),
-                notification.getType(),
-                notification.getTitle(),
-                notification.getBody(),
-                NotificationStatus.FAILED_EXCEPTION
-            )
-        );
+        throw new NotificationSendFailedException(throwable);
     }
 }
