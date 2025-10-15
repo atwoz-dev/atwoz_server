@@ -50,7 +50,7 @@ public class FcmNotificationSender implements NotificationSender {
         }
     }
 
-    public void sendFallback(Notification notification, DeviceRegistration deviceRegistration, Throwable throwable) {
+    private void sendFallback(Notification notification, DeviceRegistration deviceRegistration, Throwable throwable) {
         String errorType = throwable.getClass().getSimpleName();
         String errorMessage = throwable.getMessage();
 
