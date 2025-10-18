@@ -75,7 +75,7 @@ public class FcmResilienceConfig implements ResiliencePolicyConfigurer {
             }
 
             return switch (errorCode) {
-                case UNAVAILABLE, INTERNAL -> true;
+                case UNAVAILABLE, INTERNAL, QUOTA_EXCEEDED -> true;
                 default -> false;
             };
         }
@@ -115,7 +115,7 @@ public class FcmResilienceConfig implements ResiliencePolicyConfigurer {
             }
 
             return switch (errorCode) {
-                case UNAVAILABLE, INTERNAL -> true;
+                case UNAVAILABLE, INTERNAL, QUOTA_EXCEEDED -> true;
                 default -> false;
             };
         }
