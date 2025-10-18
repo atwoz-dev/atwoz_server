@@ -101,7 +101,7 @@ public class NotificationSendService {
             sender.send(notification, deviceRegistration);
             notification.markAsSent();
             save(notification);
-        } catch (NotificationSendFailedException e) {
+        } catch (Exception e) {
             log.warn("[알림 전송 실패] receiverId={}, type={}", notification.getReceiverId(), notification.getType());
             saveFailedNotification(notification, FAILED_EXCEPTION);
         }

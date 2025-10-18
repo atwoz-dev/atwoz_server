@@ -96,7 +96,7 @@ class NotificationSendServiceTest {
 
     @Test
     @DisplayName("send(): 정상 전송 시 SENT 상태로 저장")
-    void sendSavesSentNotification() {
+    void sendSavesSentNotification() throws Exception {
         // given
         var req = new NotificationSendRequest(SYSTEM, 10L, 20L, LIKE, Map.of(), PUSH);
         when(notificationTemplateCommandRepository.findByType(LIKE))
@@ -163,7 +163,7 @@ class NotificationSendServiceTest {
 
     @Test
     @DisplayName("send(): 전송 중 예외 발생 시 FAILED_EXCEPTION 상태로 저장")
-    void sendSavesFailedException() {
+    void sendSavesFailedException() throws Exception {
         // given
         var req = new NotificationSendRequest(SYSTEM, 10L, 20L, LIKE, Map.of(), PUSH);
         when(notificationTemplateCommandRepository.findByType(LIKE))

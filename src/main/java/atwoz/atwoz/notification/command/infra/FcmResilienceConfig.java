@@ -1,7 +1,6 @@
 package atwoz.atwoz.notification.command.infra;
 
 import atwoz.atwoz.common.config.ResiliencePolicyConfigurer;
-import atwoz.atwoz.notification.command.application.FcmException;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.MessagingErrorCode;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
@@ -15,6 +14,8 @@ import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.time.Duration;
+
+import static io.github.resilience4j.circuitbreaker.CircuitBreakerConfig.SlidingWindowType.TIME_BASED;
 
 @Configuration
 public class FcmResilienceConfig implements ResiliencePolicyConfigurer {
@@ -59,38 +60,22 @@ public class FcmResilienceConfig implements ResiliencePolicyConfigurer {
     }
 
     private boolean shouldRetry(Throwable throwable) {
-        Throwable exception = unwrapException(throwable);
-
-        // 네트워크 연결 실패: 안전하게 재시도 가능
-        if (exception instanceof ConnectException || exception instanceof UnknownHostException) {
+        // 네트워크 일시적 장애 재시도
+        if (throwable instanceof ConnectException
+            || throwable instanceof UnknownHostException
+            || throwable instanceof SocketTimeoutException) {
             return true;
         }
 
-        // READ_TIMEOUT: 요청이 이미 처리되었을 가능성이 있어 재시도하지 않음
-        if (exception instanceof SocketTimeoutException) {
-            return false;
-        }
-
-        // FirebaseMessagingException: 에러 코드에 따라 재시도 여부 결정
-        if (exception instanceof FirebaseMessagingException fme) {
+        // FCM 서버 오류만 재시도
+        if (throwable instanceof FirebaseMessagingException fme) {
             MessagingErrorCode errorCode = fme.getMessagingErrorCode();
             if (errorCode == null) {
                 return false;
             }
 
             return switch (errorCode) {
-                // FCM 서버 오류: 재시도 가능
-                case INTERNAL -> true;                  // FCM 내부 서버 오류
-                case UNAVAILABLE -> true;               // FCM 서비스 일시 중단
-                case QUOTA_EXCEEDED -> true;            // 할당량 초과 (잠시 후 복구 가능)
-
-                // 클라이언트 오류: 재시도 불가능
-                case INVALID_ARGUMENT -> false;         // 잘못된 요청 파라미터
-                case UNREGISTERED -> false;             // 등록되지 않은 토큰
-                case SENDER_ID_MISMATCH -> false;       // Sender ID 불일치
-                case THIRD_PARTY_AUTH_ERROR -> false;   // 인증 오류
-
-                // 기타 에러: 안전을 위해 재시도하지 않음
+                case UNAVAILABLE, INTERNAL -> true;
                 default -> false;
             };
         }
@@ -100,7 +85,7 @@ public class FcmResilienceConfig implements ResiliencePolicyConfigurer {
 
     private CircuitBreakerConfig circuitBreakerConfig() {
         return CircuitBreakerConfig.custom()
-            .slidingWindowType(CircuitBreakerConfig.SlidingWindowType.TIME_BASED)
+            .slidingWindowType(TIME_BASED)
             .slidingWindowSize(CB_SLIDING_WINDOW_SIZE)
             .minimumNumberOfCalls(CB_MINIMUM_NUMBER_OF_CALLS)
             .failureRateThreshold(CB_FAILURE_RATE_THRESHOLD)
@@ -111,57 +96,30 @@ public class FcmResilienceConfig implements ResiliencePolicyConfigurer {
             .permittedNumberOfCallsInHalfOpenState(CB_PERMITTED_CALLS_IN_HALF_OPEN)
             .maxWaitDurationInHalfOpenState(Duration.ofMillis(CB_MAX_WAIT_IN_HALF_OPEN_MILLIS))
             .recordException(this::shouldRecordAsFailure)
-            .ignoreExceptions(IllegalArgumentException.class)
             .build();
     }
 
-    /**
-     * Circuit Breaker 실패로 기록할 예외인지 판단합니다.
-     * <p>
-     * 외부 시스템(FCM 서버, 네트워크) 장애만 실패로 기록하여 Circuit을 열도록 합니다.
-     * 클라이언트 오류(잘못된 토큰, 파라미터 등)는 무시하여 정상 요청이 차단되지 않도록 합니다.
-     */
     private boolean shouldRecordAsFailure(Throwable throwable) {
-        Throwable exception = unwrapException(throwable);
-
-        // 네트워크 장애: Circuit Breaker 실패로 기록 (외부 시스템 문제)
-        if (exception instanceof ConnectException
-            || exception instanceof UnknownHostException
-            || exception instanceof SocketTimeoutException) {
+        // 네트워크 일시적 장애 실패로 기록
+        if (throwable instanceof ConnectException
+            || throwable instanceof UnknownHostException
+            || throwable instanceof SocketTimeoutException) {
             return true;
         }
 
-        // FirebaseMessagingException: 에러 코드에 따라 결정
-        if (exception instanceof FirebaseMessagingException fme) {
+        // FCM 서버 장애만 실패로 기록
+        if (throwable instanceof FirebaseMessagingException fme) {
             MessagingErrorCode errorCode = fme.getMessagingErrorCode();
             if (errorCode == null) {
-                return true;
+                return false;
             }
 
             return switch (errorCode) {
-                // FCM 서버 오류
-                case INTERNAL -> true;                  // FCM 내부 서버 오류
-                case UNAVAILABLE -> true;               // FCM 서비스 일시 중단
-                case QUOTA_EXCEEDED -> true;            // 할당량 초과
-
-                // 클라이언트 오류 무시
-                case INVALID_ARGUMENT -> false;         // 잘못된 요청 파라미터
-                case UNREGISTERED -> false;             // 등록되지 않은 토큰 (정상 동작)
-                case SENDER_ID_MISMATCH -> false;       // Sender ID 불일치
-                case THIRD_PARTY_AUTH_ERROR -> false;   // 인증 오류
-
-                // 기타 에러: 보수적으로 실패로 기록
-                default -> true;
+                case UNAVAILABLE, INTERNAL -> true;
+                default -> false;
             };
         }
 
-        return true;
-    }
-
-    private Throwable unwrapException(Throwable throwable) {
-        if (throwable instanceof FcmException fcmEx) {
-            return fcmEx.getCause();
-        }
-        return throwable;
+        return false;
     }
 }
