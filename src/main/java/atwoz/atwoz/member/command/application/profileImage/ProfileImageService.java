@@ -1,6 +1,8 @@
 package atwoz.atwoz.member.command.application.profileImage;
 
 import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadResponse;
+import atwoz.atwoz.member.command.application.profileImage.exception.ExceedProfileImageCountException;
+import atwoz.atwoz.member.command.application.profileImage.exception.InvalidProfileImageExtensionException;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImageCommandRepository;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
@@ -17,6 +19,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProfileImageService {
 
+    private static final List<String> ALLOWED_IMAGE_EXTENSIONS = List.of(
+        "jpg", "jpeg", "png", "webp", "gif", "heic"
+    );
     private final ProfileImageCommandRepository profileImageCommandRepository;
     private final S3Uploader s3Uploader;
 
@@ -46,6 +51,8 @@ public class ProfileImageService {
                 .order(order++)
                 .isPrimary(order == 1)
                 .build();
+
+            profileImages.add(profileImage);
         }
 
         profileImageCommandRepository.saveAll(profileImages);
@@ -61,12 +68,19 @@ public class ProfileImageService {
         /**
          * 사이즈 검증.
          */
-
+        if (request.size() > 6) {
+            throw new ExceedProfileImageCountException(request.size());
+        }
     }
 
     private void validateFileName(String fileName) {
         /**
          * 확장자 검증.
          */
+        String extension = fileName.substring(fileName.lastIndexOf("."));
+
+        if (!ALLOWED_IMAGE_EXTENSIONS.contains(extension)) {
+            throw new InvalidProfileImageExtensionException(extension);
+        }
     }
 }
