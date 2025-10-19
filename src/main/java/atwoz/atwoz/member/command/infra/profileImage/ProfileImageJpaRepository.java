@@ -12,4 +12,6 @@ public interface ProfileImageJpaRepository extends JpaRepository<ProfileImage, L
     void delete(ProfileImage profileImage);
 
     List<ProfileImage> findByMemberId(Long memberId);
+
+    void deleteAllByMemberId(Long memberId);
 }

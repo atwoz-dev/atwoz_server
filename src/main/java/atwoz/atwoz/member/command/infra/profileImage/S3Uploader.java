@@ -18,25 +18,23 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class S3Uploader {
+    private static final int PRESIGNED_URL_EXPIRATION_MINUTES = 10;
     @Value("${cloud.aws.credentials.access-key}")
     private String accessKey;
-
     @Value("${cloud.aws.credentials.secret-key}")
     private String secretKey;
-
     @Value("${cloud.aws.region.static}")
     private String region;
-
     @Value("${cloud.aws.bucket}")
     private String bucket;
-
     private AmazonS3Client s3Client;
-
     private String prefixUrl;
 
     @PostConstruct
@@ -53,6 +51,12 @@ public class S3Uploader {
             .build();
 
         prefixUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/";
+    }
+
+    public String getPreSignedUrl(String fileName) {
+        Date expiration = new Date(
+            System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(PRESIGNED_URL_EXPIRATION_MINUTES));
+        return s3Client.generatePresignedUrl(bucket, fileName, expiration).toString();
     }
 
     public String uploadFile(MultipartFile file) {
@@ -102,6 +106,11 @@ public class S3Uploader {
     private String generateRandomFileName(MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        return UUID.randomUUID() + extension;
+    }
+
+    private String generateUniqueKey(String fileName) {
+        String extension = fileName.substring(fileName.lastIndexOf("."));
         return UUID.randomUUID() + extension;
     }
 }
