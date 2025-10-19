@@ -50,7 +50,8 @@ public class MemberAuthService {
 
         Events.raise(MemberLoggedInEvent.from(member.getId()));
 
-        return new MemberLoginServiceDto(accessToken, refreshToken, member.isProfileSettingNeeded());
+        return new MemberLoginServiceDto(accessToken, refreshToken, member.isProfileSettingNeeded(),
+            member.getActivityStatus() != null ? member.getActivityStatus().name() : null);
     }
 
     @Transactional
@@ -73,7 +74,8 @@ public class MemberAuthService {
         String refreshToken = tokenProvider.createRefreshToken(member.getId(), Role.MEMBER, Instant.now());
         tokenRepository.save(refreshToken);
 
-        return new MemberLoginServiceDto(accessToken, refreshToken, member.isProfileSettingNeeded());
+        return new MemberLoginServiceDto(accessToken, refreshToken, member.isProfileSettingNeeded(),
+            member.getActivityStatus() != null ? member.getActivityStatus().name() : null);
     }
 
     public void logout(long memberId, String token) {
