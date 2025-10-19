@@ -23,12 +23,17 @@ public class ProfileImageService {
     @Transactional
     public List<ProfileImageUploadResponse> save(Long memberId, List<ProfileImageUploadRequest> requests) {
         /**
-         * 기존 이미지 데이터 Delete.
+         * Request Validate.
+         */
+        validateRequestSize(requests);
+
+        /**
+         * Delete Existed Entity.
          */
         profileImageCommandRepository.deleteByMemberId(memberId);
 
         /**
-         * 프로필 이미지 데이터 생성.
+         * Save ProfileImage Entity
          */
         List<ProfileImage> profileImages = new ArrayList<>();
         int order = 1;
@@ -48,6 +53,20 @@ public class ProfileImageService {
     }
 
     public String getPresignedUrl(String fileName) {
+        validateFileName(fileName);
         return s3Uploader.getPreSignedUrl(fileName);
+    }
+
+    private void validateRequestSize(List<ProfileImageUploadRequest> request) {
+        /**
+         * 사이즈 검증.
+         */
+
+    }
+
+    private void validateFileName(String fileName) {
+        /**
+         * 확장자 검증.
+         */
     }
 }
