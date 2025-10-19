@@ -43,10 +43,9 @@ public class MemberAuthService {
 
         Member member = createOrFindMemberByPhoneNumber(phoneNumber);
         validateMemberLoginPermission(member);
-        Role role = getRoleFromMember(member);
 
-        String accessToken = tokenProvider.createAccessToken(member.getId(), role, Instant.now());
-        String refreshToken = tokenProvider.createRefreshToken(member.getId(), role, Instant.now());
+        String accessToken = tokenProvider.createAccessToken(member.getId(), Role.MEMBER, Instant.now());
+        String refreshToken = tokenProvider.createRefreshToken(member.getId(), Role.MEMBER, Instant.now());
         tokenRepository.save(refreshToken);
 
         Events.raise(MemberLoggedInEvent.from(member.getId()));
@@ -125,23 +124,12 @@ public class MemberAuthService {
 
         ActivityStatus activityStatus = member.getActivityStatus();
 
-        if (activityStatus == ActivityStatus.WAITING_SCREENING) { // 심사 대기중일 경우.
-            throw new MemberWaitingStatusException();
-        } else if (activityStatus == ActivityStatus.SUSPENDED_PERMANENTLY) { // 영구 정지일 경우.
+        if (activityStatus == ActivityStatus.SUSPENDED_PERMANENTLY) { // 영구 정지일 경우.
             throw new PermanentlySuspendedMemberException();
         } else if (activityStatus == ActivityStatus.SUSPENDED_TEMPORARILY) { // 일시 정지일 경우.
             throw new TemporarilySuspendedMemberException();
         } else if (activityStatus != ActivityStatus.ACTIVE && activityStatus != ActivityStatus.INITIAL) { // 활동중이 아닐 경우.
             throw new MemberNotActiveException();
         }
-    }
-
-    private Role getRoleFromMember(Member member) {
-        ActivityStatus status = member.getActivityStatus();
-
-        if (status == ActivityStatus.INITIAL) {
-            return Role.INITIAL_MEMBER;
-        }
-        return Role.MEMBER;
     }
 }
