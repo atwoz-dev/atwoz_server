@@ -26,7 +26,7 @@ public enum StatusType {
     EXISTS_NOTIFICATION_DATETIME(400, "400500", "Exists Reservation Time"),
     CANNOT_BE_EDITED(400, "400600", "Cannot be edited"),
     INSUFFICIENT_HEARTS(400, "400700", "Insufficient heart balance"),
-    DORMANT_STATUS(400, "400800", "Member is Dormant status"),
+    DORMANT_STATUS(400, "400800", "Member is Dormant status"), // 활동중이 아닌 경우.
 
     UNAUTHORIZED(401, "401", "Unauthorized"),
     MISSING_ACCESS_TOKEN(401, "401001", "Missing Access Token"),
@@ -38,7 +38,9 @@ public enum StatusType {
     FORBIDDEN(403, "403", "Forbidden"),
     HANDLE_ACCESS_DENIED(403, "403001", "Access is Denied"),
     ADMIN_ACCESS_DENIED(403, "403002", "Manager Access Denied"),
-    DELETED_TARGET(403, "403003", "Deleted Target"),
+    DELETED_TARGET(403, "403003", "Deleted Target"), // 회원 삭제.
+    WAITING_STATUS(403, "403004", "Waiting Screening"), // 심사 대기 상태.
+    TEMPORARILY_FORBIDDEN(403, "403005", "Temporarily Forbidden"),
 
     NOT_FOUND(404, "404", "Not Found"),
 

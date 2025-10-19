@@ -1,8 +1,8 @@
 package atwoz.atwoz.datingexam.adapter.database;
 
 import atwoz.atwoz.QuerydslConfig;
-import atwoz.atwoz.common.MockEventsExtension;
 import atwoz.atwoz.block.domain.Block;
+import atwoz.atwoz.common.MockEventsExtension;
 import atwoz.atwoz.datingexam.domain.DatingExamAnswerEncoder;
 import atwoz.atwoz.datingexam.domain.DatingExamSubmit;
 import atwoz.atwoz.datingexam.domain.dto.DatingExamSubmitRequest;
@@ -57,6 +57,10 @@ class SoulmateQueryRepositoryImplTest {
 
             if (activityStatus == ActivityStatus.DORMANT && member.isActive()) {
                 member.changeToDormant();
+            }
+
+            if (activityStatus == ActivityStatus.ACTIVE) {
+                member.changeToActive();
             }
 
             DatingExamSubmitRequest request = mock(DatingExamSubmitRequest.class);
