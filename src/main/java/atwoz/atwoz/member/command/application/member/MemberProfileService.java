@@ -32,7 +32,7 @@ public class MemberProfileService {
     public void changeToDormant(Long memberId) {
         getMemberById(memberId).changeToDormant();
     }
-    
+
     @Transactional
     public void changeToActive(String phoneNumber) {
         Member member = getMemberByPhoneNumber(phoneNumber);

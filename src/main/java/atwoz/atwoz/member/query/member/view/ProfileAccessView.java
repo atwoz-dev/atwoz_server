@@ -9,8 +9,9 @@ public record ProfileAccessView(
     Long profileExchangeRequesterId,
     Long profileExchangeResponderId,
     String profileExchangeStatus,
-    boolean likeReceived
-
+    boolean likeReceived,
+    boolean isBlocked,
+    String activityStatus
 ) {
     @QueryProjection
     public ProfileAccessView {
