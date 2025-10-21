@@ -68,7 +68,7 @@ public class Member extends SoftDeleteBaseEntity {
     public static Member fromPhoneNumber(@NonNull String phoneNumber) {
         return Member.builder()
             .phoneNumber(PhoneNumber.from(phoneNumber))
-            .activityStatus(ActivityStatus.ACTIVE)
+            .activityStatus(ActivityStatus.INITIAL)
             .heartBalance(HeartBalance.init())
             .isVip(false)
             .primaryContactType(PrimaryContactType.NONE)
@@ -106,6 +106,14 @@ public class Member extends SoftDeleteBaseEntity {
     public void changeToActive() {
         activityStatus = ActivityStatus.ACTIVE;
         Events.raise(MemberBecameActiveEvent.from(id));
+    }
+
+    public void changeToRejected() {
+        activityStatus = ActivityStatus.REJECTED_SCREENING;
+    }
+
+    public void changeToWaiting() {
+        activityStatus = ActivityStatus.WAITING_SCREENING;
     }
 
     public void changePrimaryContactTypeToKakao(KakaoId kakaoId) {
