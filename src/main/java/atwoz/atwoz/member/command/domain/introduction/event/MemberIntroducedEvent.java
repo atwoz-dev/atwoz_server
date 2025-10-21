@@ -3,6 +3,7 @@ package atwoz.atwoz.member.command.domain.introduction.event;
 import atwoz.atwoz.common.event.Event;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @Getter
@@ -12,7 +13,11 @@ public class MemberIntroducedEvent extends Event {
     private final String content;
     private final String introductionType;
 
-    public static MemberIntroducedEvent of(Long memberId, String content, String introductionType) {
+    public static MemberIntroducedEvent of(
+        @NonNull Long memberId,
+        @NonNull String content,
+        @NonNull String introductionType
+    ) {
         return new MemberIntroducedEvent(memberId, content, introductionType);
     }
 }
