@@ -44,7 +44,7 @@ public class Match {
     private MatchStatus status;
 
     public static Match request(long requesterId, long responderId, @NonNull Message requestMessage,
-        String requesterName) {
+        @NonNull String requesterName, @NonNull MatchType type) {
         Match match = Match.builder()
             .requesterId(requesterId)
             .responderId(responderId)
@@ -52,7 +52,7 @@ public class Match {
             .status(MatchStatus.WAITING)
             .build();
 
-        Events.raise(MatchRequestedEvent.of(requesterId, requesterName, responderId));
+        Events.raise(MatchRequestedEvent.of(requesterId, requesterName, responderId, type.name()));
         Events.raise(MatchRequestCompletedEvent.of(requesterId, responderId));
 
         return match;

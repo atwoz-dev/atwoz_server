@@ -25,9 +25,11 @@ public class MatchTest {
             Long requesterId = null;
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다!");
+            MatchType type = MatchType.MATCH;
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> Match.request(requesterId, responderId, requestMessage, "testUser"))
+            Assertions.assertThatThrownBy(
+                    () -> Match.request(requesterId, responderId, requestMessage, "testUser", type))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -38,9 +40,11 @@ public class MatchTest {
             Long requesterId = 1L;
             Long responderId = null;
             Message requestMessage = Message.from("매칭을 요청합니다!");
+            MatchType type = MatchType.MATCH;
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> Match.request(requesterId, responderId, requestMessage, "testUser"))
+            Assertions.assertThatThrownBy(
+                    () -> Match.request(requesterId, responderId, requestMessage, "testUser", type))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -51,9 +55,11 @@ public class MatchTest {
             Long requesterId = 1L;
             Long responderId = 2L;
             Message requestMessage = null;
+            MatchType type = MatchType.MATCH;
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> Match.request(requesterId, responderId, requestMessage, "testUser"))
+            Assertions.assertThatThrownBy(
+                    () -> Match.request(requesterId, responderId, requestMessage, "testUser", type))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -64,10 +70,11 @@ public class MatchTest {
             Long requesterId = 1L;
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
+            MatchType type = MatchType.MATCH;
 
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
                 // When
-                Match match = Match.request(requesterId, responderId, requestMessage, "testUser");
+                Match match = Match.request(requesterId, responderId, requestMessage, "testUser", type);
 
                 // Then
                 Assertions.assertThat(match.getRequesterId()).isEqualTo(requesterId);
@@ -91,8 +98,10 @@ public class MatchTest {
             Message requestMessage = Message.from("매칭을 요청합니다.");
             Message responseMessage = Message.from("매칭을 수락합니다.");
             Match match;
+            MatchType type = MatchType.MATCH;
+
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                match = Match.request(requesterId, responderId, requestMessage, "testUser");
+                match = Match.request(requesterId, responderId, requestMessage, "testUser", type);
                 match.expire();
             }
 
@@ -109,10 +118,11 @@ public class MatchTest {
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
             Message responseMessage = Message.from("매칭을 수락합니다.");
+            MatchType type = MatchType.MATCH;
 
             Match match;
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                match = Match.request(requesterId, responderId, requestMessage, "testUser");
+                match = Match.request(requesterId, responderId, requestMessage, "testUser", type);
 
                 // When
                 match.approve(responseMessage, "testUser");
@@ -130,10 +140,11 @@ public class MatchTest {
             Long requesterId = 1L;
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
+            MatchType type = MatchType.MATCH;
             Match match;
 
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                match = Match.request(requesterId, responderId, requestMessage, "testUser");
+                match = Match.request(requesterId, responderId, requestMessage, "testUser", type);
             }
 
             // When & Then
@@ -148,10 +159,11 @@ public class MatchTest {
             Long requesterId = 1L;
             Long responderId = 2L;
             Message requestMessage = Message.from("매칭을 요청합니다.");
+            MatchType type = MatchType.MATCH;
 
             Match match;
             try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                match = Match.request(requesterId, responderId, requestMessage, "testUser");
+                match = Match.request(requesterId, responderId, requestMessage, "testUser", type);
                 match.reject("testUser");
             }
 
