@@ -96,7 +96,7 @@ class NotificationSendServiceTest {
 
     @Test
     @DisplayName("send(): 정상 전송 시 SENT 상태로 저장")
-    void sendSavesSentNotification() {
+    void sendSavesSentNotification() throws Exception {
         // given
         var req = new NotificationSendRequest(SYSTEM, 10L, 20L, LIKE, Map.of(), PUSH);
         when(notificationTemplateCommandRepository.findByType(LIKE))
@@ -117,32 +117,6 @@ class NotificationSendServiceTest {
         verify(sender).send(any(Notification.class), any(DeviceRegistration.class));
         verify(notificationCommandRepository)
             .save(argThat(n -> n.getStatus() == SENT));
-    }
-
-    @Test
-    @DisplayName("send(): 전송 실패 시 FAILED_EXCEPTION 상태로 저장")
-    void sendSavesFailedException() {
-        // given
-        var req = new NotificationSendRequest(SYSTEM, 10L, 20L, LIKE, Map.of(), PUSH);
-        when(notificationTemplateCommandRepository.findByType(LIKE))
-            .thenReturn(Optional.of(NotificationTemplate.of(LIKE, "t", "b")));
-        when(notificationPreferenceCommandRepository.findByMemberId(20L))
-            .thenReturn(Optional.of(NotificationPreference.of(20L)));
-        when(deviceRegistrationCommandRepository.findByMemberIdAndIsActiveTrue(20L))
-            .thenReturn(Optional.of(DeviceRegistration.of(20L, "device", "token")));
-
-        var sender = mock(NotificationSender.class);
-        doThrow(new NotificationSendFailureException("test exception"))
-            .when(sender).send(any(Notification.class), any(DeviceRegistration.class));
-        when(notificationSenderResolver.resolve(PUSH))
-            .thenReturn(Optional.of(sender));
-
-        // when
-        service.send(req);
-
-        // then
-        verify(notificationCommandRepository)
-            .save(argThat(n -> n.getStatus() == FAILED_EXCEPTION));
     }
 
     @Test
@@ -185,5 +159,31 @@ class NotificationSendServiceTest {
         // then
         verify(notificationCommandRepository)
             .save(argThat(n -> n.getStatus() == FAILED_UNSUPPORTED_CHANNEL));
+    }
+
+    @Test
+    @DisplayName("send(): 전송 중 예외 발생 시 FAILED_EXCEPTION 상태로 저장")
+    void sendSavesFailedException() throws Exception {
+        // given
+        var req = new NotificationSendRequest(SYSTEM, 10L, 20L, LIKE, Map.of(), PUSH);
+        when(notificationTemplateCommandRepository.findByType(LIKE))
+            .thenReturn(Optional.of(NotificationTemplate.of(LIKE, "t", "b")));
+        when(notificationPreferenceCommandRepository.findByMemberId(20L))
+            .thenReturn(Optional.of(NotificationPreference.of(20L)));
+        when(deviceRegistrationCommandRepository.findByMemberIdAndIsActiveTrue(20L))
+            .thenReturn(Optional.of(DeviceRegistration.of(20L, "device", "token")));
+
+        var sender = mock(NotificationSender.class);
+        when(notificationSenderResolver.resolve(PUSH))
+            .thenReturn(Optional.of(sender));
+        doThrow(new NotificationSendFailedException(new RuntimeException("FCM 전송 실패")))
+            .when(sender).send(any(Notification.class), any(DeviceRegistration.class));
+
+        // when
+        service.send(req);
+
+        // then
+        verify(notificationCommandRepository)
+            .save(argThat(n -> n.getStatus() == FAILED_EXCEPTION));
     }
 }

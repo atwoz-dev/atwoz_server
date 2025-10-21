@@ -231,6 +231,4 @@ class MemberAuthServiceTest {
             Assertions.assertThat(member.isDeleted()).isTrue();
         }
     }
-
-
 }
