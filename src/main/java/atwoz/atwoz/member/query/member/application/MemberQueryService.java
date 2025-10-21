@@ -1,20 +1,24 @@
 package atwoz.atwoz.member.query.member.application;
 
+import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeStatus;
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.presentation.member.MemberMapper;
 import atwoz.atwoz.member.presentation.member.dto.MemberProfileResponse;
+import atwoz.atwoz.member.query.member.application.event.MemberProfileRetrievedEvent;
 import atwoz.atwoz.member.query.member.application.exception.ProfileAccessDeniedException;
 import atwoz.atwoz.member.query.member.infra.MemberQueryRepository;
 import atwoz.atwoz.member.query.member.view.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberQueryService {
     private final MemberQueryRepository memberQueryRepository;
 
@@ -44,6 +48,9 @@ public class MemberQueryService {
             .orElseThrow(MemberNotFoundException::new);
 
         List<InterviewResultView> interviewResultViews = memberQueryRepository.findInterviewsByMemberId(otherMemberId);
+
+        Events.raise(MemberProfileRetrievedEvent.of(memberId, otherMemberId,
+            profileAccessView.matchRequesterId(), profileAccessView.matchResponderId()));
 
         return new MemberProfileResponse(MemberMapper.toBasicInfo(profileView.basicMemberInfo()),
             profileView.matchInfo(),

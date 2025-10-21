@@ -21,4 +21,6 @@ public interface MatchJpaRepository extends JpaRepository<Match, Long> {
     Optional<Match> findByIdAndRequesterId(Long id, Long requesterId);
 
     Optional<Match> findByIdAndResponderId(Long id, Long responderId);
+
+    Optional<Match> findByRequesterIdAndResponderId(Long requesterId, Long responderId);
 }

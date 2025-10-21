@@ -7,6 +7,8 @@ import atwoz.atwoz.match.command.domain.match.vo.Message;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "matches", indexes = {
     @Index(name = "idx_responder_id", columnList = "responderId"),
@@ -45,6 +47,8 @@ public class Match {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
     private MatchContactType responderContactType;
+
+    private LocalDateTime readByResponderAt;
 
     public static Match request(long requesterId, long responderId, @NonNull Message requestMessage,
         @NonNull String requesterName, @NonNull MatchType type, @NonNull MatchContactType contactType) {
@@ -87,6 +91,16 @@ public class Match {
     public void checkRejected() {
         validateChangeRejectChecked();
         status = MatchStatus.REJECT_CHECKED;
+    }
+
+    public void read(@NonNull Long readerId) {
+        if (readByResponderAt != null) {
+            return;
+        }
+        if (!readerId.equals(responderId)) {
+            return;
+        }
+        readByResponderAt = LocalDateTime.now();
     }
 
     private void validateChangeStatus() {

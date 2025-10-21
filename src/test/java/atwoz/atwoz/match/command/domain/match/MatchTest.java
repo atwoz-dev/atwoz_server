@@ -182,4 +182,76 @@ public class MatchTest {
             Assertions.assertThat(match.getStatus()).isEqualTo(MatchStatus.REJECT_CHECKED);
         }
     }
+
+    @Nested
+    @DisplayName("매치 읽음 처리 테스트")
+    class ReadMatch {
+        @Test
+        @DisplayName("응답자가 매치를 읽은 경우, 읽음 처리")
+        void readByResponder() {
+            // Given
+            Long requesterId = 1L;
+            Long responderId = 2L;
+            Message requestMessage = Message.from("매칭을 요청합니다.");
+            MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
+
+            Match match;
+            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
+                match = Match.request(requesterId, responderId, requestMessage, "testUser", type, contactType);
+            }
+
+            // When
+            match.read(responderId);
+
+            // Then
+            Assertions.assertThat(match.getReadByResponderAt()).isNotNull();
+        }
+
+        @Test
+        @DisplayName("요청자가 매치를 읽은 경우, 읽음 처리 안함")
+        void readByRequester() {
+            // Given
+            Long requesterId = 1L;
+            Long responderId = 2L;
+            Message requestMessage = Message.from("매칭을 요청합니다.");
+            MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
+
+            Match match;
+            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
+                match = Match.request(requesterId, responderId, requestMessage, "testUser", type, contactType);
+            }
+
+            // When
+            match.read(requesterId);
+
+            // Then
+            Assertions.assertThat(match.getReadByResponderAt()).isNull();
+        }
+
+        @Test
+        @DisplayName("이미 읽은 매치를 읽은 경우, 읽음 처리 안함")
+        void readAlreadyReadMatch() {
+            // Given
+            Long requesterId = 1L;
+            Long responderId = 2L;
+            Message requestMessage = Message.from("매칭을 요청합니다.");
+            MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
+
+            Match match;
+            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
+                match = Match.request(requesterId, responderId, requestMessage, "testUser", type, contactType);
+            }
+
+            // When
+            match.read(responderId);
+            var firstReadAt = match.getReadByResponderAt();
+            match.read(responderId);
+
+            // Then
+            Assertions.assertThat(match.getReadByResponderAt()).isEqualTo(firstReadAt);
+        }
+    }
 }

@@ -39,4 +39,9 @@ public class MatchRepositoryImpl implements MatchRepository {
     public Optional<Match> findByIdAndResponderId(Long id, Long responderId) {
         return matchJpaRepository.findByIdAndResponderId(id, responderId);
     }
+
+    @Override
+    public Optional<Match> findByRequesterIdAndResponderId(Long requesterId, Long responderId) {
+        return matchJpaRepository.findByRequesterIdAndResponderId(requesterId, responderId);
+    }
 }

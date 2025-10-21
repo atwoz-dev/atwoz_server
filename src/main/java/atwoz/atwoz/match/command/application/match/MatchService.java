@@ -94,6 +94,20 @@ public class MatchService {
         match.checkRejected();
     }
 
+    @Transactional
+    public void read(Long readerId, Long matchRequesterId, Long matchResponderId) {
+        validateReader(readerId, matchRequesterId, matchResponderId);
+        Match match = matchRepository.findByRequesterIdAndResponderId(matchRequesterId, matchResponderId)
+            .orElseThrow(MatchNotFoundException::new);
+        match.read(readerId);
+    }
+
+    private void validateReader(Long readerId, Long matchRequesterId, Long matchResponderId) {
+        if (!readerId.equals(matchRequesterId) && !readerId.equals(matchResponderId)) {
+            throw new IllegalArgumentException("readerId가 매치 당사자가 아닙니다.");
+        }
+    }
+
     private String findNickname(long memberId) {
         return memberCommandRepository.findById(memberId)
             .orElseThrow(() -> new EntityNotFoundException("Member not found. id: " + memberId))
