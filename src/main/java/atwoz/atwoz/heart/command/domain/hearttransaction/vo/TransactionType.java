@@ -20,7 +20,8 @@ public enum TransactionType {
     }
 
     public boolean isUsingType() {
-        return this == MESSAGE || this == DATING_EXAM || this == PROFILE_EXCHANGE || this == INTRODUCTION;
+        return this == MESSAGE || this == DATING_EXAM || this == PROFILE_EXCHANGE || this == INTRODUCTION
+            || this == MESSAGE_ACCEPTED;
     }
 
     public boolean isGainingType() {
