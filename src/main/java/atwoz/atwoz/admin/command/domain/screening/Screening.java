@@ -55,7 +55,7 @@ public class Screening extends BaseEntity {
         setAdminId(adminId);
         changeScreeningStatus(ScreeningStatus.APPROVED);
         setRejectionReason(null);
-        Events.raise(ScreeningApprovedEvent.from(memberId));
+        Events.raise(ScreeningApprovedEvent.of(adminId, memberId));
     }
 
     public void reject(long adminId, RejectionReasonType rejectionReason) {
@@ -63,7 +63,7 @@ public class Screening extends BaseEntity {
         setAdminId(adminId);
         changeScreeningStatus(ScreeningStatus.REJECTED);
         setRejectionReason(rejectionReason);
-        Events.raise(ScreeningRejectedEvent.from(memberId));
+        Events.raise(ScreeningRejectedEvent.of(adminId, memberId, rejectionReason.toString()));
     }
 
     private void setAdminId(long adminId) {

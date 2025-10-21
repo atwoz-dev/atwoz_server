@@ -63,4 +63,13 @@ public class ScreeningController {
         screeningService.reject(screeningId, authContext.getId(), request);
         return ResponseEntity.ok(BaseResponse.from(OK));
     }
+
+    @Operation(summary = "재심사")
+    @PostMapping("/rescreen")
+    public ResponseEntity<BaseResponse<Void>> rescreen(
+        @Valid @RequestBody RescreenRequest request
+    ) {
+        screeningService.rescreen(request.memberId());
+        return ResponseEntity.ok(BaseResponse.from(OK));
+    }
 }
