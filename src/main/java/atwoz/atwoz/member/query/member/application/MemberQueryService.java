@@ -54,8 +54,9 @@ public class MemberQueryService {
         if (profileAccessView.isBlocked()) { // 차단 당한 경우.
             throw new ProfileAccessDeniedException();
         }
-        if (ActivityStatus.valueOf(profileAccessView.activityStatus())
-            != ActivityStatus.ACTIVE) { // 상대방이 활성화 상태가 아닌 경우.
+        String activityStatus = profileAccessView.activityStatus();
+        if (activityStatus == null ||
+            ActivityStatus.valueOf(activityStatus).equals(ActivityStatus.ACTIVE)) { // 상대방이 활성화 상태가 아닌 경우.
             throw new ProfileAccessDeniedException();
         }
         if (profileAccessView.isIntroduced()) { // 소개를 받은 경우.
