@@ -66,8 +66,7 @@ class LikeQueryRepositoryTest {
         var senderId = senders.getFirst().getId();
         var expectedLikes = likes.stream()
             .filter(like -> like.getSenderId().equals(senderId))
-            .sorted(Comparator.comparing(Like::getCreatedAt).reversed()
-                .thenComparing(Comparator.comparing(Like::getId).reversed()))
+            .sorted(Comparator.comparing(Like::getId).reversed())
             .limit(PAGE_SIZE)
             .toList();
 
@@ -109,8 +108,7 @@ class LikeQueryRepositoryTest {
         var receiverId = receivers.getFirst().getId();
         var expectedLikes = likes.stream()
             .filter(like -> like.getReceiverId().equals(receiverId))
-            .sorted(Comparator.comparing(Like::getCreatedAt).reversed()
-                .thenComparing(Comparator.comparing(Like::getId).reversed()))
+            .sorted(Comparator.comparing(Like::getId).reversed())
             .limit(PAGE_SIZE)
             .toList();
 
@@ -142,6 +140,68 @@ class LikeQueryRepositoryTest {
 
             boolean expectedMutual = expectedLike.getSenderId() % 2 != 0;
             assertThat(likeView.isMutualLike()).isEqualTo(expectedMutual);
+        }
+    }
+
+    @Test
+    @DisplayName("보낸 좋아요 목록 페이지네이션이 데이터 누락 없이 동작한다.")
+    void findSentLikesPaginationWithoutDataLoss() {
+        // given
+        var senderId = senders.getFirst().getId();
+        var allLikes = likes.stream()
+            .filter(like -> like.getSenderId().equals(senderId))
+            .sorted(Comparator.comparing(Like::getId).reversed())
+            .toList();
+
+        var fetchedLikes = new ArrayList<RawLikeView>();
+
+        // when
+        Long lastLikeId = null;
+        while (true) {
+            var page = likeQueryRepository.findSentLikes(senderId, lastLikeId);
+            if (page.isEmpty()) {
+                break;
+            }
+            fetchedLikes.addAll(page);
+            lastLikeId = page.getLast().likeId();
+        }
+
+        // then
+        assertThat(fetchedLikes).hasSize(allLikes.size());
+
+        for (int i = 0; i < allLikes.size(); i++) {
+            assertThat(fetchedLikes.get(i).likeId()).isEqualTo(allLikes.get(i).getId());
+        }
+    }
+
+    @Test
+    @DisplayName("받은 좋아요 목록 페이지네이션이 데이터 누락 없이 동작한다.")
+    void findReceivedLikesPaginationWithoutDataLoss() {
+        // given
+        var receiverId = receivers.getFirst().getId();
+        var allLikes = likes.stream()
+            .filter(like -> like.getReceiverId().equals(receiverId))
+            .sorted(Comparator.comparing(Like::getId).reversed())
+            .toList();
+
+        var fetchedLikes = new ArrayList<RawLikeView>();
+
+        // when
+        Long lastLikeId = null;
+        while (true) {
+            var page = likeQueryRepository.findReceivedLikes(receiverId, lastLikeId);
+            if (page.isEmpty()) {
+                break;
+            }
+            fetchedLikes.addAll(page);
+            lastLikeId = page.getLast().likeId();
+        }
+
+        // then
+        assertThat(fetchedLikes).hasSize(allLikes.size());
+
+        for (int i = 0; i < allLikes.size(); i++) {
+            assertThat(fetchedLikes.get(i).likeId()).isEqualTo(allLikes.get(i).getId());
         }
     }
 
