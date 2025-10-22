@@ -11,7 +11,7 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 @Slf4j
-@Service
+@Service("notificationMemberRegisteredEventHandler")
 @RequiredArgsConstructor
 public class MemberRegisteredEventHandler {
 

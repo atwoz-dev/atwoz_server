@@ -10,7 +10,7 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 @Slf4j
-@Service
+@Service("screeningMemberRegisteredEventHandler")
 @RequiredArgsConstructor
 public class MemberRegisteredEventHandler {
 

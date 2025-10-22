@@ -66,7 +66,8 @@ class LikeQueryRepositoryTest {
         var senderId = senders.getFirst().getId();
         var expectedLikes = likes.stream()
             .filter(like -> like.getSenderId().equals(senderId))
-            .sorted(Comparator.comparing(Like::getId).reversed())
+            .sorted(Comparator.comparing(Like::getCreatedAt).reversed()
+                .thenComparing(Comparator.comparing(Like::getId).reversed()))
             .limit(PAGE_SIZE)
             .toList();
 
@@ -108,7 +109,8 @@ class LikeQueryRepositoryTest {
         var receiverId = receivers.getFirst().getId();
         var expectedLikes = likes.stream()
             .filter(like -> like.getReceiverId().equals(receiverId))
-            .sorted(Comparator.comparing(Like::getId).reversed())
+            .sorted(Comparator.comparing(Like::getCreatedAt).reversed()
+                .thenComparing(Comparator.comparing(Like::getId).reversed()))
             .limit(PAGE_SIZE)
             .toList();
 
