@@ -7,12 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class NotificationReadService {
+public class NotificationDeleteService {
 
     private final NotificationCommandRepository notificationCommandRepository;
 
     @Transactional
-    public void markAsRead(NotificationReadRequest request) {
-        notificationCommandRepository.markAllAsReadByIdIn(request.notificationIds());
+    public void delete(NotificationDeleteRequest request) {
+        notificationCommandRepository.deleteAllByIdIn(request.notificationIds());
     }
 }

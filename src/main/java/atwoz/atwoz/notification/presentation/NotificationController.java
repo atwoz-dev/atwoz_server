@@ -3,10 +3,7 @@ package atwoz.atwoz.notification.presentation;
 import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.response.BaseResponse;
-import atwoz.atwoz.notification.command.application.NotificationReadRequest;
-import atwoz.atwoz.notification.command.application.NotificationReadService;
-import atwoz.atwoz.notification.command.application.NotificationSendRequest;
-import atwoz.atwoz.notification.command.application.NotificationSendService;
+import atwoz.atwoz.notification.command.application.*;
 import atwoz.atwoz.notification.query.NotificationQueryRepository;
 import atwoz.atwoz.notification.query.NotificationView;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +24,7 @@ import static atwoz.atwoz.common.enums.StatusType.OK;
 public class NotificationController {
 
     private final NotificationReadService notificationReadService;
+    private final NotificationDeleteService notificationDeleteService;
     private final NotificationQueryRepository notificationQueryRepository;
 
     // TODO: 삭제 필요(테스트 용도)
@@ -39,19 +37,26 @@ public class NotificationController {
         return ResponseEntity.ok(BaseResponse.from(OK));
     }
 
-    @Operation(summary = "읽지 않은 알림 조회")
+    @Operation(summary = "알림 목록 조회")
     @GetMapping
     public ResponseEntity<BaseResponse<List<NotificationView>>> getNotifications(
-        @RequestParam(required = false, defaultValue = "false") boolean isRead,
-        @AuthPrincipal AuthContext authContext
+        @AuthPrincipal AuthContext authContext,
+        @RequestParam(required = false) Long lastId
     ) {
         return ResponseEntity.ok(
-            BaseResponse.of(OK, notificationQueryRepository.findNotifications(authContext.getId(), isRead))
+            BaseResponse.of(OK, notificationQueryRepository.findNotifications(authContext.getId(), lastId))
         );
     }
 
+    @Operation(summary = "알림 삭제")
+    @DeleteMapping
+    public ResponseEntity<BaseResponse<Void>> delete(@Validated @RequestBody NotificationDeleteRequest request) {
+        notificationDeleteService.delete(request);
+        return ResponseEntity.ok(BaseResponse.from(OK));
+    }
+
     // TODO: 삭제 필요(테스트 용도)
-    @Operation(summary = "알림 전송 테스트")
+    @Operation(summary = "(테스트) 알림 전송")
     @PostMapping
     public ResponseEntity<BaseResponse<Void>> send(
         @RequestBody NotificationSendRequest request

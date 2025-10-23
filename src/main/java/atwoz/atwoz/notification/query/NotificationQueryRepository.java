@@ -1,5 +1,6 @@
 package atwoz.atwoz.notification.query;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -12,9 +13,18 @@ import static atwoz.atwoz.notification.command.domain.QNotification.notification
 @RequiredArgsConstructor
 public class NotificationQueryRepository {
 
+    private static final int PAGE_SIZE = 20;
+    
     private final JPAQueryFactory queryFactory;
 
-    public List<NotificationView> findNotifications(long receiverId, boolean isRead) {
+    public List<NotificationView> findNotifications(long receiverId, Long lastId) {
+        BooleanExpression condition = notification.receiverId.eq(receiverId)
+            .and(notification.deletedAt.isNull());
+
+        if (lastId != null) {
+            condition = condition.and(notification.id.lt(lastId));
+        }
+
         return queryFactory
             .select(new QNotificationView(
                 notification.id,
@@ -23,15 +33,13 @@ public class NotificationQueryRepository {
                 notification.type.stringValue(),
                 notification.title,
                 notification.body,
+                notification.readAt.isNotNull(),
                 notification.createdAt
             ))
             .from(notification)
-            .where(
-                notification.receiverId.eq(receiverId),
-                notification.deletedAt.isNull(),
-                isRead ? notification.readAt.isNotNull() : notification.readAt.isNull()
-            )
-            .orderBy(notification.createdAt.desc())
+            .where(condition)
+            .orderBy(notification.id.desc())
+            .limit(PAGE_SIZE)
             .fetch();
     }
 }

@@ -14,6 +14,7 @@ public record NotificationView(
     String notificationType,
     String title,
     String body,
+    boolean isRead,
     LocalDateTime createdAt
 ) {
     @QueryProjection
