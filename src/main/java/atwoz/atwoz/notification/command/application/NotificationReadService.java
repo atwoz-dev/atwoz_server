@@ -12,7 +12,7 @@ public class NotificationReadService {
     private final NotificationCommandRepository notificationCommandRepository;
 
     @Transactional
-    public void markAsRead(NotificationReadRequest request) {
-        notificationCommandRepository.markAllAsReadByIdIn(request.notificationIds());
+    public void markAsRead(NotificationReadRequest request, long receiverId) {
+        notificationCommandRepository.markAllAsReadByIdIn(request.notificationIds(), receiverId);
     }
 }

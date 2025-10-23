@@ -32,8 +32,11 @@ public class NotificationController {
 
     @Operation(summary = "알림 읽기")
     @PatchMapping
-    public ResponseEntity<BaseResponse<Void>> markAsRead(@Validated @RequestBody NotificationReadRequest request) {
-        notificationReadService.markAsRead(request);
+    public ResponseEntity<BaseResponse<Void>> markAsRead(
+        @Validated @RequestBody NotificationReadRequest request,
+        @AuthPrincipal AuthContext authContext
+    ) {
+        notificationReadService.markAsRead(request, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(OK));
     }
 
@@ -50,8 +53,11 @@ public class NotificationController {
 
     @Operation(summary = "알림 삭제")
     @DeleteMapping
-    public ResponseEntity<BaseResponse<Void>> delete(@Validated @RequestBody NotificationDeleteRequest request) {
-        notificationDeleteService.delete(request);
+    public ResponseEntity<BaseResponse<Void>> delete(
+        @Validated @RequestBody NotificationDeleteRequest request,
+        @AuthPrincipal AuthContext authContext
+    ) {
+        notificationDeleteService.delete(request, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(OK));
     }
 

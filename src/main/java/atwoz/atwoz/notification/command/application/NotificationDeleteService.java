@@ -12,7 +12,7 @@ public class NotificationDeleteService {
     private final NotificationCommandRepository notificationCommandRepository;
 
     @Transactional
-    public void delete(NotificationDeleteRequest request) {
-        notificationCommandRepository.deleteAllByIdIn(request.notificationIds());
+    public void delete(NotificationDeleteRequest request, long receiverId) {
+        notificationCommandRepository.deleteAllByIdIn(request.notificationIds(), receiverId);
     }
 }
