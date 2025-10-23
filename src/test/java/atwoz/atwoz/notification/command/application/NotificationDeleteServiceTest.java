@@ -13,39 +13,39 @@ import java.util.List;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class NotificationReadServiceTest {
+class NotificationDeleteServiceTest {
 
     @Mock
     NotificationCommandRepository repository;
 
     @InjectMocks
-    NotificationReadService service;
+    NotificationDeleteService service;
 
     @Test
-    @DisplayName("markAsRead(): 단일 알림 읽음 처리 시 Repository 메서드 호출")
-    void markAsReadSingleNotification() {
+    @DisplayName("delete(): 단일 알림 삭제 시 Repository 메서드 호출")
+    void deleteSingleNotification() {
         // given
         long notificationId = 1L;
-        var request = new NotificationReadRequest(List.of(notificationId));
+        var request = new NotificationDeleteRequest(List.of(notificationId));
 
         // when
-        service.markAsRead(request);
+        service.delete(request);
 
         // then
-        verify(repository).markAllAsReadByIdIn(List.of(notificationId));
+        verify(repository).deleteAllByIdIn(List.of(notificationId));
     }
 
     @Test
-    @DisplayName("markAsRead(): 여러 알림 일괄 읽음 처리 시 Repository 메서드 호출")
-    void markAsReadMultipleNotifications() {
+    @DisplayName("delete(): 여러 알림 일괄 삭제 시 Repository 메서드 호출")
+    void deleteMultipleNotifications() {
         // given
         var ids = List.of(1L, 2L, 3L);
-        var request = new NotificationReadRequest(ids);
+        var request = new NotificationDeleteRequest(ids);
 
         // when
-        service.markAsRead(request);
+        service.delete(request);
 
         // then
-        verify(repository).markAllAsReadByIdIn(ids);
+        verify(repository).deleteAllByIdIn(ids);
     }
 }
