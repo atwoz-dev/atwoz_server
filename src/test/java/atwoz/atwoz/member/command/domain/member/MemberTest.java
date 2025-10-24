@@ -271,4 +271,23 @@ class MemberTest {
             Assertions.assertThat(member.getProfile()).isEqualTo(profile);
         }
     }
+
+    @Nested
+    @DisplayName("delete 메서드 테스트")
+    class DeleteMethodTest {
+
+        @Test
+        @DisplayName("멤버를 삭제 상태로 변경하고, deletedAt 필드를 설정합니다.")
+        void shouldMarkMemberAsDeleted() {
+            // Given
+            Member member = Member.fromPhoneNumber("01012345678");
+
+            // When
+            member.delete();
+
+            // Then
+            Assertions.assertThat(member.getActivityStatus()).isEqualTo(ActivityStatus.DELETED);
+            Assertions.assertThat(member.getDeletedAt()).isNotNull();
+        }
+    }
 }

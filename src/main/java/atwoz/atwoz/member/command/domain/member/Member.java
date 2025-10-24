@@ -201,4 +201,9 @@ public class Member extends SoftDeleteBaseEntity {
     public boolean hasSubmittedDatingExam() {
         return isDatingExamSubmitted;
     }
+
+    public void delete() {
+        this.activityStatus = ActivityStatus.DELETED;
+        super.delete();
+    }
 }
