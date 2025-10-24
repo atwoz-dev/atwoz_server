@@ -1,18 +1,24 @@
 package atwoz.atwoz.member.command.domain.member;
 
-import atwoz.atwoz.common.MockEventsExtension;
+import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartBalance;
+import atwoz.atwoz.member.command.domain.member.event.MemberProfileInitializedEvent;
 import atwoz.atwoz.member.command.domain.member.vo.KakaoId;
+import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
+import atwoz.atwoz.member.command.domain.member.vo.Nickname;
+import atwoz.atwoz.member.command.domain.member.vo.Region;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
 
+import java.util.Set;
+
+import static org.mockito.Mockito.*;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
-@ExtendWith(MockEventsExtension.class)
 class MemberTest {
 
     @Test
@@ -202,6 +208,67 @@ class MemberTest {
 
             // Then
             Assertions.assertThat(member.isProfilePublic()).isTrue();
+        }
+    }
+
+    @Nested
+    @DisplayName("updateProfile 메서드 테스트")
+    class UpdateProfileMethodTest {
+
+        @Test
+        @DisplayName("최초로 멤버 프로필을 초기화 시 멤버 프로필을 업데이트 하고 이벤트를 발행합니다.")
+        void shouldUpdateMemberProfileAndRaiseEventWhenInitializingProfileForTheFirstTime() {
+            // Given
+            Member member = Member.fromPhoneNumber("01012345678");
+            Long memberId = 1L;
+            setField(member, "id", memberId);
+
+            MemberProfile profile = MemberProfile.builder()
+                .nickname(Nickname.from("nickname"))
+                .yearOfBirth(1998)
+                .gender(Gender.MALE)
+                .height(175)
+                .job(Job.JOB_SEARCHING)
+                .hobbies(Set.of(Hobby.BOARD_GAMES, Hobby.ANIMATION))
+                .mbti(Mbti.ISTJ)
+                .region(Region.of(District.ANSAN_SI))
+                .smokingStatus(SmokingStatus.DAILY)
+                .drinkingStatus(DrinkingStatus.NONE)
+                .highestEducation(HighestEducation.ASSOCIATE)
+                .religion(Religion.BUDDHIST)
+                .build();
+
+            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class);
+                MockedStatic<MemberProfileInitializedEvent> memberProfileInitializedEventMockedStatic = mockStatic(
+                    MemberProfileInitializedEvent.class)
+            ) {
+                MemberProfileInitializedEvent memberProfileInitializedEvent = mock(MemberProfileInitializedEvent.class);
+                memberProfileInitializedEventMockedStatic.when(() -> MemberProfileInitializedEvent.from(memberId))
+                    .thenReturn(memberProfileInitializedEvent);
+
+                // When
+                member.updateProfile(profile);
+
+                // Then
+                memberProfileInitializedEventMockedStatic.verify(
+                    () -> MemberProfileInitializedEvent.from(memberId),
+                    times(1)
+                );
+                eventsMockedStatic.verify(
+                    () -> Events.raise(memberProfileInitializedEvent),
+                    times(1)
+                );
+                Assertions.assertThat(member.getProfile()).isEqualTo(profile);
+
+                eventsMockedStatic.clearInvocations();
+
+                // When
+                member.updateProfile(profile);
+
+                // Then
+                eventsMockedStatic.verifyNoInteractions();
+            }
+            Assertions.assertThat(member.getProfile()).isEqualTo(profile);
         }
     }
 }

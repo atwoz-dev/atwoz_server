@@ -77,6 +77,9 @@ public class Member extends SoftDeleteBaseEntity {
     }
 
     public void updateProfile(@NonNull MemberProfile profile) {
+        if (isProfileSettingNeeded()) {
+            Events.raise(MemberProfileInitializedEvent.from(id));
+        }
         this.profile = profile;
     }
 
