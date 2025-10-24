@@ -1,5 +1,6 @@
 package atwoz.atwoz.like.query;
 
+import atwoz.atwoz.block.domain.Block;
 import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.like.command.domain.Like;
 import atwoz.atwoz.like.command.domain.LikeLevel;
@@ -143,6 +144,64 @@ class LikeQueryRepositoryTest {
         }
     }
 
+    @Test
+    @DisplayName("내가 차단한 멤버는 제외하고 보낸 좋아요 목록을 조회한다.")
+    void findSentLikes_excludeBlockedMembers() {
+        // given
+        var senderId = senders.getFirst().getId();
+        var blockedMemberId = receivers.get(0).getId();
+        var blockerMemberId = receivers.get(1).getId();
+
+        // 멤버 차단
+        createBlock(senderId, blockedMemberId);
+        createBlock(blockerMemberId, senderId);
+
+        var expectedLikes = likes.stream()
+            .filter(like -> like.getSenderId().equals(senderId))
+            .filter(like -> !like.getReceiverId().equals(blockedMemberId))
+            .sorted(Comparator.comparing(Like::getId).reversed())
+            .limit(PAGE_SIZE)
+            .toList();
+
+        // when
+        var firstPage = likeQueryRepository.findSentLikes(senderId, null);
+
+        // then
+        assertThat(firstPage).hasSize(expectedLikes.size());
+        for (var likeView : firstPage) {
+            assertThat(likeView.opponentId()).isNotEqualTo(blockedMemberId);
+        }
+    }
+
+    @Test
+    @DisplayName("내가 차단한 멤버는 제외하고 받은 좋아요 목록을 조회한다.")
+    void findReceivedLikes_excludeBlockedMembers() {
+        // given
+        var receiverId = receivers.getFirst().getId();
+        var blockedMemberId = senders.get(0).getId();
+        var blockerMemberId = senders.get(1).getId();
+
+        // 멤버 차단
+        createBlock(receiverId, blockedMemberId);
+        createBlock(blockerMemberId, receiverId);
+
+        var expectedLikes = likes.stream()
+            .filter(like -> like.getReceiverId().equals(receiverId))
+            .filter(like -> !like.getSenderId().equals(blockedMemberId))
+            .sorted(Comparator.comparing(Like::getId).reversed())
+            .limit(PAGE_SIZE)
+            .toList();
+
+        // when
+        var firstPage = likeQueryRepository.findReceivedLikes(receiverId, null);
+
+        // then
+        assertThat(firstPage).hasSize(expectedLikes.size());
+        for (var likeView : firstPage) {
+            assertThat(likeView.opponentId()).isNotEqualTo(blockedMemberId);
+        }
+    }
+
     private void createSenders() {
         senders = new ArrayList<>();
         for (int i = 0; i < NUMBER_OF_PEOPLE; i++) {
@@ -228,5 +287,11 @@ class LikeQueryRepositoryTest {
             .isPrimary(true)
             .order(1)
             .build();
+    }
+
+    private void createBlock(long blockerId, long blockedMemberId) {
+        Block block = Block.of(blockerId, blockedMemberId);
+        em.persist(block);
+        em.flush();
     }
 }
