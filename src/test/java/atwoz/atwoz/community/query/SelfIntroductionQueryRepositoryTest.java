@@ -1,5 +1,6 @@
 package atwoz.atwoz.community.query;
 
+import atwoz.atwoz.common.MockEventsExtension;
 import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchange;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeStatus;
@@ -22,7 +23,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Import({QueryDslConfig.class, SelfIntroductionQueryRepository.class})
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(MockEventsExtension.class)
 public class SelfIntroductionQueryRepositoryTest {
 
     @Autowired

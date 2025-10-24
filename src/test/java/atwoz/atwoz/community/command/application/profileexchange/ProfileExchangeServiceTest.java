@@ -1,6 +1,6 @@
 package atwoz.atwoz.community.command.application.profileexchange;
 
-import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.common.MockEventsExtension;
 import atwoz.atwoz.common.repository.LockRepository;
 import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeAlreadyExistsException;
 import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeNotFoundException;
@@ -12,11 +12,13 @@ import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -27,10 +29,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, MockEventsExtension.class})
 class ProfileExchangeServiceTest {
 
-    private static MockedStatic<Events> mockedEvents;
     Member sender = Member.fromPhoneNumber("01012345678");
     @Mock
     private MemberCommandRepository memberCommandRepository;
@@ -46,21 +47,12 @@ class ProfileExchangeServiceTest {
 
     @BeforeEach
     void setUp() {
-        mockedEvents = Mockito.mockStatic(Events.class);
-        mockedEvents.when(() -> Events.raise(Mockito.any()))
-            .thenAnswer(invocation -> null);
-
         MemberProfile memberProfile = MemberProfile.builder()
             .nickname(Nickname.from("닉네임"))
             .build();
         setField(sender, "id", 1L);
 
         sender.updateProfile(memberProfile);
-    }
-
-    @AfterEach
-    void tearDown() {
-        mockedEvents.close();
     }
 
     @Nested

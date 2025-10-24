@@ -74,7 +74,7 @@ class AdminMemberQueryRepositoryTest {
         member.updateProfile(memberProfile);
         entityManager.flush();
 
-        if (activityStatus.equals(ActivityStatus.DORMANT)) {
+        if (activityStatus == ActivityStatus.DORMANT) {
             member.changeToDormant();
         }
         return member;
