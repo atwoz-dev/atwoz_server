@@ -7,6 +7,8 @@ import atwoz.atwoz.match.command.domain.match.vo.Message;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "matches", indexes = {
     @Index(name = "idx_responder_id", columnList = "responderId"),
@@ -15,41 +17,47 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
+@Getter
 public class Match {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
     private Long id;
 
-    @Getter
     private Long requesterId;
 
-    @Getter
     private Long responderId;
 
-    @Getter
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "request_message"))
     private Message requestMessage;
 
-    @Getter
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "response_message"))
     private Message responseMessage;
 
-    @Getter
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(50)")
     private MatchStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(50)")
+    private MatchContactType requesterContactType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(50)")
+    private MatchContactType responderContactType;
+
+    private LocalDateTime readByResponderAt;
+
     public static Match request(long requesterId, long responderId, @NonNull Message requestMessage,
-        @NonNull String requesterName, @NonNull MatchType type) {
+        @NonNull String requesterName, @NonNull MatchType type, @NonNull MatchContactType contactType) {
         Match match = Match.builder()
             .requesterId(requesterId)
             .responderId(responderId)
             .requestMessage(requestMessage)
             .status(MatchStatus.WAITING)
+            .requesterContactType(contactType)
             .build();
 
         Events.raise(MatchRequestedEvent.of(requesterId, requesterName, responderId, type.name()));
@@ -58,10 +66,11 @@ public class Match {
         return match;
     }
 
-    public void approve(@NonNull Message message, String responderName) {
+    public void approve(@NonNull Message message, String responderName, @NonNull MatchContactType contactType) {
         validateChangeStatus();
         status = MatchStatus.MATCHED;
         responseMessage = message;
+        responderContactType = contactType;
         Events.raise(MatchRespondedEvent.of(requesterId, responderId, status));
         Events.raise(MatchAcceptedEvent.of(requesterId, responderId, responderName));
     }
@@ -82,6 +91,16 @@ public class Match {
     public void checkRejected() {
         validateChangeRejectChecked();
         status = MatchStatus.REJECT_CHECKED;
+    }
+
+    public void read(@NonNull Long readerId) {
+        if (readByResponderAt != null) {
+            return;
+        }
+        if (!readerId.equals(responderId)) {
+            return;
+        }
+        readByResponderAt = LocalDateTime.now();
     }
 
     private void validateChangeStatus() {

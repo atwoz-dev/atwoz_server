@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class MatchEventHandler {
+public class MemberProfileEventHandler {
 
     private final MemberProfileService memberProfileService;
 

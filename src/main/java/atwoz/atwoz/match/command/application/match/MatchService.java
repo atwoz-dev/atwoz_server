@@ -4,16 +4,14 @@ import atwoz.atwoz.common.repository.LockRepository;
 import atwoz.atwoz.match.command.application.match.exception.ExistsMatchException;
 import atwoz.atwoz.match.command.application.match.exception.InvalidMatchUpdateException;
 import atwoz.atwoz.match.command.application.match.exception.MatchNotFoundException;
-import atwoz.atwoz.match.command.domain.match.Match;
-import atwoz.atwoz.match.command.domain.match.MatchRepository;
-import atwoz.atwoz.match.command.domain.match.MatchStatus;
-import atwoz.atwoz.match.command.domain.match.MatchType;
+import atwoz.atwoz.match.command.domain.match.*;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import atwoz.atwoz.match.presentation.dto.MatchRequestDto;
 import atwoz.atwoz.match.presentation.dto.MatchResponseDto;
 import atwoz.atwoz.member.command.domain.introduction.IntroductionType;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroduction;
 import atwoz.atwoz.member.command.domain.introduction.MemberIntroductionCommandRepository;
+import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +36,7 @@ public class MatchService {
         long responderId = request.responderId();
         String requesterName = findNickname(requesterId);
         MatchType matchType = getMatchType(requesterId, responderId);
+        MatchContactType contactType = MatchContactType.valueOf(request.contactType());
 
         String key = generateKey(requesterId, responderId);
         lockRepository.withNamedLock(key, () -> {
@@ -50,7 +49,8 @@ public class MatchService {
                 responderId,
                 Message.from(request.requestMessage()),
                 requesterName,
-                matchType
+                matchType,
+                contactType
             );
             matchRepository.save(match);
         });
@@ -73,13 +73,16 @@ public class MatchService {
     @Transactional
     public void approve(Long matchId, Long responderId, MatchResponseDto respondDto) {
         Match match = getWaitingMatchByIdAndResponderId(matchId, responderId);
+        validateMatch(match);
         String responderName = findNickname(responderId);
-        match.approve(Message.from(respondDto.responseMessage()), responderName);
+        MatchContactType contactType = MatchContactType.valueOf(respondDto.contactType());
+        match.approve(Message.from(respondDto.responseMessage()), responderName, contactType);
     }
 
     @Transactional
     public void reject(Long matchId, Long responderId) {
         Match match = getWaitingMatchByIdAndResponderId(matchId, responderId);
+        validateMatch(match);
         String responderName = findNickname(responderId);
         match.reject(responderName);
     }
@@ -87,7 +90,22 @@ public class MatchService {
     @Transactional
     public void rejectCheck(Long requesterId, Long matchId) {
         Match match = getRejectedMatchByIdAndRequesterId(matchId, requesterId);
+        validateMatch(match);
         match.checkRejected();
+    }
+
+    @Transactional
+    public void read(Long readerId, Long matchRequesterId, Long matchResponderId) {
+        validateReader(readerId, matchRequesterId, matchResponderId);
+        Match match = matchRepository.findByRequesterIdAndResponderId(matchRequesterId, matchResponderId)
+            .orElseThrow(MatchNotFoundException::new);
+        match.read(readerId);
+    }
+
+    private void validateReader(Long readerId, Long matchRequesterId, Long matchResponderId) {
+        if (!readerId.equals(matchRequesterId) && !readerId.equals(matchResponderId)) {
+            throw new IllegalArgumentException("readerId가 매치 당사자가 아닙니다.");
+        }
     }
 
     private String findNickname(long memberId) {
@@ -124,5 +142,13 @@ public class MatchService {
             throw new InvalidMatchUpdateException();
         }
         return match;
+    }
+
+    private void validateMatch(Match match) {
+        Member member = memberCommandRepository.findById(match.getRequesterId()).orElseThrow(
+            () -> new EntityNotFoundException("매치 요청자를 찾을 수 없습니다." + match.getRequesterId()));
+        if (!member.isActive()) {
+            throw new IllegalStateException("매치 요청자가 활성 상태가 아닙니다.");
+        }
     }
 }

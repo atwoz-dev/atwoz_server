@@ -5,10 +5,7 @@ import atwoz.atwoz.common.repository.LockRepository;
 import atwoz.atwoz.match.command.application.match.exception.ExistsMatchException;
 import atwoz.atwoz.match.command.application.match.exception.InvalidMatchUpdateException;
 import atwoz.atwoz.match.command.application.match.exception.MatchNotFoundException;
-import atwoz.atwoz.match.command.domain.match.Match;
-import atwoz.atwoz.match.command.domain.match.MatchRepository;
-import atwoz.atwoz.match.command.domain.match.MatchStatus;
-import atwoz.atwoz.match.command.domain.match.MatchType;
+import atwoz.atwoz.match.command.domain.match.*;
 import atwoz.atwoz.match.command.domain.match.vo.Message;
 import atwoz.atwoz.match.presentation.dto.MatchRequestDto;
 import atwoz.atwoz.match.presentation.dto.MatchResponseDto;
@@ -83,7 +80,8 @@ class MatchServiceTest {
             Long requesterId = 1L;
             Long responderId = 2L;
             String requestMessage = "매칭을 요청합니다!";
-            MatchRequestDto requestDto = new MatchRequestDto(responderId, requestMessage);
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
+            MatchRequestDto requestDto = new MatchRequestDto(responderId, requestMessage, contactType.name());
 
             when(introductionCommandRepository.findByMemberIdAndIntroducedMemberId(requesterId, responderId))
                 .thenReturn(Optional.empty());
@@ -112,7 +110,8 @@ class MatchServiceTest {
             Long requesterId = 1L;
             Long responderId = 2L;
             String requestMessage = "매칭을 요청합니다!";
-            MatchRequestDto requestDto = new MatchRequestDto(responderId, requestMessage);
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
+            MatchRequestDto requestDto = new MatchRequestDto(responderId, requestMessage, contactType.name());
 
             when(introductionCommandRepository.findByMemberIdAndIntroducedMemberId(requesterId, responderId))
                 .thenReturn(Optional.empty());
@@ -152,7 +151,8 @@ class MatchServiceTest {
             Long responderId = 1L;
             Long matchId = 1L;
             String responseMessage = "매치 수락할게요";
-            MatchResponseDto responseDto = new MatchResponseDto(responseMessage);
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
+            MatchResponseDto responseDto = new MatchResponseDto(responseMessage, contactType.name());
 
             when(matchRepository.findByIdAndResponderId(matchId, responderId))
                 .thenReturn(Optional.empty());
@@ -170,10 +170,12 @@ class MatchServiceTest {
             Long responderId = 2L;
             Long matchId = 3L;
             String responseMessage = "매치 수락할게요";
-            MatchResponseDto responseDto = new MatchResponseDto(responseMessage);
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
+            MatchResponseDto responseDto = new MatchResponseDto(responseMessage, contactType.name());
             MatchType type = MatchType.MATCH;
 
-            Match match = Match.request(requesterId, responderId, Message.from(responseMessage), "name", type);
+            Match match = Match.request(requesterId, responderId, Message.from(responseMessage), "name", type,
+                contactType);
             match.reject("name");
 
             when(matchRepository.findByIdAndResponderId(matchId, responderId))
@@ -193,13 +195,18 @@ class MatchServiceTest {
             Long matchId = 3L;
             String responseMessage = "매치 수락할게요";
             MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
+            Match match = Match.request(requesterId, responderId, Message.from(responseMessage), "name", type,
+                contactType);
 
-            Match match = Match.request(requesterId, responderId, Message.from(responseMessage), "name", type);
-
-            MatchResponseDto responseDto = new MatchResponseDto(responseMessage);
+            MatchResponseDto responseDto = new MatchResponseDto(responseMessage, contactType.name());
 
             when(matchRepository.findByIdAndResponderId(matchId, responderId))
                 .thenReturn(Optional.of(match));
+
+            Member requester = mock(Member.class);
+            when(requester.isActive()).thenReturn(true);
+            when(memberCommandRepository.findById(requesterId)).thenReturn(Optional.of(requester));
 
             mockMember(responderId, "responderName");
 
@@ -242,9 +249,11 @@ class MatchServiceTest {
             String responseMessage = "매치 수락할게요";
 
             MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
 
-            Match match = Match.request(requesterId, responderId, Message.from(responseMessage), "name", type);
-            match.approve(Message.from(responseMessage), "name");
+            Match match = Match.request(requesterId, responderId, Message.from(responseMessage), "name", type,
+                contactType);
+            match.approve(Message.from(responseMessage), "name", contactType);
 
             when(matchRepository.findByIdAndResponderId(matchId, responderId))
                 .thenReturn(Optional.of(match));
@@ -263,11 +272,17 @@ class MatchServiceTest {
             Long matchId = 3L;
             String requestMessage = "매치 신청할게요";
             MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
 
-            Match match = Match.request(requesterId, responderId, Message.from(requestMessage), "name", type);
+            Match match = Match.request(requesterId, responderId, Message.from(requestMessage), "name", type,
+                contactType);
 
             when(matchRepository.findByIdAndResponderId(matchId, responderId))
                 .thenReturn(Optional.of(match));
+
+            Member requester = mock(Member.class);
+            when(requester.isActive()).thenReturn(true);
+            when(memberCommandRepository.findById(requesterId)).thenReturn(Optional.of(requester));
 
             mockMember(responderId, "responderName");
 
@@ -293,8 +308,10 @@ class MatchServiceTest {
             Long matchId = 3L;
             String requestMessage = "매치 신청할게요";
             MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
 
-            Match match = Match.request(requesterId, responderId, Message.from(requestMessage), "name", type);
+            Match match = Match.request(requesterId, responderId, Message.from(requestMessage), "name", type,
+                contactType);
 
             when(matchRepository.findByIdAndRequesterId(matchId, requesterId))
                 .thenReturn(Optional.of(match));
@@ -328,18 +345,77 @@ class MatchServiceTest {
             Long matchId = 3L;
             String requestMessage = "매치 신청할게요";
             MatchType type = MatchType.MATCH;
+            MatchContactType contactType = MatchContactType.PHONE_NUMBER;
 
-            Match match = Match.request(requesterId, responderId, Message.from(requestMessage), "name", type);
+            Match match = Match.request(requesterId, responderId, Message.from(requestMessage), "name", type,
+                contactType);
             match.reject("name");
 
             when(matchRepository.findByIdAndRequesterId(matchId, requesterId))
                 .thenReturn(Optional.of(match));
+
+            Member requester = mock(Member.class);
+            when(requester.isActive()).thenReturn(true);
+            when(memberCommandRepository.findById(requesterId)).thenReturn(Optional.of(requester));
 
             // When
             matchService.rejectCheck(requesterId, matchId);
 
             // Then
             Assertions.assertThat(match.getStatus()).isEqualTo(MatchStatus.REJECT_CHECKED);
+        }
+    }
+
+    @Nested
+    @DisplayName("매치 읽음 처리 테스트")
+    class Read {
+        @Test
+        @DisplayName("읽는 사람의 아이디가 매치 참여자 아이디와 일치하지 않는 경우, 예외 발생")
+        void throwsExceptionWhenReaderIdIsNotEqual() {
+            // Given
+            Long readerId = 1L;
+            Long matchRequesterId = 2L;
+            Long matchResponderId = 3L;
+
+            // When & Then
+            Assertions.assertThatThrownBy(() -> matchService.read(readerId, matchRequesterId, matchResponderId))
+                .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        @DisplayName("매치가 존재하지 않는 경우, 예외 발생")
+        void throwsExceptionWhenMatchNotFound() {
+            // Given
+            Long readerId = 2L;
+            Long matchRequesterId = 2L;
+            Long matchResponderId = 3L;
+
+            when(matchRepository.findByRequesterIdAndResponderId(matchRequesterId, matchResponderId))
+                .thenReturn(Optional.empty());
+
+            // When & Then
+            Assertions.assertThatThrownBy(() -> matchService.read(readerId, matchRequesterId, matchResponderId))
+                .isInstanceOf(MatchNotFoundException.class);
+        }
+
+        @Test
+        @DisplayName("매치 읽음 처리 성공")
+        void readMatch() {
+            // Given
+            Long readerId = 2L;
+            Long matchRequesterId = 2L;
+            Long matchResponderId = 3L;
+
+            Match match = mock(Match.class);
+
+            when(matchRepository.findByRequesterIdAndResponderId(matchRequesterId, matchResponderId))
+                .thenReturn(Optional.of(match));
+
+            // When
+            matchService.read(readerId, matchRequesterId, matchResponderId);
+
+            // Then
+            verify(match, times(1)).read(readerId);
         }
     }
 }

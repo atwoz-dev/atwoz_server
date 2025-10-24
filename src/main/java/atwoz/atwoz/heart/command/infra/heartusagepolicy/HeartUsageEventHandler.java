@@ -1,7 +1,9 @@
 package atwoz.atwoz.heart.command.infra.heartusagepolicy;
 
 import atwoz.atwoz.heart.command.application.heartusagepolicy.HeartUsagePolicyService;
+import atwoz.atwoz.heart.command.domain.hearttransaction.vo.TransactionSubtype;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.TransactionType;
+import atwoz.atwoz.match.command.domain.match.event.MatchAcceptedEvent;
 import atwoz.atwoz.match.command.domain.match.event.MatchRequestedEvent;
 import atwoz.atwoz.member.command.domain.introduction.event.MemberIntroducedEvent;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +25,11 @@ public class HeartUsageEventHandler {
     public void handle(MemberIntroducedEvent event) {
         heartUsageService.useHeart(event.getMemberId(), TransactionType.INTRODUCTION, event.getContent(),
             event.getIntroductionType());
+    }
+
+    @EventListener(value = MatchAcceptedEvent.class)
+    public void handle(MatchAcceptedEvent event) {
+        heartUsageService.useHeart(event.getRequesterId(), TransactionType.MESSAGE_ACCEPTED,
+            TransactionType.MESSAGE_ACCEPTED.getDescription(), TransactionSubtype.MATCH_ACCEPTED.name());
     }
 }

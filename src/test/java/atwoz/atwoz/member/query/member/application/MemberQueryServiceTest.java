@@ -1,8 +1,10 @@
 package atwoz.atwoz.member.query.member.application;
 
+import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeStatus;
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
+import atwoz.atwoz.member.query.member.application.event.MemberProfileRetrievedEvent;
 import atwoz.atwoz.member.query.member.application.exception.ProfileAccessDeniedException;
 import atwoz.atwoz.member.query.member.infra.MemberQueryRepository;
 import atwoz.atwoz.member.query.member.view.*;
@@ -15,15 +17,14 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MemberQueryServiceTest {
@@ -176,13 +177,28 @@ class MemberQueryServiceTest {
         void notThrowsExceptionWhenProfileAccessIsAuthorized(ProfileAccessView profileAccessView, String predict) {
             // Given
             OtherMemberProfileView view = new OtherMemberProfileView(mock(BasicMemberInfo.class), mock(MatchInfo.class),
-                mock(ProfileExchangeInfo.class), mock(IntroductionInfo.class));
+                mock(ContactView.class), mock(ProfileExchangeInfo.class), mock(IntroductionInfo.class));
             when(memberQueryRepository.findProfileAccessViewByMemberId(memberId, otherMemberId)).thenReturn(
                 Optional.of(profileAccessView));
             when(memberQueryRepository.findOtherProfileByMemberId(memberId, otherMemberId)).thenReturn(
                 Optional.of(view));
-            assertThatCode(
-                () -> memberQueryService.getMemberProfile(memberId, otherMemberId)).doesNotThrowAnyException();
+
+            try (MockedStatic<Events> mockEvents = mockStatic(Events.class);
+                MockedStatic<MemberProfileRetrievedEvent> mockMemberProfileRetrievedEvent = mockStatic(
+                    MemberProfileRetrievedEvent.class)
+            ) {
+                MemberProfileRetrievedEvent memberProfileRetrievedEvent = mock(MemberProfileRetrievedEvent.class);
+                mockMemberProfileRetrievedEvent.when(
+                        () -> MemberProfileRetrievedEvent.of(memberId, otherMemberId, profileAccessView.matchRequesterId(),
+                            profileAccessView.matchResponderId()))
+                    .thenReturn(memberProfileRetrievedEvent);
+
+                // When
+                memberQueryService.getMemberProfile(memberId, otherMemberId);
+
+                // Then
+                mockEvents.verify(() -> Events.raise(memberProfileRetrievedEvent));
+            }
         }
     }
 }
