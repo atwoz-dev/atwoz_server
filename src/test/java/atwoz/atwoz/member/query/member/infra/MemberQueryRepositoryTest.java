@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.query.member.infra;
 
 import atwoz.atwoz.QuerydslConfig;
-import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.common.MockEventsExtension;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchange;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeStatus;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
@@ -24,9 +24,11 @@ import atwoz.atwoz.member.command.domain.member.vo.Region;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.query.member.view.*;
-import org.junit.jupiter.api.*;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -42,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Import({QuerydslConfig.class, MemberQueryRepository.class})
+@ExtendWith(MockEventsExtension.class)
 class MemberQueryRepositoryTest {
 
     @Autowired
@@ -73,6 +76,8 @@ class MemberQueryRepositoryTest {
             Hobby hobby2 = Hobby.BOARD_GAMES;
 
             Member member = Member.fromPhoneNumber("01012345678");
+            entityManager.persist(member);
+            
             MemberProfile updateProfile = MemberProfile.builder()
                 .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
                 .height(20)
@@ -89,7 +94,6 @@ class MemberQueryRepositoryTest {
                 .build();
 
             member.updateProfile(updateProfile);
-            entityManager.persist(member);
             entityManager.flush();
 
             InterviewQuestion interviewQuestion1 = InterviewQuestion.of("인터뷰 질문 내용1", InterviewCategory.PERSONAL, true);
@@ -129,8 +133,6 @@ class MemberQueryRepositoryTest {
             assertStatusInfo(memberInfoView.statusInfo(), member);
             assertProfileInfo(memberInfoView.profileInfo(), member);
             assertInterviewInfo(memberInfoView.interviewInfoView(), interviewAnswers);
-
-            System.out.println(memberInfoView.interviewInfoView());
         }
 
         private void assertBasicInfo(BasicInfo basicInfo, Member member) {
@@ -191,6 +193,7 @@ class MemberQueryRepositoryTest {
         void getProfileWhenMemberIdExists() {
             // Given
             Member member = Member.fromPhoneNumber("01012345678");
+            entityManager.persist(member);
 
             MemberProfile memberProfile = MemberProfile.builder()
                 .nickname(Nickname.from("nickname"))
@@ -208,8 +211,6 @@ class MemberQueryRepositoryTest {
                 .build();
 
             member.updateProfile(memberProfile);
-
-            entityManager.persist(member);
             entityManager.flush();
 
             // When
@@ -279,7 +280,6 @@ class MemberQueryRepositoryTest {
     @Nested
     @DisplayName("다른 유저의 프로필 조회")
     class OtherMemberProfile {
-        static MockedStatic<Events> mockedEvents;
         Member member;
         Member otherMember;
         LikeLevel likeLevel = LikeLevel.INTERESTED;
@@ -288,16 +288,13 @@ class MemberQueryRepositoryTest {
 
         @BeforeEach
         void setUp() {
-            mockedEvents = Mockito.mockStatic(Events.class);
-            mockedEvents.when(() -> Events.raise(Mockito.any()))
-                .thenAnswer(invocation -> null);
-
             Job job = Job.JOB_SEARCHING;
             Hobby hobby1 = Hobby.ANIMATION;
             Hobby hobby2 = Hobby.BOARD_GAMES;
 
 
             otherMember = Member.fromPhoneNumber("01012345678");
+            entityManager.persist(otherMember);
 
             MemberProfile updateProfile = MemberProfile.builder()
                 .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
@@ -315,7 +312,6 @@ class MemberQueryRepositoryTest {
                 .build();
 
             otherMember.updateProfile(updateProfile);
-            entityManager.persist(otherMember);
             entityManager.flush();
 
 
@@ -346,11 +342,6 @@ class MemberQueryRepositoryTest {
             entityManager.persist(profileImage1);
             entityManager.persist(profileImage2);
             entityManager.flush();
-        }
-
-        @AfterEach
-        void tearDown() {
-            mockedEvents.close();
         }
 
         @Test
@@ -617,8 +608,6 @@ class MemberQueryRepositoryTest {
     @Nested
     @DisplayName("유저의 인터뷰 질문/답변 조회")
     class Interviews {
-
-        static MockedStatic<Events> mockedEvents;
         Long memberId = 10L;
         Long otherMemberId = 5L;
         List<InterviewQuestion> questions;
@@ -626,10 +615,6 @@ class MemberQueryRepositoryTest {
 
         @BeforeEach
         void setUp() {
-            mockedEvents = Mockito.mockStatic(Events.class);
-            mockedEvents.when(() -> Events.raise(Mockito.any()))
-                .thenAnswer(invocation -> null);
-
             InterviewQuestion interviewQuestion1 = InterviewQuestion.of("인터뷰 질문 내용1", InterviewCategory.PERSONAL, true);
             InterviewQuestion interviewQuestion2 = InterviewQuestion.of("인터뷰 질문 내용2", InterviewCategory.ROMANTIC, true);
             InterviewQuestion interviewQuestion3 = InterviewQuestion.of("인터뷰 질문 내용3", InterviewCategory.PERSONAL, true);
@@ -657,11 +642,6 @@ class MemberQueryRepositoryTest {
 
             questions = List.of(interviewQuestion1, interviewQuestion2, interviewQuestion3, interviewQuestion4);
             answers = List.of(interviewAnswer1, interviewAnswer2, interviewAnswer4);
-        }
-
-        @AfterEach
-        void tearDown() {
-            mockedEvents.close();
         }
 
         @Test
@@ -752,18 +732,12 @@ class MemberQueryRepositoryTest {
     @Nested
     @DisplayName("프로필 접근 권한 조회 테스트")
     class findProfileAccessViewByMemberIdTest {
-
-        static MockedStatic<Events> mockedEvents;
         Member member;
         Member otherMember1;
         Member otherMember2;
 
         @BeforeEach
         void setUp() {
-            mockedEvents = Mockito.mockStatic(Events.class);
-            mockedEvents.when(() -> Events.raise(Mockito.any()))
-                .thenAnswer(invocation -> null);
-
             member = Member.fromPhoneNumber("01012345677");
             otherMember1 = Member.fromPhoneNumber("01012345678");
             otherMember2 = Member.fromPhoneNumber("01012345679");
@@ -808,11 +782,6 @@ class MemberQueryRepositoryTest {
             entityManager.persist(profileExchange);
             entityManager.persist(profileExchange2);
             entityManager.flush();
-        }
-
-        @AfterEach
-        void tearDown() {
-            mockedEvents.close();
         }
 
         @Test

@@ -1,5 +1,6 @@
 package atwoz.atwoz.heart.query.hearttransaction;
 
+import atwoz.atwoz.common.MockEventsExtension;
 import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.heart.command.domain.hearttransaction.HeartTransaction;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
@@ -12,6 +13,7 @@ import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -27,6 +29,7 @@ import static org.assertj.core.api.Assertions.within;
 
 @DataJpaTest
 @Import({QueryDslConfig.class, AdminHeartTransactionQueryRepository.class})
+@ExtendWith(MockEventsExtension.class)
 class AdminHeartTransactionQueryRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
@@ -277,6 +280,7 @@ class AdminHeartTransactionQueryRepositoryTest {
 
     private Member createMember(String phoneNumber, String nickname) {
         Member member = Member.fromPhoneNumber(phoneNumber);
+        entityManager.persist(member);
         MemberProfile memberProfile = MemberProfile.builder()
             .nickname(Nickname.from(nickname))
             .build();

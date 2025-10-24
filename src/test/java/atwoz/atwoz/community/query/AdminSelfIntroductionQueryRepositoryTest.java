@@ -1,6 +1,7 @@
 package atwoz.atwoz.community.query;
 
 import atwoz.atwoz.common.config.QueryDslConfig;
+import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.community.command.domain.selfintroduction.SelfIntroduction;
 import atwoz.atwoz.community.presentation.selfintroduction.dto.AdminSelfIntroductionSearchCondition;
 import atwoz.atwoz.community.query.selfintroduction.AdminSelfIntroductionQueryRepository;
@@ -10,9 +11,12 @@ import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;
 import org.assertj.core.api.AssertionsForClassTypes;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -32,6 +36,8 @@ import java.util.List;
 class AdminSelfIntroductionQueryRepositoryTest {
 
     private static final int PAGE_SIZE = 5;
+    private static MockedStatic<Events> mockedEvents;
+
     Member manMember;
     Member womanMember;
     List<SelfIntroduction> selfIntroductionsByMan;
@@ -43,8 +49,15 @@ class AdminSelfIntroductionQueryRepositoryTest {
 
     @BeforeEach
     void setUp() {
+        mockedEvents = Mockito.mockStatic(Events.class);
+        mockedEvents.when(() -> Events.raise(Mockito.any()))
+            .thenAnswer(invocation -> null);
+
         manMember = Member.fromPhoneNumber("01012345678");
         womanMember = Member.fromPhoneNumber("01098765432");
+
+        entityManager.persist(manMember);
+        entityManager.persist(womanMember);
 
         MemberProfile manProfile = MemberProfile
             .builder()
@@ -61,8 +74,6 @@ class AdminSelfIntroductionQueryRepositoryTest {
         manMember.updateProfile(manProfile);
         womanMember.updateProfile(womanProfile);
 
-        entityManager.persist(manMember);
-        entityManager.persist(womanMember);
         entityManager.flush();
 
         selfIntroductionsByMan = new ArrayList<>();
@@ -91,6 +102,11 @@ class AdminSelfIntroductionQueryRepositoryTest {
 
         entityManager.flush();
         entityManager.clear();
+    }
+
+    @AfterEach
+    void tearDown() {
+        mockedEvents.close();
     }
 
     @DisplayName("모든 셀프 소개를 조회합니다.")

@@ -77,6 +77,9 @@ public class Member extends SoftDeleteBaseEntity {
     }
 
     public void updateProfile(@NonNull MemberProfile profile) {
+        if (isProfileSettingNeeded()) {
+            Events.raise(MemberProfileInitializedEvent.from(id));
+        }
         this.profile = profile;
     }
 
@@ -197,5 +200,10 @@ public class Member extends SoftDeleteBaseEntity {
 
     public boolean hasSubmittedDatingExam() {
         return isDatingExamSubmitted;
+    }
+
+    public void delete() {
+        this.activityStatus = ActivityStatus.DELETED;
+        super.delete();
     }
 }

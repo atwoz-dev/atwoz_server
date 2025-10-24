@@ -1,5 +1,6 @@
 package atwoz.atwoz.mission.command.application.memberMission;
 
+import atwoz.atwoz.common.MockEventsExtension;
 import atwoz.atwoz.member.command.domain.member.Gender;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
@@ -24,7 +25,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.List;
 import java.util.Optional;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockEventsExtension.class, MockitoExtension.class})
 public class MemberMissionServiceTest {
 
     @Mock
@@ -60,13 +61,12 @@ public class MemberMissionServiceTest {
             mission = Mission.create(ActionType.LIKE, FrequencyType.DAILY, TargetGender.MALE, requiredAttempt,
                 repeatableCount, rewardedHeart, true);
             member = Member.fromPhoneNumber("01012345689");
+            ReflectionTestUtils.setField(member, "id", memberId);
             member.updateProfile(MemberProfile.builder()
                 .gender(Gender.MALE)
                 .nickname(Nickname.from("닉네임"))
                 .build());
             memberMission = MemberMission.create(memberId, missionId);
-
-            ReflectionTestUtils.setField(member, "id", memberId);
             ReflectionTestUtils.setField(mission, "id", missionId);
         }
 
