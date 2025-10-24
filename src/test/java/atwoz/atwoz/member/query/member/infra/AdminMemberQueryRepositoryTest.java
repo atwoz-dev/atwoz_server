@@ -53,6 +53,7 @@ class AdminMemberQueryRepositoryTest {
     private Member createMember(String phoneNumber, String nickname, ActivityStatus activityStatus, Gender gender,
         Grade grade) {
         Member member = Member.fromPhoneNumber(phoneNumber);
+        entityManager.persist(member);
         member.gainPurchaseHeart(HeartAmount.from(100L));
         member.gainMissionHeart(HeartAmount.from(50L), "연애고사 제출");
         member.updateGrade(grade);
@@ -71,7 +72,7 @@ class AdminMemberQueryRepositoryTest {
             .yearOfBirth(1997)
             .build();
         member.updateProfile(memberProfile);
-        entityManager.persistAndFlush(member);
+        entityManager.flush();
 
         if (activityStatus.equals(ActivityStatus.DORMANT)) {
             member.changeToDormant();

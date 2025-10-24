@@ -1,6 +1,7 @@
 package atwoz.atwoz.like.query;
 
 import atwoz.atwoz.block.domain.Block;
+import atwoz.atwoz.common.MockEventsExtension;
 import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.like.command.domain.Like;
 import atwoz.atwoz.like.command.domain.LikeLevel;
@@ -14,6 +15,7 @@ import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -28,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Import({QueryDslConfig.class, LikeQueryRepository.class})
+@ExtendWith(MockEventsExtension.class)
 class LikeQueryRepositoryTest {
     private static final int NUMBER_OF_PEOPLE = 30;
     private static final int PAGE_SIZE = 13;
@@ -271,6 +274,7 @@ class LikeQueryRepositoryTest {
 
     private Member createMember(String phone, String nickname, District district) {
         var member = Member.fromPhoneNumber(phone);
+        em.persist(member);
         var profile = MemberProfile.builder()
             .nickname(Nickname.from(nickname))
             .region(Region.of(district))

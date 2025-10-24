@@ -1,5 +1,6 @@
 package atwoz.atwoz.member.command.application.member;
 
+import atwoz.atwoz.common.MockEventsExtension;
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
 import atwoz.atwoz.member.command.domain.member.*;
 import atwoz.atwoz.member.command.domain.member.exception.InvalidMemberEnumValueException;
@@ -20,8 +21,9 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockEventsExtension.class, MockitoExtension.class})
 class MemberProfileServiceTest {
     @Mock
     private MemberCommandRepository memberCommandRepository;
@@ -83,9 +85,9 @@ class MemberProfileServiceTest {
             "DAILY", "QUIT", "BUDDHIST", hobbies.stream().map(Enum::name).collect(Collectors.toSet()), job.name()
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
+        setField(existingMember, "id", memberId);
 
         when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
-
 
         // When
         memberProfileService.updateMember(memberId, request);
@@ -114,6 +116,7 @@ class MemberProfileServiceTest {
             "DAILY", "QUIT", "BUDDHIST", null, job.name()
         );
         Member existingMember = Member.fromPhoneNumber("01012345678");
+        setField(existingMember, "id", memberId);
 
         when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
 

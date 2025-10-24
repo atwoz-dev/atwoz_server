@@ -25,6 +25,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @ExtendWith(MockitoExtension.class)
 class ProfileExchangeServiceTest {
@@ -45,15 +46,16 @@ class ProfileExchangeServiceTest {
 
     @BeforeEach
     void setUp() {
-        MemberProfile memberProfile = MemberProfile.builder()
-            .nickname(Nickname.from("닉네임"))
-            .build();
-
-        sender.updateProfile(memberProfile);
-
         mockedEvents = Mockito.mockStatic(Events.class);
         mockedEvents.when(() -> Events.raise(Mockito.any()))
             .thenAnswer(invocation -> null);
+
+        MemberProfile memberProfile = MemberProfile.builder()
+            .nickname(Nickname.from("닉네임"))
+            .build();
+        setField(sender, "id", 1L);
+
+        sender.updateProfile(memberProfile);
     }
 
     @AfterEach
