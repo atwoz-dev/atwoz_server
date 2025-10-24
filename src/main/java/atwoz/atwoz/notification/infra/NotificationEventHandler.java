@@ -1,5 +1,7 @@
 package atwoz.atwoz.notification.infra;
 
+import atwoz.atwoz.admin.command.domain.screening.event.ScreeningApprovedEvent;
+import atwoz.atwoz.admin.command.domain.screening.event.ScreeningRejectedEvent;
 import atwoz.atwoz.admin.command.domain.warning.WarningIssuedEvent;
 import atwoz.atwoz.community.command.domain.profileexchange.event.ProfileExchangeAcceptedEvent;
 import atwoz.atwoz.community.command.domain.profileexchange.event.ProfileExchangeRejectedEvent;
@@ -138,6 +140,34 @@ public class NotificationEventHandler {
             event.getReceiverId(),
             NotificationType.LIKE,
             Map.of(SENDER_NAME, event.getSenderName()),
+            ChannelType.PUSH
+        );
+        notificationSendService.send(request);
+    }
+
+    @Async
+    @TransactionalEventListener(value = ScreeningApprovedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
+    public void handleScreeningApprovedEvent(ScreeningApprovedEvent event) {
+        var request = new NotificationSendRequest(
+            SenderType.ADMIN,
+            event.getAdminId(),
+            event.getMemberId(),
+            NotificationType.SCREENING_APPROVED,
+            Map.of(),
+            ChannelType.PUSH
+        );
+        notificationSendService.send(request);
+    }
+
+    @Async
+    @TransactionalEventListener(value = ScreeningRejectedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
+    public void handleScreeningRejectedEvent(ScreeningRejectedEvent event) {
+        var request = new NotificationSendRequest(
+            SenderType.ADMIN,
+            event.getAdminId(),
+            event.getMemberId(),
+            NotificationType.SCREENING_REJECTED,
+            Map.of("rejectionReason", event.getRejectionReason()),
             ChannelType.PUSH
         );
         notificationSendService.send(request);

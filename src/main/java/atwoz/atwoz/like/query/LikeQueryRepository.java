@@ -37,7 +37,7 @@ public class LikeQueryRepository {
             .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
             .leftJoin(mutual).on(mutual.senderId.eq(like.receiverId).and(mutual.receiverId.eq(senderId)))
             .where(eqSender(senderId), ltLikeId(lastLikeId))
-            .orderBy(like.createdAt.desc())
+            .orderBy(like.id.desc())
             .limit(PAGE_SIZE)
             .fetch();
     }
@@ -61,7 +61,7 @@ public class LikeQueryRepository {
             .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
             .leftJoin(mutual).on(mutual.senderId.eq(receiverId).and(mutual.receiverId.eq(like.senderId)))
             .where(eqReceiver(receiverId), ltLikeId(lastLikeId))
-            .orderBy(like.createdAt.desc())
+            .orderBy(like.id.desc())
             .limit(PAGE_SIZE)
             .fetch();
     }

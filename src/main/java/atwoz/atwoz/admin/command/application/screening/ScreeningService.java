@@ -21,9 +21,6 @@ public class ScreeningService {
 
     @Transactional
     public void create(long memberId) {
-        if (screeningCommandRepository.existsByMemberId(memberId)) {
-            throw new DuplicateScreeningException(memberId);
-        }
         screeningCommandRepository.save(Screening.from(memberId));
     }
 
@@ -47,6 +44,11 @@ public class ScreeningService {
         }
 
         screening.reject(adminId, toRejectionReasonType(request.rejectionReason()));
+    }
+
+    @Transactional
+    public void rescreen(long memberId) {
+        screeningCommandRepository.save(Screening.from(memberId));
     }
 
     private Screening getScreening(long id) {

@@ -8,9 +8,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ScreeningApprovedEvent extends Event {
+    private final long adminId;
     private final long memberId;
 
-    public static ScreeningApprovedEvent from(long memberId) {
-        return new ScreeningApprovedEvent(memberId);
+    public static ScreeningApprovedEvent of(long adminId, long memberId) {
+        return new ScreeningApprovedEvent(adminId, memberId);
     }
 }

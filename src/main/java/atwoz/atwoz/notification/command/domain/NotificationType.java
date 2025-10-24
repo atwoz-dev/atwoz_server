@@ -22,6 +22,9 @@ public enum NotificationType {
     INAPPROPRIATE_INTERVIEW("부적절한 인터뷰 경고"),
     INAPPROPRIATE_SELF_INTRODUCTION("부적절한 셀프소개 게시글 경고"),
 
+    SCREENING_APPROVED("심사 승인"),
+    SCREENING_REJECTED("심사 반려"),
+
     INACTIVITY_REMINDER("장기 미로그인 알림");
 
     private final String description;
