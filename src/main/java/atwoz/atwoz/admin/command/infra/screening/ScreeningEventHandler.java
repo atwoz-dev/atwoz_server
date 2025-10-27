@@ -1,4 +1,4 @@
-package atwoz.atwoz.admin.infra;
+package atwoz.atwoz.admin.command.infra.screening;
 
 import atwoz.atwoz.admin.command.application.screening.DuplicateScreeningException;
 import atwoz.atwoz.admin.command.application.screening.ScreeningService;
