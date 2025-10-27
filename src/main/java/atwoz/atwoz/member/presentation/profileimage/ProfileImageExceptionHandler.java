@@ -43,7 +43,7 @@ public class ProfileImageExceptionHandler {
 
     @ExceptionHandler(FileUploadFailException.class)
     public ResponseEntity<BaseResponse<Void>> handleFileUploadFailException(FileUploadFailException e) {
-        log.error("파일 업로드에 실패하였습니다. {}", e.getMessage());
+        log.error("파일 업로드에 실패하였습니다. {}", e.getMessage(), e);
 
         return ResponseEntity.status(500)
             .body(BaseResponse.from(StatusType.INTERNAL_SERVER_ERROR));

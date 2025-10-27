@@ -52,7 +52,7 @@ public class PaymentExceptionHandler {
 
     @ExceptionHandler(AppStoreClientException.class)
     public ResponseEntity<BaseResponse<Void>> handleAppStoreClientException(AppStoreClientException e) {
-        log.error("앱스토어 서버와 통신 중 오류가 발생했습니다. {}", e.getMessage());
+        log.error("앱스토어 서버와 통신 중 오류가 발생했습니다. {}", e.getMessage(), e);
 
         return ResponseEntity.status(500)
             .body(BaseResponse.from(StatusType.INTERNAL_SERVER_ERROR));
