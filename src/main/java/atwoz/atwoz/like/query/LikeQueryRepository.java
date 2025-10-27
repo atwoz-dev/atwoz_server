@@ -46,7 +46,7 @@ public class LikeQueryRepository {
                 ltLikeId(lastLikeId),
                 receiverIdNotIn(blockedIds)
             )
-            .orderBy(like.createdAt.desc())
+            .orderBy(like.id.desc())
             .limit(PAGE_SIZE)
             .fetch();
     }
@@ -76,7 +76,7 @@ public class LikeQueryRepository {
                 ltLikeId(lastLikeId),
                 senderIdNotIn(blockedIds)
             )
-            .orderBy(like.createdAt.desc())
+            .orderBy(like.id.desc())
             .limit(PAGE_SIZE)
             .fetch();
     }

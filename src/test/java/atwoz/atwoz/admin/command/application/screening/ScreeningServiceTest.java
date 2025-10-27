@@ -33,30 +33,34 @@ class ScreeningServiceTest {
     class Create {
 
         @Test
-        @DisplayName("멤버 심사가 아직 존재하지 않는다면 Screening을 생성하고 저장합니다.")
-        void createNewMemberScreeningWhenNotExists() {
+        @DisplayName("Screening을 생성하고 저장합니다.")
+        void createNewMemberScreening() {
             // given
             long memberId = 100L;
-            when(screeningCommandRepository.existsByMemberId(memberId)).thenReturn(false);
 
             // when
             screeningService.create(memberId);
 
             // then
-            verify(screeningCommandRepository).existsByMemberId(memberId);
             verify(screeningCommandRepository).save(any(Screening.class));
         }
+    }
+
+    @Nested
+    @DisplayName("rescreen() 테스트")
+    class Rescreen {
 
         @Test
-        @DisplayName("동일 멤버의 Screening이 이미 존재하면 예외를 던집니다.")
-        void createExistingScreeningThrowsException() {
+        @DisplayName("재심사 요청 시 새로운 Screening을 생성합니다.")
+        void rescreenCreatesNewScreening() {
             // given
             long memberId = 100L;
-            when(screeningCommandRepository.existsByMemberId(memberId)).thenReturn(true);
 
-            // when & then
-            assertThatThrownBy(() -> screeningService.create(memberId))
-                .isInstanceOf(DuplicateScreeningException.class);
+            // when
+            screeningService.rescreen(memberId);
+
+            // then
+            verify(screeningCommandRepository).save(any(Screening.class));
         }
     }
 
