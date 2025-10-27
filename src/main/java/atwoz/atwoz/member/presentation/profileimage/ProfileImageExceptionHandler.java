@@ -51,7 +51,7 @@ public class ProfileImageExceptionHandler {
 
     @ExceptionHandler(EmptyImageUploadException.class)
     public ResponseEntity<BaseResponse<Void>> handleInvalidImageFileException(EmptyImageUploadException e) {
-        log.error("이미지 업로드에 실패하였습니다. {}", e.getMessage());
+        log.warn("이미지 업로드에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
             .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
