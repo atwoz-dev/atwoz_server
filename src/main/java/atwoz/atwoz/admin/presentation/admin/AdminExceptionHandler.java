@@ -30,7 +30,7 @@ public class AdminExceptionHandler {
         log.warn("관리자 로그인에 실패했습니다. {}", e.getMessage());
 
         return ResponseEntity.status(401)
-            .body(BaseResponse.of(StatusType.UNAUTHORIZED, e.getMessage()));
+            .body(BaseResponse.of(StatusType.UNAUTHORIZED, "자격 증명이 유효하지 않습니다."));
     }
 
     @ExceptionHandler(IncorrectPasswordException.class)
@@ -38,6 +38,6 @@ public class AdminExceptionHandler {
         log.warn("관리자 로그인에 실패했습니다. {}", e.getMessage());
 
         return ResponseEntity.status(401)
-            .body(BaseResponse.of(StatusType.UNAUTHORIZED, e.getMessage()));
+            .body(BaseResponse.of(StatusType.UNAUTHORIZED, "자격 증명이 유효하지 않습니다."));
     }
 }
