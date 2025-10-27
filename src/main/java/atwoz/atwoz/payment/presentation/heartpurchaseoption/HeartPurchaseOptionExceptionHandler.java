@@ -22,7 +22,7 @@ public class HeartPurchaseOptionExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.INVALID_DUPLICATE_VALUE));
+            .body(BaseResponse.of(StatusType.INVALID_DUPLICATE_VALUE, e.getMessage()));
     }
 
     @ExceptionHandler(HeartPurchaseOptionNotFoundException.class)
@@ -31,6 +31,6 @@ public class HeartPurchaseOptionExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
-            .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
     }
 }

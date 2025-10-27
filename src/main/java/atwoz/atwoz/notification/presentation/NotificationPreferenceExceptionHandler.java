@@ -23,7 +23,7 @@ public class NotificationPreferenceExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
-            .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
     }
 
     @ExceptionHandler(InvalidNotificationTypeException.class)
@@ -33,6 +33,6 @@ public class NotificationPreferenceExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(400)
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 }

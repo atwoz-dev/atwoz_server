@@ -25,7 +25,7 @@ public class InterviewAnswerExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
-            .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
     }
 
     @ExceptionHandler(InterviewQuestionIsNotPublicException.class)
@@ -34,7 +34,7 @@ public class InterviewAnswerExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(InterviewAnswerAlreadyExistsException.class)
@@ -43,7 +43,7 @@ public class InterviewAnswerExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(InterviewAnswerNotFoundException.class)
@@ -52,7 +52,7 @@ public class InterviewAnswerExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
-            .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
     }
 
     @ExceptionHandler(InterviewAnswerAccessDeniedException.class)
@@ -61,6 +61,6 @@ public class InterviewAnswerExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(403)
-            .body(BaseResponse.from(StatusType.FORBIDDEN));
+            .body(BaseResponse.of(StatusType.FORBIDDEN, e.getMessage()));
     }
 }

@@ -23,7 +23,7 @@ public class ScreeningExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.CANNOT_BE_EDITED));
+            .body(BaseResponse.of(StatusType.CANNOT_BE_EDITED, e.getMessage()));
     }
 
     @ExceptionHandler(ScreeningNotFoundException.class)
@@ -31,7 +31,7 @@ public class ScreeningExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
-            .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
     }
 
     @ExceptionHandler(InvalidRejectionReasonException.class)
@@ -39,6 +39,6 @@ public class ScreeningExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.INVALID_INPUT_VALUE));
+            .body(BaseResponse.of(StatusType.INVALID_INPUT_VALUE, e.getMessage()));
     }
 }

@@ -21,7 +21,7 @@ public class ProfileImageExceptionHandler {
         log.warn("이미지 업로드에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(ProfileImageMemberIdMismatchException.class)
@@ -30,7 +30,7 @@ public class ProfileImageExceptionHandler {
         log.warn("프로필 이미지가 유저와 일치하지 않습니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(ProfileImageNotFoundException.class)
@@ -38,12 +38,12 @@ public class ProfileImageExceptionHandler {
         log.warn("이미지 조회에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.status(404)
-            .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
     }
 
     @ExceptionHandler(FileUploadFailException.class)
     public ResponseEntity<BaseResponse<Void>> handleFileUploadFailException(FileUploadFailException e) {
-        log.warn("파일 업로드에 실패하였습니다. {}", e.getMessage());
+        log.error("파일 업로드에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.status(500)
             .body(BaseResponse.from(StatusType.INTERNAL_SERVER_ERROR));
@@ -51,10 +51,10 @@ public class ProfileImageExceptionHandler {
 
     @ExceptionHandler(EmptyImageUploadException.class)
     public ResponseEntity<BaseResponse<Void>> handleInvalidImageFileException(EmptyImageUploadException e) {
-        log.warn("이미지 업로드에 실패하였습니다. {}", e.getMessage());
+        log.error("이미지 업로드에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(DuplicateProfileImageOrderException.class)
@@ -63,7 +63,7 @@ public class ProfileImageExceptionHandler {
         log.warn("이미지 업로드에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
 

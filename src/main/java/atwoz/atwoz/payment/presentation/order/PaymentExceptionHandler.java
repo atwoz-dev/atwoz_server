@@ -23,7 +23,7 @@ public class PaymentExceptionHandler {
         log.warn("잘못된 주문입니다. {}", e.getMessage());
 
         return ResponseEntity.status(400)
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(OrderAlreadyExistsException.class)
@@ -31,7 +31,7 @@ public class PaymentExceptionHandler {
         log.warn("이미 처리된 주문입니다. {}", e.getMessage());
 
         return ResponseEntity.status(400)
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(InvalidAppReceiptException.class)
@@ -39,7 +39,7 @@ public class PaymentExceptionHandler {
         log.warn("잘못된 앱 영수증입니다. {}", e.getMessage());
 
         return ResponseEntity.status(400)
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(InvalidTransactionIdException.class)
@@ -47,12 +47,12 @@ public class PaymentExceptionHandler {
         log.warn("잘못된 Transaction ID입니다. {}", e.getMessage());
 
         return ResponseEntity.status(400)
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(AppStoreClientException.class)
     public ResponseEntity<BaseResponse<Void>> handleAppStoreClientException(AppStoreClientException e) {
-        log.warn("앱스토어 서버와 통신 중 오류가 발생했습니다. {}", e.getMessage());
+        log.error("앱스토어 서버와 통신 중 오류가 발생했습니다. {}", e.getMessage());
 
         return ResponseEntity.status(500)
             .body(BaseResponse.from(StatusType.INTERNAL_SERVER_ERROR));

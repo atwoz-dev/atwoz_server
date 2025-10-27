@@ -23,7 +23,7 @@ public class ReportExceptionHandler {
         InvalidReportReasonTypeException e) {
         log.warn("신고 사유가 잘못되었습니다. {}", e.getMessage());
 
-        return ResponseEntity.badRequest().body(BaseResponse.from(StatusType.BAD_REQUEST));
+        return ResponseEntity.badRequest().body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(InvalidReportResultException.class)
@@ -31,7 +31,7 @@ public class ReportExceptionHandler {
         InvalidReportResultException e) {
         log.warn("신고 결과가 잘못되었습니다. {}", e.getMessage());
 
-        return ResponseEntity.badRequest().body(BaseResponse.from(StatusType.BAD_REQUEST));
+        return ResponseEntity.badRequest().body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(ReportAlreadyExistsException.class)
@@ -39,20 +39,20 @@ public class ReportExceptionHandler {
         ReportAlreadyExistsException e) {
         log.warn("이미 신고한 멤버입니다. {}", e.getMessage());
 
-        return ResponseEntity.badRequest().body(BaseResponse.from(StatusType.INVALID_DUPLICATE_VALUE));
+        return ResponseEntity.badRequest().body(BaseResponse.of(StatusType.INVALID_DUPLICATE_VALUE, e.getMessage()));
     }
 
     @ExceptionHandler(InvalidReportException.class)
     public ResponseEntity<BaseResponse<Void>> handleInvalidReportException(InvalidReportException e) {
         log.warn("잘못된 신고입니다. {}", e.getMessage());
 
-        return ResponseEntity.badRequest().body(BaseResponse.from(StatusType.BAD_REQUEST));
+        return ResponseEntity.badRequest().body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(ReportNotFoundException.class)
     public ResponseEntity<BaseResponse<Void>> handleReportNotFoundException(ReportNotFoundException e) {
         log.warn("해당 신고가 존재하지 않습니다. {}", e.getMessage());
 
-        return ResponseEntity.status(404).body(BaseResponse.from(StatusType.NOT_FOUND));
+        return ResponseEntity.status(404).body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
     }
 }

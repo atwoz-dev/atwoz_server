@@ -24,7 +24,7 @@ public class MemberExceptionHandler {
         log.warn("멤버 로그인에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.status(403)
-            .body(BaseResponse.from(StatusType.FORBIDDEN));
+            .body(BaseResponse.of(StatusType.FORBIDDEN, e.getMessage()));
     }
 
     @ExceptionHandler(TemporarilySuspendedMemberException.class)
@@ -34,7 +34,7 @@ public class MemberExceptionHandler {
         log.warn("멤버 로그인에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.status(403)
-            .body(BaseResponse.from(StatusType.TEMPORARILY_FORBIDDEN));
+            .body(BaseResponse.of(StatusType.TEMPORARILY_FORBIDDEN, e.getMessage()));
     }
 
     @ExceptionHandler(MemberDeletedException.class)
@@ -42,7 +42,7 @@ public class MemberExceptionHandler {
         log.warn("멤버 로그인에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.status(403)
-            .body(BaseResponse.from(StatusType.DELETED_TARGET));
+            .body(BaseResponse.of(StatusType.DELETED_TARGET, e.getMessage()));
     }
 
     @ExceptionHandler(MemberNotFoundException.class)
@@ -50,7 +50,7 @@ public class MemberExceptionHandler {
         log.warn("멤버 조회에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.status(404)
-            .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
     }
 
     @ExceptionHandler(PhoneNumberAlreadyExistsException.class)
@@ -59,7 +59,7 @@ public class MemberExceptionHandler {
         log.warn("휴대폰 번호 변경에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(KakaoIdAlreadyExistsException.class)
@@ -67,7 +67,7 @@ public class MemberExceptionHandler {
         log.warn("카카오 아이디 변경에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(PrimaryContactTypeSettingNeededException.class)
@@ -76,7 +76,7 @@ public class MemberExceptionHandler {
         log.warn("매치 요청/응답에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(ProfileAccessDeniedException.class)
@@ -85,7 +85,7 @@ public class MemberExceptionHandler {
         log.warn("프로필 조회에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.status(403)
-            .body(BaseResponse.from(StatusType.FORBIDDEN));
+            .body(BaseResponse.of(StatusType.FORBIDDEN, e.getMessage()));
     }
 
     @ExceptionHandler(CodeNotExistsException.class)
@@ -93,7 +93,7 @@ public class MemberExceptionHandler {
         log.warn("코드 인증에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.status(404)
-            .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
     }
 
     @ExceptionHandler(CodeNotMatchException.class)
@@ -101,7 +101,7 @@ public class MemberExceptionHandler {
         log.warn("코드가 일치하지 않습니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(MemberNotActiveException.class)
@@ -109,6 +109,6 @@ public class MemberExceptionHandler {
         log.warn("회원의 상태가 부적절합니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.DORMANT_STATUS));
+            .body(BaseResponse.of(StatusType.DORMANT_STATUS, e.getMessage()));
     }
 }
