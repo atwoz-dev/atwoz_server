@@ -4,16 +4,14 @@ import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.notification.command.application.*;
-import atwoz.atwoz.notification.query.NotificationQueryRepository;
-import atwoz.atwoz.notification.query.NotificationView;
+import atwoz.atwoz.notification.query.NotificationQueryService;
+import atwoz.atwoz.notification.query.NotificationViews;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static atwoz.atwoz.common.enums.StatusType.OK;
 
@@ -25,7 +23,7 @@ public class NotificationController {
 
     private final NotificationReadService notificationReadService;
     private final NotificationDeleteService notificationDeleteService;
-    private final NotificationQueryRepository notificationQueryRepository;
+    private final NotificationQueryService notificationQueryService;
 
     // TODO: 삭제 필요(테스트 용도)
     private final NotificationSendService notificationSendService;
@@ -42,12 +40,12 @@ public class NotificationController {
 
     @Operation(summary = "알림 목록 조회")
     @GetMapping
-    public ResponseEntity<BaseResponse<List<NotificationView>>> getNotifications(
+    public ResponseEntity<BaseResponse<NotificationViews>> getNotifications(
         @AuthPrincipal AuthContext authContext,
         @RequestParam(required = false) Long lastId
     ) {
         return ResponseEntity.ok(
-            BaseResponse.of(OK, notificationQueryRepository.findNotifications(authContext.getId(), lastId))
+            BaseResponse.of(OK, notificationQueryService.findNotifications(authContext.getId(), lastId))
         );
     }
 

@@ -13,11 +13,9 @@ import static atwoz.atwoz.notification.command.domain.QNotification.notification
 @RequiredArgsConstructor
 public class NotificationQueryRepository {
 
-    private static final int PAGE_SIZE = 20;
-    
     private final JPAQueryFactory queryFactory;
 
-    public List<NotificationView> findNotifications(long receiverId, Long lastId) {
+    public List<NotificationView> findNotifications(long receiverId, Long lastId, int limit) {
         BooleanExpression condition = notification.receiverId.eq(receiverId)
             .and(notification.deletedAt.isNull());
 
@@ -39,7 +37,7 @@ public class NotificationQueryRepository {
             .from(notification)
             .where(condition)
             .orderBy(notification.id.desc())
-            .limit(PAGE_SIZE)
+            .limit(limit)
             .fetch();
     }
 }

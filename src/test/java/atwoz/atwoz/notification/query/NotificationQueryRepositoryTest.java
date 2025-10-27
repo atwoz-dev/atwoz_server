@@ -37,7 +37,7 @@ class NotificationQueryRepositoryTest {
         em.clear();
 
         // when
-        var results = repository.findNotifications(2L, null);
+        var results = repository.findNotifications(2L, null, 20);
 
         // then
         assertThat(results).hasSize(2);
@@ -63,7 +63,7 @@ class NotificationQueryRepositoryTest {
 
         // when
         Long lastId = n3.getId();
-        var results = repository.findNotifications(3L, lastId);
+        var results = repository.findNotifications(3L, lastId, 20);
 
         // then
         assertThat(results).hasSize(2);
@@ -85,7 +85,7 @@ class NotificationQueryRepositoryTest {
         em.clear();
 
         // when
-        var results = repository.findNotifications(4L, null);
+        var results = repository.findNotifications(4L, null, 20);
 
         // then
         assertThat(results).hasSize(1);
