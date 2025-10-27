@@ -1,5 +1,7 @@
 package atwoz.atwoz.like.query;
 
+import atwoz.atwoz.block.domain.Block;
+import atwoz.atwoz.common.MockEventsExtension;
 import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.like.command.domain.Like;
 import atwoz.atwoz.like.command.domain.LikeLevel;
@@ -13,6 +15,7 @@ import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -27,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Import({QueryDslConfig.class, LikeQueryRepository.class})
+@ExtendWith(MockEventsExtension.class)
 class LikeQueryRepositoryTest {
     private static final int NUMBER_OF_PEOPLE = 30;
     private static final int PAGE_SIZE = 13;
@@ -144,6 +148,64 @@ class LikeQueryRepositoryTest {
     }
 
     @Test
+    @DisplayName("내가 차단한 멤버는 제외하고 보낸 좋아요 목록을 조회한다.")
+    void findSentLikes_excludeBlockedMembers() {
+        // given
+        var senderId = senders.getFirst().getId();
+        var blockedMemberId = receivers.get(0).getId();
+        var blockerMemberId = receivers.get(1).getId();
+
+        // 멤버 차단
+        createBlock(senderId, blockedMemberId);
+        createBlock(blockerMemberId, senderId);
+
+        var expectedLikes = likes.stream()
+            .filter(like -> like.getSenderId().equals(senderId))
+            .filter(like -> !like.getReceiverId().equals(blockedMemberId))
+            .sorted(Comparator.comparing(Like::getId).reversed())
+            .limit(PAGE_SIZE)
+            .toList();
+
+        // when
+        var firstPage = likeQueryRepository.findSentLikes(senderId, null);
+
+        // then
+        assertThat(firstPage).hasSize(expectedLikes.size());
+        for (var likeView : firstPage) {
+            assertThat(likeView.opponentId()).isNotEqualTo(blockedMemberId);
+        }
+    }
+
+    @Test
+    @DisplayName("내가 차단한 멤버는 제외하고 받은 좋아요 목록을 조회한다.")
+    void findReceivedLikes_excludeBlockedMembers() {
+        // given
+        var receiverId = receivers.getFirst().getId();
+        var blockedMemberId = senders.get(0).getId();
+        var blockerMemberId = senders.get(1).getId();
+
+        // 멤버 차단
+        createBlock(receiverId, blockedMemberId);
+        createBlock(blockerMemberId, receiverId);
+
+        var expectedLikes = likes.stream()
+            .filter(like -> like.getReceiverId().equals(receiverId))
+            .filter(like -> !like.getSenderId().equals(blockedMemberId))
+            .sorted(Comparator.comparing(Like::getId).reversed())
+            .limit(PAGE_SIZE)
+            .toList();
+
+        // when
+        var firstPage = likeQueryRepository.findReceivedLikes(receiverId, null);
+
+        // then
+        assertThat(firstPage).hasSize(expectedLikes.size());
+        for (var likeView : firstPage) {
+            assertThat(likeView.opponentId()).isNotEqualTo(blockedMemberId);
+        }
+    }
+
+    @Test
     @DisplayName("보낸 좋아요 목록 페이지네이션이 데이터 누락 없이 동작한다.")
     void findSentLikesPaginationWithoutDataLoss() {
         // given
@@ -210,7 +272,6 @@ class LikeQueryRepositoryTest {
         for (int i = 0; i < NUMBER_OF_PEOPLE; i++) {
             var sender = createMember(String.format("010%04d1234", i), "sender" + i, District.GWANAK_GU);
             senders.add(sender);
-            em.persist(sender);
         }
     }
 
@@ -274,6 +335,7 @@ class LikeQueryRepositoryTest {
 
     private Member createMember(String phone, String nickname, District district) {
         var member = Member.fromPhoneNumber(phone);
+        em.persist(member);
         var profile = MemberProfile.builder()
             .nickname(Nickname.from(nickname))
             .region(Region.of(district))
@@ -290,5 +352,11 @@ class LikeQueryRepositoryTest {
             .isPrimary(true)
             .order(1)
             .build();
+    }
+
+    private void createBlock(long blockerId, long blockedMemberId) {
+        Block block = Block.of(blockerId, blockedMemberId);
+        em.persist(block);
+        em.flush();
     }
 }

@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.query.introduction.intra;
 
 import atwoz.atwoz.QuerydslConfig;
-import atwoz.atwoz.common.event.Events;
+import atwoz.atwoz.common.MockEventsExtension;
 import atwoz.atwoz.like.command.domain.Like;
 import atwoz.atwoz.like.command.domain.LikeLevel;
 import atwoz.atwoz.member.command.domain.introduction.IntroductionType;
@@ -12,11 +12,12 @@ import atwoz.atwoz.member.command.domain.member.vo.Region;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.query.introduction.application.IntroductionSearchCondition;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -35,6 +36,7 @@ import static org.mockito.Mockito.when;
 
 @DataJpaTest
 @Import({QuerydslConfig.class, IntroductionQueryRepository.class})
+@ExtendWith(MockEventsExtension.class)
 class IntroductionQueryRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
@@ -59,6 +61,7 @@ class IntroductionQueryRepositoryTest {
             Hobby hobby4 = Hobby.BADMINTON_AND_TENNIS;
 
             Member member1 = Member.fromPhoneNumber("01011111111");
+            entityManager.persist(member1);
             MemberProfile profile1 = MemberProfile.builder()
                 .yearOfBirth(currentYear - 19) // 20살
                 .hobbies(Set.of(hobby1, hobby2))
@@ -71,10 +74,10 @@ class IntroductionQueryRepositoryTest {
             member1.updateProfile(profile1);
             member1.publishProfile();
 
-            entityManager.persist(member1);
             entityManager.flush();
 
             Member member2 = Member.fromPhoneNumber("01022222222");
+            entityManager.persist(member2);
             MemberProfile profile2 = MemberProfile.builder()
                 .yearOfBirth(currentYear - 39) // 40살
                 .hobbies(Set.of(hobby3, hobby4))
@@ -88,8 +91,6 @@ class IntroductionQueryRepositoryTest {
             if (!fieldName.equals("isProfilePublic")) {
                 member2.publishProfile();
             }
-
-            entityManager.persist(member2);
             entityManager.flush();
 
 
@@ -126,7 +127,6 @@ class IntroductionQueryRepositoryTest {
 
             // when
             Set<Long> result = introductionQueryRepository.findAllIntroductionMemberId(condition, limit);
-            System.out.println("hobby Condition : " + condition.getHobbies());
 
             // then
             switch (fieldName) {
@@ -150,20 +150,6 @@ class IntroductionQueryRepositoryTest {
     @Nested
     @DisplayName("findAllMemberIntroductionProfileQueryResultByMemberIds 메서드 테스트")
     class FindAllMemberIntroductionProfileQueryResultByMemberIdsIdsTest {
-        private static MockedStatic<Events> mockedEvents;
-
-        @BeforeEach
-        void setUp() {
-            mockedEvents = Mockito.mockStatic(Events.class);
-            mockedEvents.when(() -> Events.raise(Mockito.any()))
-                .thenAnswer(invocation -> null);
-        }
-
-        @AfterEach
-        void tearDown() {
-            mockedEvents.close();
-        }
-
         @ParameterizedTest
         @ValueSource(strings = {"introduced", "notIntroduced1", "notIntroduced2"})
         @DisplayName("멤버 ID 목록에 해당하는 회원의 소개 프로필 리턴")
@@ -175,6 +161,7 @@ class IntroductionQueryRepositoryTest {
             Hobby hobby4 = Hobby.BADMINTON_AND_TENNIS;
 
             Member me = Member.fromPhoneNumber("01011111111");
+            entityManager.persist(me);
             MemberProfile profile1 = MemberProfile.builder()
                 .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
                 .hobbies(Set.of(hobby1, hobby2))
@@ -184,11 +171,10 @@ class IntroductionQueryRepositoryTest {
                 .drinkingStatus(DrinkingStatus.SOCIAL)
                 .build();
             me.updateProfile(profile1);
-
-            entityManager.persist(me);
             entityManager.flush();
 
             Member introductionTargetMember = Member.fromPhoneNumber("01022222222");
+            entityManager.persist(introductionTargetMember);
             MemberProfile introductionTargetMemberProfile = MemberProfile.builder()
                 .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
                 .hobbies(Set.of(hobby3, hobby4))
@@ -199,8 +185,6 @@ class IntroductionQueryRepositoryTest {
                 .mbti(Mbti.ISTP)
                 .build();
             introductionTargetMember.updateProfile(introductionTargetMemberProfile);
-
-            entityManager.persist(introductionTargetMember);
             entityManager.flush();
 
             ProfileImage primaryProfileImage = ProfileImage.builder()
@@ -277,6 +261,7 @@ class IntroductionQueryRepositoryTest {
             Hobby hobby4 = Hobby.BADMINTON_AND_TENNIS;
 
             Member me = Member.fromPhoneNumber("01011111111");
+            entityManager.persist(me);
             MemberProfile profile1 = MemberProfile.builder()
                 .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
                 .hobbies(Set.of(hobby1, hobby2))
@@ -286,11 +271,10 @@ class IntroductionQueryRepositoryTest {
                 .drinkingStatus(DrinkingStatus.SOCIAL)
                 .build();
             me.updateProfile(profile1);
-
-            entityManager.persist(me);
             entityManager.flush();
 
             Member isIntroducedTrueMember = Member.fromPhoneNumber("01022222222");
+            entityManager.persist(isIntroducedTrueMember);
             MemberProfile isIntroducedTrueMemberProfile = MemberProfile.builder()
                 .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
                 .hobbies(Set.of(hobby3, hobby4))
@@ -301,11 +285,10 @@ class IntroductionQueryRepositoryTest {
                 .mbti(Mbti.ISTP)
                 .build();
             isIntroducedTrueMember.updateProfile(isIntroducedTrueMemberProfile);
-
-            entityManager.persist(isIntroducedTrueMember);
             entityManager.flush();
 
             Member isIntroducedFalseMember = Member.fromPhoneNumber("01033333333");
+            entityManager.persist(isIntroducedFalseMember);
             MemberProfile isIntroducedFalseMemberProfile = MemberProfile.builder()
                 .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
                 .hobbies(Set.of(hobby3, hobby4))
@@ -316,8 +299,6 @@ class IntroductionQueryRepositoryTest {
                 .mbti(Mbti.ISTP)
                 .build();
             isIntroducedFalseMember.updateProfile(isIntroducedFalseMemberProfile);
-
-            entityManager.persist(isIntroducedFalseMember);
             entityManager.flush();
 
             IntroductionType type = IntroductionType.DIAMOND_GRADE;

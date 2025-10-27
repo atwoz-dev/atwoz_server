@@ -210,7 +210,7 @@ public class IntroductionSearchCondition {
             null,
             null
             , null,
-            null,
+            member.getGrade(),
             gender,
             null
         );

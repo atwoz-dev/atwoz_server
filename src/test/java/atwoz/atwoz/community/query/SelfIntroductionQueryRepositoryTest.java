@@ -1,7 +1,7 @@
 package atwoz.atwoz.community.query;
 
+import atwoz.atwoz.common.MockEventsExtension;
 import atwoz.atwoz.common.config.QueryDslConfig;
-import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchange;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeStatus;
 import atwoz.atwoz.community.command.domain.selfintroduction.SelfIntroduction;
@@ -18,9 +18,11 @@ import atwoz.atwoz.member.command.domain.member.vo.Region;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.query.member.AgeConverter;
-import org.junit.jupiter.api.*;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -34,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Import({QueryDslConfig.class, SelfIntroductionQueryRepository.class})
+@ExtendWith(MockEventsExtension.class)
 public class SelfIntroductionQueryRepositoryTest {
 
     @Autowired
@@ -45,9 +48,6 @@ public class SelfIntroductionQueryRepositoryTest {
     @Nested
     @DisplayName("셀프 소개 페이지네이션 테스트")
     class selfIntroductionPaginationTest {
-
-        static MockedStatic<Events> mockedEvents;
-
         Member maleMember;
         String maleMemberProfileImageUrl = "imageUrl1";
 
@@ -58,12 +58,10 @@ public class SelfIntroductionQueryRepositoryTest {
 
         @BeforeEach
         void setUp() {
-            mockedEvents = Mockito.mockStatic(Events.class);
-            mockedEvents.when(() -> Events.raise(Mockito.any()))
-                .thenAnswer(invocation -> null);
-
             maleMember = Member.fromPhoneNumber("01012345678");
             femaleMember = Member.fromPhoneNumber("01012345679");
+            entityManager.persist(maleMember);
+            entityManager.persist(femaleMember);
 
             MemberProfile maleMemberProfile = MemberProfile.builder()
                 .gender(Gender.MALE)
@@ -81,9 +79,6 @@ public class SelfIntroductionQueryRepositoryTest {
 
             maleMember.updateProfile(maleMemberProfile);
             femaleMember.updateProfile(femaleMemberProfile);
-
-            entityManager.persist(maleMember);
-            entityManager.persist(femaleMember);
             entityManager.flush();
 
             // 프로필 이미지 설정.
@@ -126,11 +121,6 @@ public class SelfIntroductionQueryRepositoryTest {
             entityManager.flush();
 
             selfIntroductions.sort((s1, s2) -> (int) (s2.getId() - s1.getId()));
-        }
-
-        @AfterEach
-        void tearDown() {
-            mockedEvents.close();
         }
 
         @Test
@@ -309,9 +299,6 @@ public class SelfIntroductionQueryRepositoryTest {
     @Nested
     @DisplayName("셀프 소개 상세 조회 테스트")
     class selfIntroductionFindTest {
-
-        static MockedStatic<Events> mockedEvents;
-
         Member member;
         Member targetMember;
         ProfileImage profileImage;
@@ -322,10 +309,6 @@ public class SelfIntroductionQueryRepositoryTest {
 
         @BeforeEach
         void setUp() {
-            mockedEvents = Mockito.mockStatic(Events.class);
-            mockedEvents.when(() -> Events.raise(Mockito.any()))
-                .thenAnswer(invocation -> null);
-
             // 취미 데이터 생성.
             Hobby hobby = Hobby.ANIMATION;
             Hobby hobby2 = Hobby.BOARD_GAMES;
@@ -334,6 +317,8 @@ public class SelfIntroductionQueryRepositoryTest {
             // 멤버 데이터 생성.
             member = Member.fromPhoneNumber("01012345678");
             targetMember = Member.fromPhoneNumber("01056781234");
+            entityManager.persist(member);
+            entityManager.persist(targetMember);
 
             MemberProfile memberProfile = MemberProfile.builder()
                 .mbti(Mbti.ENFJ)
@@ -345,8 +330,6 @@ public class SelfIntroductionQueryRepositoryTest {
 
             targetMember.updateProfile(memberProfile);
 
-            entityManager.persist(member);
-            entityManager.persist(targetMember);
             entityManager.flush();
 
             // 프로필 이미지 설정.
@@ -390,20 +373,12 @@ public class SelfIntroductionQueryRepositoryTest {
             entityManager.flush();
         }
 
-        @AfterEach
-        void tearDown() {
-            mockedEvents.close();
-        }
-
         @Test
         @DisplayName("셀프 소개를 상세 조회합니다.")
         void findSelfIntroduction() {
             // Given
             Long memberId = member.getId();
             Long selfIntroductionId = selfIntroduction.getId();
-
-            System.out.println(memberId);
-            System.out.println(selfIntroductionId);
 
             // When
             SelfIntroductionView view = selfIntroductionQueryRepository.findSelfIntroductionByIdWithMemberId(

@@ -7,7 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import static atwoz.atwoz.block.domain.QBlock.block;
 import static atwoz.atwoz.like.command.domain.QLike.like;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
 import static atwoz.atwoz.member.command.domain.profileImage.QProfileImage.profileImage;
@@ -20,6 +23,8 @@ public class LikeQueryRepository {
 
     public List<RawLikeView> findSentLikes(long senderId, Long lastLikeId) {
         QLike mutual = new QLike("mutual");
+
+        Set<Long> blockedIds = getBlockedIds(senderId);
 
         return queryFactory
             .select(new QRawLikeView(
@@ -36,7 +41,11 @@ public class LikeQueryRepository {
             .join(member).on(member.id.eq(like.receiverId))
             .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
             .leftJoin(mutual).on(mutual.senderId.eq(like.receiverId).and(mutual.receiverId.eq(senderId)))
-            .where(eqSender(senderId), ltLikeId(lastLikeId))
+            .where(
+                eqSender(senderId),
+                ltLikeId(lastLikeId),
+                receiverIdNotIn(blockedIds)
+            )
             .orderBy(like.id.desc())
             .limit(PAGE_SIZE)
             .fetch();
@@ -44,6 +53,8 @@ public class LikeQueryRepository {
 
     public List<RawLikeView> findReceivedLikes(long receiverId, Long lastLikeId) {
         QLike mutual = new QLike("mutual");
+
+        Set<Long> blockedIds = getBlockedIds(receiverId);
 
         return queryFactory
             .select(new QRawLikeView(
@@ -60,7 +71,11 @@ public class LikeQueryRepository {
             .join(member).on(member.id.eq(like.senderId))
             .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
             .leftJoin(mutual).on(mutual.senderId.eq(receiverId).and(mutual.receiverId.eq(like.senderId)))
-            .where(eqReceiver(receiverId), ltLikeId(lastLikeId))
+            .where(
+                eqReceiver(receiverId),
+                ltLikeId(lastLikeId),
+                senderIdNotIn(blockedIds)
+            )
             .orderBy(like.id.desc())
             .limit(PAGE_SIZE)
             .fetch();
@@ -76,5 +91,29 @@ public class LikeQueryRepository {
 
     private BooleanExpression ltLikeId(Long lastLikeId) {
         return lastLikeId != null ? like.id.lt(lastLikeId) : null;
+    }
+
+    private Set<Long> getBlockedIds(long blockerId) {
+        return queryFactory
+            .select(block.blockedId)
+            .from(block)
+            .where(block.blockerId.eq(blockerId))
+            .fetch()
+            .stream()
+            .collect(Collectors.toSet());
+    }
+
+    private BooleanExpression senderIdNotIn(Set<Long> ids) {
+        if (ids.isEmpty()) {
+            return null;
+        }
+        return like.senderId.notIn(ids);
+    }
+
+    private BooleanExpression receiverIdNotIn(Set<Long> ids) {
+        if (ids.isEmpty()) {
+            return null;
+        }
+        return like.receiverId.notIn(ids);
     }
 }

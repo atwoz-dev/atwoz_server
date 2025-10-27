@@ -44,6 +44,7 @@ class SoulmateQueryRepositoryImplTest {
         private Member createMemberAndSubmit(String phoneNumber, Gender gender, boolean isProfilePublic,
             ActivityStatus activityStatus, String answer) {
             Member member = Member.fromPhoneNumber(phoneNumber);
+            em.persist(member);
             MemberProfile profile = MemberProfile.builder()
                 .gender(gender)
                 .build();
@@ -51,8 +52,6 @@ class SoulmateQueryRepositoryImplTest {
             if (isProfilePublic) {
                 member.publishProfile();
             }
-
-            em.persist(member);
             em.flush();
 
             if (activityStatus == ActivityStatus.DORMANT && member.isActive()) {

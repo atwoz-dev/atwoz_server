@@ -11,7 +11,8 @@ public enum ActivityStatus {
     SUSPENDED_PERMANENTLY("영구 정지"),
     WAITING_SCREENING("심사 대기중"),
     REJECTED_SCREENING("심사 거절"),
-    DORMANT("휴면");
+    DORMANT("휴면"),
+    DELETED("탈퇴");
 
     private final String description;
 
