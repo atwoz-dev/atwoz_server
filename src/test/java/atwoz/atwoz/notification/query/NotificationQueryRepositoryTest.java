@@ -24,47 +24,71 @@ class NotificationQueryRepositoryTest {
     private NotificationQueryRepository repository;
 
     @Test
-    @DisplayName("findNotifications(): 읽지 않은 알림만 조회")
-    void findUnreadNotifications() {
+    @DisplayName("findNotifications(): 첫 페이지 조회 (lastId = null)")
+    void findNotificationsFirstPage() {
         // given
-        var unread = Notification.create(SYSTEM, 1L, 2L, LIKE, "t1", "b1");
-        var read = Notification.create(SYSTEM, 2L, 3L, LIKE, "t2", "b2");
+        var unread = Notification.create(SYSTEM, 1L, 2L, LIKE, "unread", "b1");
+        var read = Notification.create(SYSTEM, 2L, 2L, LIKE, "read", "b2");
         read.markAsRead();
+
         em.persist(unread);
         em.persist(read);
         em.flush();
         em.clear();
 
         // when
-        var results = repository.findNotifications(2L, false);
-
-        // then
-        assertThat(results).hasSize(1);
-        assertThat(results.getFirst().receiverId()).isEqualTo(2L);
-        assertThat(results.getFirst().title()).isEqualTo("t1");
-    }
-
-    @Test
-    @DisplayName("findNotifications(): 읽은 알림만 조회")
-    void findReadNotifications() {
-        // given
-        var unread = Notification.create(SYSTEM, 1L, 3L, LIKE, "t3", "b3");
-        var read1 = Notification.create(SYSTEM, 1L, 3L, LIKE, "t4", "b4");
-        var read2 = Notification.create(SYSTEM, 1L, 3L, LIKE, "t5", "b5");
-        read1.markAsRead();
-        read2.markAsRead();
-        em.persist(unread);
-        em.persist(read1);
-        em.persist(read2);
-        em.flush();
-        em.clear();
-
-        // when
-        var results = repository.findNotifications(3L, true);
+        var results = repository.findNotifications(2L, null, 20);
 
         // then
         assertThat(results).hasSize(2);
         assertThat(results).extracting("title")
-            .containsExactlyInAnyOrder("t4", "t5");
+            .containsExactlyInAnyOrder("unread", "read");
+        assertThat(results).extracting("isRead")
+            .containsExactlyInAnyOrder(false, true);
+    }
+
+    @Test
+    @DisplayName("findNotifications(): 다음 페이지 조회 (lastId != null)")
+    void findNotificationsNextPage() {
+        // given
+        var n1 = Notification.create(SYSTEM, 1L, 3L, LIKE, "n1", "b1");
+        var n2 = Notification.create(SYSTEM, 1L, 3L, LIKE, "n2", "b2");
+        var n3 = Notification.create(SYSTEM, 1L, 3L, LIKE, "n3", "b3");
+
+        em.persist(n1);
+        em.persist(n2);
+        em.persist(n3);
+        em.flush();
+        em.clear();
+
+        // when
+        Long lastId = n3.getId();
+        var results = repository.findNotifications(3L, lastId, 20);
+
+        // then
+        assertThat(results).hasSize(2);
+        assertThat(results).extracting("title")
+            .containsExactly("n2", "n1");
+    }
+
+    @Test
+    @DisplayName("findNotifications(): 삭제된 알림은 조회되지 않음")
+    void findNotificationsExcludeDeleted() {
+        // given
+        var active = Notification.create(SYSTEM, 1L, 4L, LIKE, "active", "body");
+        var deleted = Notification.create(SYSTEM, 1L, 4L, LIKE, "deleted", "body");
+        deleted.delete();
+
+        em.persist(active);
+        em.persist(deleted);
+        em.flush();
+        em.clear();
+
+        // when
+        var results = repository.findNotifications(4L, null, 20);
+
+        // then
+        assertThat(results).hasSize(1);
+        assertThat(results.getFirst().title()).isEqualTo("active");
     }
 }
