@@ -1,5 +1,6 @@
 package atwoz.atwoz.match.command.domain.match;
 
+import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.match.command.domain.match.event.*;
 import atwoz.atwoz.match.command.domain.match.exception.InvalidMatchStatusChangeException;
@@ -9,16 +10,19 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+import static lombok.AccessLevel.PRIVATE;
+import static lombok.AccessLevel.PROTECTED;
+
 @Entity
 @Table(name = "matches", indexes = {
     @Index(name = "idx_responder_id", columnList = "responderId"),
     @Index(name = "idx_requester_id_responder_id", columnList = "requesterId, responderId")
 })
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor(access = PRIVATE)
+@Builder(access = PRIVATE)
 @Getter
-public class Match {
+public class Match extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
