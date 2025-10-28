@@ -103,6 +103,6 @@ public class MatchHistoryQueryRepository {
         if (endDate == null) {
             return null;
         }
-        return match.createdAt.loe(endDate.plusDays(1).atStartOfDay().minusSeconds(1));
+        return match.createdAt.lt(endDate.plusDays(1).atStartOfDay());
     }
 }
