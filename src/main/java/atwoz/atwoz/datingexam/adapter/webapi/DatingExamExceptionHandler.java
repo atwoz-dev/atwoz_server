@@ -67,9 +67,9 @@ public class DatingExamExceptionHandler {
     @ExceptionHandler(DatingExamEncodingFailedException.class)
     public ResponseEntity<BaseResponse<Void>> handleDatingExamEncodingFailedException(
         DatingExamEncodingFailedException e) {
-        log.error("연애 모의고사 답안 인코딩에 실패했습니다. {}", e.getMessage());
+        log.error("연애 모의고사 답안 인코딩에 실패했습니다. {}", e.getMessage(), e);
 
         return ResponseEntity.internalServerError()
-            .body(BaseResponse.of(StatusType.INTERNAL_SERVER_ERROR, e.getMessage()));
+            .body(BaseResponse.from(StatusType.INTERNAL_SERVER_ERROR));
     }
 }

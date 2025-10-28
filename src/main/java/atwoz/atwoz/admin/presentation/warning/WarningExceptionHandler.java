@@ -22,6 +22,6 @@ public class WarningExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.INVALID_INPUT_VALUE));
+            .body(BaseResponse.of(StatusType.INVALID_INPUT_VALUE, e.getMessage()));
     }
 }

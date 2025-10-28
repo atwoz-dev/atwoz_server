@@ -22,7 +22,7 @@ public class MatchExceptionHandler {
         log.warn("매치 요청에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(MatchNotFoundException.class)
@@ -30,7 +30,7 @@ public class MatchExceptionHandler {
         log.warn("해당 매치를 찾을 수 없습니다. {}", e.getMessage());
 
         return ResponseEntity.status(404)
-            .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
     }
 
     @ExceptionHandler(InvalidMatchUpdateException.class)
@@ -38,6 +38,6 @@ public class MatchExceptionHandler {
         log.warn("해당 매치의 상태를 변경할 수 없습니다. {}", e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 }

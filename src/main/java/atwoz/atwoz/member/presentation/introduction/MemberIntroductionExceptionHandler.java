@@ -21,7 +21,7 @@ public class MemberIntroductionExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
-            .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
     }
 
     @ExceptionHandler(InvalidAgeRangeException.class)
@@ -29,7 +29,7 @@ public class MemberIntroductionExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(IntroducedMemberNotFoundException.class)
@@ -38,7 +38,7 @@ public class MemberIntroductionExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
-            .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
     }
 
     @ExceptionHandler(IntroducedMemberNotActiveException.class)
@@ -47,7 +47,7 @@ public class MemberIntroductionExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.BAD_REQUEST));
+            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 
     @ExceptionHandler(MemberIntroductionAlreadyExistsException.class)

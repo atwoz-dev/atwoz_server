@@ -23,7 +23,7 @@ public class InterviewQuestionExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.INVALID_DUPLICATE_VALUE));
+            .body(BaseResponse.of(StatusType.INVALID_DUPLICATE_VALUE, e.getMessage()));
     }
 
     @ExceptionHandler(InvalidInterviewCategoryException.class)
@@ -32,7 +32,7 @@ public class InterviewQuestionExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.from(StatusType.INVALID_TYPE_VALUE));
+            .body(BaseResponse.of(StatusType.INVALID_TYPE_VALUE, e.getMessage()));
     }
 
     @ExceptionHandler(InterviewQuestionNotFoundException.class)
@@ -41,6 +41,6 @@ public class InterviewQuestionExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
-            .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
     }
 }

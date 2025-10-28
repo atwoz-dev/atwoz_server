@@ -23,7 +23,7 @@ public class NotificationExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
-            .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
     }
 
     @ExceptionHandler(MemberNotFoundException.class)
@@ -31,7 +31,7 @@ public class NotificationExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
-            .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
     }
 
     @ExceptionHandler(NotificationNotFoundException.class)
@@ -39,6 +39,6 @@ public class NotificationExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404)
-            .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
     }
 }

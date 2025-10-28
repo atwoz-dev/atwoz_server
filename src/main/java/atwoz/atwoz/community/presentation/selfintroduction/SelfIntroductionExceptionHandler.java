@@ -19,7 +19,7 @@ public class SelfIntroductionExceptionHandler {
         log.warn("셀프 소개 조회에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.status(404)
-            .body(BaseResponse.from(StatusType.NOT_FOUND));
+            .body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
     }
 
     @ExceptionHandler(NotSelfIntroductionAuthorException.class)
@@ -27,6 +27,6 @@ public class SelfIntroductionExceptionHandler {
         log.warn("셀프 소개 작성에 실패하였습니다. {}", e.getMessage());
 
         return ResponseEntity.status(401)
-            .body(BaseResponse.from(StatusType.UNAUTHORIZED));
+            .body(BaseResponse.of(StatusType.UNAUTHORIZED, e.getMessage()));
     }
 }

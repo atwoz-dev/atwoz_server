@@ -21,20 +21,20 @@ public class LikeExceptionHandler {
     public ResponseEntity<BaseResponse<Void>> handleLikeAlreadyExistsException(LikeAlreadyExistsException e) {
         log.warn(e.getMessage());
 
-        return ResponseEntity.badRequest().body(BaseResponse.from(StatusType.INVALID_DUPLICATE_VALUE));
+        return ResponseEntity.badRequest().body(BaseResponse.of(StatusType.INVALID_DUPLICATE_VALUE, e.getMessage()));
     }
 
     @ExceptionHandler(InvalidLikeLevelException.class)
     public ResponseEntity<BaseResponse<Void>> handleInvalidLikeLevelException(InvalidLikeLevelException e) {
         log.warn(e.getMessage());
 
-        return ResponseEntity.badRequest().body(BaseResponse.from(StatusType.INVALID_ENUM_VALUE));
+        return ResponseEntity.badRequest().body(BaseResponse.of(StatusType.INVALID_ENUM_VALUE, e.getMessage()));
     }
 
     @ExceptionHandler(MemberNotFoundException.class)
     public ResponseEntity<BaseResponse<Void>> handleMemberNotFoundException(MemberNotFoundException e) {
         log.warn(e.getMessage());
 
-        return ResponseEntity.status(404).body(BaseResponse.from(StatusType.NOT_FOUND));
+        return ResponseEntity.status(404).body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
     }
 }
