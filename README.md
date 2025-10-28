@@ -26,7 +26,6 @@
 - CI/CD 관련 내용은 [여기](https://github.com/atwoz-dev/atwoz_server/pull/46)를 참고해주세요.
   <img width="792" src="https://github.com/user-attachments/assets/e38d4208-03cc-45c5-8792-eaac02eecaf8"/>
 
-
 <br>
 
 ## 컨텍스트 맵
@@ -165,3 +164,4 @@ docker compose --env-file .env up -d
 - 애플리케이션 실행 후 웹 브라우저 또는 API 클라이언트를 통해 `http://localhost:8080/swagger-ui.html` (또는 `.env`에 설정한 포트)로 접근하여 서비스가 정상적으로 동작하는지
   확인합니다.
 - Swagger UI 설정이 활성화된 경우, API 문서를 확인할 수 있습니다.
+- 
