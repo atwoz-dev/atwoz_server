@@ -17,6 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.verify;
+
 @ExtendWith(MockitoExtension.class)
 public class ProfileImageServiceTest {
 
@@ -35,7 +38,7 @@ public class ProfileImageServiceTest {
 
         @Test
         @DisplayName("이미지 확장자가 허용되지 않는 경우, 예외 발생")
-        void throwExceptionWhenFileExtensionIsNotIncluded() {
+        void throwExceptionWhenFileExtensionIsNotIncluded_invalidExtension() {
             // Given
             String fileName = "error.txt";
 
@@ -65,6 +68,27 @@ public class ProfileImageServiceTest {
             // When & Then
             Assertions.assertThatThrownBy(() -> profileImageService.save(memberId, requests))
                 .isInstanceOf(ExceedProfileImageCountException.class);
+        }
+
+        void uploadImage() {
+            // Given
+            Long memberId = 1L;
+            List<ProfileImageUploadRequest> request = List.of(
+                new ProfileImageUploadRequest("https://bucket.s3.region.amazonaws.com/TEMP_IMAGE_1.jpeg"),
+                new ProfileImageUploadRequest("https://bucket.s3.region.amazonaws.com/TEMP_IMAGE_1.jpeg"),
+                new ProfileImageUploadRequest("https://bucket.s3.region.amazonaws.com/TEMP_IMAGE_1.jpeg"),
+                new ProfileImageUploadRequest("https://bucket.s3.region.amazonaws.com/TEMP_IMAGE_1.jpeg"),
+                new ProfileImageUploadRequest("https://bucket.s3.region.amazonaws.com/TEMP_IMAGE_1.jpeg"),
+                new ProfileImageUploadRequest("https://bucket.s3.region.amazonaws.com/TEMP_IMAGE_2.jpeg"),
+                new ProfileImageUploadRequest("https://bucket.s3.region.amazonaws.com/TEMP_IMAGE_3.jpeg"),
+                new ProfileImageUploadRequest("https://bucket.s3.region.amazonaws.com/TEMP_IMAGE_4.jpeg")
+            );
+            // When
+            profileImageService.save(memberId, request);
+
+            // Then
+            verify(profileImageCommandRepository).deleteByMemberId(memberId);
+            verify(profileImageCommandRepository).saveAll(anyList());
         }
     }
 }

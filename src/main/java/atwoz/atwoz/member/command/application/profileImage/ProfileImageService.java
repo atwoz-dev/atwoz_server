@@ -30,6 +30,10 @@ public class ProfileImageService {
         /**
          * Request Validate.
          */
+        if (requests == null) {
+            requests = new ArrayList<>();
+        }
+
         validateRequestSize(requests);
 
         /**
@@ -77,7 +81,16 @@ public class ProfileImageService {
         /**
          * 확장자 검증.
          */
-        String extension = fileName.substring(fileName.lastIndexOf("."));
+        if (fileName == null || fileName.isEmpty()) {
+            throw new InvalidProfileImageExtensionException("Blank FileName.");
+        }
+
+        int lastDotIndex = fileName.lastIndexOf(".");
+        if (lastDotIndex == -1 || lastDotIndex == fileName.length() - 1) {
+            throw new InvalidProfileImageExtensionException("No Extension.");
+        }
+
+        String extension = fileName.substring(lastDotIndex + 1).toLowerCase();
 
         if (!ALLOWED_IMAGE_EXTENSIONS.contains(extension)) {
             throw new InvalidProfileImageExtensionException(extension);
