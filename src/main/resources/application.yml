@@ -7,7 +7,7 @@ spring:
       fail-on-unknown-properties: true
 
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:atwoz_local}
+    url: jdbc:mysql://localhost:3306/atwoz_local
     username: ${MYSQL_USER:user}
     password: ${MYSQL_PASSWORD:1234}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -22,9 +22,9 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:}
+      host: localhost
+      port: 6379
+      password:
       ssl:
         enabled: false
 

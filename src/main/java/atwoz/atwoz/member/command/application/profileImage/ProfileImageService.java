@@ -7,6 +7,7 @@ import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImageCommandRepository;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.command.infra.profileImage.S3Uploader;
+import atwoz.atwoz.member.command.infra.profileImage.dto.PresignedUrlResponse;
 import atwoz.atwoz.member.presentation.profileimage.dto.ProfileImageUploadRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ import java.util.List;
 public class ProfileImageService {
 
     private static final List<String> ALLOWED_IMAGE_EXTENSIONS = List.of(
-        "jpg", "jpeg", "png", "webp", "gif", "heic"
+        "jpg", "jpeg", "png", "webp", "heic"
     );
     private final ProfileImageCommandRepository profileImageCommandRepository;
     private final S3Uploader s3Uploader;
@@ -52,20 +53,21 @@ public class ProfileImageService {
                 .builder()
                 .memberId(memberId)
                 .imageUrl(ImageUrl.from(request.getImageUrl()))
-                .order(order++)
+                .order(order)
                 .isPrimary(order == 1)
                 .build();
 
             profileImages.add(profileImage);
+            order++;
         }
 
         profileImageCommandRepository.saveAll(profileImages);
         return ProfileImageMapper.toList(profileImages);
     }
 
-    public String getPresignedUrl(String fileName) {
+    public PresignedUrlResponse getPresignedUrl(String fileName, Long userId) {
         validateFileName(fileName);
-        return s3Uploader.getPreSignedUrl(fileName);
+        return s3Uploader.getPreSignedUrl(fileName, userId);
     }
 
     private void validateRequestSize(List<ProfileImageUploadRequest> request) {

@@ -41,9 +41,10 @@ public class ProfileImageServiceTest {
         void throwExceptionWhenFileExtensionIsNotIncluded_invalidExtension() {
             // Given
             String fileName = "error.txt";
+            Long userId = 1L;
 
             // When & Then
-            Assertions.assertThatThrownBy(() -> profileImageService.getPresignedUrl(fileName))
+            Assertions.assertThatThrownBy(() -> profileImageService.getPresignedUrl(fileName, userId))
                 .isInstanceOf(InvalidProfileImageExtensionException.class);
         }
     }

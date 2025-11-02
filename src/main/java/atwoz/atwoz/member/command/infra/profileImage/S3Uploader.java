@@ -1,10 +1,13 @@
 package atwoz.atwoz.member.command.infra.profileImage;
 
+import atwoz.atwoz.member.command.infra.profileImage.dto.PresignedUrlResponse;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -30,6 +33,9 @@ public class S3Uploader {
 
     private AmazonS3Client s3Client;
 
+    private String prefixUrl;
+
+
     @PostConstruct
     public void init() {
         BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(accessKey, secretKey);
@@ -42,16 +48,27 @@ public class S3Uploader {
             .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
             .withClientConfiguration(clientConfiguration)
             .build();
+
+        prefixUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/";
     }
 
-    public String getPreSignedUrl(String fileName) {
+    public PresignedUrlResponse getPreSignedUrl(String fileName, Long userId) {
+        String key = generateUniqueKey(fileName, userId);
         Date expiration = new Date(
             System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(PRESIGNED_URL_EXPIRATION_MINUTES));
-        return s3Client.generatePresignedUrl(bucket, generateUniqueKey(fileName), expiration).toString();
+
+        GeneratePresignedUrlRequest req = new GeneratePresignedUrlRequest(bucket, key)
+            .withMethod(HttpMethod.PUT)
+            .withExpiration(expiration);
+
+        String presignedUrl = s3Client.generatePresignedUrl(req).toString();
+        String objectUrl = prefixUrl + key;
+
+        return new PresignedUrlResponse(presignedUrl, objectUrl);
     }
 
-    private String generateUniqueKey(String fileName) {
+    private String generateUniqueKey(String fileName, Long userId) {
         String extension = fileName.substring(fileName.lastIndexOf("."));
-        return UUID.randomUUID() + extension;
+        return userId + "/" + UUID.randomUUID() + extension;
     }
 }

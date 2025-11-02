@@ -6,6 +6,7 @@ import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.profileImage.ProfileImageService;
 import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadResponse;
+import atwoz.atwoz.member.command.infra.profileImage.dto.PresignedUrlResponse;
 import atwoz.atwoz.member.presentation.profileimage.dto.PresignedUrlPostRequest;
 import atwoz.atwoz.member.presentation.profileimage.dto.ProfileImageUploadRequestWrapper;
 import atwoz.atwoz.member.query.profileimage.ProfileImageQueryRepository;
@@ -38,9 +39,11 @@ public class ProfileImageController {
 
     @Operation(summary = "프로필 이미지 업로드용 preSignedUrl 생성")
     @PostMapping("/presigned-url")
-    public ResponseEntity<BaseResponse<String>> getPresignedUrl(@RequestBody @Valid PresignedUrlPostRequest request) {
+    public ResponseEntity<BaseResponse<PresignedUrlResponse>> getPresignedUrl(
+        @RequestBody @Valid PresignedUrlPostRequest request,
+        @AuthPrincipal AuthContext authContext) {
         return ResponseEntity.ok(
-            BaseResponse.of(StatusType.OK, profileImageService.getPresignedUrl(request.fileName()))
+            BaseResponse.of(StatusType.OK, profileImageService.getPresignedUrl(request.fileName(), authContext.getId()))
         );
     }
 
