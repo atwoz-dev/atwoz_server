@@ -71,7 +71,7 @@ member                  // 하위 도메인
 
 #### .env 파일 생성 및 수정
 
-프로젝트 루트 디렉토리에 있는 `.env.example` 파일을 참고하여 `.env` 파일을 생성합니다.  
+프로젝트 루트 디렉토리에 있는 `.env.example` 파일을 참고하여 `.env` 파일을 생성합니다.
 예시:
 
 ```bash
@@ -80,37 +80,59 @@ cp .env.example .env
 
 생성된 `.env` 파일에서 다음과 같이 각 환경 변수의 값을 실제 환경에 맞게 수정합니다.
 
-#### 기본 환경 변수
+#### Spring Profiles
 
-| 변수명                        | 설명                            | 예시                |
-|----------------------------|-------------------------------|-------------------|
-| **SPRING_PROFILES_ACTIVE** | 실행 환경 지정 (예: local 또는 deploy) | local \|\| deploy |
-| **APP_HOST_PORT**          | 애플리케이션의 호스트 노출 포트             | 8080              |
-| **APP_CONTAINER_PORT**     | 컨테이너 내부에서 사용하는 포트             | 8080              |
+| 변수명                        | 설명       | 옵션               |
+|----------------------------|----------|------------------|
+| **SPRING_PROFILES_ACTIVE** | 실행 환경 지정 | local, dev, prod |
 
-#### MySQL 설정
+#### Server 설정
 
-| 변수명                      | 설명                  | 예시          |
-|--------------------------|---------------------|-------------|
-| **MYSQL_HOST**           | MySQL 컨테이너의 호스트명    | db          |
-| **MYSQL_PORT**           | MySQL 기본 포트         | 3306        |
-| **MYSQL_HOST_PORT**      | 호스트와의 포트 매핑 (MySQL) | 3308        |
-| **MYSQL_CONTAINER_PORT** | 컨테이너 내부 MySQL 포트    | 3306        |
-| **MYSQL_DATABASE**       | 사용할 데이터베이스 이름       | atwoz_local |
-| **MYSQL_USER**           | 데이터베이스 사용자          | user        |
-| **MYSQL_PASSWORD**       | 데이터베이스 사용자 비밀번호     | 1234        |
-| **MYSQL_ROOT_PASSWORD**  | MySQL root 비밀번호     | 1234        |
+| 변수명                    | 설명                    | 예시   |
+|------------------------|-----------------------|------|
+| **SERVER_PORT**        | Spring Boot 애플리케이션 포트 | 8080 |
+| **APP_HOST_PORT**      | 호스트 머신에서 접근할 포트       | 8080 |
+| **APP_CONTAINER_PORT** | Docker 컨테이너 내부 포트     | 8080 |
 
-#### Redis 설정
+#### MySQL
 
-| 변수명                      | 설명                  | 예시    |
-|--------------------------|---------------------|-------|
-| **REDIS_HOST**           | Redis 컨테이너의 호스트명    | redis |
-| **REDIS_PORT**           | Redis 기본 포트         | 6381  |
-| **REDIS_HOST_PORT**      | 호스트와의 포트 매핑 (Redis) | 6381  |
-| **REDIS_CONTAINER_PORT** | 컨테이너 내부 Redis 포트    | 6379  |
+| 변수명 | 설명 | 예시 |
+|--------------------------|---------|----|------|
+| **MYSQL_HOST**           | MySQL 서버 호스트 (로컬: db, 서버: RDS 엔드포인트) | db |
+| **MYSQL_PORT**           | MySQL 서버 포트 | 3306 |
+| **MYSQL_HOST_PORT**      | 호스트 머신에서 MySQL 접근 포트 | 3308 |
+| **MYSQL_CONTAINER_PORT** | MySQL 컨테이너 내부 포트 | 3306 |
+| **MYSQL_DATABASE**       | 데이터베이스 이름 | atwoz |
+| **MYSQL_USER**           | MySQL 사용자명 | user |
+| **MYSQL_PASSWORD**       | MySQL 비밀번호 | 1234 |
+| **MYSQL_ROOT_PASSWORD**  | MySQL root 비밀번호 | 1234 |
 
-### AWS S3 / EC2 설정
+#### JPA/Hibernate
+
+| 변수명 | 설명 | 예시 |
+|--------------------|-----------------------------|----|------|
+| **JPA_DDL_AUTO**   | 스키마 자동 생성 모드 (create/update/validate) | create |
+| **JPA_SHOW_SQL**   | SQL 로그 출력 여부 | true |
+| **JPA_FORMAT_SQL** | SQL 포매팅 여부 | true |
+
+#### Flyway
+
+| 변수명                | 설명                   | 예시    |
+|--------------------|----------------------|-------|
+| **FLYWAY_ENABLED** | 데이터베이스 마이그레이션 활성화 여부 | false |
+
+#### Redis
+
+| 변수명                      | 설명                                    | 예시    |
+|--------------------------|---------------------------------------|-------|
+| **REDIS_HOST**           | Redis 서버 호스트                          | redis |
+| **REDIS_PORT**           | Spring Boot가 연결할 Redis 포트 (컨테이너 내부)   | 6379  |
+| **REDIS_HOST_PORT**      | 호스트 머신에서 Redis 접근 포트                  | 6381  |
+| **REDIS_CONTAINER_PORT** | Redis 컨테이너 내부 포트                      | 6379  |
+| **REDIS_PASSWORD**       | Redis 비밀번호 (선택)                       |       |
+| **REDIS_SSL_ENABLED**    | Redis SSL 활성화 (AWS ElastiCache는 true) | false |
+
+#### AWS S3
 
 | 변수명                    | 설명       | 예시 |
 |------------------------|----------|----|
@@ -118,24 +140,51 @@ cp .env.example .env
 | **AWS_S3_SECRET_KEY**  | S3 비밀 키  |    |
 | **AWS_S3_BUCKET_NAME** | S3 버킷 이름 |    |
 
-### Swagger 설정
+#### JWT
+
+| 변수명                              | 설명                      | 예시                                          |
+|----------------------------------|-------------------------|---------------------------------------------|
+| **JWT_SECRET**                   | JWT 서명 키                | this-is-secret-key-value-at-least-128-bytes |
+| **JWT_ACCESS_TOKEN_EXPIRATION**  | Access Token 만료 시간 (초)  | 1800                                        |
+| **JWT_REFRESH_TOKEN_EXPIRATION** | Refresh Token 만료 시간 (초) | 1209600                                     |
+
+#### Auth
+
+| 변수명                  | 설명        | 예시     |
+|----------------------|-----------|--------|
+| **AUTH_PREFIX_CODE** | 인증 코드 접두사 | 008008 |
+
+#### Swagger
 
 | 변수명                    | 설명                | 예시   |
 |------------------------|-------------------|------|
 | **SPRINGDOC_ENABLED**  | Swagger 문서 활성화 여부 | true |
 | **SWAGGER_UI_ENABLED** | Swagger UI 활성화 여부 | true |
 
-### APP Store 설정
+#### App Store
 
-| 변수명                              | 설명                        | 예시 |
-|----------------------------------|---------------------------|----|
-| **APP_STORE_KEY_ID**             | APP Store Key ID          |    |
-| **APP_STORE_PRIVATE_KEY_STRING** | APP Store Private Key 문자열 |    |
-| **APP_STORE_ISSUER_ID**          | APP Store Issuer ID       |    |
-| **APP_STORE_ENVIRONMENT**        | APP Store 환경              |    |
-| **APP_STORE_BUNDLE_ID**          | APP Store 번들 ID           |    |
+| 변수명                              | 설명                                | 예시                                            |
+|----------------------------------|-----------------------------------|-----------------------------------------------|
+| **APP_STORE_KEY_ID**             | App Store Connect API Key ID      |                                               |
+| **APP_STORE_PRIVATE_KEY_STRING** | App Store Connect Private Key     |                                               |
+| **APP_STORE_ISSUER_ID**          | App Store Connect Issuer ID       |                                               |
+| **APP_STORE_ENVIRONMENT**        | App Store 환경 (Sandbox/Production) | Sandbox                                       |
+| **APP_STORE_BUNDLE_ID**          | 앱 Bundle ID                       |                                               |
+| **APP_STORE_APP_APPLE_ID**       | 앱 Apple ID                        |                                               |
+| **APP_STORE_ROOT_CA_G2_PATH**    | Apple Root CA G2 인증서 경로           | /etc/certs/appstore/AppleRootCA-G2.pem        |
+| **APP_STORE_ROOT_CA_G3_PATH**    | Apple Root CA G3 인증서 경로           | /etc/certs/appstore/AppleRootCA-G3.pem        |
+| **APP_STORE_BASE_URL**           | App Store Server API URL          | https://api.storekit-sandbox.itunes.apple.com |
 
-### Firebase 설정
+#### Bizgo
+
+| 변수명                         | 설명               | 예시 |
+|-----------------------------|------------------|----|
+| **BIZGO_API_URL**           | Bizgo API URL    |    |
+| **BIZGO_CLIENT_ID**         | Bizgo 클라이언트 ID   |    |
+| **BIZGO_CLIENT_PASSWORD**   | Bizgo 클라이언트 비밀번호 |    |
+| **BIZGO_FROM_PHONE_NUMBER** | 발신 전화번호          |    |
+
+#### Firebase
 
 | 변수명                                | 설명                | 예시 |
 |------------------------------------|-------------------|----|
