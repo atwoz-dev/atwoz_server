@@ -1,28 +1,24 @@
 package atwoz.atwoz.member.command.infra.profileImage;
 
-import atwoz.atwoz.member.command.application.profileImage.exception.FileUploadFailException;
-import atwoz.atwoz.member.command.infra.profileImage.exception.S3AmazonException;
-import atwoz.atwoz.member.command.infra.profileImage.exception.S3ClientException;
-import com.amazonaws.AmazonServiceException;
+import atwoz.atwoz.member.command.infra.profileImage.dto.PresignedUrlResponse;
 import com.amazonaws.ClientConfiguration;
-import com.amazonaws.SdkClientException;
+import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.util.Date;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class S3Uploader {
+    private static final int PRESIGNED_URL_EXPIRATION_MINUTES = 10;
     @Value("${cloud.aws.credentials.access-key}")
     private String accessKey;
 
@@ -38,6 +34,7 @@ public class S3Uploader {
     private AmazonS3Client s3Client;
 
     private String prefixUrl;
+
 
     @PostConstruct
     public void init() {
@@ -55,53 +52,23 @@ public class S3Uploader {
         prefixUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/";
     }
 
-    public String uploadFile(MultipartFile file) {
-        String fileName = generateRandomFileName(file);
-        ObjectMetadata objectMetadata = getObjectMetadata(file);
+    public PresignedUrlResponse getPreSignedUrl(String fileName, Long userId) {
+        String key = generateUniqueKey(fileName, userId);
+        Date expiration = new Date(
+            System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(PRESIGNED_URL_EXPIRATION_MINUTES));
 
-        try {
-            s3Client.putObject(bucket, fileName, file.getInputStream(), objectMetadata);
-        } catch (IOException e) {
-            throw new FileUploadFailException(e);
-        } catch (AmazonServiceException e) {
-            throw new S3AmazonException(e);
-        } catch (SdkClientException e) {
-            throw new S3ClientException(e);
-        }
+        GeneratePresignedUrlRequest req = new GeneratePresignedUrlRequest(bucket, key)
+            .withMethod(HttpMethod.PUT)
+            .withExpiration(expiration);
 
-        return prefixUrl + fileName;
+        String presignedUrl = s3Client.generatePresignedUrl(req).toString();
+        String objectUrl = prefixUrl + key;
+
+        return new PresignedUrlResponse(presignedUrl, objectUrl);
     }
 
-    @Async
-    public CompletableFuture<String> uploadImageAsync(MultipartFile image) {
-        if (image == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-        String imageUrl = uploadFile(image);
-        return CompletableFuture.completedFuture(imageUrl);
-    }
-
-    public void deleteFile(String url) {
-        String key = getKey(url);
-        s3Client.deleteObject(bucket, key);
-    }
-
-    private String getKey(String url) {
-        return url.substring(prefixUrl.length());
-    }
-
-    private ObjectMetadata getObjectMetadata(MultipartFile file) {
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-
-        objectMetadata.setContentType(file.getContentType());
-        objectMetadata.setContentLength(file.getSize());
-
-        return objectMetadata;
-    }
-
-    private String generateRandomFileName(MultipartFile file) {
-        String originalFilename = file.getOriginalFilename();
-        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        return UUID.randomUUID() + extension;
+    private String generateUniqueKey(String fileName, Long userId) {
+        String extension = fileName.substring(fileName.lastIndexOf("."));
+        return userId + "/" + UUID.randomUUID() + extension;
     }
 }

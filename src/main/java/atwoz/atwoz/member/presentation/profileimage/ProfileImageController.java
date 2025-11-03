@@ -6,6 +6,8 @@ import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.profileImage.ProfileImageService;
 import atwoz.atwoz.member.command.application.profileImage.dto.ProfileImageUploadResponse;
+import atwoz.atwoz.member.command.infra.profileImage.dto.PresignedUrlResponse;
+import atwoz.atwoz.member.presentation.profileimage.dto.PresignedUrlPostRequest;
 import atwoz.atwoz.member.presentation.profileimage.dto.ProfileImageUploadRequestWrapper;
 import atwoz.atwoz.member.query.profileimage.ProfileImageQueryRepository;
 import atwoz.atwoz.member.query.profileimage.view.ProfileImageView;
@@ -13,7 +15,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,19 +30,21 @@ public class ProfileImageController {
     private final ProfileImageQueryRepository profileImageQueryRepository;
 
     @Operation(summary = "프로필 이미지 업로드")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
     public ResponseEntity<BaseResponse<List<ProfileImageUploadResponse>>> updateProfileImage(
         @ModelAttribute @Valid ProfileImageUploadRequestWrapper request, @AuthPrincipal AuthContext authContext) {
         return ResponseEntity.ok(
             BaseResponse.of(StatusType.OK, profileImageService.save(authContext.getId(), request.getRequests())));
     }
 
-    @Operation(summary = "프로필 이미지 삭제")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<BaseResponse<Void>> deleteProfileImage(@PathVariable Long id,
+    @Operation(summary = "프로필 이미지 업로드용 preSignedUrl 생성")
+    @PostMapping("/presigned-url")
+    public ResponseEntity<BaseResponse<PresignedUrlResponse>> getPresignedUrl(
+        @RequestBody @Valid PresignedUrlPostRequest request,
         @AuthPrincipal AuthContext authContext) {
-        profileImageService.delete(id, authContext.getId());
-        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+        return ResponseEntity.ok(
+            BaseResponse.of(StatusType.OK, profileImageService.getPresignedUrl(request.fileName(), authContext.getId()))
+        );
     }
 
     @Operation(summary = "내 프로필 이미지 조회")
