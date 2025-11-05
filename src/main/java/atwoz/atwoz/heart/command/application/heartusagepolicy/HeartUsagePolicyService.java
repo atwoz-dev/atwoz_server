@@ -24,12 +24,15 @@ public class HeartUsagePolicyService {
     private final MemberCommandRepository memberCommandRepository;
 
     @Transactional
-    public HeartTransaction useHeart(long memberId, TransactionType transactionType, String content,
+    public void useHeart(long memberId, TransactionType transactionType, String content,
         String transactionSubtype) {
         Member member = getMember(memberId);
         HeartAmount heartAmount = getHeartAmount(member, transactionType, transactionSubtype);
+        if (heartAmount.isZero()) {
+            return;
+        }
         HeartBalance balanceAfterUsingHeart = deductHeartBalance(member, heartAmount);
-        return createHeartTransaction(member, transactionType, content, heartAmount, balanceAfterUsingHeart);
+        createHeartTransaction(member, transactionType, content, heartAmount, balanceAfterUsingHeart);
     }
 
     private Member getMember(long memberId) {
@@ -51,10 +54,10 @@ public class HeartUsagePolicyService {
         return balanceAfterUsingHeart;
     }
 
-    private HeartTransaction createHeartTransaction(Member member, TransactionType transactionType, String content,
+    private void createHeartTransaction(Member member, TransactionType transactionType, String content,
         HeartAmount heartAmount, HeartBalance balanceAfterUsingHeart) {
         HeartTransaction heartTransaction = HeartTransaction.of(member.getId(), transactionType, content, heartAmount,
             balanceAfterUsingHeart);
-        return heartTransactionCommandRepository.save(heartTransaction);
+        heartTransactionCommandRepository.save(heartTransaction);
     }
 }

@@ -32,4 +32,8 @@ public final class HeartAmount {
     public boolean isGainingAmount() {
         return this.amount >= MIN_GAINING_AMOUNT;
     }
+
+    public boolean isZero() {
+        return this.amount.equals(0L);
+    }
 }
