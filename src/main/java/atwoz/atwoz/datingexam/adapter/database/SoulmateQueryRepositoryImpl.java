@@ -2,6 +2,7 @@ package atwoz.atwoz.datingexam.adapter.database;
 
 import atwoz.atwoz.datingexam.application.required.SoulmateQueryRepository;
 import atwoz.atwoz.datingexam.domain.DatingExamSubmit;
+import atwoz.atwoz.datingexam.domain.SubjectType;
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Gender;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static atwoz.atwoz.block.domain.QBlock.block;
+import static atwoz.atwoz.datingexam.domain.QDatingExamSubject.datingExamSubject;
 import static atwoz.atwoz.datingexam.domain.QDatingExamSubmit.datingExamSubmit;
 import static atwoz.atwoz.member.command.domain.member.QMember.member;
 
@@ -79,6 +81,10 @@ public class SoulmateQueryRepositoryImpl implements SoulmateQueryRepository {
     private Set<Long> getEqualAnswerMemberIds(Long memberId) {
         List<DatingExamSubmit> submits = queryFactory.select(datingExamSubmit)
             .from(datingExamSubmit)
+            .innerJoin(datingExamSubject).on(
+                datingExamSubmit.subjectId.eq(datingExamSubject.id),
+                datingExamSubject.type.eq(SubjectType.REQUIRED)
+            )
             .where(datingExamSubmit.memberId.eq(memberId))
             .fetch();
 
