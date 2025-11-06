@@ -105,6 +105,7 @@ public class AdminMemberQueryRepository {
     public Optional<AdminMemberDetailView> findById(long memberId) {
         List<InterviewInfoView> interviewInfos = queryFactory
             .select(new QInterviewInfoView(
+                interviewQuestion.id,
                 interviewQuestion.content,
                 interviewAnswer.content
             ))
