@@ -1,9 +1,9 @@
 package atwoz.atwoz.datingexam.application.provided;
 
-import atwoz.atwoz.datingexam.application.dto.DatingExamInfoResponse;
+import atwoz.atwoz.datingexam.application.dto.DatingExamInfoWithSubjectSubmissionResponse;
 
 public interface DatingExamFinder {
-    DatingExamInfoResponse findRequiredExamInfo();
+    DatingExamInfoWithSubjectSubmissionResponse findRequiredExamInfo(Long memberId);
 
-    DatingExamInfoResponse findOptionalExamInfo();
+    DatingExamInfoWithSubjectSubmissionResponse findOptionalExamInfo(Long memberId);
 }
