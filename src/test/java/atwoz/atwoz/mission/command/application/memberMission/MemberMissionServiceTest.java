@@ -25,6 +25,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 @ExtendWith({MockEventsExtension.class, MockitoExtension.class})
 public class MemberMissionServiceTest {
 
@@ -123,10 +125,12 @@ public class MemberMissionServiceTest {
                 .thenReturn(Optional.of(memberMission));
 
             // When
-            memberMissionService.executeMissionsByAction(memberId, mission.getActionType().name());
+            boolean hasProcessedMission = memberMissionService.executeMissionsByAction(memberId,
+                mission.getActionType().name());
 
             // Then
             Mockito.verify(memberMissionCommandRepository, Mockito.never()).save(Mockito.any(MemberMission.class));
+            assertThat(hasProcessedMission).isTrue();
         }
 
         @Test
@@ -147,12 +151,14 @@ public class MemberMissionServiceTest {
             Mockito.when(completedMemberMission.isCompleted()).thenReturn(true);
 
             // When
-            memberMissionService.executeMissionsByAction(memberId, mission.getActionType().name());
+            boolean hasProcessedMission = memberMissionService.executeMissionsByAction(memberId,
+                mission.getActionType().name());
 
             // Then
             Mockito.verify(memberMissionCommandRepository, Mockito.never()).save(Mockito.any(MemberMission.class));
             Mockito.verify(completedMemberMission, Mockito.never())
                 .countPlus(mission.getRequiredAttempt(), mission.getRepeatableCount());
+            assertThat(hasProcessedMission).isFalse();
         }
     }
 }

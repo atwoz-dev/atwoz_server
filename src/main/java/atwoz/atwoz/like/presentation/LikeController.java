@@ -24,13 +24,14 @@ public class LikeController {
 
     @Operation(summary = "좋아요 보내기")
     @PostMapping
-    public ResponseEntity<BaseResponse<Void>> send(
+    public ResponseEntity<BaseResponse<LikeSendResponse>> send(
         @Valid @RequestBody LikeSendRequest request,
         @AuthPrincipal AuthContext authContext
     ) {
         final long senderId = authContext.getId();
-        likeSendService.send(senderId, request);
-        return ResponseEntity.ok(BaseResponse.from(OK));
+        boolean hasProcessedMission = likeSendService.send(senderId, request);
+        LikeSendResponse response = new LikeSendResponse(hasProcessedMission);
+        return ResponseEntity.ok(BaseResponse.of(OK, response));
     }
 
     @Operation(summary = "내가 보낸 좋아요 목록 조회")

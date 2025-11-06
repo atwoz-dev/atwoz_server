@@ -2,7 +2,6 @@ package atwoz.atwoz.mission.command.infra.memberMission;
 
 import atwoz.atwoz.datingexam.application.dto.AllRequiredSubjectSubmittedEvent;
 import atwoz.atwoz.interview.command.domain.answer.event.FirstInterviewSubmittedEvent;
-import atwoz.atwoz.like.command.domain.LikeSentEvent;
 import atwoz.atwoz.mission.command.application.memberMission.MemberMissionService;
 import atwoz.atwoz.mission.command.domain.mission.ActionType;
 import lombok.AccessLevel;
@@ -21,12 +20,6 @@ public class MemberMissionEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(AllRequiredSubjectSubmittedEvent event) {
         memberMissionService.executeMissionsByAction(event.getMemberId(), ActionType.FIRST_DATE_EXAM.name());
-    }
-
-    @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handle(LikeSentEvent event) {
-        memberMissionService.executeMissionsByAction(event.getSenderId(), ActionType.LIKE.name());
     }
 
     @Async
