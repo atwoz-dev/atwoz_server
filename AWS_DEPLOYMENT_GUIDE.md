@@ -1,4 +1,4 @@
-# AWS 운영 서버 세팅 가이드 (ATWOZ)
+# AWS 운영 서버 세팅 가이드 (DEEPPLE)
 
 ## 📋 목차
 
@@ -25,13 +25,13 @@
 
 ### 1.1 환경 전략
 
-ATWOZ 프로젝트는 3가지 환경으로 구성됩니다:
+DEEPPLE 프로젝트는 3가지 환경으로 구성됩니다:
 
-| 환경              | 브랜치       | 인프라            | 배포 방식             | 도메인               | 목적         |
-|-----------------|-----------|----------------|-------------------|-------------------|------------|
-| **Local**       | feature/* | Docker Compose | 수동                | localhost:8080    | 개발자 로컬 개발  |
-| **Development** | develop   | AWS (최소 사양)    | 자동 (develop 머지 시) | dev-api.atwoz.com | 통합 테스트, QA |
-| **Production**  | main      | AWS (고가용성)     | 자동 (main 머지 시)    | api.atwoz.com     | 실제 서비스     |
+| 환경              | 브랜치       | 인프라            | 배포 방식             | 도메인                 | 목적         |
+|-----------------|-----------|----------------|-------------------|---------------------|------------|
+| **Local**       | feature/* | Docker Compose | 수동                | localhost:8080      | 개발자 로컬 개발  |
+| **Development** | develop   | AWS (최소 사양)    | 자동 (develop 머지 시) | dev-api.deepple.com | 통합 테스트, QA |
+| **Production**  | main      | AWS (고가용성)     | 자동 (main 머지 시)    | api.deepple.com     | 실제 서비스     |
 
 ### 1.2 환경별 차이점
 
@@ -78,7 +78,7 @@ ATWOZ 프로젝트는 3가지 환경으로 구성됩니다:
 
 2. **애플리케이션용 IAM Role 생성**
 
-    - Role 이름: `atwoz-app-role`
+    - Role 이름: `deepple-app-role`
     - 신뢰할 수 있는 엔터티: EC2
     - 권한:
         - `AmazonS3FullAccess` (S3 업로드용)
@@ -103,13 +103,13 @@ ATWOZ 프로젝트는 3가지 환경으로 구성됩니다:
 
 **Development VPC**:
 
-- 이름: `atwoz-dev-vpc`
+- 이름: `deepple-dev-vpc`
 - CIDR: `10.1.0.0/16`
 - 간소화된 구성 (비용 절감)
 
 **Production VPC**:
 
-- 이름: `atwoz-prod-vpc`
+- 이름: `deepple-prod-vpc`
 - CIDR: `10.0.0.0/16`
 - 완전한 고가용성 구성
 
@@ -118,7 +118,7 @@ ATWOZ 프로젝트는 3가지 환경으로 구성됩니다:
 1. **VPC 생성**
 
     - AWS Console → VPC → Create VPC
-    - 이름: `atwoz-prod-vpc`
+    - 이름: `deepple-prod-vpc`
     - IPv4 CIDR: `10.0.0.0/16` (65,536개의 IP 주소)
 
 2. **서브넷 생성**
@@ -126,12 +126,12 @@ ATWOZ 프로젝트는 3가지 환경으로 구성됩니다:
    **퍼블릭 서브넷** (인터넷 접근 가능):
 
     ```
-    - atwoz-prod-public-subnet-1a
+    - deepple-prod-public-subnet-1a
       - 가용 영역: ap-northeast-2a
       - CIDR: 10.0.1.0/24
       - 용도: EC2, ALB
 
-    - atwoz-prod-public-subnet-1c
+    - deepple-prod-public-subnet-1c
       - 가용 영역: ap-northeast-2c
       - CIDR: 10.0.2.0/24
       - 용도: EC2, ALB (고가용성)
@@ -140,12 +140,12 @@ ATWOZ 프로젝트는 3가지 환경으로 구성됩니다:
    **프라이빗 서브넷** (인터넷 직접 접근 불가):
 
     ```
-    - atwoz-prod-private-subnet-1a
+    - deepple-prod-private-subnet-1a
       - 가용 영역: ap-northeast-2a
       - CIDR: 10.0.11.0/24
       - 용도: RDS, ElastiCache
 
-    - atwoz-prod-private-subnet-1c
+    - deepple-prod-private-subnet-1c
       - 가용 영역: ap-northeast-2c
       - CIDR: 10.0.12.0/24
       - 용도: RDS, ElastiCache (고가용성)
@@ -153,7 +153,7 @@ ATWOZ 프로젝트는 3가지 환경으로 구성됩니다:
 
 3. **인터넷 게이트웨이 생성**
 
-    - 이름: `atwoz-prod-igw`
+    - 이름: `deepple-prod-igw`
     - VPC에 연결
 
 4. **NAT 게이트웨이 생성** (선택사항)
@@ -168,7 +168,7 @@ ATWOZ 프로젝트는 3가지 환경으로 구성됩니다:
    **퍼블릭 라우팅 테이블**:
 
     ```
-    - 이름: atwoz-prod-public-rt
+    - 이름: deepple-prod-public-rt
     - 라우트: 0.0.0.0/0 → Internet Gateway
     - 연결: 퍼블릭 서브넷들
     ```
@@ -176,7 +176,7 @@ ATWOZ 프로젝트는 3가지 환경으로 구성됩니다:
    **프라이빗 라우팅 테이블**:
 
     ```
-    - 이름: atwoz-prod-private-rt
+    - 이름: deepple-prod-private-rt
     - 라우트: 0.0.0.0/0 → NAT Gateway (선택사항)
     - 연결: 프라이빗 서브넷들
     ```
@@ -196,7 +196,7 @@ ATWOZ 프로젝트는 3가지 환경으로 구성됩니다:
     ```
     - 엔진: MySQL 8.0
     - 템플릿: 프로덕션
-    - DB 인스턴스 식별자: atwoz-prod-db
+    - DB 인스턴스 식별자: deepple-prod-db
     - 마스터 사용자 이름: admin
     - 마스터 암호: [강력한 비밀번호 생성]
     ```
@@ -223,18 +223,18 @@ ATWOZ 프로젝트는 3가지 환경으로 구성됩니다:
 4. **연결 설정**
 
     ```
-    - VPC: atwoz-prod-vpc
+    - VPC: deepple-prod-vpc
     - 서브넷 그룹: 프라이빗 서브넷들로 구성
     - 퍼블릭 액세스: 아니요 (보안상 중요!)
-    - VPC 보안 그룹: atwoz-prod-db-sg (새로 생성)
+    - VPC 보안 그룹: deepple-prod-db-sg (새로 생성)
     ```
 
-5. **보안 그룹 설정** (`atwoz-prod-db-sg`)
+5. **보안 그룹 설정** (`deepple-prod-db-sg`)
 
     ```
     인바운드 규칙:
     - 유형: MySQL/Aurora (3306)
-    - 소스: atwoz-prod-app-sg (EC2 보안 그룹)
+    - 소스: deepple-prod-app-sg (EC2 보안 그룹)
     ```
 
 6. **백업 설정**
@@ -257,33 +257,33 @@ ATWOZ 프로젝트는 3가지 환경으로 구성됩니다:
 
     ```bash
     # Bastion 호스트 또는 VPN을 통해 접속
-    mysql -h atwoz-prod-db.xxxxx.ap-northeast-2.rds.amazonaws.com -u admin -p
+    mysql -h deepple-prod-db.xxxxx.ap-northeast-2.rds.amazonaws.com -u admin -p
 
     # 데이터베이스 생성
-    CREATE DATABASE atwoz CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    CREATE DATABASE deepple CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
     # 애플리케이션용 사용자 생성
-    CREATE USER 'atwoz_app'@'%' IDENTIFIED BY '[강력한 비밀번호]';
-    GRANT ALL PRIVILEGES ON atwoz.* TO 'atwoz_app'@'%';
+    CREATE USER 'deepple_app'@'%' IDENTIFIED BY '[강력한 비밀번호]';
+    GRANT ALL PRIVILEGES ON deepple.* TO 'deepple_app'@'%';
     FLUSH PRIVILEGES;
     ```
 
 ### 4.3 RDS 엔드포인트 확인
 
 ```
-라이터(쓰기) 엔드포인트: atwoz-prod-db.xxxxx.ap-northeast-2.rds.amazonaws.com
-리더(읽기) 엔드포인트: atwoz-prod-db-ro.xxxxx.ap-northeast-2.rds.amazonaws.com
+라이터(쓰기) 엔드포인트: deepple-prod-db.xxxxx.ap-northeast-2.rds.amazonaws.com
+리더(읽기) 엔드포인트: deepple-prod-db-ro.xxxxx.ap-northeast-2.rds.amazonaws.com
 ```
 
-### 4.4 Flyway 마이그레이션 확인 (ATWOZ 특화)
+### 4.4 Flyway 마이그레이션 확인 (DEEPPLE 특화)
 
-**중요**: ATWOZ 프로젝트는 Flyway를 사용하여 데이터베이스 스키마를 관리합니다.
+**중요**: DEEPPLE 프로젝트는 Flyway를 사용하여 데이터베이스 스키마를 관리합니다.
 
 ```bash
 # RDS 접속 후 마이그레이션 상태 확인
-mysql -h atwoz-prod-db.xxxxx.ap-northeast-2.rds.amazonaws.com -u atwoz_app -p
+mysql -h deepple-prod-db.xxxxx.ap-northeast-2.rds.amazonaws.com -u deepple_app -p
 
-USE atwoz;
+USE deepple;
 SELECT * FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;
 
 # 예상 결과:
@@ -314,7 +314,7 @@ SELECT * FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;
     - 클러스터 엔진: Redis
     - 위치: AWS 클라우드
     - 클러스터 모드: 비활성화 (간단한 구성)
-    - 이름: atwoz-prod-redis
+    - 이름: deepple-prod-redis
     - 엔진 버전: 7.0 (최신 안정 버전)
     ```
 
@@ -331,15 +331,15 @@ SELECT * FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;
     ```
     - 서브넷 그룹: 프라이빗 서브넷들
     - Multi-AZ: 활성화 (자동 장애 조치)
-    - 보안 그룹: atwoz-prod-redis-sg (새로 생성)
+    - 보안 그룹: deepple-prod-redis-sg (새로 생성)
     ```
 
-4. **보안 그룹 설정** (`atwoz-prod-redis-sg`)
+4. **보안 그룹 설정** (`deepple-prod-redis-sg`)
 
     ```
     인바운드 규칙:
     - 유형: 사용자 지정 TCP (6379)
-    - 소스: atwoz-prod-app-sg (EC2 보안 그룹)
+    - 소스: deepple-prod-app-sg (EC2 보안 그룹)
     ```
 
 5. **보안 설정**
@@ -360,8 +360,8 @@ SELECT * FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;
 ### 5.3 Redis 엔드포인트 확인
 
 ```
-기본 엔드포인트: atwoz-prod-redis.xxxxx.cache.amazonaws.com:6379
-읽기 엔드포인트: atwoz-prod-redis-ro.xxxxx.cache.amazonaws.com:6379
+기본 엔드포인트: deepple-prod-redis.xxxxx.cache.amazonaws.com:6379
+읽기 엔드포인트: deepple-prod-redis-ro.xxxxx.cache.amazonaws.com:6379
 ```
 
 ---
@@ -377,8 +377,8 @@ SELECT * FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;
 1. **버킷 생성**
 
     ```
-    - 버킷 이름: atwoz-prod-storage (전세계 고유해야 함)
-    - 개발용: atwoz-dev-storage
+    - 버킷 이름: deepple-prod-storage (전세계 고유해야 함)
+    - 개발용: deepple-dev-storage
     - 리전: ap-northeast-2
     - 객체 소유권: ACL 비활성화
     - 퍼블릭 액세스 차단: 모두 차단 (보안)
@@ -445,8 +445,8 @@ SELECT * FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;
         "s3:ListBucket"
       ],
       "Resource": [
-        "arn:aws:s3:::atwoz-prod-storage",
-        "arn:aws:s3:::atwoz-prod-storage/*"
+        "arn:aws:s3:::deepple-prod-storage",
+        "arn:aws:s3:::deepple-prod-storage/*"
       ]
     }
   ]
@@ -463,14 +463,14 @@ SELECT * FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;
 
 ### 7.2 보안 그룹 생성
 
-**애플리케이션 보안 그룹** (`atwoz-prod-app-sg`):
+**애플리케이션 보안 그룹** (`deepple-prod-app-sg`):
 
 ```
 인바운드 규칙:
 1. SSH (22) - 소스: 관리자 IP만 (보안상 중요!)
-2. HTTP (80) - 소스: atwoz-prod-alb-sg (로드 밸런서)
-3. HTTPS (443) - 소스: atwoz-prod-alb-sg
-4. Custom (8080) - 소스: atwoz-prod-alb-sg (Spring Boot 포트)
+2. HTTP (80) - 소스: deepple-prod-alb-sg (로드 밸런서)
+3. HTTPS (443) - 소스: deepple-prod-alb-sg
+4. Custom (8080) - 소스: deepple-prod-alb-sg (Spring Boot 포트)
 
 아웃바운드 규칙:
 - 모든 트래픽 허용 (0.0.0.0/0)
@@ -499,7 +499,7 @@ SELECT * FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;
 3. **키 페어**
 
     ```
-    - 새 키 페어 생성: atwoz-prod-key
+    - 새 키 페어 생성: deepple-prod-key
     - 유형: RSA
     - 형식: .pem
     - 다운로드 후 안전하게 보관! (분실 시 서버 접속 불가)
@@ -508,10 +508,10 @@ SELECT * FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;
 4. **네트워크 설정**
 
     ```
-    - VPC: atwoz-prod-vpc
-    - 서브넷: atwoz-prod-public-subnet-1a
+    - VPC: deepple-prod-vpc
+    - 서브넷: deepple-prod-public-subnet-1a
     - 퍼블릭 IP 자동 할당: 활성화
-    - 보안 그룹: atwoz-prod-app-sg
+    - 보안 그룹: deepple-prod-app-sg
     ```
 
 5. **스토리지 구성**
@@ -524,7 +524,7 @@ SELECT * FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;
 6. **고급 세부 정보**
 
     ```
-    - IAM 인스턴스 프로파일: atwoz-app-role
+    - IAM 인스턴스 프로파일: deepple-app-role
     - 사용자 데이터 (초기 설정 스크립트):
     ```
 
@@ -554,23 +554,23 @@ SSH로 접속 후:
 
 ```bash
 # 키 파일 권한 설정 (로컬)
-chmod 400 atwoz-prod-key.pem
+chmod 400 deepple-prod-key.pem
 
 # SSH 접속
-ssh -i atwoz-prod-key.pem ec2-user@[EC2_PUBLIC_IP]
+ssh -i deepple-prod-key.pem ec2-user@[EC2_PUBLIC_IP]
 
 # Docker 확인
 docker --version
 docker-compose --version
 
 # 작업 디렉토리 생성
-mkdir -p /home/ec2-user/atwoz
-cd /home/ec2-user/atwoz
+mkdir -p /home/ec2-user/deepple
+cd /home/ec2-user/deepple
 ```
 
-### 7.5 ATWOZ 프로젝트 필수 파일 배치
+### 7.5 DEEPPLE 프로젝트 필수 파일 배치
 
-**중요**: ATWOZ 프로젝트는 Firebase와 App Store 인증서 파일이 필요합니다.
+**중요**: DEEPPLE 프로젝트는 Firebase와 App Store 인증서 파일이 필요합니다.
 
 #### 1. Firebase 인증서 배치
 
@@ -580,7 +580,7 @@ mkdir -p /home/ec2-user/secrets
 chmod 700 /home/ec2-user/secrets
 
 # 로컬에서 파일 전송
-scp -i atwoz-prod-key.pem firebase-adminsdk.json ec2-user@[EC2_IP]:/home/ec2-user/secrets/
+scp -i deepple-prod-key.pem firebase-adminsdk.json ec2-user@[EC2_IP]:/home/ec2-user/secrets/
 
 # EC2에서 권한 설정
 chmod 400 /home/ec2-user/secrets/firebase-adminsdk.json
@@ -595,8 +595,8 @@ chmod 755 /home/ec2-user/certs
 chmod 755 /home/ec2-user/certs/appstore
 
 # 로컬에서 파일 전송
-scp -i atwoz-prod-key.pem AppleRootCA-G2.pem ec2-user@[EC2_IP]:/home/ec2-user/certs/appstore/
-scp -i atwoz-prod-key.pem AppleRootCA-G3.pem ec2-user@[EC2_IP]:/home/ec2-user/certs/appstore/
+scp -i deepple-prod-key.pem AppleRootCA-G2.pem ec2-user@[EC2_IP]:/home/ec2-user/certs/appstore/
+scp -i deepple-prod-key.pem AppleRootCA-G3.pem ec2-user@[EC2_IP]:/home/ec2-user/certs/appstore/
 
 # EC2에서 권한 설정
 chmod 444 /home/ec2-user/certs/appstore/*.pem
@@ -621,10 +621,10 @@ APP_HOST_PORT=8080
 APP_CONTAINER_PORT=8080
 
 # MySQL (RDS 엔드포인트)
-MYSQL_HOST=atwoz-prod-db.xxxxx.ap-northeast-2.rds.amazonaws.com
+MYSQL_HOST=deepple-prod-db.xxxxx.ap-northeast-2.rds.amazonaws.com
 MYSQL_PORT=3306
-MYSQL_DATABASE=atwoz
-MYSQL_USER=atwoz_app
+MYSQL_DATABASE=deepple
+MYSQL_USER=deepple_app
 MYSQL_PASSWORD=[RDS 비밀번호]
 
 # JPA
@@ -636,7 +636,7 @@ JPA_FORMAT_SQL=false
 FLYWAY_ENABLED=true
 
 # Redis (ElastiCache 엔드포인트)
-REDIS_HOST=atwoz-prod-redis.xxxxx.cache.amazonaws.com
+REDIS_HOST=deepple-prod-redis.xxxxx.cache.amazonaws.com
 REDIS_PORT=6379
 REDIS_PASSWORD=[Redis AUTH 토큰]
 REDIS_SSL_ENABLED=true
@@ -644,7 +644,7 @@ REDIS_SSL_ENABLED=true
 # AWS S3
 AWS_S3_ACCESS_KEY=[EC2 IAM Role 사용시 불필요]
 AWS_S3_SECRET_KEY=[EC2 IAM Role 사용시 불필요]
-AWS_S3_BUCKET_NAME=atwoz-prod-storage
+AWS_S3_BUCKET_NAME=deepple-prod-storage
 
 # JWT (보안상 매우 중요! 강력한 값으로 변경)
 JWT_SECRET=[256비트 이상의 랜덤 문자열]
@@ -749,7 +749,7 @@ sudo nano /home/ec2-user/deploy_script.sh
 #!/bin/bash
 
 # 배포 스크립트
-DOCKER_IMAGE="ggongtae/atwoz"
+DOCKER_IMAGE="ggongtae/deepple"
 CONTAINER_NAME="spring-app"
 ENV_FILE="/home/ec2-user/.env"
 LOG_FILE="/home/ec2-user/deploy.log"
@@ -775,7 +775,7 @@ docker run -d \
   -v /home/ec2-user/certs:/etc/certs:ro \
   --log-driver=awslogs \
   --log-opt awslogs-region=ap-northeast-2 \
-  --log-opt awslogs-group=/atwoz/prod/application \
+  --log-opt awslogs-group=/deepple/prod/application \
   --log-opt awslogs-stream=spring-app \
   --restart unless-stopped \
   $DOCKER_IMAGE:latest
@@ -838,10 +838,10 @@ sudo chmod +x /home/ec2-user/deploy_script.sh
 3. **Auto Scaling 그룹 생성**
 
     ```
-    - 이름: atwoz-prod-asg
+    - 이름: deepple-prod-asg
     - 시작 템플릿: 위에서 생성한 템플릿
     - VPC 및 서브넷: 퍼블릭 서브넷들
-    - 로드 밸런서: atwoz-prod-alb (아래에서 생성)
+    - 로드 밸런서: deepple-prod-alb (아래에서 생성)
     - 그룹 크기:
       * 원하는 용량: 2
       * 최소 용량: 2
@@ -860,7 +860,7 @@ sudo chmod +x /home/ec2-user/deploy_script.sh
 
 ### 8.2 보안 그룹 생성
 
-**로드 밸런서 보안 그룹** (`atwoz-prod-alb-sg`):
+**로드 밸런서 보안 그룹** (`deepple-prod-alb-sg`):
 
 ```
 인바운드 규칙:
@@ -876,7 +876,7 @@ sudo chmod +x /home/ec2-user/deploy_script.sh
 1. **기본 구성**
 
     ```
-    - 이름: atwoz-prod-alb
+    - 이름: deepple-prod-alb
     - 체계: Internet-facing (인터넷 연결)
     - IP 주소 유형: IPv4
     ```
@@ -884,7 +884,7 @@ sudo chmod +x /home/ec2-user/deploy_script.sh
 2. **네트워크 매핑**
 
     ```
-    - VPC: atwoz-prod-vpc
+    - VPC: deepple-prod-vpc
     - 매핑: ap-northeast-2a, ap-northeast-2c (최소 2개 AZ)
     - 서브넷: 퍼블릭 서브넷들 선택
     ```
@@ -892,7 +892,7 @@ sudo chmod +x /home/ec2-user/deploy_script.sh
 3. **보안 그룹**
 
     ```
-    - atwoz-prod-alb-sg
+    - deepple-prod-alb-sg
     ```
 
 4. **리스너 및 라우팅**
@@ -913,11 +913,11 @@ sudo chmod +x /home/ec2-user/deploy_script.sh
 5. **대상 그룹 생성**
 
     ```
-    - 이름: atwoz-prod-tg
+    - 이름: deepple-prod-tg
     - 대상 유형: 인스턴스
     - 프로토콜: HTTP
     - 포트: 8080
-    - VPC: atwoz-prod-vpc
+    - VPC: deepple-prod-vpc
     - 헬스 체크:
       * 프로토콜: HTTP
       * 경로: /actuator/health
@@ -957,8 +957,8 @@ management:
 **도메인 구매** (가비아, Route 53, Cloudflare 등):
 
 ```
-운영: api.atwoz.com
-개발: dev-api.atwoz.com
+운영: api.deepple.com
+개발: dev-api.deepple.com
 ```
 
 ### 9.2 Route 53 설정 (AWS DNS 서비스)
@@ -966,7 +966,7 @@ management:
 1. **호스팅 영역 생성**
 
     ```
-    - 도메인 이름: atwoz.com
+    - 도메인 이름: deepple.com
     - 유형: 퍼블릭 호스팅 영역
     ```
 
@@ -974,14 +974,14 @@ management:
 
     ```
     레코드 1 (운영):
-    - 이름: api.atwoz.com
+    - 이름: api.deepple.com
     - 유형: A (Alias)
-    - 트래픽 라우팅 대상: ALB (atwoz-prod-alb)
+    - 트래픽 라우팅 대상: ALB (deepple-prod-alb)
 
     레코드 2 (개발):
-    - 이름: dev-api.atwoz.com
+    - 이름: dev-api.deepple.com
     - 유형: A (Alias)
-    - 트래픽 라우팅 대상: ALB (atwoz-dev-alb)
+    - 트래픽 라우팅 대상: ALB (deepple-dev-alb)
     ```
 
 3. **네임서버 설정**
@@ -998,9 +998,9 @@ management:
     ```
     - 리전: ap-northeast-2 (ALB와 동일 리전!)
     - 도메인 이름:
-      * api.atwoz.com
-      * dev-api.atwoz.com
-      * *.atwoz.com (와일드카드, 선택)
+      * api.deepple.com
+      * dev-api.deepple.com
+      * *.deepple.com (와일드카드, 선택)
     - 검증 방법: DNS 검증 (권장)
     ```
 
@@ -1088,7 +1088,7 @@ Production:
       * Required reviewers: 최소 1명 (팀 리더, DevOps 담당자)
       * Wait timer: 0분 (또는 원하는 대기 시간)
     - Environment secrets: PROD_* 시크릿 추가
-    - Environment URL: https://api.atwoz.com
+    - Environment URL: https://api.deepple.com
     ```
 
 ### 10.4 CI/CD 워크플로우 구조
@@ -1141,11 +1141,11 @@ Production:
 
     ```
     운영:
-    - 로그 그룹: /atwoz/prod/application
+    - 로그 그룹: /deepple/prod/application
     - 보존 기간: 30일
 
     개발:
-    - 로그 그룹: /atwoz/dev/application
+    - 로그 그룹: /deepple/dev/application
     - 보존 기간: 7일 (비용 절감)
     ```
 
@@ -1157,7 +1157,7 @@ Production:
     docker run -d \
       --log-driver=awslogs \
       --log-opt awslogs-region=ap-northeast-2 \
-      --log-opt awslogs-group=/atwoz/prod/application \
+      --log-opt awslogs-group=/deepple/prod/application \
       --log-opt awslogs-stream=spring-app \
       ...
     ```
@@ -1175,7 +1175,7 @@ Production:
 
 2. **CloudWatch 대시보드 생성**
 
-    - 이름: atwoz-prod-dashboard
+    - 이름: deepple-prod-dashboard
     - 위젯 추가: 주요 메트릭 시각화
 
 ### 11.3 알람 설정
@@ -1184,27 +1184,27 @@ Production:
 
 ```
 1. EC2 CPU 사용률 > 80%
-   - 알람 이름: atwoz-prod-ec2-high-cpu
+   - 알람 이름: deepple-prod-ec2-high-cpu
    - 기간: 5분 연속
    - 작업: SNS 토픽으로 이메일/SMS 발송
 
 2. RDS CPU 사용률 > 80%
-   - 알람 이름: atwoz-prod-rds-high-cpu
+   - 알람 이름: deepple-prod-rds-high-cpu
 
 3. RDS 프리 스토리지 < 10GB
-   - 알람 이름: atwoz-prod-rds-low-storage
+   - 알람 이름: deepple-prod-rds-low-storage
 
 4. ALB 5xx 에러 > 100건/5분
-   - 알람 이름: atwoz-prod-alb-5xx-errors
+   - 알람 이름: deepple-prod-alb-5xx-errors
 
 5. ALB 타겟 Unhealthy 수 > 0
-   - 알람 이름: atwoz-prod-alb-unhealthy-targets
+   - 알람 이름: deepple-prod-alb-unhealthy-targets
 ```
 
 **SNS 토픽 생성**:
 
 ```
-- 토픽 이름: atwoz-prod-alerts
+- 토픽 이름: deepple-prod-alerts
 - 구독: 운영팀 이메일, Slack 웹훅 등
 ```
 
@@ -1224,7 +1224,7 @@ Production:
 ```bash
 # 월 1회 백업 복원 테스트 (개발 환경에서)
 aws rds restore-db-instance-from-db-snapshot \
-  --db-instance-identifier atwoz-dev-restore-test \
+  --db-instance-identifier deepple-dev-restore-test \
   --db-snapshot-identifier [스냅샷 ID]
 ```
 
@@ -1364,7 +1364,7 @@ aws rds restore-db-instance-from-db-snapshot \
 - [ ] SSL 인증서 발급 및 ALB 연결
 - [ ] HTTPS 리디렉션 설정
 
-**애플리케이션 (ATWOZ 특화)**:
+**애플리케이션 (DEEPPLE 특화)**:
 
 - [ ] 운영 환경 변수 설정 (.env)
 - [ ] JPA_DDL_AUTO=validate 확인 (중요!)
@@ -1418,7 +1418,7 @@ aws rds restore-db-instance-from-db-snapshot \
   ├─ Route 53 설정
   └─ ACM 인증서 발급
 
-4단계: ATWOZ 프로젝트 설정 (0.5일)
+4단계: DEEPPLE 프로젝트 설정 (0.5일)
   ├─ Firebase 인증서 배치
   ├─ App Store 인증서 배치
   ├─ .env 파일 설정
@@ -1490,7 +1490,7 @@ docker run -d \
   -v /home/ec2-user/secrets:/etc/credentials:ro \
   -v /home/ec2-user/certs:/etc/certs:ro \
   --restart unless-stopped \
-  ggongtae/atwoz:[이전 태그]
+  ggongtae/deepple:[이전 태그]
 ```
 
 **데이터베이스 마이그레이션 실패 시**:
@@ -1623,8 +1623,8 @@ aws elbv2 describe-target-health \
 
 ```bash
 # Flyway 히스토리 확인
-mysql -h [RDS_HOST] -u atwoz_app -p
-USE atwoz;
+mysql -h [RDS_HOST] -u deepple_app -p
+USE deepple;
 SELECT * FROM flyway_schema_history;
 
 # 실패한 마이그레이션 수동 수정
@@ -1641,7 +1641,7 @@ DELETE FROM flyway_schema_history WHERE success = 0;
 docker exec spring-app ls -la /etc/credentials/
 
 # 파일이 없으면 다시 복사
-scp -i atwoz-prod-key.pem firebase-adminsdk.json ec2-user@[EC2_IP]:/home/ec2-user/secrets/
+scp -i deepple-prod-key.pem firebase-adminsdk.json ec2-user@[EC2_IP]:/home/ec2-user/secrets/
 
 # 컨테이너 재시작
 docker restart spring-app
@@ -1671,7 +1671,7 @@ docker restart spring-app
 
 ## 결론
 
-이 가이드를 따라 단계별로 진행하면 ATWOZ 프로젝트를 안정적이고 확장 가능한 AWS 운영 환경에 배포할 수 있습니다.
+이 가이드를 따라 단계별로 진행하면 DEEPPLE 프로젝트를 안정적이고 확장 가능한 AWS 운영 환경에 배포할 수 있습니다.
 
 **핵심 포인트**:
 
@@ -1679,7 +1679,7 @@ docker restart spring-app
 2. **안정성**: Auto Scaling, 로드 밸런싱, 백업
 3. **모니터링**: CloudWatch, 알람, 로그
 4. **비용**: 단계적 확장, 예약 인스턴스
-5. **ATWOZ 특화**: Firebase, App Store 인증서, Flyway 마이그레이션
+5. **DEEPPLE 특화**: Firebase, App Store 인증서, Flyway 마이그레이션
 
 **다음 단계**:
 
