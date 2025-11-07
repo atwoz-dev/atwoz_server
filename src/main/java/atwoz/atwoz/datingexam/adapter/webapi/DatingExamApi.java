@@ -4,7 +4,7 @@ import atwoz.atwoz.auth.presentation.AuthContext;
 import atwoz.atwoz.auth.presentation.AuthPrincipal;
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
-import atwoz.atwoz.datingexam.application.dto.DatingExamInfoResponse;
+import atwoz.atwoz.datingexam.application.dto.DatingExamInfoWithSubjectSubmissionResponse;
 import atwoz.atwoz.datingexam.application.provided.DatingExamFinder;
 import atwoz.atwoz.datingexam.application.provided.DatingExamSubmitter;
 import atwoz.atwoz.datingexam.domain.dto.DatingExamSubmitRequest;
@@ -35,19 +35,21 @@ public class DatingExamApi {
 
     @Operation(summary = "필수 과목 정보 조회 API")
     @GetMapping("/required")
-    public ResponseEntity<BaseResponse<DatingExamInfoResponse>> getRequiredExamInfo(
+    public ResponseEntity<BaseResponse<DatingExamInfoWithSubjectSubmissionResponse>> getRequiredExamInfo(
         @AuthPrincipal AuthContext authContext
     ) {
-        final DatingExamInfoResponse requiredExamInfo = datingExamFinder.findRequiredExamInfo();
+        final DatingExamInfoWithSubjectSubmissionResponse requiredExamInfo = datingExamFinder.findRequiredExamInfo(
+            authContext.getId());
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, requiredExamInfo));
     }
 
     @Operation(summary = "선택 과목 정보 조회 API")
     @GetMapping("/optional")
-    public ResponseEntity<BaseResponse<DatingExamInfoResponse>> getOptionalExamInfo(
+    public ResponseEntity<BaseResponse<DatingExamInfoWithSubjectSubmissionResponse>> getOptionalExamInfo(
         @AuthPrincipal AuthContext authContext
     ) {
-        final DatingExamInfoResponse optionalExamInfo = datingExamFinder.findOptionalExamInfo();
+        final DatingExamInfoWithSubjectSubmissionResponse optionalExamInfo = datingExamFinder.findOptionalExamInfo(
+            authContext.getId());
         return ResponseEntity.ok(BaseResponse.of(StatusType.OK, optionalExamInfo));
     }
 }

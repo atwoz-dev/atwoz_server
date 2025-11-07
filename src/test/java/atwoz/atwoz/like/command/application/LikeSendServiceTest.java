@@ -8,6 +8,8 @@ import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;
+import atwoz.atwoz.mission.command.application.memberMission.MemberMissionService;
+import atwoz.atwoz.mission.command.domain.mission.ActionType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,10 +20,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class LikeSendServiceTest {
@@ -31,6 +32,9 @@ class LikeSendServiceTest {
 
     @Mock
     MemberCommandRepository memberCommandRepository;
+
+    @Mock
+    MemberMissionService memberMissionService;
 
     @InjectMocks
     LikeSendService likeSendService;
@@ -44,25 +48,30 @@ class LikeSendServiceTest {
         var likeLevel = LikeLevelRequest.INTERESTED;
         var request = new LikeSendRequest(receiverId, likeLevel);
 
-        given(likeCommandRepository.existsBySenderIdAndReceiverId(senderId, receiverId)).willReturn(false);
+        when(likeCommandRepository.existsBySenderIdAndReceiverId(senderId, receiverId)).thenReturn(false);
 
         var mockNickname = mock(Nickname.class);
-        given(mockNickname.getValue()).willReturn("nickname");
+        when(mockNickname.getValue()).thenReturn("nickname");
 
         var mockProfile = mock(MemberProfile.class);
-        given(mockProfile.getNickname()).willReturn(mockNickname);
+        when(mockProfile.getNickname()).thenReturn(mockNickname);
 
         var mockMember = mock(Member.class);
-        given(mockMember.getProfile()).willReturn(mockProfile);
+        when(mockMember.getProfile()).thenReturn(mockProfile);
 
-        given(memberCommandRepository.findById(senderId))
-            .willReturn(Optional.of(mockMember));
+        when(memberCommandRepository.findById(senderId)).thenReturn(Optional.of(mockMember));
+
+        boolean expectedMissionProcessed = true;
+        when(memberMissionService.executeMissionsByAction(senderId, ActionType.LIKE.name()))
+            .thenReturn(expectedMissionProcessed);
 
         // when
-        likeSendService.send(senderId, request);
+        boolean hasProcessedMission = likeSendService.send(senderId, request);
 
         // then
         verify(likeCommandRepository).save(any(Like.class));
+        verify(memberMissionService).executeMissionsByAction(senderId, ActionType.LIKE.name());
+        assertThat(hasProcessedMission).isEqualTo(expectedMissionProcessed);
     }
 
     @Test
@@ -74,7 +83,7 @@ class LikeSendServiceTest {
         var likeLevel = LikeLevelRequest.INTERESTED;
         var request = new LikeSendRequest(receiverId, likeLevel);
 
-        given(likeCommandRepository.existsBySenderIdAndReceiverId(senderId, receiverId)).willReturn(true);
+        when(likeCommandRepository.existsBySenderIdAndReceiverId(senderId, receiverId)).thenReturn(true);
 
         // when & then
         assertThatThrownBy(() -> likeSendService.send(senderId, request))

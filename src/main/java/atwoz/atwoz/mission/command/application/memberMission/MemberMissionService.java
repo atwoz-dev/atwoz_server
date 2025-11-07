@@ -24,13 +24,14 @@ public class MemberMissionService {
     private final MemberCommandRepository memberCommandRepository;
 
     @Transactional
-    public void executeMissionsByAction(Long memberId, String actionType) {
+    public boolean executeMissionsByAction(Long memberId, String actionType) {
         Member member = getMember(memberId);
         validateMember(member);
 
         List<Mission> missions = getMission(actionType, member.getProfile().getGender().name());
+        boolean hasProcessedMission = false;
 
-        missions.forEach(mission -> {
+        for (Mission mission : missions) {
             MemberMission memberMission =
                 mission.getFrequencyType() == FrequencyType.CHALLENGE ? createOrFindByMemberIdAndMissionId(memberId,
                     mission.getId()) : createOrFindByMemberIdAndMissionIdOnToday(memberId, mission.getId());
@@ -39,8 +40,11 @@ public class MemberMissionService {
                 Events.raise(
                     MemberMissionCompletedEvent.from(member.getId(), member.getProfile().getNickname().getValue(),
                         mission.getRewardedHeart(), mission.getActionType().getDescription()));
+                hasProcessedMission = true;
             }
-        });
+        }
+
+        return hasProcessedMission;
     }
 
     private List<Mission> getMission(String actionType, String targetGender) {

@@ -3,7 +3,6 @@ package atwoz.atwoz.heart.command.application.heartusagepolicy;
 import atwoz.atwoz.heart.command.application.heartusagepolicy.exception.HeartUsagePolicyNotFoundException;
 import atwoz.atwoz.heart.command.domain.hearttransaction.HeartTransaction;
 import atwoz.atwoz.heart.command.domain.hearttransaction.HeartTransactionCommandRepository;
-import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartBalance;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.TransactionSubtype;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.TransactionType;
@@ -24,7 +23,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -86,10 +84,11 @@ class HeartUsagePolicyServiceTest {
     }
 
     @Test
-    @DisplayName("VIP 멤버인 경우 하트 사용량 0으로 처리")
-    void shouldUseZeroHeartAmountWhenMemberIsVip() {
+    @DisplayName("하트 사용량이 0인 경우 경우 하트 사용 처리하지 않음")
+    void shouldNotProcessHeartUsageWhenHeartAmountIsZero() {
         // given
         Member member = Member.fromPhoneNumber("01012345678");
+        // vip는 하트 사용량 0
         setField(member, "isVip", true);
         Long memberId = 1L;
         setField(member, "id", memberId);
@@ -110,72 +109,15 @@ class HeartUsagePolicyServiceTest {
 
         when(heartUsagePolicyCommandRepository.findByGenderAndTransactionType(gender, transactionType))
             .thenReturn(Optional.of(heartUsagePolicy));
-        when(heartTransactionCommandRepository.save(any(HeartTransaction.class)))
-            .thenAnswer(invocation -> {
-                HeartTransaction heartTransaction = invocation.getArgument(0);
-                setField(heartTransaction, "id", 1L);
-                return heartTransaction;
-            });
-        HeartAmount expectedHeartAmount = HeartAmount.from(0L);
-
         TransactionSubtype subtype = TransactionSubtype.MATCH;
 
         // when
-        HeartTransaction heartTransaction = heartUsageService.useHeart(memberId, transactionType,
+        heartUsageService.useHeart(memberId, transactionType,
             transactionType.getDescription(), subtype.name());
 
         // then
-        assertThat(heartTransaction.getHeartAmount()).isEqualTo(expectedHeartAmount);
-        assertThat(heartTransaction.getHeartBalance()).isEqualTo(heartBalanceBeforeUsingHeart);
-
         verify(heartUsagePolicyCommandRepository, atMostOnce()).findByGenderAndTransactionType(gender, transactionType);
-        verify(heartTransactionCommandRepository, atMostOnce()).save(any(HeartTransaction.class));
-    }
-
-    @Test
-    @DisplayName("무료로 처리되어야 하는 subtype인 경우 하트 사용량 0으로 처리")
-    void shouldUseZeroHeartAmountWhenMemberIsFreeSubtype() {
-        // given
-        Member member = Member.fromPhoneNumber("01012345678");
-        Long memberId = 1L;
-        setField(member, "id", memberId);
-        Gender gender = Gender.MALE;
-        MemberProfile memberProfile = MemberProfile.builder()
-            .gender(gender)
-            .build();
-        setField(member, "profile", memberProfile);
-        when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(member));
-
-        HeartBalance heartBalanceBeforeUsingHeart = HeartBalance.init();
-        setField(heartBalanceBeforeUsingHeart, "purchaseHeartBalance", 100L);
-        setField(heartBalanceBeforeUsingHeart, "missionHeartBalance", 100L);
-        setField(member, "heartBalance", heartBalanceBeforeUsingHeart);
-        TransactionType transactionType = TransactionType.MESSAGE;
-        HeartPriceAmount heartPriceAmount = HeartPriceAmount.from(10L);
-        HeartUsagePolicy heartUsagePolicy = HeartUsagePolicy.of(transactionType, gender, heartPriceAmount);
-
-        when(heartUsagePolicyCommandRepository.findByGenderAndTransactionType(gender, transactionType))
-            .thenReturn(Optional.of(heartUsagePolicy));
-        when(heartTransactionCommandRepository.save(any(HeartTransaction.class)))
-            .thenAnswer(invocation -> {
-                HeartTransaction heartTransaction = invocation.getArgument(0);
-                setField(heartTransaction, "id", 1L);
-                return heartTransaction;
-            });
-        HeartAmount expectedHeartAmount = HeartAmount.from(0L);
-
-        TransactionSubtype subtype = TransactionSubtype.SOULMATE;
-
-        // when
-        HeartTransaction heartTransaction = heartUsageService.useHeart(memberId, transactionType,
-            transactionType.getDescription(), subtype.name());
-
-        // then
-        assertThat(heartTransaction.getHeartAmount()).isEqualTo(expectedHeartAmount);
-        assertThat(heartTransaction.getHeartBalance()).isEqualTo(heartBalanceBeforeUsingHeart);
-
-        verify(heartUsagePolicyCommandRepository, atMostOnce()).findByGenderAndTransactionType(gender, transactionType);
-        verify(heartTransactionCommandRepository, atMostOnce()).save(any(HeartTransaction.class));
+        verify(heartTransactionCommandRepository, never()).save(any(HeartTransaction.class));
     }
 
     @Test
@@ -208,19 +150,13 @@ class HeartUsagePolicyServiceTest {
                 setField(heartTransaction, "id", 1L);
                 return heartTransaction;
             });
-        HeartAmount expectedHeartAmount = HeartAmount.from(-10L);
-        HeartBalance expectedHeartBalance = heartBalanceBeforeUsingHeart.useHeart(expectedHeartAmount);
-
         TransactionSubtype subtype = TransactionSubtype.MATCH;
 
         // when
-        HeartTransaction heartTransaction = heartUsageService.useHeart(memberId, transactionType,
+        heartUsageService.useHeart(memberId, transactionType,
             transactionType.getDescription(), subtype.name());
 
         // then
-        assertThat(heartTransaction.getHeartAmount()).isEqualTo(expectedHeartAmount);
-        assertThat(heartTransaction.getHeartBalance()).isEqualTo(expectedHeartBalance);
-
         verify(heartUsagePolicyCommandRepository, atMostOnce()).findByGenderAndTransactionType(gender, transactionType);
         verify(heartTransactionCommandRepository, atMostOnce()).save(any(HeartTransaction.class));
     }

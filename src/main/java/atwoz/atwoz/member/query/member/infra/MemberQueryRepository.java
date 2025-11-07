@@ -51,7 +51,8 @@ public class MemberQueryRepository {
                     member.profile.region.district.stringValue(), member.profile.mbti.stringValue(),
                     member.profile.smokingStatus.stringValue(), member.profile.drinkingStatus.stringValue(),
                     member.profile.religion.stringValue(), set(hobby.stringValue()),
-                    set((new QInterviewInfoView(interviewQuestion.content, interviewAnswer.content))))))
+                    set((new QInterviewInfoView(interviewQuestion.id, interviewQuestion.content,
+                        interviewAnswer.content))))))
             .get(memberId);
 
         return Optional.ofNullable(memberInfoView);
