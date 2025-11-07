@@ -1,5 +1,5 @@
 # 빌드를 위한 베이스 이미지
-FROM openjdk:21-slim as build
+FROM eclipse-temurin:21-jdk-jammy as build
 
 # 작업 디렉토리 설정
 WORKDIR /workspace/app
@@ -22,7 +22,7 @@ COPY src src
 RUN ./gradlew build -x test --no-daemon
 
 # 런타임을 위한 새로운 베이스 이미지
-FROM openjdk:21-slim
+FROM eclipse-temurin:21-jre-jammy
 
 VOLUME /tmp
 
