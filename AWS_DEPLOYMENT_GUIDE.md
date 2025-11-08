@@ -6,7 +6,7 @@
 2. [AWS 계정 및 기본 설정](#2-aws-계정-및-기본-설정)
 3. [네트워크 구성 (VPC)](#3-네트워크-구성-vpc)
 4. [데이터베이스 구성 (RDS)](#4-데이터베이스-구성-rds)
-5. [캐시 서버 구성 (ElastiCache)](#5-캐시-서버-구성-elasticache)
+5. [캐시 서버 구성 (ElastiCache - Valkey)](#5-캐시-서버-구성-elasticache---valkey)
 6. [스토리지 구성 (S3)](#6-스토리지-구성-s3)
 7. [컴퓨팅 리소스 (EC2)](#7-컴퓨팅-리소스-ec2)
 8. [로드 밸런서 (ALB)](#8-로드-밸런서-alb)
@@ -62,34 +62,90 @@ DEEPPLE 프로젝트는 3가지 환경으로 구성됩니다:
 
 ## 2. AWS 계정 및 기본 설정
 
-### 2.1 AWS 계정 생성 및 IAM 설정
+### 2.1 리전 선택 (가장 먼저!)
 
-**개념**: IAM(Identity and Access Management)은 AWS 리소스에 대한 접근 권한을 안전하게 관리하는 서비스입니다.
+**중요**: 모든 작업 전에 반드시 리전을 확인하세요!
 
-#### 단계:
+1. AWS 콘솔 (https://console.aws.amazon.com) 접속
+2. 우측 상단의 리전 드롭다운 클릭
+3. **"아시아 태평양(서울) ap-northeast-2"** 선택
+4. 이후 모든 작업은 서울 리전에서 진행
 
-1. **루트 계정 보안 강화**
+**왜 서울 리전인가?**
 
-    ```
-    - MFA(Multi-Factor Authentication) 활성화
-    - 루트 계정 액세스 키 삭제
-    - 강력한 비밀번호 정책 설정
-    ```
+- 한국 사용자 대상 → 레이턴시 최소화 (5-10ms)
+- 데이터 주권 (개인정보보호법 준수)
+- DEEPPLE 프로젝트 설정이 `ap-northeast-2`로 되어 있음
 
-2. **애플리케이션용 IAM Role 생성**
+### 2.2 IAM Role 생성 (EC2용)
 
-    - Role 이름: `deepple-app-role`
-    - 신뢰할 수 있는 엔터티: EC2
-    - 권한:
-        - `AmazonS3FullAccess` (S3 업로드용)
-        - `CloudWatchLogsFullAccess` (로깅용)
+**개념**: IAM Role은 EC2 인스턴스가 S3, CloudWatch 등 AWS 서비스에 안전하게 접근할 수 있도록 권한을 부여합니다. 코드에 액세스 키를 넣지 않아도 됩니다.
 
-### 2.2 리전 선택
+#### 2.2.1 운영 환경용 Role 생성
 
-**권장 리전**: `ap-northeast-2` (서울)
+1. **IAM 서비스로 이동**
+    - AWS 콘솔 검색창에 "IAM" 입력
+    - "IAM" 클릭
 
-- 이유: 한국 사용자 대상 서비스이므로 레이턴시 최소화
-- 프로젝트 설정에 이미 `ap-northeast-2`로 되어 있음
+2. **역할 만들기 시작**
+    - 좌측 메뉴에서 "역할" 클릭
+    - "역할 만들기" 버튼 클릭
+
+3. **신뢰할 수 있는 엔터티 유형 선택**
+    - "AWS 서비스" 선택 (기본값)
+    - 사용 사례: "EC2" 선택
+    - "다음" 클릭
+
+4. **권한 정책 연결**
+
+   다음 정책들을 검색해서 체크:
+
+   ```
+   ✓ AmazonS3FullAccess
+     → S3 버킷에 파일 업로드/다운로드
+
+   ✓ CloudWatchLogsFullAccess
+     → 애플리케이션 로그를 CloudWatch로 전송
+
+   ✓ CloudWatchAgentServerPolicy (선택사항, 권장)
+     → 서버 메트릭(CPU, 메모리 등)을 CloudWatch로 전송
+
+   ✓ AmazonSSMManagedInstanceCore (선택사항, 권장)
+     → SSH 없이 AWS Systems Manager로 서버 접속 가능
+   ```
+
+    - "다음" 클릭
+
+5. **역할 이름 및 설명 입력**
+    - 역할 이름: `deepple-prod-app-role`
+    - 설명: `DEEPPLE 운영 서버용 EC2 역할 - S3, CloudWatch 접근`
+    - "역할 만들기" 클릭
+
+6. **생성 완료 확인**
+    - 역할 목록에 `deepple-prod-app-role`이 표시되면 성공
+
+#### 2.2.2 개발 환경용 Role 생성 (선택사항)
+
+동일한 과정으로:
+
+- 역할 이름: `deepple-dev-app-role`
+- 동일한 권한 추가
+
+**💡 IAM Role을 사용하는 이유**
+
+- ✅ 코드나 .env 파일에 액세스 키를 넣지 않아도 됨
+- ✅ EC2에서 자동으로 AWS 서비스 접근 (보안 강화)
+- ✅ 권한이 자동으로 회전되어 관리 불필요
+
+### 2.3 보안 권장사항 (선택사항)
+
+#### 루트 계정 MFA 활성화 (강력 권장)
+
+1. 우측 상단 계정명 클릭 → "보안 자격 증명"
+2. "멀티 팩터 인증(MFA)" → "MFA 할당"
+3. "가상 MFA 디바이스" 선택
+4. Google Authenticator, Authy 등으로 QR 코드 스캔
+5. 연속된 두 개의 MFA 코드 입력 → 완료
 
 ---
 
@@ -99,87 +155,347 @@ DEEPPLE 프로젝트는 3가지 환경으로 구성됩니다:
 
 **개념**: Virtual Private Cloud는 AWS 클라우드에서 논리적으로 격리된 네트워크 공간입니다. 여러분만의 데이터 센터를 클라우드에 만드는 것과 같습니다.
 
-### 3.2 개발/운영 환경별 VPC
+**VPC에 포함되는 리소스**:
 
-**Development VPC**:
+- VPC (가상 네트워크)
+- 서브넷 (VPC 내부의 IP 대역 분할)
+- 인터넷 게이트웨이 (인터넷 연결)
+- NAT 게이트웨이 (프라이빗 서브넷의 아웃바운드 인터넷 연결, 선택)
+- 라우팅 테이블 (네트워크 트래픽 경로 설정)
 
-- 이름: `deepple-dev-vpc`
-- CIDR: `10.1.0.0/16`
-- 간소화된 구성 (비용 절감)
+### 3.2 환경별 VPC 설정
 
-**Production VPC**:
+| 항목        | Development       | Production         |
+|-----------|-------------------|--------------------|
+| VPC 이름    | `deepple-dev-vpc` | `deepple-prod-vpc` |
+| CIDR 블록   | `10.1.0.0/16`     | `10.0.0.0/16`      |
+| 가용 영역 수   | 1개 (비용 절감)        | 2개 (고가용성)          |
+| NAT 게이트웨이 | 없음 (비용 절감)        | 선택사항 (고가용성)        |
+| 퍼블릭 서브넷   | 1개                | 2개                 |
+| 프라이빗 서브넷  | 1개                | 2개                 |
 
-- 이름: `deepple-prod-vpc`
-- CIDR: `10.0.0.0/16`
-- 완전한 고가용성 구성
+### 3.3 VPC 마법사로 한 번에 구성하기 (권장)
 
-### 3.3 Production VPC 생성
+AWS VPC 마법사를 사용하면 VPC, 서브넷, 인터넷 게이트웨이, 라우팅 테이블을 한 번에 생성할 수 있습니다.
 
-1. **VPC 생성**
+#### 3.3.1 운영 환경(Production) VPC 생성
 
-    - AWS Console → VPC → Create VPC
-    - 이름: `deepple-prod-vpc`
-    - IPv4 CIDR: `10.0.0.0/16` (65,536개의 IP 주소)
+**1단계: VPC 서비스로 이동**
 
-2. **서브넷 생성**
+1. AWS 콘솔 (https://console.aws.amazon.com) 접속
+2. 리전이 **"서울 (ap-northeast-2)"**인지 확인
+3. 검색창에 "VPC" 입력 → "VPC" 클릭
+4. 좌측 메뉴에서 "VPC" 클릭
+5. 우측 상단 **"VPC 생성"** 버튼 클릭
 
-   **퍼블릭 서브넷** (인터넷 접근 가능):
+**2단계: 생성할 리소스 선택**
 
-    ```
-    - deepple-prod-public-subnet-1a
-      - 가용 영역: ap-northeast-2a
-      - CIDR: 10.0.1.0/24
-      - 용도: EC2, ALB
+- **생성할 리소스**: "VPC 및 추가 리소스" 선택
+    - (이 옵션이 VPC 마법사입니다)
 
-    - deepple-prod-public-subnet-1c
-      - 가용 영역: ap-northeast-2c
-      - CIDR: 10.0.2.0/24
-      - 용도: EC2, ALB (고가용성)
-    ```
+**3단계: VPC 설정**
 
-   **프라이빗 서브넷** (인터넷 직접 접근 불가):
+```
+이름 태그 자동 생성:
+  ✓ 체크 (자동으로 리소스 이름 생성)
 
-    ```
-    - deepple-prod-private-subnet-1a
-      - 가용 영역: ap-northeast-2a
-      - CIDR: 10.0.11.0/24
-      - 용도: RDS, ElastiCache
+이름 태그:
+  deepple-prod
 
-    - deepple-prod-private-subnet-1c
-      - 가용 영역: ap-northeast-2c
-      - CIDR: 10.0.12.0/24
-      - 용도: RDS, ElastiCache (고가용성)
-    ```
+IPv4 CIDR 블록:
+  10.0.0.0/16
+  (총 65,536개의 IP 주소, 운영 환경에 충분)
 
-3. **인터넷 게이트웨이 생성**
+IPv6 CIDR 블록:
+  "IPv6 CIDR 블록 없음" 선택
+  (IPv6가 필요없으면 선택 해제)
 
-    - 이름: `deepple-prod-igw`
-    - VPC에 연결
+테넌시:
+  "기본값" 선택
+  (전용 하드웨어는 매우 비쌈)
+```
 
-4. **NAT 게이트웨이 생성** (선택사항)
+**4단계: 가용 영역(AZ) 설정**
 
-    - 프라이빗 서브넷이 외부로 통신해야 할 때 필요
-    - 위치: 퍼블릭 서브넷
-    - Elastic IP 할당
-    - **비용**: 월 ~$40 (선택적)
+```
+가용 영역(AZ) 수:
+  2
+  (고가용성을 위해 2개 이상 필수)
 
-5. **라우팅 테이블 설정**
+  💡 설명: 2개의 가용 영역에 리소스를 분산하면,
+     한 AZ에 장애가 발생해도 다른 AZ에서 서비스 계속 가능
+```
 
-   **퍼블릭 라우팅 테이블**:
+**5단계: 서브넷 설정**
 
-    ```
-    - 이름: deepple-prod-public-rt
-    - 라우트: 0.0.0.0/0 → Internet Gateway
-    - 연결: 퍼블릭 서브넷들
-    ```
+```
+퍼블릭 서브넷 수:
+  2
+  (각 AZ에 1개씩, ALB와 EC2가 위치)
 
-   **프라이빗 라우팅 테이블**:
+프라이빗 서브넷 수:
+  2
+  (각 AZ에 1개씩, RDS와 ElastiCache가 위치)
 
-    ```
-    - 이름: deepple-prod-private-rt
-    - 라우트: 0.0.0.0/0 → NAT Gateway (선택사항)
-    - 연결: 프라이빗 서브넷들
-    ```
+  💡 퍼블릭 vs 프라이빗:
+     - 퍼블릭: 인터넷에서 직접 접근 가능 (EC2, ALB)
+     - 프라이빗: 인터넷에서 직접 접근 불가 (RDS, ElastiCache)
+```
+
+**서브넷 CIDR 블록 자동 설정 확인**:
+
+VPC 마법사가 자동으로 다음과 같이 설정합니다:
+
+```
+퍼블릭 서브넷:
+  - ap-northeast-2a: 10.0.0.0/20 (4,096개 IP)
+  - ap-northeast-2c: 10.0.16.0/20 (4,096개 IP)
+
+프라이빗 서브넷:
+  - ap-northeast-2a: 10.0.128.0/20 (4,096개 IP)
+  - ap-northeast-2c: 10.0.144.0/20 (4,096개 IP)
+```
+
+**6단계: NAT 게이트웨이 설정 (선택사항, 고가용성)**
+
+```
+NAT 게이트웨이($):
+  선택 옵션:
+
+  ❌ "없음" (비용 절감, 비권장)
+     - 프라이빗 서브넷이 인터넷에 접근 불가
+     - RDS, ElastiCache는 업데이트 다운로드 불가
+     - 비용: $0/월
+
+  ✅ "1개 AZ에" (권장, 비용 절약)
+     - 1개의 NAT 게이트웨이로 모든 프라이빗 서브넷 지원
+     - NAT 게이트웨이가 있는 AZ 장애 시 인터넷 연결 끊김
+     - 비용: 약 $40/월
+     - 운영 초기에 권장
+
+  ⭐ "AZ마다 1개" (고가용성, 비용 높음)
+     - 각 AZ마다 NAT 게이트웨이 배치
+     - 한 AZ 장애 시에도 다른 AZ는 정상 작동
+     - 비용: 약 $80/월
+     - 트래픽이 많고 안정성이 중요할 때 권장
+
+  💡 권장: 운영 환경은 "1개 AZ에" 선택
+     프라이빗 서브넷의 외부 통신이 필요하므로 NAT 게이트웨이 필요
+     (예: RDS 패치 다운로드, Docker 이미지 Pull)
+```
+
+**7단계: VPC 엔드포인트 설정 (선택사항, 비용 절감)**
+
+```
+VPC 엔드포인트:
+  "S3 Gateway" 체크
+
+  💡 설명: S3 Gateway 엔드포인트는 무료이며,
+     EC2에서 S3로 접근할 때 인터넷을 거치지 않고
+     AWS 내부 네트워크를 사용하여 비용 절감
+
+  기타 엔드포인트는 비용이 발생하므로 선택 해제
+```
+
+**8단계: DNS 옵션**
+
+```
+DNS 옵션:
+  ✓ DNS 호스트 이름 활성화
+  ✓ DNS 확인 활성화
+
+  (기본값 유지, RDS 등의 엔드포인트 이름 사용에 필요)
+```
+
+**9단계: VPC 생성**
+
+1. 우측 하단 **"VPC 생성"** 버튼 클릭
+2. 생성 진행 상황 확인 (약 2-3분 소요)
+3. "VPC가 성공적으로 생성되었습니다" 메시지 확인
+
+**10단계: 생성된 리소스 확인**
+
+생성 완료 후 다음 리소스들이 자동으로 생성됩니다:
+
+```
+✓ VPC: deepple-prod-vpc (10.0.0.0/16)
+
+✓ 서브넷 4개:
+  - deepple-prod-subnet-public1-ap-northeast-2a
+  - deepple-prod-subnet-public2-ap-northeast-2c
+  - deepple-prod-subnet-private1-ap-northeast-2a
+  - deepple-prod-subnet-private2-ap-northeast-2c
+
+✓ 인터넷 게이트웨이: deepple-prod-igw
+  (VPC에 자동 연결됨)
+
+✓ NAT 게이트웨이: deepple-prod-nat-public1-ap-northeast-2a
+  (선택한 경우)
+
+✓ 라우팅 테이블 2개:
+  - deepple-prod-rtb-public (퍼블릭 서브넷용)
+  - deepple-prod-rtb-private (프라이빗 서브넷용)
+
+✓ S3 엔드포인트 (선택한 경우)
+```
+
+#### 3.3.2 개발 환경(Development) VPC 생성 (선택사항)
+
+개발 환경은 비용 절감을 위해 간소화된 구성으로 생성합니다.
+
+**동일한 과정으로 VPC 마법사 실행, 차이점만 명시**:
+
+```
+이름 태그: deepple-dev
+
+IPv4 CIDR 블록: 10.1.0.0/16
+
+가용 영역(AZ) 수: 1
+  (고가용성 불필요, 비용 절감)
+
+퍼블릭 서브넷 수: 1
+프라이빗 서브넷 수: 1
+
+NAT 게이트웨이: 없음
+  (프라이빗 서브넷의 외부 통신이 필요없으면 비용 절감)
+  (필요시 "1개 AZ에" 선택)
+
+VPC 엔드포인트: S3 Gateway만 체크
+```
+
+### 3.4 수동으로 VPC 구성하기 (선택사항)
+
+VPC 마법사 대신 직접 하나씩 생성하고 싶다면 다음 순서로 진행합니다:
+
+<details>
+<summary>수동 구성 단계 보기 (클릭하여 펼치기)</summary>
+
+#### 1. VPC 생성
+
+```
+1. VPC 대시보드 → "VPC" → "VPC 생성"
+2. 생성할 리소스: "VPC만"
+3. 이름 태그: deepple-prod-vpc
+4. IPv4 CIDR: 10.0.0.0/16
+5. "VPC 생성" 클릭
+```
+
+#### 2. 서브넷 생성 (4개)
+
+```
+1. VPC 대시보드 → "서브넷" → "서브넷 생성"
+2. VPC: deepple-prod-vpc 선택
+
+퍼블릭 서브넷 1:
+  - 이름: deepple-prod-public-1a
+  - 가용 영역: ap-northeast-2a
+  - IPv4 CIDR: 10.0.0.0/20
+
+퍼블릭 서브넷 2:
+  - 이름: deepple-prod-public-1c
+  - 가용 영역: ap-northeast-2c
+  - IPv4 CIDR: 10.0.16.0/20
+
+프라이빗 서브넷 1:
+  - 이름: deepple-prod-private-1a
+  - 가용 영역: ap-northeast-2a
+  - IPv4 CIDR: 10.0.128.0/20
+
+프라이빗 서브넷 2:
+  - 이름: deepple-prod-private-1c
+  - 가용 영역: ap-northeast-2c
+  - IPv4 CIDR: 10.0.144.0/20
+
+3. "서브넷 생성" 클릭
+```
+
+#### 3. 인터넷 게이트웨이 생성 및 연결
+
+```
+1. VPC 대시보드 → "인터넷 게이트웨이" → "인터넷 게이트웨이 생성"
+2. 이름 태그: deepple-prod-igw
+3. "인터넷 게이트웨이 생성" 클릭
+4. 생성된 IGW 선택 → "작업" → "VPC에 연결"
+5. VPC: deepple-prod-vpc 선택 → "인터넷 게이트웨이 연결"
+```
+
+#### 4. NAT 게이트웨이 생성 (선택사항)
+
+```
+1. VPC 대시보드 → "NAT 게이트웨이" → "NAT 게이트웨이 생성"
+2. 이름: deepple-prod-nat-1a
+3. 서브넷: deepple-prod-public-1a (퍼블릭 서브넷 선택!)
+4. 연결 유형: 퍼블릭
+5. Elastic IP 할당: "Elastic IP 할당" 클릭
+6. "NAT 게이트웨이 생성" 클릭
+7. 생성 완료까지 약 5분 대기
+```
+
+#### 5. 라우팅 테이블 생성 및 설정
+
+**퍼블릭 라우팅 테이블**:
+
+```
+1. VPC 대시보드 → "라우팅 테이블" → "라우팅 테이블 생성"
+2. 이름: deepple-prod-public-rt
+3. VPC: deepple-prod-vpc
+4. "라우팅 테이블 생성" 클릭
+5. 생성된 라우팅 테이블 선택 → "라우팅" 탭 → "라우팅 편집"
+6. "라우팅 추가":
+   - 대상: 0.0.0.0/0
+   - 대상: 인터넷 게이트웨이 → deepple-prod-igw 선택
+7. "변경 사항 저장"
+8. "서브넷 연결" 탭 → "서브넷 연결 편집"
+9. 퍼블릭 서브넷 2개 선택 (deepple-prod-public-1a, 1c)
+10. "연결 저장"
+```
+
+**프라이빗 라우팅 테이블**:
+
+```
+1. "라우팅 테이블 생성"
+2. 이름: deepple-prod-private-rt
+3. VPC: deepple-prod-vpc
+4. "라우팅 테이블 생성" 클릭
+5. (NAT 게이트웨이 사용 시) "라우팅 편집"
+   - 대상: 0.0.0.0/0
+   - 대상: NAT 게이트웨이 → deepple-prod-nat-1a 선택
+6. "서브넷 연결 편집"
+7. 프라이빗 서브넷 2개 선택 (deepple-prod-private-1a, 1c)
+8. "연결 저장"
+```
+
+</details>
+
+### 3.5 VPC 생성 확인
+
+VPC가 올바르게 생성되었는지 확인합니다.
+
+1. **VPC 대시보드로 이동**
+2. **"리소스 맵" 클릭**
+3. **deepple-prod-vpc 선택**
+4. 다음 항목들이 표시되는지 확인:
+    - ✓ VPC
+    - ✓ 서브넷 4개 (퍼블릭 2, 프라이빗 2)
+    - ✓ 인터넷 게이트웨이
+    - ✓ NAT 게이트웨이 (선택한 경우)
+    - ✓ 라우팅 테이블 2개
+
+### 3.6 서브넷 이름 기억하기
+
+이후 RDS, ElastiCache, EC2 등을 생성할 때 서브넷을 선택해야 하므로 이름을 기억해두세요:
+
+```
+퍼블릭 서브넷 (EC2, ALB용):
+  - deepple-prod-subnet-public1-ap-northeast-2a
+  - deepple-prod-subnet-public2-ap-northeast-2c
+
+프라이빗 서브넷 (RDS, ElastiCache용):
+  - deepple-prod-subnet-private1-ap-northeast-2a
+  - deepple-prod-subnet-private2-ap-northeast-2c
+```
+
+**💡 Tip**: 서브넷 ID도 함께 메모해두면 나중에 CLI나 Terraform 사용 시 편리합니다.
 
 ---
 
@@ -189,90 +505,431 @@ DEEPPLE 프로젝트는 3가지 환경으로 구성됩니다:
 
 **개념**: Relational Database Service는 AWS가 관리하는 관계형 데이터베이스 서비스입니다. 백업, 패치, 모니터링을 자동으로 처리해줍니다.
 
-### 4.2 RDS MySQL 인스턴스 생성 (Production)
+**RDS 사용 시 장점**:
 
-1. **기본 설정**
+- 자동 백업 및 복원
+- 자동 소프트웨어 패치
+- Multi-AZ 고가용성 지원
+- 읽기 전용 복제본 (Read Replica) 지원
+- 모니터링 및 알람
 
-    ```
-    - 엔진: MySQL 8.0
-    - 템플릿: 프로덕션
-    - DB 인스턴스 식별자: deepple-prod-db
-    - 마스터 사용자 이름: admin
-    - 마스터 암호: [강력한 비밀번호 생성]
-    ```
+### 4.2 환경별 RDS 설정
 
-2. **인스턴스 구성**
+| 항목                   | Development | Production                 |
+|----------------------|-------------|----------------------------|
+| DB 인스턴스 클래스          | db.t3.micro | db.t3.medium ~ db.t3.large |
+| Multi-AZ             | 아니요 (비용 절감) | 예 (필수, 고가용성)               |
+| 스토리지                 | 20GB        | 100GB (자동 확장)              |
+| 백업 보존 기간             | 3일          | 7-30일                      |
+| Performance Insights | 비활성화        | 활성화 (7일 무료)                |
 
-    ```
-    - 인스턴스 클래스: db.t3.medium (시작용)
-      * 추후 부하에 따라 db.t3.large, db.m5.large 등으로 확장
-    - 스토리지:
-      * 유형: gp3 (최신, 비용 효율적)
-      * 크기: 100GB (초기)
-      * 자동 확장: 활성화, 최대 500GB
-    ```
+### 4.3 운영 환경(Production) RDS 생성
 
-3. **가용성 및 내구성**
+#### 4.3.1 서브넷 그룹 생성 (먼저 해야 함)
 
-    ```
-    - Multi-AZ 배포: 예 (필수!)
-      * 개념: 다른 가용 영역에 대기 DB를 자동으로 복제
-      * 장점: 장애 시 자동 페일오버, 무중단 서비스
-    ```
+**1단계: RDS 서비스로 이동**
 
-4. **연결 설정**
+1. AWS 콘솔 검색창에 "RDS" 입력
+2. "RDS" 클릭
+3. 리전이 **"서울 (ap-northeast-2)"**인지 확인
 
-    ```
-    - VPC: deepple-prod-vpc
-    - 서브넷 그룹: 프라이빗 서브넷들로 구성
-    - 퍼블릭 액세스: 아니요 (보안상 중요!)
-    - VPC 보안 그룹: deepple-prod-db-sg (새로 생성)
-    ```
+**2단계: 서브넷 그룹 생성**
 
-5. **보안 그룹 설정** (`deepple-prod-db-sg`)
+1. 좌측 메뉴에서 **"서브넷 그룹"** 클릭
+2. **"DB 서브넷 그룹 생성"** 버튼 클릭
+3. 서브넷 그룹 세부 정보:
+   ```
+   이름: deepple-prod-db-subnet-group
+   설명: DEEPPLE 운영 DB용 서브넷 그룹
+   VPC: deepple-prod-vpc 선택
+   ```
+4. **서브넷 추가**:
+   ```
+   가용 영역 선택:
+   ✓ ap-northeast-2a
+   ✓ ap-northeast-2c
 
-    ```
-    인바운드 규칙:
-    - 유형: MySQL/Aurora (3306)
-    - 소스: deepple-prod-app-sg (EC2 보안 그룹)
-    ```
+   서브넷 선택:
+   ✓ deepple-prod-subnet-private1-ap-northeast-2a (10.0.128.0/20)
+   ✓ deepple-prod-subnet-private2-ap-northeast-2c (10.0.144.0/20)
 
-6. **백업 설정**
+   💡 중요: 반드시 프라이빗 서브넷 선택!
+   ```
+5. **"생성"** 버튼 클릭
 
-    ```
-    - 자동 백업: 활성화
-    - 백업 기간: 7일 (권장: 7-30일)
-    - 백업 시간: 새벽 3시-4시 (트래픽 적은 시간)
-    - 스냅샷 복사: 다른 리전에 복사 (재해 복구용, 선택)
-    ```
+#### 4.3.2 보안 그룹 생성
 
-7. **모니터링**
+**1단계: EC2 콘솔에서 보안 그룹 생성**
 
-    ```
-    - Enhanced Monitoring: 활성화 (60초 단위)
-    - Performance Insights: 활성화 (7일 무료)
-    ```
+1. AWS 콘솔 검색창에 "VPC" 입력
+2. 좌측 메뉴에서 **"보안 그룹"** 클릭
+3. **"보안 그룹 생성"** 버튼 클릭
 
-8. **데이터베이스 초기화**
-
-    ```bash
-    # Bastion 호스트 또는 VPN을 통해 접속
-    mysql -h deepple-prod-db.xxxxx.ap-northeast-2.rds.amazonaws.com -u admin -p
-
-    # 데이터베이스 생성
-    CREATE DATABASE deepple CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-    # 애플리케이션용 사용자 생성
-    CREATE USER 'deepple_app'@'%' IDENTIFIED BY '[강력한 비밀번호]';
-    GRANT ALL PRIVILEGES ON deepple.* TO 'deepple_app'@'%';
-    FLUSH PRIVILEGES;
-    ```
-
-### 4.3 RDS 엔드포인트 확인
+**2단계: 보안 그룹 설정**
 
 ```
-라이터(쓰기) 엔드포인트: deepple-prod-db.xxxxx.ap-northeast-2.rds.amazonaws.com
-리더(읽기) 엔드포인트: deepple-prod-db-ro.xxxxx.ap-northeast-2.rds.amazonaws.com
+기본 세부 정보:
+  보안 그룹 이름: deepple-prod-db-sg
+  설명: DEEPPLE 운영 RDS 보안 그룹
+  VPC: deepple-prod-vpc
+
+인바운드 규칙:
+  규칙 1:
+    유형: MySQL/Aurora
+    프로토콜: TCP
+    포트 범위: 3306
+    소스: 사용자 지정
+    → deepple-prod-app-sg 검색 후 선택 (EC2 보안 그룹)
+    설명: Allow from application servers
+
+  💡 중요: EC2 보안 그룹만 허용! 0.0.0.0/0 절대 금지!
+
+아웃바운드 규칙:
+  기본값 유지 (모든 트래픽 허용)
+```
+
+4. **"보안 그룹 생성"** 클릭
+
+#### 4.3.3 RDS MySQL 인스턴스 생성
+
+**1단계: 데이터베이스 생성 시작**
+
+1. RDS 콘솔로 돌아가기
+2. 좌측 메뉴에서 **"데이터베이스"** 클릭
+3. **"데이터베이스 생성"** 버튼 클릭
+
+**2단계: 엔진 옵션**
+
+```
+엔진 유형:
+  ○ MySQL 선택
+
+에디션:
+  MySQL Community (기본값)
+
+엔진 버전:
+  MySQL 8.0.35 (또는 최신 8.0.x 버전)
+
+  💡 주의: 8.0.x 중 가장 최신 버전 선택 권장
+  DEEPPLE 프로젝트는 MySQL 8.0 기준으로 개발됨
+```
+
+**3단계: 템플릿**
+
+```
+템플릿 선택:
+  ○ 프로덕션
+
+  💡 설명:
+  - 프로덕션: Multi-AZ 기본 활성화, 고가용성 옵션 권장
+  - 개발/테스트: Single-AZ, 비용 절감
+  - 프리 티어: 학습용, 운영 환경 부적합
+```
+
+**4단계: 설정**
+
+```
+DB 인스턴스 식별자:
+  deepple-prod-db
+
+  💡 이 이름은 엔드포인트 URL에 포함됩니다
+  예: deepple-prod-db.xxxxx.ap-northeast-2.rds.amazonaws.com
+
+자격 증명 설정:
+  마스터 사용자 이름: admin
+  (또는 원하는 이름, 기억하기 쉬운 것)
+
+  자격 증명 관리:
+    ○ 자체 관리 선택
+
+  마스터 암호:
+    [강력한 비밀번호 입력]
+
+    💡 비밀번호 생성 예시:
+    - 16자 이상
+    - 대문자, 소문자, 숫자, 특수문자 포함
+    - 생성 후 안전한 곳에 저장 (AWS Secrets Manager 권장)
+
+  마스터 암호 확인:
+    [동일한 비밀번호 재입력]
+```
+
+**5단계: 인스턴스 구성**
+
+```
+DB 인스턴스 클래스:
+  인스턴스 클래스 유형:
+    ○ 버스터블 클래스 (t 클래스) 선택
+
+  인스턴스 클래스:
+    db.t3.medium (2 vCPU, 4GB RAM)
+
+    💡 권장 인스턴스 선택:
+
+    ✅ db.t3.medium (시작용, 권장)
+       - 비용: ~$60/월
+       - 동시 접속자 100-500명 처리 가능
+
+    ⭐ db.t3.large (트래픽 증가 시)
+       - 비용: ~$120/월
+       - 동시 접속자 500-1000명 처리 가능
+
+    🚀 db.m5.large (고성능 필요 시)
+       - 비용: ~$150/월
+       - 안정적인 성능, CPU 크레딧 걱정 없음
+```
+
+**6단계: 스토리지**
+
+```
+스토리지 유형:
+  ○ 범용 SSD (gp3) 선택 (최신, 권장)
+
+  💡 gp2 vs gp3:
+  - gp3: 최신, 동일 가격에 20% 더 빠름
+  - gp2: 이전 세대
+
+할당된 스토리지:
+  100 GiB (초기 권장)
+
+  💡 데이터 예상량:
+  - 사용자 10만명 기준: ~20-30GB
+  - 여유분 고려하여 100GB 권장
+
+스토리지 자동 조정:
+  ✓ 스토리지 자동 조정 활성화
+
+  최대 스토리지 임계값:
+    500 GiB
+
+  💡 자동 확장 트리거:
+  - 여유 공간 < 10% 일 때 자동 확장
+  - 다운타임 없이 확장됨
+```
+
+**7단계: 가용성 및 내구성 (중요!)**
+
+```
+Multi-AZ 배포:
+  ✓ Multi-AZ DB 인스턴스 생성 (필수!)
+
+  💡 Multi-AZ란?
+  - 다른 가용 영역(AZ)에 대기 DB 자동 복제
+  - 주 DB 장애 시 1-2분 내 자동 페일오버
+  - 다운타임 최소화 (계획된 유지보수 시에도)
+  - 비용: 약 2배 (운영 환경 필수)
+
+  ❌ Single-AZ (개발 환경만 사용)
+  - 비용 절감, 고가용성 없음
+  - 장애 시 서비스 중단
+```
+
+**8단계: 연결**
+
+```
+컴퓨팅 리소스:
+  ○ EC2 컴퓨팅 리소스에 연결 안 함 선택
+  (수동으로 VPC와 보안 그룹 설정)
+
+네트워크 유형:
+  IPv4
+
+Virtual Private Cloud(VPC):
+  deepple-prod-vpc 선택
+
+DB 서브넷 그룹:
+  deepple-prod-db-subnet-group 선택
+  (위에서 생성한 서브넷 그룹)
+
+퍼블릭 액세스:
+  ○ 아니요 선택 (필수!)
+
+  💡 매우 중요:
+  - "예" 선택 시 인터넷에서 DB 직접 접근 가능 (보안 위험!)
+  - 반드시 "아니요" 선택
+  - EC2에서만 프라이빗 네트워크로 접근
+
+VPC 보안 그룹:
+  ○ 기존 항목 선택
+  → deepple-prod-db-sg 선택
+  ("default" 보안 그룹 제거)
+
+가용 영역:
+  기본 설정 없음 (자동 선택)
+
+  💡 Multi-AZ 사용 시 AWS가 자동으로 최적의 AZ 선택
+
+추가 구성:
+  데이터베이스 포트: 3306 (기본값)
+```
+
+**9단계: 데이터베이스 인증**
+
+```
+데이터베이스 인증 옵션:
+  ✓ 암호 인증 (기본값, 권장)
+
+  선택사항:
+  ☐ IAM 데이터베이스 인증
+  ☐ Kerberos 인증
+
+  💡 암호 인증이 가장 일반적이고 Spring Boot와 호환성 좋음
+```
+
+**10단계: 모니터링 (선택사항, 권장)**
+
+```
+Enhanced Monitoring 활성화:
+  ✓ Enhanced Monitoring 활성화
+
+  세분화: 60초
+
+  모니터링 역할:
+    ○ 기본값 (자동 생성)
+
+  💡 Enhanced Monitoring:
+  - OS 레벨 메트릭 수집 (CPU, 메모리, 디스크 I/O)
+  - 비용: 거의 무료 ($1~2/월)
+  - 성능 문제 진단에 매우 유용
+
+Performance Insights 활성화:
+  ✓ Performance Insights 켜기
+
+  보존 기간: 7일 (무료)
+
+  💡 Performance Insights:
+  - 쿼리 성능 분석 도구
+  - 느린 쿼리 자동 감지
+  - 7일 무료, 장기 보존은 유료
+```
+
+**11단계: 추가 구성**
+
+```
+데이터베이스 옵션:
+  초기 데이터베이스 이름: (비워둠)
+
+  💡 비워두는 이유:
+  - RDS 생성 후 수동으로 생성 권장
+  - 문자셋(utf8mb4) 등 세부 설정 필요
+
+  DB 파라미터 그룹: default.mysql8.0 (기본값)
+  옵션 그룹: default:mysql-8-0 (기본값)
+
+백업:
+  ✓ 자동 백업 활성화 (필수!)
+
+  백업 보존 기간: 7일
+
+  💡 백업 보존 기간 선택:
+  - 개발: 3일
+  - 운영(권장): 7일
+  - 규정 준수 필요: 30일 (최대 35일)
+
+  백업 기간:
+    03:00 - 04:00 (UTC)
+    → 한국 시간 12:00 - 13:00 (낮 시간)
+
+    💡 권장 시간 (한국 기준):
+    - 18:00 - 19:00 UTC (새벽 3시-4시)
+    - 트래픽이 가장 적은 시간 선택
+
+  ✓ AWS Backup으로 백업 복사 (선택사항)
+
+암호화:
+  ✓ 암호화 활성화
+
+  AWS KMS 키: (default) aws/rds 선택
+
+  💡 개인정보보호법 준수를 위해 필수
+
+로그 내보내기:
+  CloudWatch Logs로 내보낼 로그 유형:
+  ✓ 오류 로그
+  ✓ 느린 쿼리 로그 (선택사항, 권장)
+  ☐ 일반 로그 (디버깅 시에만)
+  ☐ 감사 로그 (규정 준수 필요 시)
+
+  💡 느린 쿼리 로그:
+  - 1초 이상 걸리는 쿼리 자동 기록
+  - 성능 최적화에 유용
+
+유지 관리:
+  자동 마이너 버전 업그레이드 활성화:
+    ✓ 활성화 (권장)
+
+    💡 마이너 버전 업그레이드:
+    - 8.0.35 → 8.0.36 같은 보안 패치
+    - 자동 적용, 다운타임 최소화
+
+  유지 관리 기간:
+    월요일 18:00 - 19:00 UTC (새벽 3시-4시)
+
+    💡 트래픽 적은 시간대 선택
+
+삭제 방지:
+  ✓ 삭제 방지 활성화 (운영 환경 필수!)
+
+  💡 실수로 DB 삭제 방지
+```
+
+**12단계: 예상 월별 비용 확인**
+
+생성 전 우측 상단의 **"월별 예상 요금"** 확인:
+
+```
+예상 비용 (db.t3.medium, Multi-AZ, 100GB):
+- 인스턴스: ~$120/월
+- 스토리지: ~$20/월
+- 백업: ~$5/월 (100GB 기준)
+─────────────────
+총 예상: ~$145/월
+```
+
+**13단계: 데이터베이스 생성**
+
+1. 모든 설정 확인
+2. 우측 하단 **"데이터베이스 생성"** 버튼 클릭
+3. 생성 진행 상황 확인 (약 10-15분 소요)
+4. 상태가 "사용 가능"으로 변경될 때까지 대기
+
+#### 4.3.4 개발 환경(Development) RDS 생성 (선택사항)
+
+동일한 과정으로, 차이점만 명시:
+
+```
+DB 인스턴스 식별자: deepple-dev-db
+템플릿: 개발/테스트
+DB 인스턴스 클래스: db.t3.micro
+Multi-AZ: 아니요
+스토리지: 20GB, 자동 조정 최대 100GB
+백업 보존 기간: 3일
+Performance Insights: 비활성화 (비용 절감)
+삭제 방지: 비활성화 (개발 환경은 재생성 용이)
+```
+
+### 4.4 RDS 엔드포인트 확인
+
+**1단계: 엔드포인트 복사**
+
+1. RDS 콘솔 → "데이터베이스"
+2. `deepple-prod-db` 클릭
+3. **"연결 & 보안"** 탭에서 엔드포인트 확인
+
+```
+엔드포인트:
+  deepple-prod-db.xxxxxxxxxxxxx.ap-northeast-2.rds.amazonaws.com
+
+포트:
+  3306
+```
+
+**2단계: 엔드포인트 저장**
+
+이 엔드포인트를 `.env` 파일의 `MYSQL_HOST`에 사용합니다.
+
+```bash
+MYSQL_HOST=deepple-prod-db.xxxxxxxxxxxxx.ap-northeast-2.rds.amazonaws.com
 ```
 
 ### 4.4 Flyway 마이그레이션 확인 (DEEPPLE 특화)
@@ -300,69 +957,283 @@ SELECT * FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;
 
 ---
 
-## 5. 캐시 서버 구성 (ElastiCache)
+## 5. 캐시 서버 구성 (ElastiCache - Valkey)
 
-### 5.1 ElastiCache란?
+### 5.1 ElastiCache와 Valkey란?
 
-**개념**: 인메모리 캐시 서비스로, Redis나 Memcached를 관리형으로 제공합니다. 데이터베이스 부하를 줄이고 응답 속도를 높입니다.
+**개념**:
 
-### 5.2 ElastiCache Redis 클러스터 생성
+- ElastiCache는 AWS의 관리형 인메모리 캐시 서비스입니다.
+- Valkey는 Redis의 오픈소스 포크로, Redis와 호환되면서 완전한 오픈소스입니다.
+- 데이터베이스 부하를 줄이고 응답 속도를 높입니다.
 
-1. **기본 설정**
+💡 **Valkey vs Redis**: Valkey는 Redis 7.2+ 호환이며, AWS에서 공식 지원합니다.
 
-    ```
-    - 클러스터 엔진: Redis
-    - 위치: AWS 클라우드
-    - 클러스터 모드: 비활성화 (간단한 구성)
-    - 이름: deepple-prod-redis
-    - 엔진 버전: 7.0 (최신 안정 버전)
-    ```
+### 5.2 서브넷 그룹 생성 (먼저 해야 함)
 
-2. **노드 구성**
+**AWS 콘솔 → ElastiCache → 서브넷 그룹**으로 이동
 
-    ```
-    - 노드 유형: cache.t3.small (운영 권장)
-      * 개발: cache.t3.micro
-    - 복제본 수: 1개 (읽기 확장 및 고가용성)
-    ```
-
-3. **고급 설정**
-
-    ```
-    - 서브넷 그룹: 프라이빗 서브넷들
-    - Multi-AZ: 활성화 (자동 장애 조치)
-    - 보안 그룹: deepple-prod-redis-sg (새로 생성)
-    ```
-
-4. **보안 그룹 설정** (`deepple-prod-redis-sg`)
-
-    ```
-    인바운드 규칙:
-    - 유형: 사용자 지정 TCP (6379)
-    - 소스: deepple-prod-app-sg (EC2 보안 그룹)
-    ```
-
-5. **보안 설정**
-
-    ```
-    - 전송 중 암호화: 활성화
-    - 저장 데이터 암호화: 활성화
-    - AUTH 토큰: 설정 (비밀번호 보호)
-    ```
-
-6. **백업 설정**
-
-    ```
-    - 자동 백업: 활성화
-    - 백업 기간: 3일
-    ```
-
-### 5.3 Redis 엔드포인트 확인
+**서브넷 그룹 생성** 클릭:
 
 ```
-기본 엔드포인트: deepple-prod-redis.xxxxx.cache.amazonaws.com:6379
-읽기 엔드포인트: deepple-prod-redis-ro.xxxxx.cache.amazonaws.com:6379
+이름: deepple-prod-valkey-subnet-group
+설명: DEEPPLE 운영 Valkey 서브넷 그룹
+VPC: deepple-prod-vpc
+
+가용 영역 및 서브넷 선택:
+✓ ap-northeast-2a → deepple-prod-private-subnet-1a
+✓ ap-northeast-2c → deepple-prod-private-subnet-1c
 ```
+
+### 5.3 보안 그룹 생성
+
+**EC2 → 보안 그룹 → 보안 그룹 생성**
+
+```
+보안 그룹 이름: deepple-prod-valkey-sg
+설명: Security group for Valkey cluster
+VPC: deepple-prod-vpc
+
+인바운드 규칙:
+┌─────────────────┬──────────┬─────────────────────────┬──────────────────────┐
+│ 유형            │ 포트     │ 소스                    │ 설명                 │
+├─────────────────┼──────────┼─────────────────────────┼──────────────────────┤
+│ 사용자 지정 TCP │ 6379     │ deepple-prod-app-sg     │ Allow Valkey from EC2│
+└─────────────────┴──────────┴─────────────────────────┴──────────────────────┘
+
+아웃바운드 규칙:
+- 기본값 유지 (모든 트래픽 허용)
+```
+
+### 5.4 ElastiCache Valkey 클러스터 생성
+
+**AWS 콘솔 → ElastiCache → Valkey 캐시 생성** 클릭
+
+**1단계: 클러스터 엔진 선택**
+
+```
+엔진 옵션:
+  ○ Redis OSS
+  ✓ Valkey (권장, 완전 오픈소스)
+
+생성 방법:
+  ○ 클러스터 캐시 설계 (복잡)
+  ✓ 손쉬운 생성 (권장) 또는 클러스터 캐시 설계
+```
+
+**2단계: 클러스터 설정**
+
+```
+이름: deepple-prod-valkey
+위치:
+  ✓ AWS 클라우드
+
+클러스터 모드:
+  ○ 활성화 (샤딩, 수평 확장, 복잡)
+  ✓ 비활성화 (권장, 단순 구성) - 대부분의 경우 충분
+```
+
+**3단계: 엔진 버전**
+
+```
+Valkey 버전: 7.2 (최신 안정 버전, Redis 7.2 호환)
+포트: 6379 (기본값)
+파라미터 그룹: default.valkey7 (기본값 사용)
+노드 유형: 아래 참조
+```
+
+**4단계: 노드 유형 선택**
+
+| 환경      | 노드 유형           | 메모리     | vCPU | 비용/월  | 권장 사항    |
+|---------|-----------------|---------|------|-------|----------|
+| 개발      | cache.t3.micro  | 512MB   | 2    | ~$12  | 개발/테스트만  |
+| 운영(소규모) | cache.t3.small  | 1.5GB   | 2    | ~$25  | ✅ 권장     |
+| 운영(중규모) | cache.t3.medium | 3.1GB   | 2    | ~$50  | 대용량 캐시   |
+| 운영(대규모) | cache.r7g.large | 13.07GB | 2    | ~$130 | 고성능 필요 시 |
+
+```
+선택:
+  개발: cache.t3.micro
+  운영: ✓ cache.t3.small (권장)
+```
+
+**5단계: 복제본 개수 (고가용성)**
+
+```
+복제본 수:
+  개발 환경:
+    ❌ 0개 - 복제본 없음 (비용 절감, 단일 장애점 있음)
+
+  운영 환경:
+    ✅ 1개 - 고가용성 및 읽기 확장 (권장!)
+    ⭐ 2개 - 더 높은 가용성 (대규모 서비스, 선택사항)
+
+💡 복제본 1개 설정 시 효과:
+- 다른 AZ에 자동 배치
+- 주 노드 장애 시 자동 승격 (Automatic Failover)
+- 읽기 성능 향상 (읽기 분산)
+- 비용: 노드당 추가 비용 발생
+```
+
+**6단계: Multi-AZ 자동 장애 조치**
+
+```
+Multi-AZ:
+  개발: ❌ 비활성화 (비용 절감)
+  운영: ✅ 활성화 (필수!)
+
+  💡 Multi-AZ 효과:
+  - 복제본을 다른 가용 영역에 배치
+  - 주 노드 장애 시 1-2분 내 자동 복구
+  - 운영 환경 필수 설정
+```
+
+**7단계: 서브넷 그룹**
+
+```
+서브넷 그룹:
+  ✓ deepple-prod-valkey-subnet-group (위에서 생성)
+
+  💡 프라이빗 서브넷에 배치되어 외부 접근 불가
+```
+
+**8단계: 보안 설정**
+
+```
+VPC 보안 그룹:
+  ✓ deepple-prod-valkey-sg 선택
+
+전송 중 암호화 (TLS):
+  개발: ○ 비활성화
+  운영: ✓ 활성화 (권장!)
+
+저장 데이터 암호화:
+  개발: ○ 비활성화 (비용 절감)
+  운영: ✓ 활성화 (필수!)
+
+  암호화 키:
+    ✓ (기본값) AWS 관리형 키 사용
+    ○ 고객 관리형 키 (KMS) - 고급 보안 필요 시
+
+AUTH 토큰 (비밀번호 인증):
+  개발: ○ 비활성화
+  운영: ✓ 활성화 (보안 강화!)
+
+  토큰: [강력한 랜덤 문자열, 안전하게 보관 필수!]
+
+  💡 AUTH 토큰 생성:
+  openssl rand -base64 32
+```
+
+**9단계: 백업 설정**
+
+```
+자동 백업:
+  개발: ❌ 비활성화 (비용 절감)
+  운영: ✅ 활성화 (데이터 보호!)
+
+백업 보존 기간:
+  개발: 1일
+  운영: 3-7일 (권장: 3일)
+
+백업 기간 (시간대):
+  - 새벽 2:00-4:00 (트래픽 적은 시간대 선택)
+```
+
+**10단계: 로그 전송 (선택사항, 권장)**
+
+```
+로그 전송:
+  ✓ 느린 로그 (Slow log) → CloudWatch Logs
+  ✓ 엔진 로그 (Engine log) → CloudWatch Logs
+
+  로그 형식: JSON (권장)
+  로그 그룹: /aws/elasticache/valkey/deepple-prod
+```
+
+**11단계: 유지 관리**
+
+```
+유지 관리 기간:
+  - 요일: 화요일 (권장)
+  - 시간: 새벽 3:00-4:00 (트래픽 적은 시간)
+
+  💡 자동 패치 및 업데이트 시간
+```
+
+**12단계: 태그 및 생성**
+
+```
+태그 (선택):
+  Name: deepple-prod-valkey
+  Environment: production
+  Project: deepple
+  Engine: valkey
+
+→ "생성" 버튼 클릭
+```
+
+**생성 시간**: 약 10-15분 소요
+
+### 5.5 Valkey 엔드포인트 확인
+
+클러스터 생성 완료 후:
+
+**ElastiCache → Valkey 캐시 → deepple-prod-valkey** 클릭
+
+```
+기본 엔드포인트 (Primary, 쓰기/읽기):
+  deepple-prod-valkey.xxxxx.apne2.cache.amazonaws.com:6379
+
+읽기 엔드포인트 (Reader, 읽기 전용 - 복제본 있을 경우):
+  deepple-prod-valkey-ro.xxxxx.apne2.cache.amazonaws.com:6379
+```
+
+💡 **애플리케이션 연결 전략**:
+
+- **쓰기 작업**: 기본 엔드포인트 사용
+- **읽기 작업**: 읽기 엔드포인트 사용 (부하 분산)
+
+### 5.6 연결 테스트
+
+EC2에서 Valkey 연결 테스트:
+
+```bash
+# Redis CLI 설치 (Valkey는 Redis 호환이므로 redis-cli 사용)
+sudo yum install -y redis  # Amazon Linux
+sudo apt install -y redis-tools  # Ubuntu
+
+# TLS 없이 연결 테스트 (개발 환경)
+redis-cli -h deepple-prod-valkey.xxxxx.apne2.cache.amazonaws.com -p 6379
+
+# TLS + AUTH 토큰 사용 연결 (운영 환경)
+redis-cli -h deepple-prod-valkey.xxxxx.apne2.cache.amazonaws.com \
+  -p 6379 \
+  --tls \
+  -a [AUTH_토큰]
+
+# 연결 후 테스트
+127.0.0.1:6379> ping
+PONG
+127.0.0.1:6379> set test "hello valkey"
+OK
+127.0.0.1:6379> get test
+"hello valkey"
+127.0.0.1:6379> info server
+# Valkey 서버 정보 출력
+```
+
+### 5.7 애플리케이션 설정 (.env)
+
+```bash
+# Valkey (Redis 호환)
+REDIS_HOST=deepple-prod-valkey.xxxxx.apne2.cache.amazonaws.com
+REDIS_PORT=6379
+REDIS_PASSWORD=[AUTH 토큰]
+REDIS_SSL_ENABLED=true  # 운영 환경에서 TLS 활성화 시
+```
+
+💡 **참고**: Spring Boot의 Redis 라이브러리는 Valkey와 완전 호환됩니다 (Redis 프로토콜 사용).
 
 ---
 
@@ -370,73 +1241,309 @@ SELECT * FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;
 
 ### 6.1 S3란?
 
-**개념**: Simple Storage Service는 객체 스토리지 서비스로, 이미지, 동영상 등의 파일을 저장합니다. 무제한 용량에 고가용성을 제공합니다.
+**개념**: Simple Storage Service는 객체 스토리지 서비스로, 이미지, 동영상, 프로필 사진 등의 파일을 저장합니다.
+
+**S3 특징**:
+
+- 무제한 용량 (파일당 최대 5TB)
+- 99.999999999% (11 9's) 내구성
+- 자동 복제 (리전 내 여러 가용 영역)
+- 비용 효율적 (사용한 만큼만 지불)
+
+**DEEPPLE 프로젝트 사용 목적**:
+
+- 사용자 프로필 사진
+- 인증 사진 (본인 인증)
+- 데이팅 인증 사진
+- 커뮤니티 이미지
 
 ### 6.2 S3 버킷 생성
 
-1. **버킷 생성**
+#### 6.2.1 운영 환경 버킷 생성
 
-    ```
-    - 버킷 이름: deepple-prod-storage (전세계 고유해야 함)
-    - 개발용: deepple-dev-storage
-    - 리전: ap-northeast-2
-    - 객체 소유권: ACL 비활성화
-    - 퍼블릭 액세스 차단: 모두 차단 (보안)
-    ```
+**1단계: S3 서비스로 이동**
 
-2. **버저닝 설정**
+1. AWS 콘솔에서 "S3" 검색
+2. **"버킷 만들기"** 클릭
 
-    ```
-    - 버전 관리: 활성화
-    - 이유: 실수로 파일 삭제/변경 시 복구 가능
-    ```
+**2단계: 일반 구성**
 
-3. **암호화 설정**
+```
+버킷 이름:
+  deepple-prod-storage
 
-    ```
-    - 기본 암호화: SSE-S3 (Amazon S3 관리형 키)
-    - 버킷 키: 활성화 (비용 절감)
-    ```
+  💡 중요:
+  - 전 세계에서 고유해야 함 (이미 사용 중이면 에러)
+  - 소문자, 숫자, 하이픈(-)만 사용 가능
+  - 변경 불가능 (버킷 생성 후)
 
-4. **수명 주기 정책** (비용 절감)
+AWS 리전:
+  ✓ 아시아 태평양(서울) ap-northeast-2
 
-    ```
-    규칙 1: 오래된 버전 삭제
-    - 이전 버전은 90일 후 삭제
+  💡 EC2, RDS와 동일한 리전 선택 (전송 비용 절감)
+```
 
-    규칙 2: 미완료 멀티파트 업로드 정리
-    - 7일 후 자동 삭제
-    ```
+**3단계: 객체 소유권**
 
-5. **CORS 설정** (웹/앱에서 접근 시)
+```
+객체 소유권:
+  ✓ ACL 비활성화됨(권장)
 
-    ```json
-    [
-      {
-        "AllowedHeaders": ["*"],
-        "AllowedMethods": ["GET", "PUT", "POST", "DELETE"],
-        "AllowedOrigins": ["https://yourdomain.com"],
-        "ExposeHeaders": ["ETag"],
-        "MaxAgeSeconds": 3000
-      }
-    ]
-    ```
+  💡 설명:
+  - ACL(Access Control List) 대신 버킷 정책 사용
+  - 모든 객체를 버킷 소유자가 소유
+  - 현대적이고 안전한 방식
+```
 
-6. **CloudFront CDN 연동** (선택사항, 권장)
+**4단계: 퍼블릭 액세스 차단 설정 (매우 중요!)**
 
-    - **개념**: CDN(Content Delivery Network)은 전세계에 파일을 캐싱하여 빠른 전송을 제공
-    - S3를 오리진으로 CloudFront 배포 생성
-    - 이점: 속도 향상, S3 비용 절감, DDoS 보호
+```
+이 버킷의 퍼블릭 액세스 차단 설정:
+  ✓ 모든 퍼블릭 액세스 차단 (강력 권장!)
 
-### 6.3 IAM 정책 설정
+  ☑ 새 ACL(액세스 제어 목록)을 통해 부여된 버킷 및 객체에 대한 퍼블릭 액세스 차단
+  ☑ 임의의 ACL(액세스 제어 목록)을 통해 부여된 버킷 및 객체에 대한 퍼블릭 액세스 차단
+  ☑ 새 퍼블릭 버킷 또는 액세스 포인트 정책을 통해 부여된 버킷 및 객체에 대한 퍼블릭 액세스 차단
+  ☑ 임의의 퍼블릭 버킷 또는 액세스 포인트 정책을 통해 버킷 및 객체에 대한 퍼블릭 및 교차 계정 액세스 차단
 
-애플리케이션이 S3에 접근하도록 EC2 IAM Role에 권한 추가:
+  💡 매우 중요:
+  - DEEPPLE은 Presigned URL 방식 사용
+  - 직접적인 퍼블릭 액세스는 불필요
+  - 보안 위험 방지
+```
+
+**5단계: 버킷 버전 관리**
+
+```
+버킷 버전 관리:
+  개발: ○ 비활성화 (비용 절감)
+  운영: ✓ 활성화 (권장!)
+
+  💡 버전 관리 효과:
+  - 파일 삭제/덮어쓰기 시 이전 버전 유지
+  - 실수로 삭제한 파일 복구 가능
+  - 비용: 모든 버전의 스토리지 비용 발생
+```
+
+**6단계: 태그 (선택사항)**
+
+```
+태그:
+  Environment = production
+  Project = deepple
+  ManagedBy = manual (또는 terraform)
+```
+
+**7단계: 기본 암호화**
+
+```
+기본 암호화:
+  암호화 유형:
+    ✓ SSE-S3 (서버 측 암호화 - Amazon S3 관리형 키)
+
+  버킷 키:
+    ✓ 활성화 (권장)
+
+  💡 버킷 키 효과:
+  - 암호화 요청 비용 99% 절감
+  - 성능 향상
+  - 추가 비용 없음
+```
+
+**8단계: 고급 설정**
+
+```
+객체 잠금:
+  ○ 비활성화 (DEEPPLE에서 불필요)
+
+  💡 객체 잠금이란?
+  - 법률/규정 준수용 기능
+  - 지정된 기간 동안 객체 삭제/수정 불가
+  - 금융, 의료 등 특수 목적
+```
+
+**9단계: 버킷 생성**
+
+- 모든 설정 확인
+- **"버킷 만들기"** 버튼 클릭
+- 생성 완료 확인
+
+#### 6.2.2 개발 환경 버킷 생성 (선택사항)
+
+동일한 과정으로:
+
+```
+버킷 이름: deepple-dev-storage
+버전 관리: 비활성화 (비용 절감)
+나머지: 운영 환경과 동일
+```
+
+### 6.3 수명 주기 정책 설정 (비용 절감)
+
+버킷 생성 후 수명 주기 규칙 추가:
+
+**1단계: 버킷 선택**
+
+1. S3 콘솔에서 `deepple-prod-storage` 클릭
+2. **"관리"** 탭 클릭
+3. **"수명 주기 규칙 생성"** 클릭
+
+**2단계: 규칙 1 - 오래된 버전 삭제**
+
+```
+수명 주기 규칙 이름: delete-old-versions
+
+규칙 범위:
+  ✓ 버킷의 모든 객체에 적용
+
+수명 주기 규칙 작업:
+  ☑ 객체의 이전 버전 영구 삭제
+
+  이전 버전 영구 삭제:
+    90일 후
+
+  💡 효과:
+  - 90일 이전 버전 자동 삭제
+  - 스토리지 비용 절감
+```
+
+**3단계: 규칙 2 - 미완료 멀티파트 업로드 정리**
+
+```
+수명 주기 규칙 이름: cleanup-incomplete-uploads
+
+규칙 범위:
+  ✓ 버킷의 모든 객체에 적용
+
+수명 주기 규칙 작업:
+  ☑ 불완전한 멀티파트 업로드 삭제
+
+  불완전한 멀티파트 업로드 삭제:
+    7일 후
+
+  💡 효과:
+  - 업로드 실패한 파일 조각 자동 정리
+  - 불필요한 비용 방지
+```
+
+### 6.4 CORS 설정
+
+**1단계: 권한 탭으로 이동**
+
+1. 버킷 선택 → **"권한"** 탭
+2. **"CORS(Cross-Origin Resource Sharing)"** 섹션
+3. **"편집"** 클릭
+
+**2단계: CORS 구성 입력**
+
+```json
+[
+  {
+    "AllowedHeaders": [
+      "*"
+    ],
+    "AllowedMethods": [
+      "GET",
+      "PUT",
+      "POST",
+      "DELETE"
+    ],
+    "AllowedOrigins": [
+      "https://api.deepple.com",
+      "https://dev-api.deepple.com",
+      "http://localhost:3000"
+    ],
+    "ExposeHeaders": [
+      "ETag",
+      "x-amz-server-side-encryption",
+      "x-amz-request-id"
+    ],
+    "MaxAgeSeconds": 3000
+  }
+]
+```
+
+**3단계: 저장**
+
+💡 **CORS가 필요한 이유**:
+
+- 웹 브라우저에서 직접 S3 업로드 시 필요
+- Presigned URL 사용 시에도 권장
+
+### 6.5 버킷 정책 설정 (선택사항)
+
+**CloudFront 사용 시** 또는 **특정 IP 제한 시** 버킷 정책 추가:
 
 ```json
 {
   "Version": "2012-10-17",
   "Statement": [
     {
+      "Sid": "AllowCloudFrontAccess",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+      },
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::deepple-prod-storage/*",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::ACCOUNT-ID:distribution/DISTRIBUTION-ID"
+        }
+      }
+    }
+  ]
+}
+```
+
+### 6.6 CloudFront CDN 연동 (선택사항, 권장)
+
+**개념**: CloudFront는 AWS의 CDN 서비스로, 전 세계에 파일을 캐싱하여 빠른 전송을 제공합니다.
+
+**장점**:
+
+- 이미지 로딩 속도 향상 (해외 사용자도 빠름)
+- S3 요청 비용 절감 (캐시 히트 시)
+- DDoS 보호
+- HTTPS 지원
+
+**CloudFront 배포 생성 (간략)**:
+
+```
+1. CloudFront 콘솔로 이동
+2. "배포 생성" 클릭
+3. 오리진:
+   - 오리진 도메인: deepple-prod-storage.s3.ap-northeast-2.amazonaws.com
+   - 오리진 액세스: Origin Access Control (권장)
+4. 기본 캐시 동작:
+   - 뷰어 프로토콜 정책: Redirect HTTP to HTTPS
+   - 허용된 HTTP 메서드: GET, HEAD, OPTIONS
+   - 캐시 정책: CachingOptimized
+5. 배포 생성
+6. 배포 도메인 이름 사용: d111111abcdef8.cloudfront.net
+```
+
+### 6.7 IAM 정책 설정
+
+**EC2 IAM Role에 S3 권한 추가** (섹션 2.2에서 생성한 `deepple-prod-app-role`):
+
+**1단계: IAM 역할로 이동**
+
+1. IAM 콘솔 → "역할"
+2. `deepple-prod-app-role` 검색 후 클릭
+
+**2단계: 인라인 정책 추가**
+
+1. **"권한 추가"** → **"인라인 정책 생성"**
+2. **JSON** 탭 클릭
+3. 다음 정책 입력:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "S3AccessForDEEPPLE",
       "Effect": "Allow",
       "Action": [
         "s3:PutObject",
@@ -453,6 +1560,48 @@ SELECT * FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;
 }
 ```
 
+4. **"정책 검토"** 클릭
+5. 정책 이름: `S3AccessPolicy`
+6. **"정책 생성"** 클릭
+
+### 6.8 애플리케이션 설정 (.env)
+
+```bash
+# AWS S3 (IAM Role 사용 시 Access Key 불필요)
+AWS_S3_BUCKET_NAME=deepple-prod-storage
+AWS_S3_REGION=ap-northeast-2
+
+# CloudFront 사용 시 (선택사항)
+CLOUDFRONT_DOMAIN=d111111abcdef8.cloudfront.net
+```
+
+💡 **Presigned URL 방식**:
+
+- DEEPPLE은 Presigned URL 방식 사용
+- EC2에서 임시 URL 생성 → 클라이언트에 전달
+- 클라이언트가 직접 S3에 업로드
+- 서버 부하 최소화
+
+### 6.9 S3 사용량 모니터링
+
+**1단계: S3 스토리지 렌즈 활성화**
+
+1. S3 콘솔 → **"스토리지 렌즈"**
+2. 기본 대시보드에서 사용량 확인
+
+**2단계: 비용 확인**
+
+```
+예상 비용 (운영 환경):
+- 스토리지: 100GB × $0.025/GB = $2.5/월
+- PUT 요청: 10,000건/월 × $0.005/1000건 = $0.05/월
+- GET 요청: 100,000건/월 × $0.0004/1000건 = $0.04/월
+- 데이터 전송: 50GB × $0.126/GB = $6.3/월 (CloudFront 미사용 시)
+───────────────────────────
+총 예상: ~$9/월 (CloudFront 미사용)
+         ~$3/월 (CloudFront 사용 시, 전송 비용 절감)
+```
+
 ---
 
 ## 7. 컴퓨팅 리소스 (EC2)
@@ -463,90 +1612,562 @@ SELECT * FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;
 
 ### 7.2 보안 그룹 생성
 
-**애플리케이션 보안 그룹** (`deepple-prod-app-sg`):
+💡 **보안 그룹이란?**
+보안 그룹은 EC2 인스턴스에 대한 **가상 방화벽** 역할을 합니다. 인바운드(들어오는)와 아웃바운드(나가는) 트래픽을 제어합니다.
+
+#### 애플리케이션 보안 그룹 생성 (`deepple-prod-app-sg`)
+
+**1단계: 보안 그룹 생성 시작**
+
+1. AWS 콘솔 → **EC2 대시보드** 접속
+2. 좌측 메뉴 → **네트워크 및 보안** → **보안 그룹** 클릭
+3. 우측 상단 **[보안 그룹 생성]** 버튼 클릭
+
+**2단계: 기본 세부 정보**
 
 ```
-인바운드 규칙:
-1. SSH (22) - 소스: 관리자 IP만 (보안상 중요!)
-2. HTTP (80) - 소스: deepple-prod-alb-sg (로드 밸런서)
-3. HTTPS (443) - 소스: deepple-prod-alb-sg
-4. Custom (8080) - 소스: deepple-prod-alb-sg (Spring Boot 포트)
-
-아웃바운드 규칙:
-- 모든 트래픽 허용 (0.0.0.0/0)
+보안 그룹 이름: deepple-prod-app-sg
+설명: DEEPPLE Production Application Server Security Group
+VPC: deepple-prod-vpc (앞서 생성한 VPC 선택)
 ```
+
+**3단계: 인바운드 규칙 추가**
+
+아래 **[인바운드 규칙 추가]** 버튼을 4번 클릭하여 규칙 추가:
+
+**규칙 1 - SSH 접속 (관리자만)**
+
+```
+유형: SSH
+프로토콜: TCP
+포트 범위: 22
+소스: 내 IP (자동 감지) 또는 사무실 IP (예: 123.456.789.0/32)
+설명: Admin SSH access only
+```
+
+⚠️ **보안 경고**: SSH는 반드시 특정 IP만 허용! `0.0.0.0/0` (모든 IP) 절대 금지!
+
+**규칙 2 - HTTP (로드 밸런서에서)**
+
+```
+유형: HTTP
+프로토콜: TCP
+포트 범위: 80
+소스 유형: 사용자 지정
+소스: deepple-prod-alb-sg (보안 그룹 선택)
+설명: HTTP from ALB
+```
+
+💡 **팁**: 소스에 보안 그룹을 지정하면 해당 보안 그룹이 할당된 리소스만 접근 가능합니다.
+
+**규칙 3 - HTTPS (로드 밸런서에서)**
+
+```
+유형: HTTPS
+프로토콜: TCP
+포트 범위: 443
+소스 유형: 사용자 지정
+소스: deepple-prod-alb-sg (보안 그룹 선택)
+설명: HTTPS from ALB
+```
+
+**규칙 4 - Spring Boot 애플리케이션 포트 (로드 밸런서에서)**
+
+```
+유형: 사용자 지정 TCP
+프로토콜: TCP
+포트 범위: 8080
+소스 유형: 사용자 지정
+소스: deepple-prod-alb-sg (보안 그룹 선택)
+설명: Spring Boot app port from ALB
+```
+
+💡 **왜 8080인가?**
+DEEPPLE Spring Boot 애플리케이션은 8080 포트에서 실행됩니다. ALB가 이 포트로 헬스 체크 및 트래픽 전달을 수행합니다.
+
+**4단계: 아웃바운드 규칙 확인**
+
+기본 아웃바운드 규칙 유지 (자동으로 설정됨):
+
+```
+유형: 모든 트래픽
+프로토콜: 전체
+포트 범위: 전체
+대상: 0.0.0.0/0
+설명: Allow all outbound traffic
+```
+
+💡 **아웃바운드는 왜 모두 허용?**
+
+- EC2가 외부 서비스(RDS, ElastiCache, S3, API 등) 호출해야 함
+- 인바운드는 엄격히 제한, 아웃바운드는 일반적으로 허용
+
+**5단계: 태그 추가**
+
+```
+키: Name, 값: deepple-prod-app-sg
+키: Environment, 값: Production
+키: Project, 값: DEEPPLE
+```
+
+**6단계: 생성 완료**
+
+우측 하단 **[보안 그룹 생성]** 버튼 클릭
+
+---
+
+#### 인바운드 규칙 요약
+
+| 규칙         | 포트   | 소스      | 용도            | 보안 수준    |
+|------------|------|---------|---------------|----------|
+| SSH        | 22   | 관리자 IP만 | 서버 관리         | ⚠️ 매우 중요 |
+| HTTP       | 80   | ALB SG  | HTTP 리다이렉트    | ✅ 안전     |
+| HTTPS      | 443  | ALB SG  | HTTPS 트래픽     | ✅ 안전     |
+| Custom TCP | 8080 | ALB SG  | Spring Boot 앱 | ✅ 안전     |
+
+💡 **보안 모범 사례**:
+
+- ✅ **최소 권한 원칙**: 필요한 포트만 개방
+- ✅ **소스 제한**: SSH는 관리자 IP만, 애플리케이션 포트는 ALB만
+- ✅ **설명 작성**: 각 규칙의 용도를 명확히 기록
+- ❌ **0.0.0.0/0 남용 금지**: SSH, DB 포트에 절대 사용 금지
 
 ### 7.3 EC2 인스턴스 생성
 
-1. **AMI 선택**
+💡 **EC2 인스턴스란?**
+애플리케이션이 실제로 실행되는 가상 서버입니다. DEEPPLE Spring Boot 애플리케이션이 Docker 컨테이너로 실행됩니다.
 
-    ```
-    - Amazon Linux 2023 또는 Ubuntu 22.04 LTS
-    - 64비트 (x86)
-    ```
+#### 7.3.1 EC2 인스턴스 시작
 
-2. **인스턴스 유형**
+**1단계: EC2 대시보드 접속**
 
-    ```
-    Production:
-    - 시작: t3.medium (2 vCPU, 4GB RAM)
-    - 추천: t3.large (2 vCPU, 8GB RAM)
+1. AWS 콘솔 → **EC2** 검색 후 클릭
+2. 리전이 **"서울 (ap-northeast-2)"**인지 확인
+3. 좌측 메뉴 → **"인스턴스"** 클릭
+4. 우측 상단 **"인스턴스 시작"** 버튼 클릭
 
-    Development:
-    - t3.small (2 vCPU, 2GB RAM)
-    ```
+**2단계: 이름 및 태그**
 
-3. **키 페어**
+```
+이름: deepple-prod-app-01
 
-    ```
-    - 새 키 페어 생성: deepple-prod-key
-    - 유형: RSA
-    - 형식: .pem
-    - 다운로드 후 안전하게 보관! (분실 시 서버 접속 불가)
-    ```
+추가 태그 (선택사항):
+  Environment = production
+  Project = deepple
+  Role = application
+```
 
-4. **네트워크 설정**
+**3단계: 애플리케이션 및 OS 이미지 (AMI) 선택**
 
-    ```
-    - VPC: deepple-prod-vpc
-    - 서브넷: deepple-prod-public-subnet-1a
-    - 퍼블릭 IP 자동 할당: 활성화
-    - 보안 그룹: deepple-prod-app-sg
-    ```
+```
+빠른 시작 탭에서 선택:
 
-5. **스토리지 구성**
+  ✅ Amazon Linux 2023 AMI (권장)
+     - 설명: Amazon Linux 2023 AMI
+     - 아키텍처: 64비트 (x86)
+     - 루트 디바이스 유형: EBS
 
-    ```
-    - 루트 볼륨: 30GB, gp3
-    - 추가 볼륨: 필요시 데이터용 50GB
-    ```
+  또는
 
-6. **고급 세부 정보**
+  ⭐ Ubuntu Server 22.04 LTS
+     - 설명: Ubuntu Server 22.04 LTS (HVM), SSD Volume Type
+     - 아키텍처: 64비트 (x86)
 
-    ```
-    - IAM 인스턴스 프로파일: deepple-app-role
-    - 사용자 데이터 (초기 설정 스크립트):
-    ```
+💡 권장: Amazon Linux 2023
+  - AWS에 최적화됨
+  - 보안 패치 자동 적용
+  - yum 패키지 관리자 사용
+```
 
-    ```bash
-    #!/bin/bash
-    # 시스템 업데이트
-    yum update -y  # Ubuntu는 apt update -y && apt upgrade -y
+**4단계: 인스턴스 유형 선택**
 
-    # Docker 설치
-    yum install -y docker
-    systemctl start docker
-    systemctl enable docker
-    usermod -aG docker ec2-user  # Ubuntu는 ubuntu
+```
+인스턴스 유형 선택:
 
-    # Docker Compose 설치
-    curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    chmod +x /usr/local/bin/docker-compose
+개발 환경:
+  ❌ t3.micro (1GB RAM, 비권장)
+     - Spring Boot 실행에 메모리 부족
 
-    # CloudWatch Logs 에이전트 설치 (선택)
-    wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
-    rpm -U ./amazon-cloudwatch-agent.rpm
-    ```
+  ✅ t3.small (2GB RAM, 권장)
+     - 비용: ~$15/월
+     - 개발/테스트 용도 적합
+
+운영 환경:
+  ✅ t3.medium (4GB RAM, 시작용 권장)
+     - 비용: ~$30/월
+     - 동시 접속자 100-300명
+     - 2 vCPU, 4GB RAM
+
+  ⭐ t3.large (8GB RAM, 안정적)
+     - 비용: ~$60/월
+     - 동시 접속자 500-1000명
+     - 2 vCPU, 8GB RAM
+     - 트래픽 증가 시 권장
+
+  🚀 t3.xlarge (16GB RAM, 대규모)
+     - 비용: ~$120/월
+     - 대용량 트래픽
+     - 4 vCPU, 16GB RAM
+
+💡 권장: 운영 환경은 t3.medium에서 시작, 필요시 t3.large로 업그레이드
+```
+
+**5단계: 키 페어 (로그인) 설정**
+
+```
+키 페어 이름:
+  - 기존 키 페어 선택: (이미 있으면 선택)
+  또는
+  - "새 키 페어 생성" 클릭
+
+새 키 페어 생성 시:
+  키 페어 이름: deepple-prod-key
+  키 페어 유형: RSA
+  프라이빗 키 파일 형식: .pem (Mac/Linux) 또는 .ppk (Windows/PuTTY)
+
+  → "키 페어 생성" 클릭
+
+⚠️ 매우 중요:
+- 키 파일은 자동으로 다운로드됩니다
+- 이 키 파일을 안전한 곳에 보관하세요!
+- 분실 시 서버 접속 불가능
+- 절대 Git에 커밋하지 마세요!
+
+다운로드 후 로컬에서 권한 설정:
+chmod 400 ~/Downloads/deepple-prod-key.pem
+```
+
+**6단계: 네트워크 설정**
+
+```
+"편집" 버튼 클릭:
+
+VPC:
+  ✓ deepple-prod-vpc 선택
+
+서브넷:
+  ✓ deepple-prod-subnet-public1-ap-northeast-2a (퍼블릭 서브넷)
+
+  💡 퍼블릭 서브넷 선택 이유:
+  - ALB에서 직접 트래픽 전달 받기 위함
+  - SSH 접속 가능
+
+퍼블릭 IP 자동 할당:
+  ✓ 활성화
+
+  💡 퍼블릭 IP 필요 이유:
+  - 인터넷을 통한 SSH 접속
+  - Docker 이미지 Pull
+  - 소프트웨어 업데이트 다운로드
+
+방화벽 (보안 그룹):
+  ○ 기존 보안 그룹 선택
+  ✓ deepple-prod-app-sg (앞서 생성한 보안 그룹)
+
+  "default" 보안 그룹은 제거하세요!
+```
+
+**7단계: 스토리지 구성**
+
+```
+루트 볼륨 설정:
+
+볼륨 1 (루트):
+  크기(GiB): 30
+  볼륨 유형: gp3 (범용 SSD, 최신)
+
+  💡 gp3 선택 이유:
+  - gp2보다 20% 빠르고 비용 동일
+  - IOPS: 3000 (기본값, 충분)
+  - 처리량: 125 MB/s (기본값)
+
+  종료 시 삭제: ✓ 체크 (기본값)
+  암호화: ○ 암호화 안 함 (선택사항)
+
+💡 스토리지 크기 가이드:
+- 30GB: OS + Docker + 애플리케이션 이미지
+- 로그 파일은 CloudWatch로 전송되므로 큰 용량 불필요
+- 필요시 나중에 EBS 볼륨 확장 가능
+
+추가 볼륨 (선택사항):
+  데이터 전용 볼륨이 필요한 경우에만 추가
+  - "새 볼륨 추가" 클릭
+  - 크기: 50GiB
+  - 볼륨 유형: gp3
+```
+
+**8단계: 고급 세부 정보**
+
+```
+"고급 세부 정보" 펼치기:
+
+IAM 인스턴스 프로파일:
+  ✓ deepple-prod-app-role (섹션 2.2에서 생성한 역할)
+
+  💡 IAM Role 필요 이유:
+  - S3 버킷 접근 (파일 업로드/다운로드)
+  - CloudWatch Logs 전송
+  - 액세스 키 없이 안전하게 AWS 서비스 사용
+
+종료 방식:
+  중지 - 최대 절전 모드 동작: 중지
+
+종료 방지 기능 활성화:
+  개발: ☐ 비활성화
+  운영: ✓ 활성화 (권장, 실수로 인한 삭제 방지)
+
+세부 CloudWatch 모니터링:
+  ○ 비활성화 (기본값, 비용 절감)
+
+  💡 세부 모니터링:
+  - 활성화 시: 1분 간격 메트릭 ($2.10/월 추가)
+  - 비활성화 시: 5분 간격 메트릭 (무료)
+  - 대부분의 경우 5분 간격으로 충분
+
+사용자 데이터 (User Data):
+  아래 스크립트를 복사하여 붙여넣기
+```
+
+**사용자 데이터 스크립트** (Amazon Linux 2023용):
+
+```bash
+#!/bin/bash
+# DEEPPLE 운영 서버 초기 설정 스크립트
+# Amazon Linux 2023
+
+# 로그 파일 설정
+exec > >(tee /var/log/user-data.log)
+exec 2>&1
+
+echo "===== DEEPPLE Server Setup Started ====="
+date
+
+# 시스템 업데이트
+echo "Step 1: System Update"
+yum update -y
+
+# Docker 설치
+echo "Step 2: Installing Docker"
+yum install -y docker
+systemctl start docker
+systemctl enable docker
+
+# ec2-user를 docker 그룹에 추가
+usermod -aG docker ec2-user
+
+# Docker Compose 설치
+echo "Step 3: Installing Docker Compose"
+DOCKER_COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d\" -f4)
+curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
+# Docker 버전 확인
+docker --version
+docker-compose --version
+
+# CloudWatch Logs 에이전트 설치 (선택사항, 권장)
+echo "Step 4: Installing CloudWatch Agent"
+wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
+rpm -U ./amazon-cloudwatch-agent.rpm
+
+# 작업 디렉토리 생성
+echo "Step 5: Creating directories"
+mkdir -p /home/ec2-user/deepple
+mkdir -p /home/ec2-user/secrets
+mkdir -p /home/ec2-user/certs/appstore
+chmod 700 /home/ec2-user/secrets
+chmod 755 /home/ec2-user/certs
+chmod 755 /home/ec2-user/certs/appstore
+
+# 소유권 설정
+chown -R ec2-user:ec2-user /home/ec2-user/deepple
+chown -R ec2-user:ec2-user /home/ec2-user/secrets
+chown -R ec2-user:ec2-user /home/ec2-user/certs
+
+# Git 설치 (선택사항)
+echo "Step 6: Installing Git"
+yum install -y git
+
+# 타임존 설정 (서울)
+echo "Step 7: Setting timezone to Asia/Seoul"
+timedatectl set-timezone Asia/Seoul
+
+# 재부팅 (Docker 그룹 적용)
+echo "===== DEEPPLE Server Setup Completed ====="
+date
+echo "Rebooting in 10 seconds..."
+sleep 10
+reboot
+```
+
+**Ubuntu 22.04용 사용자 데이터 스크립트**:
+
+```bash
+#!/bin/bash
+# DEEPPLE 운영 서버 초기 설정 스크립트
+# Ubuntu 22.04 LTS
+
+# 로그 파일 설정
+exec > >(tee /var/log/user-data.log)
+exec 2>&1
+
+echo "===== DEEPPLE Server Setup Started ====="
+date
+
+# 시스템 업데이트
+echo "Step 1: System Update"
+apt update -y
+apt upgrade -y
+
+# Docker 설치
+echo "Step 2: Installing Docker"
+apt install -y docker.io
+systemctl start docker
+systemctl enable docker
+
+# ubuntu 사용자를 docker 그룹에 추가
+usermod -aG docker ubuntu
+
+# Docker Compose 설치
+echo "Step 3: Installing Docker Compose"
+DOCKER_COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d\" -f4)
+curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
+# Docker 버전 확인
+docker --version
+docker-compose --version
+
+# CloudWatch Logs 에이전트 설치
+echo "Step 4: Installing CloudWatch Agent"
+wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+dpkg -i -E ./amazon-cloudwatch-agent.deb
+
+# 작업 디렉토리 생성
+echo "Step 5: Creating directories"
+mkdir -p /home/ubuntu/deepple
+mkdir -p /home/ubuntu/secrets
+mkdir -p /home/ubuntu/certs/appstore
+chmod 700 /home/ubuntu/secrets
+chmod 755 /home/ubuntu/certs
+chmod 755 /home/ubuntu/certs/appstore
+
+# 소유권 설정
+chown -R ubuntu:ubuntu /home/ubuntu/deepple
+chown -R ubuntu:ubuntu /home/ubuntu/secrets
+chown -R ubuntu:ubuntu /home/ubuntu/certs
+
+# Git 설치
+echo "Step 6: Installing Git"
+apt install -y git
+
+# 타임존 설정 (서울)
+echo "Step 7: Setting timezone to Asia/Seoul"
+timedatectl set-timezone Asia/Seoul
+
+echo "===== DEEPPLE Server Setup Completed ====="
+date
+echo "Rebooting in 10 seconds..."
+sleep 10
+reboot
+```
+
+💡 **사용자 데이터 스크립트 설명**:
+
+- EC2 인스턴스 최초 부팅 시 자동 실행
+- Docker, Docker Compose, CloudWatch Agent 자동 설치
+- DEEPPLE 프로젝트에 필요한 디렉토리 생성
+- 로그는 `/var/log/user-data.log`에 저장
+
+**9단계: 인스턴스 시작**
+
+```
+우측 "요약" 패널에서 설정 확인:
+  - 인스턴스 수: 1
+  - AMI: Amazon Linux 2023 또는 Ubuntu 22.04
+  - 인스턴스 유형: t3.medium (또는 선택한 타입)
+  - 키 페어: deepple-prod-key
+  - 네트워크: deepple-prod-vpc
+  - 보안 그룹: deepple-prod-app-sg
+  - 스토리지: 30GB gp3
+
+→ 우측 하단 "인스턴스 시작" 버튼 클릭
+```
+
+**10단계: 인스턴스 시작 확인**
+
+```
+1. "성공적으로 인스턴스를 시작했습니다" 메시지 확인
+2. "인스턴스 보기" 클릭
+3. 인스턴스 상태:
+   - 인스턴스 상태: 실행 중 (초록색)
+   - 상태 확인: 2/2 통과 (약 5분 소요)
+
+4. 인스턴스 ID 확인: i-0123456789abcdef0
+5. 퍼블릭 IPv4 주소 확인: 13.124.xxx.xxx (메모!)
+```
+
+#### 7.3.2 환경별 인스턴스 구성 비교
+
+| 항목           | Development        | Production           |
+|--------------|--------------------|----------------------|
+| 인스턴스 이름      | deepple-dev-app-01 | deepple-prod-app-01  |
+| 인스턴스 유형      | t3.small           | t3.medium ~ t3.large |
+| 스토리지         | 20GB gp3           | 30GB gp3             |
+| 퍼블릭 IP       | 활성화                | 활성화                  |
+| 종료 방지        | 비활성화               | ✅ 활성화                |
+| 세부 모니터링      | 비활성화               | 선택사항                 |
+| Auto Scaling | 없음                 | ⭐ 권장 (2-4대)          |
+
+#### 7.3.3 인스턴스 시작 후 확인
+
+**SSH 접속 테스트**:
+
+```bash
+# 로컬 터미널에서
+chmod 400 ~/Downloads/deepple-prod-key.pem
+
+# Amazon Linux 2023
+ssh -i ~/Downloads/deepple-prod-key.pem ec2-user@13.124.xxx.xxx
+
+# Ubuntu
+ssh -i ~/Downloads/deepple-prod-key.pem ubuntu@13.124.xxx.xxx
+```
+
+**초기 설정 스크립트 확인**:
+
+```bash
+# EC2에 접속한 후
+
+# 사용자 데이터 로그 확인
+sudo cat /var/log/user-data.log
+
+# Docker 설치 확인
+docker --version
+# Docker version 24.0.5, build ced0996
+
+docker-compose --version
+# Docker Compose version v2.23.0
+
+# Docker 그룹 확인 (ec2-user가 docker 그룹에 있어야 함)
+groups
+# ec2-user wheel docker
+
+# 디렉토리 확인
+ls -la /home/ec2-user/
+# drwxr-xr-x  2 ec2-user ec2-user   24 Jan  1 12:00 certs
+# drwxr-xr-x  2 ec2-user ec2-user    6 Jan  1 12:00 deepple
+# drwx------  2 ec2-user ec2-user    6 Jan  1 12:00 secrets
+
+# 타임존 확인
+timedatectl
+# Time zone: Asia/Seoul (KST, +0900)
+```
+
+💡 **트러블슈팅**:
+
+- Docker 명령어에 `sudo` 필요 시: 로그아웃 후 재로그인
+- 사용자 데이터 실행 실패 시: `/var/log/user-data.log` 확인
 
 ### 7.4 EC2 초기 설정
 
@@ -860,16 +2481,102 @@ sudo chmod +x /home/ec2-user/deploy_script.sh
 
 ### 8.2 보안 그룹 생성
 
-**로드 밸런서 보안 그룹** (`deepple-prod-alb-sg`):
+💡 **ALB 보안 그룹의 역할**
+ALB는 인터넷에서 들어오는 모든 트래픽을 받아서 백엔드 EC2 인스턴스로 전달합니다. 따라서 인터넷(0.0.0.0/0)에서 HTTP/HTTPS를 허용해야 합니다.
+
+#### ALB 보안 그룹 생성 (`deepple-prod-alb-sg`)
+
+**1단계: 보안 그룹 생성 시작**
+
+1. AWS 콘솔 → **VPC 대시보드** 접속
+2. 좌측 메뉴 → **보안 그룹** 클릭
+3. 우측 상단 **[보안 그룹 생성]** 버튼 클릭
+
+**2단계: 기본 세부 정보**
 
 ```
-인바운드 규칙:
-1. HTTP (80) - 소스: 0.0.0.0/0 (모든 곳)
-2. HTTPS (443) - 소스: 0.0.0.0/0 (모든 곳)
-
-아웃바운드 규칙:
-- 모든 트래픽 허용
+보안 그룹 이름: deepple-prod-alb-sg
+설명: DEEPPLE Production ALB Security Group
+VPC: deepple-prod-vpc (앞서 생성한 VPC 선택)
 ```
+
+**3단계: 인바운드 규칙 추가**
+
+아래 **[인바운드 규칙 추가]** 버튼을 2번 클릭하여 규칙 추가:
+
+**규칙 1 - HTTP (모든 인터넷에서)**
+
+```
+유형: HTTP
+프로토콜: TCP
+포트 범위: 80
+소스: 0.0.0.0/0 (모든 곳)
+설명: Allow HTTP from anywhere
+```
+
+💡 **왜 HTTP를 열어야 하나요?**
+
+- HTTP 트래픽을 받아서 HTTPS로 리디렉션하기 위함
+- 사용자가 http://api.deepple.com 으로 접속해도 자동으로 https:// 로 전환
+
+**규칙 2 - HTTPS (모든 인터넷에서)**
+
+```
+유형: HTTPS
+프로토콜: TCP
+포트 범위: 443
+소스: 0.0.0.0/0 (모든 곳)
+설명: Allow HTTPS from anywhere
+```
+
+💡 **HTTPS 트래픽**
+
+- 실제 애플리케이션 트래픽은 모두 HTTPS로 전달됨
+- SSL 인증서는 ALB에서 종료 (SSL Termination)
+
+**4단계: 아웃바운드 규칙 확인**
+
+기본 아웃바운드 규칙 유지 (자동으로 설정됨):
+
+```
+유형: 모든 트래픽
+프로토콜: 전체
+포트 범위: 전체
+대상: 0.0.0.0/0
+설명: Allow all outbound traffic
+```
+
+💡 **아웃바운드 규칙**
+
+- ALB가 백엔드 EC2 인스턴스(8080 포트)로 트래픽 전달하기 위함
+- 헬스 체크 요청도 아웃바운드 규칙을 통해 전송
+
+**5단계: 태그 추가**
+
+```
+키: Name, 값: deepple-prod-alb-sg
+키: Environment, 값: Production
+키: Project, 값: DEEPPLE
+```
+
+**6단계: 생성 완료**
+
+우측 하단 **[보안 그룹 생성]** 버튼 클릭
+
+---
+
+#### 인바운드 규칙 요약
+
+| 규칙    | 포트  | 소스        | 용도        | 이유          |
+|-------|-----|-----------|-----------|-------------|
+| HTTP  | 80  | 0.0.0.0/0 | HTTP 리디렉션 | HTTPS 강제 전환 |
+| HTTPS | 443 | 0.0.0.0/0 | 실제 트래픽    | 사용자 요청 처리   |
+
+💡 **보안 차이점**:
+
+- **ALB**: 인터넷에서 접근 가능 (0.0.0.0/0)
+- **EC2**: ALB에서만 접근 가능 (deepple-prod-alb-sg)
+- 이렇게 하면 EC2는 인터넷에 직접 노출되지 않음
 
 ### 8.3 ALB 생성
 
