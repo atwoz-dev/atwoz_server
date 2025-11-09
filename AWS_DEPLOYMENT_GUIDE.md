@@ -6,7 +6,7 @@
 2. [AWS 계정 및 기본 설정](#2-aws-계정-및-기본-설정)
 3. [네트워크 구성 (VPC)](#3-네트워크-구성-vpc)
 4. [데이터베이스 구성 (RDS)](#4-데이터베이스-구성-rds)
-5. [캐시 서버 구성 (ElastiCache - Valkey)](#5-캐시-서버-구성-elasticache---valkey)
+5. [캐시 서버 구성 (ElastiCache)](#5-캐시-서버-구성-elasticache)
 6. [스토리지 구성 (S3)](#6-스토리지-구성-s3)
 7. [컴퓨팅 리소스 (EC2)](#7-컴퓨팅-리소스-ec2)
 8. [로드 밸런서 (ALB)](#8-로드-밸런서-alb)
@@ -513,7 +513,60 @@ VPC가 올바르게 생성되었는지 확인합니다.
 - 읽기 전용 복제본 (Read Replica) 지원
 - 모니터링 및 알람
 
-### 4.2 환경별 RDS 설정
+### 4.2 MySQL vs Aurora 선택 가이드
+
+**개념**: RDS에서는 일반 MySQL과 Aurora MySQL 중 선택할 수 있습니다.
+
+#### MySQL RDS (권장 - 초기 단계)
+
+**장점**:
+
+- 비용이 Aurora 대비 30-50% 저렴
+- 표준 MySQL과 완벽히 호환
+- 간단한 구성, 예측 가능한 성능
+
+**단점**:
+
+- Aurora보다 낮은 성능
+- Read Replica 확장이 수동
+
+**적합한 경우**:
+
+- ✅ 초기/중소 규모 서비스
+- ✅ 트래픽이 아직 크지 않을 때
+- ✅ 예산이 제한적일 때
+
+#### Aurora MySQL
+
+**장점**:
+
+- MySQL 대비 최대 5배 빠른 성능
+- Read Replica 자동 확장
+- 더 빠른 장애 조치 (< 30초)
+- 스토리지 자동 확장 (10GB ~ 128TB)
+
+**단점**:
+
+- 비용이 MySQL 대비 높음
+- 초기 설정이 복잡
+
+**적합한 경우**:
+
+- ✅ 대규모 트래픽 예상
+- ✅ MSA 전환 계획
+- ✅ 높은 가용성이 필수적인 경우
+
+#### 마이그레이션 가능성
+
+MySQL RDS ➔ Aurora는 **스냅샷 기반으로 쉽게 전환 가능**합니다:
+
+- 다운타임: 10-30분 정도
+- 데이터 손실: 없음
+- 코드 변경: 불필요 (엔드포인트만 변경)
+
+💡 **권장**: 초기에는 MySQL RDS로 시작하고, 트래픽 증가 시 Aurora로 전환
+
+### 4.3 환경별 RDS 설정
 
 | 항목                   | Development | Production                 |
 |----------------------|-------------|----------------------------|
@@ -617,13 +670,30 @@ VPC가 올바르게 생성되었는지 확인합니다.
 **3단계: 템플릿**
 
 ```
-템플릿 선택:
-  ○ 프로덕션
+템플릿 선택 가이드:
 
-  💡 설명:
-  - 프로덕션: Multi-AZ 기본 활성화, 고가용성 옵션 권장
-  - 개발/테스트: Single-AZ, 비용 절감
-  - 프리 티어: 학습용, 운영 환경 부적합
+○ 프로덕션 (대규모 트래픽, 높은 가용성 필요 시)
+  - Multi-AZ 기본 활성화
+  - 고가용성 옵션 자동 설정
+  - 삭제 방지 기본 활성화
+  - 비용: 높음
+  - 나중에 변경: 가능
+
+○ 개발/테스트 (권장 - 초기 운영)
+  - Single-AZ 기본 설정
+  - 비용 절감
+  - 필요시 Multi-AZ로 쉽게 전환 가능 (클릭 한 번, 5-10분 다운타임)
+  - 비용: 프로덕션의 약 50%
+  - 나중에 변경: 가능
+
+○ 프리 티어 (학습용만)
+  - 제한 많음 (t2.micro, 20GB, 750시간/월)
+  - Multi-AZ 미지원
+  - 운영 환경 부적합
+
+💡 권장 선택:
+  초기 운영 또는 트래픽 적을 때: "개발/테스트" 선택
+  → 비용 절약하면서 필요시 업그레이드 가능
 ```
 
 **4단계: 설정**
@@ -932,7 +1002,7 @@ Performance Insights: 비활성화 (비용 절감)
 MYSQL_HOST=deepple-prod-db.xxxxxxxxxxxxx.ap-northeast-2.rds.amazonaws.com
 ```
 
-### 4.4 Flyway 마이그레이션 확인 (DEEPPLE 특화)
+### 4.5 Flyway 마이그레이션 확인 (DEEPPLE 특화)
 
 **중요**: DEEPPLE 프로젝트는 Flyway를 사용하여 데이터베이스 스키마를 관리합니다.
 
@@ -955,11 +1025,132 @@ SELECT * FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;
 - 스키마 변경은 반드시 Flyway 마이그레이션 스크립트로 관리
 - 롤백 스크립트도 함께 준비
 
+### 4.6 RDS 중지 및 비용 관리
+
+**RDS 중지 시 주의사항**
+
+RDS를 일시적으로 사용하지 않을 때 중지할 수 있지만, 몇 가지 중요한 사항이 있습니다:
+
+#### 1. 자동 재시작 정책
+
+```
+RDS를 중지하면 7일 후 자동으로 재시작됩니다
+- AWS 정책: 유지보수 및 패치 적용 위해
+- 장기 중지 불가: 계속 꺼두려면 7일마다 재중지 필요
+- 알림 설정 권장: 재시작 알림 받도록 CloudWatch 알람 설정
+```
+
+#### 2. 중지 중 발생하는 비용
+
+**절약되는 비용** ✅:
+
+- 인스턴스 시간당 비용 (가장 큰 부분)
+- 예: db.t3.small ($25/월) → $0
+
+**계속 발생하는 비용** ❌:
+
+- 스토리지 비용: 할당한 GB만큼 계속 과금
+    - 예: 30GB × $0.115/GB = ~$3.5/월
+- 백업 스토리지: 무료 범위 초과 시
+- Enhanced Monitoring (활성화 시): ~$1-2/월
+
+**총 절약률**: 약 85-90% 절감 (인스턴스 비용만 중단)
+
+#### 3. RDS 중지 방법
+
+```
+AWS 콘솔에서:
+1. RDS 콘솔 → 데이터베이스 선택
+2. 작업 → 중지 클릭
+3. 스냅샷 생성 여부 선택 (권장: 체크)
+4. 확인
+
+중지 완료까지: 약 2-5분 소요
+```
+
+#### 4. 완전한 비용 절감 방법
+
+**장기간 사용하지 않을 경우**:
+
+```
+1. 최종 스냅샷 생성
+   - RDS 콘솔 → 작업 → 스냅샷 생성
+   - 이름: deepple-prod-db-final-snapshot-YYYYMMDD
+
+2. RDS 인스턴스 삭제
+   - 최종 스냅샷 생성: 예
+   - 삭제 방지 비활성화 필요
+
+3. 스냅샷 비용
+   - 스토리지 비용의 약 1/3
+   - 30GB 스냅샷: ~$1/월
+
+4. 복원 시
+   - 스냅샷에서 복원 (10-20분 소요)
+   - 모든 데이터 보존
+```
+
+#### 5. 비용 비교 (db.t3.small, 30GB 기준)
+
+| 상태               | 월 비용 | 절감률 | 재시작 시간 |
+|------------------|------|-----|--------|
+| 실행 중 (Single-AZ) | ~$28 | 0%  | -      |
+| 중지됨              | ~$4  | 85% | 2-5분   |
+| 삭제 (스냅샷 보관)      | ~$1  | 96% | 10-20분 |
+
+#### 6. 실전 운영 팁
+
+**개발/테스트 환경**:
+
+```bash
+# 업무 종료 시 중지 (수동 또는 Lambda 자동화)
+# 월요일 아침 재시작
+# 월 비용: ~$15 → ~$5 (약 60% 절감)
+```
+
+**운영 환경**:
+
+```bash
+# 중지 금지 (서비스 중단)
+# Multi-AZ + Auto Scaling 권장
+# 비용 절감은 예약 인스턴스 활용
+```
+
+**알람 설정 (자동 재시작 방지)**:
+
+```
+CloudWatch 이벤트:
+- 이벤트 패턴: RDS DB Instance 상태 변경
+- 필터: "starting" → "running"
+- 알림: SNS 토픽으로 이메일/SMS 발송
+```
+
+#### 7. 엔드포인트 저장 필수!
+
+RDS 중지 전 반드시 엔드포인트 정보를 저장하세요:
+
+```bash
+# RDS 엔드포인트 복사
+RDS 콘솔 → 데이터베이스 선택 → 연결 & 보안 탭
+
+엔드포인트: deepple-prod-db.xxxxx.ap-northeast-2.rds.amazonaws.com
+포트: 3306
+사용자 이름: admin
+암호: [안전한 곳에 보관]
+
+# .env 파일이나 안전한 문서에 저장!
+```
+
+💡 **권장 운영 방식**:
+
+- 개발/테스트: 사용하지 않을 때 중지 → 비용 절감
+- 운영 환경: 항상 실행 + 예약 인스턴스로 비용 절감
+
 ---
 
-## 5. 캐시 서버 구성 (ElastiCache - Valkey)
+## 5. 캐시 서버 구성 (ElastiCache)
 
-### 5.1 ElastiCache와 Valkey란?
+### 5.1 ElastiCache란?
 
 **개념**:
 
@@ -976,13 +1167,13 @@ SELECT * FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;
 **서브넷 그룹 생성** 클릭:
 
 ```
-이름: deepple-prod-valkey-subnet-group
-설명: DEEPPLE 운영 Valkey 서브넷 그룹
+이름: deepple-prod-cache-subnet-group
+설명: DEEPPLE 운영 ElastiCache 서브넷 그룹
 VPC: deepple-prod-vpc
 
 가용 영역 및 서브넷 선택:
-✓ ap-northeast-2a → deepple-prod-private-subnet-1a
-✓ ap-northeast-2c → deepple-prod-private-subnet-1c
+✓ ap-northeast-2a → deepple-prod-private-1a
+✓ ap-northeast-2c → deepple-prod-private-1c
 ```
 
 ### 5.3 보안 그룹 생성
@@ -990,24 +1181,24 @@ VPC: deepple-prod-vpc
 **EC2 → 보안 그룹 → 보안 그룹 생성**
 
 ```
-보안 그룹 이름: deepple-prod-valkey-sg
-설명: Security group for Valkey cluster
+보안 그룹 이름: deepple-prod-cache-sg
+설명: Security group for ElastiCache cluster
 VPC: deepple-prod-vpc
 
 인바운드 규칙:
-┌─────────────────┬──────────┬─────────────────────────┬──────────────────────┐
-│ 유형            │ 포트     │ 소스                    │ 설명                 │
-├─────────────────┼──────────┼─────────────────────────┼──────────────────────┤
-│ 사용자 지정 TCP │ 6379     │ deepple-prod-app-sg     │ Allow Valkey from EC2│
-└─────────────────┴──────────┴─────────────────────────┴──────────────────────┘
+┌─────────────────┬──────────┬─────────────────────────┬────────────────────────┐
+│ 유형            │ 포트     │ 소스                    │ 설명                   │
+├─────────────────┼──────────┼─────────────────────────┼────────────────────────┤
+│ 사용자 지정 TCP │ 6379     │ deepple-prod-app-sg     │ Allow Cache from EC2   │
+└─────────────────┴──────────┴─────────────────────────┴────────────────────────┘
 
 아웃바운드 규칙:
 - 기본값 유지 (모든 트래픽 허용)
 ```
 
-### 5.4 ElastiCache Valkey 클러스터 생성
+### 5.4 ElastiCache 클러스터 생성
 
-**AWS 콘솔 → ElastiCache → Valkey 캐시 생성** 클릭
+**AWS 콘솔 → ElastiCache → 캐시 생성** 클릭
 
 **1단계: 클러스터 엔진 선택**
 
@@ -1024,7 +1215,7 @@ VPC: deepple-prod-vpc
 **2단계: 클러스터 설정**
 
 ```
-이름: deepple-prod-valkey
+이름: deepple-prod-cache
 위치:
   ✓ AWS 클라우드
 
@@ -1092,7 +1283,7 @@ Multi-AZ:
 
 ```
 서브넷 그룹:
-  ✓ deepple-prod-valkey-subnet-group (위에서 생성)
+  ✓ deepple-prod-cache-subnet-group (위에서 생성)
 
   💡 프라이빗 서브넷에 배치되어 외부 접근 불가
 ```
@@ -1101,7 +1292,7 @@ Multi-AZ:
 
 ```
 VPC 보안 그룹:
-  ✓ deepple-prod-valkey-sg 선택
+  ✓ deepple-prod-cache-sg 선택
 
 전송 중 암호화 (TLS):
   개발: ○ 비활성화
@@ -1148,7 +1339,7 @@ AUTH 토큰 (비밀번호 인증):
   ✓ 엔진 로그 (Engine log) → CloudWatch Logs
 
   로그 형식: JSON (권장)
-  로그 그룹: /aws/elasticache/valkey/deepple-prod
+  로그 그룹: /aws/elasticache/cache/deepple-prod
 ```
 
 **11단계: 유지 관리**
@@ -1165,9 +1356,9 @@ AUTH 토큰 (비밀번호 인증):
 
 ```
 태그 (선택):
-  Name: deepple-prod-valkey
-  Environment: production
-  Project: deepple
+  Name: deepple-prod-cache
+  Environment: Production
+  Project: DEEPPLE
   Engine: valkey
 
 → "생성" 버튼 클릭
@@ -1175,18 +1366,18 @@ AUTH 토큰 (비밀번호 인증):
 
 **생성 시간**: 약 10-15분 소요
 
-### 5.5 Valkey 엔드포인트 확인
+### 5.5 엔드포인트 확인
 
 클러스터 생성 완료 후:
 
-**ElastiCache → Valkey 캐시 → deepple-prod-valkey** 클릭
+**ElastiCache → 캐시 → deepple-prod-cache** 클릭
 
 ```
 기본 엔드포인트 (Primary, 쓰기/읽기):
-  deepple-prod-valkey.xxxxx.apne2.cache.amazonaws.com:6379
+  deepple-prod-cache.xxxxx.apne2.cache.amazonaws.com:6379
 
 읽기 엔드포인트 (Reader, 읽기 전용 - 복제본 있을 경우):
-  deepple-prod-valkey-ro.xxxxx.apne2.cache.amazonaws.com:6379
+  deepple-prod-cache-ro.xxxxx.apne2.cache.amazonaws.com:6379
 ```
 
 💡 **애플리케이션 연결 전략**:
@@ -1196,7 +1387,7 @@ AUTH 토큰 (비밀번호 인증):
 
 ### 5.6 연결 테스트
 
-EC2에서 Valkey 연결 테스트:
+EC2에서 ElastiCache 연결 테스트:
 
 ```bash
 # Redis CLI 설치 (Valkey는 Redis 호환이므로 redis-cli 사용)
@@ -1204,10 +1395,10 @@ sudo yum install -y redis  # Amazon Linux
 sudo apt install -y redis-tools  # Ubuntu
 
 # TLS 없이 연결 테스트 (개발 환경)
-redis-cli -h deepple-prod-valkey.xxxxx.apne2.cache.amazonaws.com -p 6379
+redis-cli -h deepple-prod-cache.xxxxx.apne2.cache.amazonaws.com -p 6379
 
 # TLS + AUTH 토큰 사용 연결 (운영 환경)
-redis-cli -h deepple-prod-valkey.xxxxx.apne2.cache.amazonaws.com \
+redis-cli -h deepple-prod-cache.xxxxx.apne2.cache.amazonaws.com \
   -p 6379 \
   --tls \
   -a [AUTH_토큰]
@@ -1226,8 +1417,8 @@ OK
 ### 5.7 애플리케이션 설정 (.env)
 
 ```bash
-# Valkey (Redis 호환)
-REDIS_HOST=deepple-prod-valkey.xxxxx.apne2.cache.amazonaws.com
+# ElastiCache (Redis 호환)
+REDIS_HOST=deepple-prod-cache.xxxxx.apne2.cache.amazonaws.com
 REDIS_PORT=6379
 REDIS_PASSWORD=[AUTH 토큰]
 REDIS_SSL_ENABLED=true  # 운영 환경에서 TLS 활성화 시
