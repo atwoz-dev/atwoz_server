@@ -1940,7 +1940,7 @@ DEEPPLE Spring Boot 애플리케이션은 8080 포트에서 실행됩니다. ALB
 **2단계: 이름 및 태그**
 
 ```
-이름: deepple-prod-app-01
+이름: deepple-prod-app
 
 추가 태그 (선택사항):
   Environment = production
@@ -2039,23 +2039,43 @@ VPC:
 서브넷:
   ✓ deepple-prod-subnet-public1-ap-northeast-2a (퍼블릭 서브넷)
 
-  💡 퍼블릭 서브넷 선택 이유:
-  - ALB에서 직접 트래픽 전달 받기 위함
-  - SSH 접속 가능
+  💡 서브넷 선택 Trade-off 분석:
+
+  [선택한 방식] 퍼블릭 서브넷 + 보안 그룹 강화:
+  ✅ 비용 효율적: NAT Gateway 불필요 (~$40-50/월 절약)
+  ✅ 인터넷 직접 연결: Docker pull, apt update 가능
+  ✅ 간단한 구조: 추가 인프라 불필요
+  ✅ 보안 그룹으로 충분한 보호 가능
+  ⚠️ EC2가 퍼블릭 IP를 가짐 (보안 그룹으로 접근 제어)
+
+  [대안] 프라이빗 서브넷 + NAT Gateway (Best Practice):
+  ✅ 완벽한 격리: EC2가 인터넷에 직접 노출 안 됨
+  ✅ 더 높은 보안 수준
+  ❌ 추가 비용: NAT Gateway $40-50/월
+  ❌ 복잡도 증가: Bastion Host 또는 Session Manager 필요
+
+  → 소규모 운영 환경에서는 퍼블릭 서브넷 + 보안 그룹 방식이 합리적
+  → 규모가 커지면 프라이빗 서브넷으로 전환 고려
 
 퍼블릭 IP 자동 할당:
   ✓ 활성화
 
   💡 퍼블릭 IP 필요 이유:
-  - 인터넷을 통한 SSH 접속
+  - 인터넷을 통한 SSH 접속 (보안 그룹으로 IP 제한)
   - Docker 이미지 Pull
   - 소프트웨어 업데이트 다운로드
+  - 외부 API 호출 (결제, SMS 등)
 
 방화벽 (보안 그룹):
   ○ 기존 보안 그룹 선택
   ✓ deepple-prod-app-sg (앞서 생성한 보안 그룹)
 
   "default" 보안 그룹은 제거하세요!
+
+  ⚠️ 중요: 보안 그룹 인바운드 규칙 확인
+  - SSH (22): 특정 IP만 허용 (회사/집 IP)
+  - 애플리케이션 (8080): ALB 보안 그룹만 허용
+  - 일반 인터넷 사용자는 EC2에 직접 접근 불가
 ```
 
 **7단계: 스토리지 구성**
@@ -2123,22 +2143,25 @@ IAM 인스턴스 프로파일:
 
 ```bash
 #!/bin/bash
-# DEEPPLE 운영 서버 초기 설정 스크립트
 # Amazon Linux 2023
 
 # 로그 파일 설정
 exec > >(tee /var/log/user-data.log)
 exec 2>&1
 
-echo "===== DEEPPLE Server Setup Started ====="
+echo "===== Server Setup Started ====="
 date
 
-# 시스템 업데이트
-echo "Step 1: System Update"
+# 시스템 업데이트 
+echo "===== System Update ====="
 yum update -y
 
+# 타임존 설정
+echo "===== Setting timezone to Asia/Seoul ====="
+timedatectl set-timezone Asia/Seoul
+
 # Docker 설치
-echo "Step 2: Installing Docker"
+echo "===== Installing Docker ====="
 yum install -y docker
 systemctl start docker
 systemctl enable docker
@@ -2146,28 +2169,15 @@ systemctl enable docker
 # ec2-user를 docker 그룹에 추가
 usermod -aG docker ec2-user
 
-# Docker Compose 설치
-echo "Step 3: Installing Docker Compose"
-DOCKER_COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d\" -f4)
-curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
-
-# Docker 버전 확인
-docker --version
-docker-compose --version
-
-# CloudWatch Logs 에이전트 설치 (선택사항, 권장)
-echo "Step 4: Installing CloudWatch Agent"
-wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
-rpm -U ./amazon-cloudwatch-agent.rpm
-
-# 작업 디렉토리 생성
-echo "Step 5: Creating directories"
+# 프로젝트 디렉토리 생성
+echo "===== Creating directories ====="
 mkdir -p /home/ec2-user/deepple
-mkdir -p /home/ec2-user/secrets
-mkdir -p /home/ec2-user/certs/appstore
-chmod 700 /home/ec2-user/secrets
-chmod 755 /home/ec2-user/certs
+mkdir -p /home/ec2-user/secrets           # Firebase 인증서 저장 위치
+mkdir -p /home/ec2-user/certs/appstore    # App Store 인증서 저장 위치
+
+# 보안 권한 설정
+chmod 700 /home/ec2-user/secrets          # secrets는 소유자만 접근
+chmod 755 /home/ec2-user/certs            # certs는 읽기 가능
 chmod 755 /home/ec2-user/certs/appstore
 
 # 소유권 설정
@@ -2175,99 +2185,23 @@ chown -R ec2-user:ec2-user /home/ec2-user/deepple
 chown -R ec2-user:ec2-user /home/ec2-user/secrets
 chown -R ec2-user:ec2-user /home/ec2-user/certs
 
-# Git 설치 (선택사항)
-echo "Step 6: Installing Git"
-yum install -y git
-
-# 타임존 설정 (서울)
-echo "Step 7: Setting timezone to Asia/Seoul"
-timedatectl set-timezone Asia/Seoul
-
-# 재부팅 (Docker 그룹 적용)
-echo "===== DEEPPLE Server Setup Completed ====="
+echo "===== Server Setup Completed ====="
 date
-echo "Rebooting in 10 seconds..."
-sleep 10
-reboot
 ```
 
-**Ubuntu 22.04용 사용자 데이터 스크립트**:
+**💡 스크립트 구성 요소**:
 
-```bash
-#!/bin/bash
-# DEEPPLE 운영 서버 초기 설정 스크립트
-# Ubuntu 22.04 LTS
+**필수 항목**:
 
-# 로그 파일 설정
-exec > >(tee /var/log/user-data.log)
-exec 2>&1
-
-echo "===== DEEPPLE Server Setup Started ====="
-date
-
-# 시스템 업데이트
-echo "Step 1: System Update"
-apt update -y
-apt upgrade -y
-
-# Docker 설치
-echo "Step 2: Installing Docker"
-apt install -y docker.io
-systemctl start docker
-systemctl enable docker
-
-# ubuntu 사용자를 docker 그룹에 추가
-usermod -aG docker ubuntu
-
-# Docker Compose 설치
-echo "Step 3: Installing Docker Compose"
-DOCKER_COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d\" -f4)
-curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
-
-# Docker 버전 확인
-docker --version
-docker-compose --version
-
-# CloudWatch Logs 에이전트 설치
-echo "Step 4: Installing CloudWatch Agent"
-wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
-dpkg -i -E ./amazon-cloudwatch-agent.deb
-
-# 작업 디렉토리 생성
-echo "Step 5: Creating directories"
-mkdir -p /home/ubuntu/deepple
-mkdir -p /home/ubuntu/secrets
-mkdir -p /home/ubuntu/certs/appstore
-chmod 700 /home/ubuntu/secrets
-chmod 755 /home/ubuntu/certs
-chmod 755 /home/ubuntu/certs/appstore
-
-# 소유권 설정
-chown -R ubuntu:ubuntu /home/ubuntu/deepple
-chown -R ubuntu:ubuntu /home/ubuntu/secrets
-chown -R ubuntu:ubuntu /home/ubuntu/certs
-
-# Git 설치
-echo "Step 6: Installing Git"
-apt install -y git
-
-# 타임존 설정 (서울)
-echo "Step 7: Setting timezone to Asia/Seoul"
-timedatectl set-timezone Asia/Seoul
-
-echo "===== DEEPPLE Server Setup Completed ====="
-date
-echo "Rebooting in 10 seconds..."
-sleep 10
-reboot
-```
+- ✅ Docker 설치 - 애플리케이션 실행에 필수
+- ✅ 디렉토리 생성 - Firebase, App Store 인증서 저장용
+- ✅ 타임존 설정 - 로그 시간 일관성
 
 💡 **사용자 데이터 스크립트 설명**:
 
 - EC2 인스턴스 최초 부팅 시 자동 실행
-- Docker, Docker Compose, CloudWatch Agent 자동 설치
-- DEEPPLE 프로젝트에 필요한 디렉토리 생성
+- Docker, Docker Compose 자동 설치
+- 프로젝트에 필요한 디렉토리 생성
 - 로그는 `/var/log/user-data.log`에 저장
 
 **9단계: 인스턴스 시작**
@@ -2373,7 +2307,6 @@ ssh -i deepple-prod-key.pem ec2-user@[EC2_PUBLIC_IP]
 
 # Docker 확인
 docker --version
-docker-compose --version
 
 # 작업 디렉토리 생성
 mkdir -p /home/ec2-user/deepple
