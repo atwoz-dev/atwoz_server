@@ -32,9 +32,11 @@ public class ProfileImageController {
     @Operation(summary = "프로필 이미지 업로드")
     @PostMapping
     public ResponseEntity<BaseResponse<List<ProfileImageUploadResponse>>> updateProfileImage(
-        @ModelAttribute @Valid ProfileImageUploadRequestWrapper request, @AuthPrincipal AuthContext authContext) {
-        return ResponseEntity.ok(
-            BaseResponse.of(StatusType.OK, profileImageService.save(authContext.getId(), request.getRequests())));
+        @RequestBody @Valid ProfileImageUploadRequestWrapper request,
+        @AuthPrincipal AuthContext authContext
+    ) {
+        List<ProfileImageUploadResponse> result = profileImageService.save(authContext.getId(), request.requests());
+        return ResponseEntity.ok(BaseResponse.of(StatusType.OK, result));
     }
 
     @Operation(summary = "프로필 이미지 업로드용 preSignedUrl 생성")

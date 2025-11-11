@@ -1,13 +1,11 @@
 package atwoz.atwoz.member.presentation.profileimage.dto;
 
 import jakarta.validation.Valid;
-import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-public class ProfileImageUploadRequestWrapper {
+public record ProfileImageUploadRequestWrapper(
     @Valid
-    private final List<ProfileImageUploadRequest> requests = new ArrayList<>();
+    List<ProfileImageUploadRequest> requests
+) {
 }
