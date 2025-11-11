@@ -52,7 +52,7 @@ public class ProfileImageService {
             ProfileImage profileImage = ProfileImage
                 .builder()
                 .memberId(memberId)
-                .imageUrl(ImageUrl.from(request.getImageUrl()))
+                .imageUrl(ImageUrl.from(request.imageUrl()))
                 .order(order)
                 .isPrimary(order == 1)
                 .build();
