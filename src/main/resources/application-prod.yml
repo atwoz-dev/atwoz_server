@@ -92,3 +92,15 @@ bizgo:
 
 scheduler:
   cron: "0 0 0 * * *"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: never
+  server:
+    port: 8080
