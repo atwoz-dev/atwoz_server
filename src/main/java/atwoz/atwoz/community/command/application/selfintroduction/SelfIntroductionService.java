@@ -51,7 +51,7 @@ public class SelfIntroductionService {
     }
 
     private void validateSelfIntroductionAuthor(Long memberIdFromSelfIntroduction, Long memberId) {
-        if (memberIdFromSelfIntroduction != memberId) {
+        if (!memberIdFromSelfIntroduction.equals(memberId)) {
             throw new NotSelfIntroductionAuthorException();
         }
     }
