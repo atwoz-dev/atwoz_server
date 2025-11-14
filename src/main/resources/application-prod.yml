@@ -28,6 +28,9 @@ spring:
     baseline-version: 0
     table: flyway_schema_history
 
+  lifecycle:
+    timeout-per-shutdown-phase: ${SHUTDOWN_TIMEOUT:30s}
+
 logging:
   level:
     root: INFO
@@ -45,6 +48,7 @@ cloud:
 
 server:
   port: ${SERVER_PORT:8080}
+  shutdown: graceful
   tomcat:
     max-http-form-post-size: 50MB
 
