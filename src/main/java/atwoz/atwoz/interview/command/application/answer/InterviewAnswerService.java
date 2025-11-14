@@ -35,6 +35,13 @@ public class InterviewAnswerService {
         interviewAnswer.updateContent(request.answerContent());
     }
 
+    @Transactional
+    public void deleteAnswer(Long answerId, Long memberId) {
+        InterviewAnswer interviewAnswer = getInterviewAnswer(answerId);
+        validateAnswer(interviewAnswer, memberId);
+        interviewAnswerCommandRepository.delete(interviewAnswer);
+    }
+
     private void validateQuestion(Long questionId, Long memberId) {
         InterviewQuestion interviewQuestion = interviewQuestionCommandRepository.findById(questionId)
             .orElseThrow(InterviewQuestionNotFoundException::new);
