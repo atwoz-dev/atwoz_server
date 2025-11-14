@@ -68,11 +68,11 @@ jobs:
             export ENV="${{secrets.ENV}}"
 
             # Alternatively, create the .env file directly on the EC2 instance
-            echo "$ENV" > /home/ubuntu/.env
+            echo "$ENV" > /home/ec2-user/.env
 
             # Run the deploy script with sudo
             echo "Run Deploy Script" 
-            sudo /home/ubuntu/deploy_script.sh
+            sudo /home/ec2-user/deploy_script.sh
           
             # Exit SSH session.
             exit
