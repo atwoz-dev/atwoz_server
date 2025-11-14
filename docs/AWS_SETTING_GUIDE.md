@@ -31,36 +31,14 @@
 ```
 인터넷
   ↓
-Route 53 (도메인)
+Route 53
   ↓
-ALB (로드밸런서)
+ALB 
   ↓
-EC2 (애플리케이션)
+EC2 
   ↓
-RDS (MySQL) + ElastiCache (Redis) + S3 (파일 저장소)
+RDS + ElastiCache + S3 
 ```
-
-### 1.3 비용 예상 (월간)
-
-**개발 환경 (dev)**
-
-- EC2 t3.small: $15
-- RDS db.t3.micro (Single-AZ): $15
-- ElastiCache cache.t3.micro: $12
-- NAT Gateway: $40
-- 기타: $5
-- **합계: 약 $87/월 (~₩116,000)**
-
-**운영 환경 (prod)**
-
-- EC2 t3.medium: $30
-- RDS db.t3.medium (Multi-AZ): $120
-- ElastiCache cache.t3.small: $50
-- NAT Gateway: $40
-- ALB: $20
-- Route 53: $1
-- 기타: $10
-- **합계: 약 $271/월 (~₩362,000)**
 
 ---
 
@@ -150,14 +128,14 @@ IPv6 CIDR: 없음
 **6. NAT 게이트웨이**:
 
 ```
-권장: "1개 AZ에" 선택 (비용: ~$40/월)
+권장: "1개 AZ에" 선택 
 
 왜 NAT Gateway가 필요한가?
 - 프라이빗 서브넷의 RDS, ElastiCache가 외부 통신 필요
   (패치 다운로드, Docker 이미지 Pull 등)
 - 외부에서 프라이빗 서브넷으로 직접 접근은 차단 (보안)
 
-고가용성 필요 시: "AZ마다 1개" (~$80/월)
+고가용성 필요 시: "AZ마다 1개"
 ```
 
 **7. VPC 엔드포인트**:
@@ -346,15 +324,15 @@ spring:
 ## 5. 캐시 서버 (ElastiCache)
 
 **ElastiCache란?**
-AWS가 관리하는 Redis 서비스입니다. 백업, 패치, 복제를 자동으로 처리합니다.
+AWS가 관리하는 캐시 서비스입니다. 백업, 패치, 복제를 자동으로 처리합니다.
 
 ### 5.1 서브넷 그룹 생성
 
 1. **ElastiCache 콘솔** → 서브넷 그룹 → **서브넷 그룹 생성**
 2. 설정:
    ```
-   이름: deepple-prod-redis-subnet-group
-   설명: DEEPPLE 운영 Redis용 서브넷 그룹
+   이름: deepple-prod-cache-subnet-group
+   설명: DEEPPLE 운영 캐시용 서브넷 그룹
    VPC: deepple-prod-vpc
    ```
 3. 서브넷 추가:
@@ -369,8 +347,8 @@ AWS가 관리하는 Redis 서비스입니다. 백업, 패치, 복제를 자동�
 1. **VPC 콘솔** → 보안 그룹 → **보안 그룹 생성**
 2. 설정:
    ```
-   이름: deepple-prod-redis-sg
-   설명: DEEPPLE 운영 Redis 보안 그룹
+   이름: deepple-prod-cache-sg
+   설명: DEEPPLE 운영 캐시 보안 그룹
    VPC: deepple-prod-vpc
    ```
 3. 인바운드 규칙:
@@ -382,9 +360,9 @@ AWS가 관리하는 Redis 서비스입니다. 백업, 패치, 복제를 자동�
    ```
 4. 생성
 
-### 5.3 Redis 클러스터 생성
+### 5.3 클러스터 생성
 
-1. **ElastiCache 콘솔** → Redis 클러스터 → **클러스터 생성**
+1. **ElastiCache 콘솔** → Valkey 클러스터 → **클러스터 생성**
 
 **2. 클러스터 모드**:
 
@@ -402,8 +380,8 @@ Multi-AZ: 활성화 (고가용성)
 **4. 클러스터 정보**:
 
 ```
-이름: deepple-prod-redis
-엔진 버전: Redis 7.x (최신)
+이름: deepple-prod-cache
+엔진 버전: 최신 버전 선택
 포트: 6379
 노드 유형: cache.t3.micro (개발), cache.t3.small (운영)
 복제본 수: 1 (Multi-AZ 최소)
@@ -412,8 +390,8 @@ Multi-AZ: 활성화 (고가용성)
 **5. 연결**:
 
 ```
-서브넷 그룹: deepple-prod-redis-subnet-group
-보안 그룹: deepple-prod-redis-sg
+서브넷 그룹: deepple-prod-cache-subnet-group
+보안 그룹: deepple-prod-cache-sg
 ```
 
 **6. 고급 설정**:
@@ -430,7 +408,7 @@ Multi-AZ: 활성화 (고가용성)
 ### 5.4 연결 정보 저장
 
 ```
-엔드포인트: deepple-prod-redis.xxxxxx.ng.0001.apn2.cache.amazonaws.com
+엔드포인트: deepple-prod-cache.xxxxxx.ng.0001.apn2.cache.amazonaws.com
 포트: 6379
 
 application-prod.yml 설정:
@@ -493,7 +471,7 @@ ACL 비활성화됨 (권장)
 
 7. **버킷 만들기**
 
-### 6.2 CORS 설정 (선택, 프론트엔드 직접 업로드 시)
+### 6.2 CORS 설정 (프론트엔드가 웹 브라우저일 경우)
 
 버킷 선택 → 권한 → CORS 편집:
 
@@ -536,10 +514,7 @@ ACL 비활성화됨 (권장)
 # application-prod.yml
 cloud:
   aws:
-    s3:
-      bucket: deepple-prod-storage
-    region:
-      static: ap-northeast-2
+    bucket: deepple-prod-storage
     credentials:
       instance-profile: true  # EC2 IAM Role 사용
 ```
@@ -953,5 +928,3 @@ curl https://api.deepple.co.kr/actuator/health
 curl -I http://api.deepple.co.kr
 # 예상: Location: https://api.deepple.co.kr
 ```
-
----
