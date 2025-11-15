@@ -136,8 +136,6 @@ cp .env.example .env
 
 | 변수명                    | 설명       | 예시 |
 |------------------------|----------|----|
-| **AWS_S3_ACCESS_KEY**  | S3 접근 키  |    |
-| **AWS_S3_SECRET_KEY**  | S3 비밀 키  |    |
 | **AWS_S3_BUCKET_NAME** | S3 버킷 이름 |    |
 
 #### JWT

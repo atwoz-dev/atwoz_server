@@ -1,16 +1,10 @@
 package atwoz.atwoz;
 
+import atwoz.atwoz.common.support.IntegrationTestSupport;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
-@SpringBootTest
-@Import(RedisTestConfig.class)
-class AtwozApplicationTests {
-
-
+class AtwozApplicationTests extends IntegrationTestSupport {
     @Test
     void contextLoads() {
-
     }
 }

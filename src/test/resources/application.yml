@@ -27,16 +27,13 @@ spring:
   flyway:
     enabled: false
 
-cloud:
-  aws:
-    bucket: bucket-name
-    credentials:
-      access-key: access-key
-      secret-key: secret-key
-    stack:
-      auto: false
-    region:
-      static: ap-northeast-2
+  cloud:
+    aws:
+      region:
+        static: ap-northeast-2
+      s3:
+        enabled: false
+        bucket: test-bucket
 
 jwt:
   secret: this-is-secret-key-value-at-least-128-bytes

@@ -1,16 +1,16 @@
 package atwoz.atwoz.member.command.infra.profileImage.exception;
 
-import com.amazonaws.AmazonServiceException;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
 
 public class S3AmazonException extends RuntimeException {
-    private final AmazonServiceException exception;
+    private final AwsServiceException exception;
 
-    public S3AmazonException(AmazonServiceException amazonServiceException) {
+    public S3AmazonException(AwsServiceException awsServiceException) {
         super("S3 서비스에 문제가 발생하였습니다.");
-        this.exception = amazonServiceException;
+        this.exception = awsServiceException;
     }
 
-    public AmazonServiceException getException() {
+    public AwsServiceException getException() {
         return exception;
     }
 }

@@ -1,8 +1,8 @@
 package atwoz.atwoz.datingexam.adapter.database;
 
-import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.block.domain.Block;
 import atwoz.atwoz.common.MockEventsExtension;
+import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.datingexam.domain.DatingExamAnswerEncoder;
 import atwoz.atwoz.datingexam.domain.DatingExamSubject;
 import atwoz.atwoz.datingexam.domain.DatingExamSubmit;
@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Import({QuerydslConfig.class, SoulmateQueryRepositoryImpl.class})
+@Import({QueryDslConfig.class, SoulmateQueryRepositoryImpl.class})
 @ExtendWith(MockEventsExtension.class)
 @DataJpaTest
 class SoulmateQueryRepositoryImplTest {

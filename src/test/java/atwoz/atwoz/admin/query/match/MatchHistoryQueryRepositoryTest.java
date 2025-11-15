@@ -1,7 +1,7 @@
 package atwoz.atwoz.admin.query.match;
 
-import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.common.MockEventsExtension;
+import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.match.command.domain.match.Match;
 import atwoz.atwoz.match.command.domain.match.MatchContactType;
 import atwoz.atwoz.match.command.domain.match.MatchType;
@@ -26,7 +26,7 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import({QuerydslConfig.class, MatchHistoryQueryRepository.class})
+@Import({QueryDslConfig.class, MatchHistoryQueryRepository.class})
 @ExtendWith(MockEventsExtension.class)
 class MatchHistoryQueryRepositoryTest {
 

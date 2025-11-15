@@ -65,9 +65,9 @@ public class ProfileImageService {
         return ProfileImageMapper.toList(profileImages);
     }
 
-    public PresignedUrlResponse getPresignedUrl(String fileName, Long userId) {
+    public PresignedUrlResponse getPresignedUrl(String fileName, Long memberId) {
         validateFileName(fileName);
-        return s3Uploader.getPreSignedUrl(fileName, userId);
+        return s3Uploader.getPresignedUrl(fileName, memberId);
     }
 
     private void validateRequestSize(List<ProfileImageUploadRequest> request) {
