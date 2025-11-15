@@ -1,7 +1,7 @@
 package atwoz.atwoz.admin.query.screening;
 
-import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.admin.command.domain.screening.Screening;
+import atwoz.atwoz.common.config.QuerydslConfig;
 import atwoz.atwoz.interview.command.domain.answer.InterviewAnswer;
 import atwoz.atwoz.interview.command.domain.question.InterviewCategory;
 import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;

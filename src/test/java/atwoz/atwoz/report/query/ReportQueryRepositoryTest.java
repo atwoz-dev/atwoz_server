@@ -1,7 +1,7 @@
 package atwoz.atwoz.report.query;
 
-import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.common.MockEventsExtension;
+import atwoz.atwoz.common.config.QuerydslConfig;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;

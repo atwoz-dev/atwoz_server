@@ -1,6 +1,6 @@
 package atwoz.atwoz.member.command.infra.profileImage.exception;
 
-import com.amazonaws.SdkClientException;
+import software.amazon.awssdk.core.exception.SdkClientException;
 
 public class S3ClientException extends RuntimeException {
     private final SdkClientException exception;

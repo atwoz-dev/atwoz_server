@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.query.introduction.intra;
 
 
-import atwoz.atwoz.QuerydslConfig;
+import atwoz.atwoz.common.config.QuerydslConfig;
 import atwoz.atwoz.member.command.domain.introduction.MemberIdeal;
 import atwoz.atwoz.member.command.domain.introduction.vo.AgeRange;
 import atwoz.atwoz.member.command.domain.member.*;

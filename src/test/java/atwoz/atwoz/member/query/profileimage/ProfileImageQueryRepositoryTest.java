@@ -1,6 +1,6 @@
 package atwoz.atwoz.member.query.profileimage;
 
-import atwoz.atwoz.QuerydslConfig;
+import atwoz.atwoz.common.config.QuerydslConfig;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.query.profileimage.view.ProfileImageView;

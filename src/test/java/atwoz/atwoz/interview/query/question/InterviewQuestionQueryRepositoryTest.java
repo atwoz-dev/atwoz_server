@@ -1,6 +1,6 @@
 package atwoz.atwoz.interview.query.question;
 
-import atwoz.atwoz.QuerydslConfig;
+import atwoz.atwoz.common.config.QuerydslConfig;
 import atwoz.atwoz.interview.command.domain.answer.InterviewAnswer;
 import atwoz.atwoz.interview.command.domain.question.InterviewCategory;
 import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;

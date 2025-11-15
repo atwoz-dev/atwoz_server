@@ -1,6 +1,6 @@
 package atwoz.atwoz.datingexam.adapter.database;
 
-import atwoz.atwoz.QuerydslConfig;
+import atwoz.atwoz.common.config.QuerydslConfig;
 import atwoz.atwoz.datingexam.application.dto.DatingExamAnswerInfo;
 import atwoz.atwoz.datingexam.application.dto.DatingExamInfoResponse;
 import atwoz.atwoz.datingexam.application.dto.DatingExamQuestionInfo;

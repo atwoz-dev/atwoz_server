@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.query.introduction.intra;
 
-import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.common.MockEventsExtension;
+import atwoz.atwoz.common.config.QuerydslConfig;
 import atwoz.atwoz.like.command.domain.Like;
 import atwoz.atwoz.like.command.domain.LikeLevel;
 import atwoz.atwoz.member.command.domain.introduction.IntroductionType;

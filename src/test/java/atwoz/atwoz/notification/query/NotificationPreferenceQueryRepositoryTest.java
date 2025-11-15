@@ -1,6 +1,6 @@
 package atwoz.atwoz.notification.query;
 
-import atwoz.atwoz.QuerydslConfig;
+import atwoz.atwoz.common.config.QuerydslConfig;
 import atwoz.atwoz.notification.command.domain.NotificationPreference;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

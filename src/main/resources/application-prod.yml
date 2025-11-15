@@ -31,19 +31,16 @@ spring:
   lifecycle:
     timeout-per-shutdown-phase: ${SHUTDOWN_TIMEOUT:30s}
 
+  cloud:
+    aws:
+      region:
+        static: ap-northeast-2
+      s3:
+        bucket: ${AWS_S3_BUCKET_NAME}
+
 logging:
   level:
-    root: INFO
-
-cloud:
-  aws:
-    bucket: ${AWS_S3_BUCKET_NAME}
-    credentials:
-      instance-profile: true  # EC2 IAM Role 사용
-    stack:
-      auto: false
-    region:
-      static: ap-northeast-2
+    root: info
 
 server:
   port: ${SERVER_PORT:8080}

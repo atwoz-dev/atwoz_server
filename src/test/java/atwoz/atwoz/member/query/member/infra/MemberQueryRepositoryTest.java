@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.query.member.infra;
 
-import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.common.MockEventsExtension;
+import atwoz.atwoz.common.config.QuerydslConfig;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchange;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeStatus;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
@@ -77,7 +77,7 @@ class MemberQueryRepositoryTest {
 
             Member member = Member.fromPhoneNumber("01012345678");
             entityManager.persist(member);
-            
+
             MemberProfile updateProfile = MemberProfile.builder()
                 .yearOfBirth(Calendar.getInstance().get(Calendar.YEAR) - 25) // 26살
                 .height(20)

@@ -1,8 +1,8 @@
 package atwoz.atwoz.datingexam.adapter.database;
 
-import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.block.domain.Block;
 import atwoz.atwoz.common.MockEventsExtension;
+import atwoz.atwoz.common.config.QuerydslConfig;
 import atwoz.atwoz.datingexam.domain.DatingExamAnswerEncoder;
 import atwoz.atwoz.datingexam.domain.DatingExamSubmit;
 import atwoz.atwoz.datingexam.domain.dto.DatingExamSubmitRequest;

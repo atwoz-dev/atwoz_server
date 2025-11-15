@@ -1,9 +1,9 @@
 package atwoz.atwoz.member.query.member.infra;
 
-import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.admin.command.domain.warning.Warning;
 import atwoz.atwoz.admin.command.domain.warning.WarningReasonType;
 import atwoz.atwoz.common.MockEventsExtension;
+import atwoz.atwoz.common.config.QuerydslConfig;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.interview.command.domain.answer.InterviewAnswer;
 import atwoz.atwoz.interview.command.domain.question.InterviewCategory;

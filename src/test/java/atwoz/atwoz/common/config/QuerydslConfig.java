@@ -1,4 +1,4 @@
-package atwoz.atwoz;
+package atwoz.atwoz.common.config;
 
 import com.querydsl.jpa.JPQLTemplates;
 import com.querydsl.jpa.impl.JPAQueryFactory;

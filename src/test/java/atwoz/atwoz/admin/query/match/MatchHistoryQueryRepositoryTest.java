@@ -1,7 +1,7 @@
 package atwoz.atwoz.admin.query.match;
 
-import atwoz.atwoz.QuerydslConfig;
 import atwoz.atwoz.common.MockEventsExtension;
+import atwoz.atwoz.common.config.QuerydslConfig;
 import atwoz.atwoz.match.command.domain.match.Match;
 import atwoz.atwoz.match.command.domain.match.MatchContactType;
 import atwoz.atwoz.match.command.domain.match.MatchType;
