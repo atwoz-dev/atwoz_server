@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AgeConverterTest {
     @Test
     @DisplayName("연도를 나이로 변환하고, 다시 나이를 연도로 변환하면 같은 연도가 나와야 한다.")
-    void toAgeAndBackThanSameYearOfBirth() {
+    void toAgeAndBackThenSameYearOfBirth() {
         // given
         Integer yearOfBirth = 1997;
 
