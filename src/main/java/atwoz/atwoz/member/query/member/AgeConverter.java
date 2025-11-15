@@ -12,6 +12,6 @@ public class AgeConverter {
     }
 
     public static Integer toYearOfBirth(Integer age) {
-        return age == null ? null : Calendar.getInstance().get(Calendar.YEAR) - age - 1;
+        return age == null ? null : Calendar.getInstance().get(Calendar.YEAR) - age + 1;
     }
 }
