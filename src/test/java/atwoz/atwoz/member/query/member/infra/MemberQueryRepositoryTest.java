@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.query.member.infra;
 
 import atwoz.atwoz.common.MockEventsExtension;
-import atwoz.atwoz.common.config.QuerydslConfig;
+import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchange;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeStatus;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @DataJpaTest
-@Import({QuerydslConfig.class, MemberQueryRepository.class})
+@Import({QueryDslConfig.class, MemberQueryRepository.class})
 @ExtendWith(MockEventsExtension.class)
 class MemberQueryRepositoryTest {
 

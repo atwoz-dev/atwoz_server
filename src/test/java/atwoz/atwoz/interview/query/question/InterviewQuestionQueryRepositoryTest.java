@@ -1,6 +1,6 @@
 package atwoz.atwoz.interview.query.question;
 
-import atwoz.atwoz.common.config.QuerydslConfig;
+import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.interview.command.domain.answer.InterviewAnswer;
 import atwoz.atwoz.interview.command.domain.question.InterviewCategory;
 import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;
@@ -21,7 +21,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import({QuerydslConfig.class, InterviewQuestionQueryRepository.class})
+@Import({QueryDslConfig.class, InterviewQuestionQueryRepository.class})
 class InterviewQuestionQueryRepositoryTest {
 
     @Autowired

@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.query.introduction.intra;
 
 import atwoz.atwoz.common.MockEventsExtension;
-import atwoz.atwoz.common.config.QuerydslConfig;
+import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.like.command.domain.Like;
 import atwoz.atwoz.like.command.domain.LikeLevel;
 import atwoz.atwoz.member.command.domain.introduction.IntroductionType;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 
 
 @DataJpaTest
-@Import({QuerydslConfig.class, IntroductionQueryRepository.class})
+@Import({QueryDslConfig.class, IntroductionQueryRepository.class})
 @ExtendWith(MockEventsExtension.class)
 class IntroductionQueryRepositoryTest {
     @Autowired

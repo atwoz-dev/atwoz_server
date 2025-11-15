@@ -1,6 +1,6 @@
 package atwoz.atwoz.notification.query;
 
-import atwoz.atwoz.common.config.QuerydslConfig;
+import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.notification.command.domain.NotificationPreference;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ import static atwoz.atwoz.notification.command.domain.NotificationType.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import({QuerydslConfig.class, NotificationPreferenceQueryRepository.class})
+@Import({QueryDslConfig.class, NotificationPreferenceQueryRepository.class})
 class NotificationPreferenceQueryRepositoryTest {
 
     @Autowired

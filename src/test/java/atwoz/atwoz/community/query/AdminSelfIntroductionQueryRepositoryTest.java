@@ -1,6 +1,6 @@
 package atwoz.atwoz.community.query;
 
-import atwoz.atwoz.common.config.QuerydslConfig;
+import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.community.command.domain.selfintroduction.SelfIntroduction;
 import atwoz.atwoz.community.presentation.selfintroduction.dto.AdminSelfIntroductionSearchCondition;
@@ -32,7 +32,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @DataJpaTest
-@Import({QuerydslConfig.class, AdminSelfIntroductionQueryRepository.class})
+@Import({QueryDslConfig.class, AdminSelfIntroductionQueryRepository.class})
 class AdminSelfIntroductionQueryRepositoryTest {
 
     private static final int PAGE_SIZE = 5;

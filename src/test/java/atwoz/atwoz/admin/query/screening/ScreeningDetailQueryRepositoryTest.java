@@ -1,7 +1,7 @@
 package atwoz.atwoz.admin.query.screening;
 
 import atwoz.atwoz.admin.command.domain.screening.Screening;
-import atwoz.atwoz.common.config.QuerydslConfig;
+import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.interview.command.domain.answer.InterviewAnswer;
 import atwoz.atwoz.interview.command.domain.question.InterviewCategory;
 import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;
@@ -24,7 +24,7 @@ import java.util.Calendar;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import({QuerydslConfig.class, ScreeningDetailQueryRepository.class})
+@Import({QueryDslConfig.class, ScreeningDetailQueryRepository.class})
 class ScreeningDetailQueryRepositoryTest {
 
     @Autowired

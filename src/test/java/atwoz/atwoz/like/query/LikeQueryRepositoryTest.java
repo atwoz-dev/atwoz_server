@@ -2,7 +2,7 @@ package atwoz.atwoz.like.query;
 
 import atwoz.atwoz.block.domain.Block;
 import atwoz.atwoz.common.MockEventsExtension;
-import atwoz.atwoz.common.config.QuerydslConfig;
+import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.like.command.domain.Like;
 import atwoz.atwoz.like.command.domain.LikeLevel;
 import atwoz.atwoz.member.command.domain.member.District;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import({QuerydslConfig.class, LikeQueryRepository.class})
+@Import({QueryDslConfig.class, LikeQueryRepository.class})
 @ExtendWith(MockEventsExtension.class)
 class LikeQueryRepositoryTest {
     private static final int NUMBER_OF_PEOPLE = 30;

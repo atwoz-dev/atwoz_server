@@ -1,6 +1,6 @@
 package atwoz.atwoz.heart.query.hearttransaction;
 
-import atwoz.atwoz.common.config.QuerydslConfig;
+import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.heart.command.domain.hearttransaction.HeartTransaction;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartAmount;
 import atwoz.atwoz.heart.command.domain.hearttransaction.vo.HeartBalance;
@@ -21,7 +21,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
-@Import({QuerydslConfig.class, HeartTransactionQueryRepository.class})
+@Import({QueryDslConfig.class, HeartTransactionQueryRepository.class})
 class HeartTransactionQueryRepositoryTest {
 
     @Autowired

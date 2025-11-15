@@ -1,6 +1,6 @@
 package atwoz.atwoz.member.query.profileimage;
 
-import atwoz.atwoz.common.config.QuerydslConfig;
+import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.member.command.domain.profileImage.ProfileImage;
 import atwoz.atwoz.member.command.domain.profileImage.vo.ImageUrl;
 import atwoz.atwoz.member.query.profileimage.view.ProfileImageView;
@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
-@Import({QuerydslConfig.class, ProfileImageQueryRepository.class})
+@Import({QueryDslConfig.class, ProfileImageQueryRepository.class})
 @DataJpaTest
 public class ProfileImageQueryRepositoryTest {
     @Autowired

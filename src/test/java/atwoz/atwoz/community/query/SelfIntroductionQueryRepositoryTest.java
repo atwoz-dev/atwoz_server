@@ -1,7 +1,7 @@
 package atwoz.atwoz.community.query;
 
 import atwoz.atwoz.common.MockEventsExtension;
-import atwoz.atwoz.common.config.QuerydslConfig;
+import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchange;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeStatus;
 import atwoz.atwoz.community.command.domain.selfintroduction.SelfIntroduction;
@@ -35,7 +35,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import({QuerydslConfig.class, SelfIntroductionQueryRepository.class})
+@Import({QueryDslConfig.class, SelfIntroductionQueryRepository.class})
 @ExtendWith(MockEventsExtension.class)
 public class SelfIntroductionQueryRepositoryTest {
 

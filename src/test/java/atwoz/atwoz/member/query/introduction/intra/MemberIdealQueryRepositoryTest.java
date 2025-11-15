@@ -1,7 +1,7 @@
 package atwoz.atwoz.member.query.introduction.intra;
 
 
-import atwoz.atwoz.common.config.QuerydslConfig;
+import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.member.command.domain.introduction.MemberIdeal;
 import atwoz.atwoz.member.command.domain.introduction.vo.AgeRange;
 import atwoz.atwoz.member.command.domain.member.*;
@@ -18,7 +18,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import({QuerydslConfig.class, MemberIdealQueryRepository.class})
+@Import({QueryDslConfig.class, MemberIdealQueryRepository.class})
 class MemberIdealQueryRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;

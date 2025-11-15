@@ -1,7 +1,7 @@
 package atwoz.atwoz.report.query;
 
 import atwoz.atwoz.common.MockEventsExtension;
-import atwoz.atwoz.common.config.QuerydslConfig;
+import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.vo.MemberProfile;
 import atwoz.atwoz.member.command.domain.member.vo.Nickname;
@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
 @DataJpaTest
-@Import({QuerydslConfig.class, ReportQueryRepository.class})
+@Import({QueryDslConfig.class, ReportQueryRepository.class})
 @ExtendWith(MockEventsExtension.class)
 class ReportQueryRepositoryTest {
     @Autowired

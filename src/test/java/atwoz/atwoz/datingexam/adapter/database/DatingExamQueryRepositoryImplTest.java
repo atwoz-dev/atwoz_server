@@ -1,6 +1,6 @@
 package atwoz.atwoz.datingexam.adapter.database;
 
-import atwoz.atwoz.common.config.QuerydslConfig;
+import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.datingexam.application.dto.DatingExamAnswerInfo;
 import atwoz.atwoz.datingexam.application.dto.DatingExamInfoResponse;
 import atwoz.atwoz.datingexam.application.dto.DatingExamQuestionInfo;
@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Import({QuerydslConfig.class, DatingExamQueryRepositoryImpl.class})
+@Import({QueryDslConfig.class, DatingExamQueryRepositoryImpl.class})
 @DataJpaTest
 class DatingExamQueryRepositoryImplTest {
 

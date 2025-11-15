@@ -1,6 +1,6 @@
 package atwoz.atwoz.payment.query.heartpurchaseoption;
 
-import atwoz.atwoz.common.config.QuerydslConfig;
+import atwoz.atwoz.common.config.QueryDslConfig;
 import atwoz.atwoz.payment.command.domain.heartpurchaseoption.HeartPurchaseAmount;
 import atwoz.atwoz.payment.command.domain.heartpurchaseoption.HeartPurchaseOption;
 import atwoz.atwoz.payment.command.domain.heartpurchaseoption.Price;
@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
 @DataJpaTest
-@Import({QuerydslConfig.class, HeartPurchaseOptionQueryRepository.class})
+@Import({QueryDslConfig.class, HeartPurchaseOptionQueryRepository.class})
 class HeartPurchaseOptionQueryRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
