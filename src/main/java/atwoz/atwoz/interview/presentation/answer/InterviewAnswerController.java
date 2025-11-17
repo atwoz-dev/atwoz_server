@@ -42,4 +42,14 @@ public class InterviewAnswerController {
         interviewAnswerService.updateAnswer(id, request, authContext.getId());
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
     }
+
+    @Operation(summary = "인터뷰 답변 삭제 API")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<BaseResponse<Void>> deleteAnswer(
+        @PathVariable Long id,
+        @AuthPrincipal AuthContext authContext
+    ) {
+        interviewAnswerService.deleteAnswer(id, authContext.getId());
+        return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
 }

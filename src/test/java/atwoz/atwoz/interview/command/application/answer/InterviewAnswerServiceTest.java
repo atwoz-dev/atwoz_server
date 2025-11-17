@@ -219,4 +219,56 @@ class InterviewAnswerServiceTest {
             verify(interviewAnswer).updateContent(answerContent);
         }
     }
+
+    @Nested
+    @DisplayName("deleteAnswer 메서드 테스트")
+    class DeleteAnswerMethodTest {
+        @Test
+        @DisplayName("인터뷰 답변이 존재하지 않으면 예외를 던진다.")
+        void throwsExceptionWhenInterviewAnswerDoesNotExist() {
+            // given
+            Long answerId = 1L;
+            Long memberId = 2L;
+
+            when(interviewAnswerCommandRepository.findById(answerId)).thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> interviewAnswerService.deleteAnswer(answerId, memberId))
+                .isInstanceOf(InterviewAnswerNotFoundException.class);
+        }
+
+        @Test
+        @DisplayName("인터뷰 답변이 본인이 작성한 것이 아니라면 예외를 던진다.")
+        void throwsExceptionWhenInterviewAnswerIsNotWrittenByMember() {
+            // given
+            Long answerId = 1L;
+            Long memberId = 2L;
+
+            InterviewAnswer interviewAnswer = mock(InterviewAnswer.class);
+            when(interviewAnswer.isAnsweredBy(memberId)).thenReturn(false);
+            when(interviewAnswerCommandRepository.findById(answerId)).thenReturn(Optional.of(interviewAnswer));
+
+            // when & then
+            assertThatThrownBy(() -> interviewAnswerService.deleteAnswer(answerId, memberId))
+                .isInstanceOf(InterviewAnswerAccessDeniedException.class);
+        }
+
+        @Test
+        @DisplayName("인터뷰 답변을 삭제한다.")
+        void deletesInterviewAnswer() {
+            // given
+            Long answerId = 1L;
+            Long memberId = 2L;
+
+            InterviewAnswer interviewAnswer = mock(InterviewAnswer.class);
+            when(interviewAnswer.isAnsweredBy(memberId)).thenReturn(true);
+            when(interviewAnswerCommandRepository.findById(answerId)).thenReturn(Optional.of(interviewAnswer));
+
+            // when
+            interviewAnswerService.deleteAnswer(answerId, memberId);
+
+            // then
+            verify(interviewAnswerCommandRepository, times(1)).delete(interviewAnswer);
+        }
+    }
 }
