@@ -45,7 +45,7 @@ public class Screening extends BaseEntity {
     }
 
     public static Screening from(long memberId) {
-        ScreeningCreatedEvent.from(memberId);
+        Events.raise(ScreeningCreatedEvent.from(memberId));
         return new Screening(memberId, null, null, ScreeningStatus.PENDING);
     }
 
