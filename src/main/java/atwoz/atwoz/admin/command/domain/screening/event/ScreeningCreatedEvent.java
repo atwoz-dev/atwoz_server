@@ -7,10 +7,10 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ScreeningWaitingEvent extends Event {
+public class ScreeningCreatedEvent extends Event {
     private final long memberId;
 
-    public static ScreeningWaitingEvent from(long memberId) {
-        return new ScreeningWaitingEvent(memberId);
+    public static ScreeningCreatedEvent from(long memberId) {
+        return new ScreeningCreatedEvent(memberId);
     }
 }

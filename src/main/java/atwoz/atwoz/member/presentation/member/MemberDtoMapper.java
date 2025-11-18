@@ -5,6 +5,6 @@ import atwoz.atwoz.member.presentation.member.dto.MemberLoginResponse;
 
 public class MemberDtoMapper {
     public static MemberLoginResponse toMemberLoginResponse(MemberLoginServiceDto dto) {
-        return new MemberLoginResponse(dto.accessToken(), dto.isProfileSettingNeeded());
+        return new MemberLoginResponse(dto.accessToken(), dto.isProfileSettingNeeded(), dto.activityStatus());
     }
 }

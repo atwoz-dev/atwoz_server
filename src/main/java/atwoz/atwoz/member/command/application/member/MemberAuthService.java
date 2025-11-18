@@ -22,11 +22,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class MemberAuthService {
 
+    private final static List<ActivityStatus> ALLOWED_ACTIVITY_STATUS = List.of(ActivityStatus.ACTIVE,
+        ActivityStatus.INITIAL, ActivityStatus.WAITING_SCREENING, ActivityStatus.REJECTED_SCREENING);
     private final MemberCommandRepository memberCommandRepository;
     private final AuthMessageService authMessageService;
     private final TokenProvider tokenProvider;
@@ -120,7 +123,10 @@ public class MemberAuthService {
             throw new PermanentlySuspendedMemberException();
         } else if (activityStatus == ActivityStatus.SUSPENDED_TEMPORARILY) { // 일시 정지일 경우.
             throw new TemporarilySuspendedMemberException();
-        } else if (activityStatus != ActivityStatus.ACTIVE && activityStatus != ActivityStatus.INITIAL) { // 활동중이 아닐 경우.
+        } else if (!ALLOWED_ACTIVITY_STATUS.contains(activityStatus)) {
+            /**
+             * 2025/11/18 변경 : 이외의 상태 (활동중, 심사 대기중, 심사 거절) 는 로그인 허용.
+             */
             throw new MemberNotActiveException();
         }
     }

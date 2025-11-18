@@ -263,6 +263,7 @@ class MemberTest {
                 eventsMockedStatic.clearInvocations();
 
                 // When
+                setField(member, "activityStatus", ActivityStatus.ACTIVE);
                 member.updateProfile(profile);
 
                 // Then
