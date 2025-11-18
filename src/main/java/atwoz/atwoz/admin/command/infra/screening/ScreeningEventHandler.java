@@ -3,7 +3,6 @@ package atwoz.atwoz.admin.command.infra.screening;
 import atwoz.atwoz.admin.command.application.screening.DuplicateScreeningException;
 import atwoz.atwoz.admin.command.application.screening.ScreeningService;
 import atwoz.atwoz.member.command.domain.member.event.MemberProfileInitializedEvent;
-import atwoz.atwoz.member.command.domain.member.event.MemberProfileReInitializedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -26,18 +25,6 @@ public class ScreeningEventHandler {
             log.warn(e.getMessage());
         } catch (Exception e) {
             log.error("Member(id: {})의 Screening 생성 중 예외가 발생했습니다.", event.getMemberId(), e);
-        }
-    }
-
-    @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handle(MemberProfileReInitializedEvent event) {
-        try {
-            screeningService.create(event.getMemberId());
-        } catch (DuplicateScreeningException e) {
-            log.warn(e.getMessage());
-        } catch (Exception e) {
-            log.error("Member(id: {})의 Screening 재생성 중 예외가 발생했습니다.", event.getMemberId(), e);
         }
     }
 }
