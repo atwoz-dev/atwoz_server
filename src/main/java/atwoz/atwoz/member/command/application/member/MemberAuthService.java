@@ -14,7 +14,6 @@ import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import atwoz.atwoz.member.command.domain.member.event.MemberLoggedInEvent;
 import atwoz.atwoz.member.command.domain.member.event.MemberLoggedOutEvent;
 import atwoz.atwoz.member.command.domain.member.event.MemberRegisteredEvent;
-import atwoz.atwoz.member.command.domain.member.exception.MemberNotActiveException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -120,8 +119,9 @@ public class MemberAuthService {
             throw new PermanentlySuspendedMemberException();
         } else if (activityStatus == ActivityStatus.SUSPENDED_TEMPORARILY) { // 일시 정지일 경우.
             throw new TemporarilySuspendedMemberException();
-        } else if (activityStatus != ActivityStatus.ACTIVE && activityStatus != ActivityStatus.INITIAL) { // 활동중이 아닐 경우.
-            throw new MemberNotActiveException();
         }
+        /**
+         * 2025/11/18 변경 : 이외의 상태 (활동중, 심사 대기중, 심사 거절) 는 로그인 허용.
+         */
     }
 }
