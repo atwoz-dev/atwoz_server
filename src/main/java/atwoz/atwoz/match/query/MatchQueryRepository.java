@@ -30,11 +30,11 @@ public class MatchQueryRepository {
             .select(new QMatchView(
                 match.id,
                 match.responderId,
-                match.responseMessage.value,
+                match.responseMessage != null ? match.responseMessage.value : null,
                 member.profile.nickname.value,
                 profileImage.imageUrl.value,
                 member.profile.region.city.stringValue(),
-                match.requestMessage.value,
+                match.requestMessage != null ? match.requestMessage.value : null,
                 match.status.stringValue(),
                 match.createdAt
             ))
@@ -44,8 +44,8 @@ public class MatchQueryRepository {
                 ltMatchId(lastMatchId),
                 responderIdNotIn(blockedIds)
             )
-            .leftJoin(member).on(member.id.eq(match.responderId))
-            .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
+            .join(member).on(member.id.eq(match.responderId))
+            .join(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
             .orderBy(match.id.desc())
             .limit(PAGE_SIZE)
             .fetch();
@@ -58,11 +58,11 @@ public class MatchQueryRepository {
             .select(new QMatchView(
                 match.id,
                 match.requesterId,
-                match.requestMessage.value,
+                match.responseMessage != null ? match.responseMessage.value : null,
                 member.profile.nickname.value,
                 profileImage.imageUrl.value,
                 member.profile.region.city.stringValue(),
-                match.responseMessage.value,
+                match.requestMessage != null ? match.requestMessage.value : null,
                 match.status.stringValue(),
                 match.createdAt
             ))
@@ -72,8 +72,8 @@ public class MatchQueryRepository {
                 ltMatchId(lastMatchId),
                 requesterIdNotIn(blockedIds)
             )
-            .leftJoin(member).on(member.id.eq(match.requesterId))
-            .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
+            .join(member).on(member.id.eq(match.requesterId))
+            .join(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
             .orderBy(match.id.desc())
             .limit(PAGE_SIZE)
             .fetch();
