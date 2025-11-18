@@ -14,15 +14,15 @@ public class MatchQueryService {
 
     public MatchViews getSentMatches(long requesterId, Long lastMatchId) {
         List<MatchView> matches = matchQueryRepository.findSentMatches(requesterId, lastMatchId);
-        boolean hasMore = matches.size() > CLIENT_PAGE_SIZE;
-        if (hasMore) {
-            matches = matches.subList(0, CLIENT_PAGE_SIZE);
-        }
-        return new MatchViews(matches, hasMore);
+        return paginateMatches(matches);
     }
 
     public MatchViews getReceivedMatches(long responderId, Long lastMatchId) {
         List<MatchView> matches = matchQueryRepository.findReceiveMatches(responderId, lastMatchId);
+        return paginateMatches(matches);
+    }
+
+    private MatchViews paginateMatches(List<MatchView> matches) {
         boolean hasMore = matches.size() > CLIENT_PAGE_SIZE;
         if (hasMore) {
             matches = matches.subList(0, CLIENT_PAGE_SIZE);
