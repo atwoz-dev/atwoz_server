@@ -7,6 +7,8 @@ import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.match.command.application.match.MatchService;
 import atwoz.atwoz.match.presentation.dto.MatchRequestDto;
 import atwoz.atwoz.match.presentation.dto.MatchResponseDto;
+import atwoz.atwoz.match.presentation.dto.MatchViews;
+import atwoz.atwoz.match.query.MatchQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class MatchController {
     private final MatchService matchService;
+    private final MatchQueryService matchQueryService;
 
     @Operation(summary = "메시지 전송 (매칭 요청)")
     @PostMapping("/request")
@@ -50,5 +53,21 @@ public class MatchController {
         @AuthPrincipal AuthContext authContext) {
         matchService.rejectCheck(authContext.getId(), matchId);
         return ResponseEntity.ok(BaseResponse.from(StatusType.OK));
+    }
+
+    @Operation(summary = "내가 보낸 매칭 메세지")
+    @GetMapping("/sent")
+    public ResponseEntity<BaseResponse<MatchViews>> getSentMatch(@ModelAttribute Long lastMatchId,
+        @AuthPrincipal AuthContext authContext) {
+        return ResponseEntity.ok(
+            BaseResponse.of(StatusType.OK, matchQueryService.getSentMatches(authContext.getId(), lastMatchId)));
+    }
+
+    @Operation(summary = "내가 받은 매칭 메세지")
+    @GetMapping("/received")
+    public ResponseEntity<BaseResponse<MatchViews>> getReceivedMatch(@ModelAttribute Long lastMatchId,
+        @AuthPrincipal AuthContext authContext) {
+        return ResponseEntity.ok(
+            BaseResponse.of(StatusType.OK, matchQueryService.getReceivedMatches(authContext.getId(), lastMatchId)));
     }
 }
