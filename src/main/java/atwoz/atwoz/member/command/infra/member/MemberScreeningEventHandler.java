@@ -1,8 +1,8 @@
 package atwoz.atwoz.member.command.infra.member;
 
 import atwoz.atwoz.admin.command.domain.screening.event.ScreeningApprovedEvent;
+import atwoz.atwoz.admin.command.domain.screening.event.ScreeningCreatedEvent;
 import atwoz.atwoz.admin.command.domain.screening.event.ScreeningRejectedEvent;
-import atwoz.atwoz.admin.command.domain.screening.event.ScreeningWaitingEvent;
 import atwoz.atwoz.member.command.application.member.MemberProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,8 +38,8 @@ public class MemberScreeningEventHandler {
     }
 
     @Async
-    @TransactionalEventListener(value = ScreeningWaitingEvent.class, phase = TransactionPhase.AFTER_COMMIT)
-    public void handle(ScreeningWaitingEvent event) {
+    @TransactionalEventListener(value = ScreeningCreatedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
+    public void handle(ScreeningCreatedEvent event) {
         try {
             memberProfileService.changeWaiting(event.getMemberId());
         } catch (Exception e) {

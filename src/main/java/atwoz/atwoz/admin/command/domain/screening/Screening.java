@@ -1,6 +1,7 @@
 package atwoz.atwoz.admin.command.domain.screening;
 
 import atwoz.atwoz.admin.command.domain.screening.event.ScreeningApprovedEvent;
+import atwoz.atwoz.admin.command.domain.screening.event.ScreeningCreatedEvent;
 import atwoz.atwoz.admin.command.domain.screening.event.ScreeningRejectedEvent;
 import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.common.event.Events;
@@ -44,6 +45,7 @@ public class Screening extends BaseEntity {
     }
 
     public static Screening from(long memberId) {
+        ScreeningCreatedEvent.from(memberId);
         return new Screening(memberId, null, null, ScreeningStatus.PENDING);
     }
 

@@ -81,8 +81,6 @@ public class Member extends SoftDeleteBaseEntity {
 
         if (!isProfileSettingNeeded() && activityStatus == ActivityStatus.INITIAL) {
             Events.raise(MemberProfileInitializedEvent.from(id));
-        } else if (!isProfileSettingNeeded() && activityStatus == ActivityStatus.REJECTED_SCREENING) {
-            Events.raise(MemberProfileReInitializedEvent.from(id));
         }
     }
 
