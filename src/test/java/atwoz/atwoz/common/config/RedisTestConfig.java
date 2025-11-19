@@ -1,4 +1,4 @@
-package atwoz.atwoz;
+package atwoz.atwoz.common.config;
 
 import org.mockito.Mockito;
 import org.redisson.api.RedissonClient;
