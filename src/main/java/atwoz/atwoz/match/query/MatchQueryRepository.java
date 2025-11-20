@@ -45,7 +45,7 @@ public class MatchQueryRepository {
                 responderIdNotIn(blockedIds)
             )
             .join(member).on(member.id.eq(match.responderId))
-            .join(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
+            .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
             .orderBy(match.id.desc())
             .limit(PAGE_SIZE)
             .fetch();
@@ -73,7 +73,7 @@ public class MatchQueryRepository {
                 requesterIdNotIn(blockedIds)
             )
             .join(member).on(member.id.eq(match.requesterId))
-            .join(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
+            .leftJoin(profileImage).on(profileImage.memberId.eq(member.id).and(profileImage.isPrimary.eq(true)))
             .orderBy(match.id.desc())
             .limit(PAGE_SIZE)
             .fetch();
