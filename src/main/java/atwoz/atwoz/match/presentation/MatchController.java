@@ -57,7 +57,7 @@ public class MatchController {
 
     @Operation(summary = "내가 보낸 매칭 메세지")
     @GetMapping("/sent")
-    public ResponseEntity<BaseResponse<MatchViews>> getSentMatch(@ModelAttribute Long lastMatchId,
+    public ResponseEntity<BaseResponse<MatchViews>> getSentMatch(@RequestParam(required = false) Long lastMatchId,
         @AuthPrincipal AuthContext authContext) {
         return ResponseEntity.ok(
             BaseResponse.of(StatusType.OK, matchQueryService.getSentMatches(authContext.getId(), lastMatchId)));
@@ -65,7 +65,7 @@ public class MatchController {
 
     @Operation(summary = "내가 받은 매칭 메세지")
     @GetMapping("/received")
-    public ResponseEntity<BaseResponse<MatchViews>> getReceivedMatch(@ModelAttribute Long lastMatchId,
+    public ResponseEntity<BaseResponse<MatchViews>> getReceivedMatch(@RequestParam(required = false) Long lastMatchId,
         @AuthPrincipal AuthContext authContext) {
         return ResponseEntity.ok(
             BaseResponse.of(StatusType.OK, matchQueryService.getReceivedMatches(authContext.getId(), lastMatchId)));
