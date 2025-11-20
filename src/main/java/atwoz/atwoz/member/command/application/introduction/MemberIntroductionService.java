@@ -1,6 +1,8 @@
 package atwoz.atwoz.member.command.application.introduction;
 
+import atwoz.atwoz.block.application.required.BlockRepository;
 import atwoz.atwoz.datingexam.application.required.SoulmateQueryRepository;
+import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberBlockedException;
 import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotActiveException;
 import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotFoundException;
 import atwoz.atwoz.member.command.application.introduction.exception.MemberIntroductionAlreadyExistsException;
@@ -22,6 +24,7 @@ public class MemberIntroductionService {
     private final MemberCommandRepository memberCommandRepository;
     private final MemberIntroductionCommandRepository memberIntroductionCommandRepository;
     private final SoulmateQueryRepository soulmateQueryRepository;
+    private final BlockRepository blockRepository;
 
     @Transactional
     public void createGradeIntroduction(long memberId, long introducedMemberId) {
@@ -97,6 +100,12 @@ public class MemberIntroductionService {
     private void validateIntroduction(long memberId, long introducedMemberId) {
         Member introductionMember = memberCommandRepository.findById(introducedMemberId)
             .orElseThrow(IntroducedMemberNotFoundException::new);
+        if (blockRepository.existsByBlockerIdAndBlockedId(memberId, introducedMemberId)) {
+            throw new IntroducedMemberBlockedException();
+        }
+        if (blockRepository.existsByBlockerIdAndBlockedId(introducedMemberId, memberId)) {
+            throw new IntroducedMemberBlockedException();
+        }
         if (!introductionMember.isActive()) {
             throw new IntroducedMemberNotActiveException();
         }

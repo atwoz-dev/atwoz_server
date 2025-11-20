@@ -2,10 +2,7 @@ package atwoz.atwoz.member.presentation.introduction;
 
 import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
-import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotActiveException;
-import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotFoundException;
-import atwoz.atwoz.member.command.application.introduction.exception.MemberIdealNotFoundException;
-import atwoz.atwoz.member.command.application.introduction.exception.MemberIntroductionAlreadyExistsException;
+import atwoz.atwoz.member.command.application.introduction.exception.*;
 import atwoz.atwoz.member.command.domain.introduction.exception.InvalidAgeRangeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -47,6 +44,15 @@ public class MemberIntroductionExceptionHandler {
     @ExceptionHandler(IntroducedMemberNotActiveException.class)
     public ResponseEntity<BaseResponse<Void>> handleIntroducedMemberNotActiveException(
         IntroducedMemberNotActiveException e) {
+        log.warn(e.getMessage());
+
+        return ResponseEntity.badRequest()
+            .body(BaseResponse.of(StatusType.FORBIDDEN, e.getMessage()));
+    }
+
+    @ExceptionHandler(IntroducedMemberBlockedException.class)
+    public ResponseEntity<BaseResponse<Void>> handleIntroducedMemberBlockedException(
+        IntroducedMemberBlockedException e) {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
