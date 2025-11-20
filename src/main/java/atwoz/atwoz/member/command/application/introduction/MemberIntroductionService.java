@@ -100,14 +100,15 @@ public class MemberIntroductionService {
     private void validateIntroduction(long memberId, long introducedMemberId) {
         Member introductionMember = memberCommandRepository.findById(introducedMemberId)
             .orElseThrow(IntroducedMemberNotFoundException::new);
+
+        if (!introductionMember.isActive()) {
+            throw new IntroducedMemberNotActiveException();
+        }
         if (blockRepository.existsByBlockerIdAndBlockedId(memberId, introducedMemberId)) {
             throw new IntroducedMemberBlockedException();
         }
         if (blockRepository.existsByBlockerIdAndBlockedId(introducedMemberId, memberId)) {
             throw new IntroducedMemberBlockedException();
-        }
-        if (!introductionMember.isActive()) {
-            throw new IntroducedMemberNotActiveException();
         }
         if (memberIntroductionCommandRepository.existsByMemberIdAndIntroducedMemberId(memberId, introducedMemberId)) {
             throw new MemberIntroductionAlreadyExistsException();
