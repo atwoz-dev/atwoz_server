@@ -50,7 +50,7 @@ public class MemberIntroductionExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest()
-            .body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
+            .body(BaseResponse.of(StatusType.FORBIDDEN, e.getMessage()));
     }
 
     @ExceptionHandler(MemberIntroductionAlreadyExistsException.class)
