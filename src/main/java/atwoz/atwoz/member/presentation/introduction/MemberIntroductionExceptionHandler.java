@@ -46,7 +46,7 @@ public class MemberIntroductionExceptionHandler {
         IntroducedMemberNotActiveException e) {
         log.warn(e.getMessage());
 
-        return ResponseEntity.badRequest()
+        return ResponseEntity.status(403)
             .body(BaseResponse.of(StatusType.FORBIDDEN, e.getMessage()));
     }
 
@@ -55,7 +55,7 @@ public class MemberIntroductionExceptionHandler {
         IntroducedMemberBlockedException e) {
         log.warn(e.getMessage());
 
-        return ResponseEntity.badRequest()
+        return ResponseEntity.status(403)
             .body(BaseResponse.of(StatusType.FORBIDDEN, e.getMessage()));
     }
 
