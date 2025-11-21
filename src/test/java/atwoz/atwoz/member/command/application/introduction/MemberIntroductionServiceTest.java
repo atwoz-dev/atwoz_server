@@ -1,7 +1,9 @@
 package atwoz.atwoz.member.command.application.introduction;
 
 
+import atwoz.atwoz.block.application.required.BlockRepository;
 import atwoz.atwoz.datingexam.application.required.SoulmateQueryRepository;
+import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberBlockedException;
 import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotActiveException;
 import atwoz.atwoz.member.command.application.introduction.exception.IntroducedMemberNotFoundException;
 import atwoz.atwoz.member.command.application.introduction.exception.MemberIntroductionAlreadyExistsException;
@@ -39,6 +41,9 @@ class MemberIntroductionServiceTest {
     @Mock
     private SoulmateQueryRepository soulmateQueryRepository;
 
+    @Mock
+    private BlockRepository blockRepository;
+
     @Test
     @DisplayName("소개받은 멤버가 존재하지 않으면 예외를 던진다.")
     void throwsExceptionWhenIntroducedMemberNotFound() {
@@ -69,6 +74,41 @@ class MemberIntroductionServiceTest {
             .isInstanceOf(IntroducedMemberNotActiveException.class);
     }
 
+    @Test
+    @DisplayName("소개받은 멤버를 차단한 상태라면 예외를 던진다")
+    void throwsExceptionWhenMemberBlocksIntroducedMember() {
+        // given
+        long memberId = 1L;
+        long introducedMemberId = 2L;
+
+        Member introducedMember = mock(Member.class);
+        when(introducedMember.isActive()).thenReturn(true);
+        when(memberCommandRepository.findById(introducedMemberId)).thenReturn(Optional.of(introducedMember));
+        when(blockRepository.existsByBlockerIdAndBlockedId(memberId, introducedMemberId)).thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> memberIntroductionService.createGradeIntroduction(memberId, introducedMemberId))
+            .isInstanceOf(IntroducedMemberBlockedException.class);
+    }
+
+    @Test
+    @DisplayName("소개받은 멤버가 차단된 상태라면 예외를 던진다")
+    void throwsExceptionWhenIntroducedMemberBlocksMember() {
+        // given
+        long memberId = 1L;
+        long introducedMemberId = 2L;
+
+        Member introducedMember = mock(Member.class);
+        when(introducedMember.isActive()).thenReturn(true);
+        when(memberCommandRepository.findById(introducedMemberId)).thenReturn(Optional.of(introducedMember));
+        when(blockRepository.existsByBlockerIdAndBlockedId(memberId, introducedMemberId)).thenReturn(false);
+        when(blockRepository.existsByBlockerIdAndBlockedId(introducedMemberId, memberId)).thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> memberIntroductionService.createGradeIntroduction(memberId, introducedMemberId))
+            .isInstanceOf(IntroducedMemberBlockedException.class);
+    }
+
 
     @Test
     @DisplayName("이미 소개받은 멤버라면 예외를 던진다")
@@ -80,6 +120,8 @@ class MemberIntroductionServiceTest {
         Member introducedMember = mock(Member.class);
         when(introducedMember.isActive()).thenReturn(true);
         when(memberCommandRepository.findById(introducedMemberId)).thenReturn(Optional.of(introducedMember));
+        when(blockRepository.existsByBlockerIdAndBlockedId(memberId, introducedMemberId)).thenReturn(false);
+        when(blockRepository.existsByBlockerIdAndBlockedId(introducedMemberId, memberId)).thenReturn(false);
         when(memberIntroductionCommandRepository.existsByMemberIdAndIntroducedMemberId(memberId,
             introducedMemberId)).thenReturn(true);
 
@@ -98,6 +140,8 @@ class MemberIntroductionServiceTest {
         Member introducedMember = mock(Member.class);
         when(introducedMember.isActive()).thenReturn(true);
         when(memberCommandRepository.findById(introducedMemberId)).thenReturn(Optional.of(introducedMember));
+        when(blockRepository.existsByBlockerIdAndBlockedId(memberId, introducedMemberId)).thenReturn(false);
+        when(blockRepository.existsByBlockerIdAndBlockedId(introducedMemberId, memberId)).thenReturn(false);
         when(memberIntroductionCommandRepository.existsByMemberIdAndIntroducedMemberId(memberId,
             introducedMemberId)).thenReturn(false);
 
