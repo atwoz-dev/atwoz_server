@@ -1,0 +1,268 @@
+name: CD - Development
+
+on:
+  push:
+    branches: [ "develop" ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
+      - '.env.example'
+
+concurrency:
+  group: deploy-dev
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: ap-northeast-2
+  ECR_REPOSITORY: deepple
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: development
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          mask-aws-account-id: true
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}
+          tags: |
+            type=raw,value=dev-latest
+            type=sha,prefix=dev-
+
+      - name: Build and push Docker image
+        id: build-image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy to EC2 via SSM
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: dev-latest
+          CONTAINER_NAME: deepple-app
+          BLUE_PORT: 8081
+          GREEN_PORT: 8082
+          HEALTH_CHECK_MAX_RETRIES: 30
+          HEALTH_CHECK_INTERVAL: 2
+        run: |
+          echo "Sending deployment command via SSM..."
+
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids ${{ secrets.DEV_EC2_INSTANCE_ID }} \
+            --document-name "AWS-RunShellScript" \
+            --timeout-seconds 300 \
+            --parameters commands="
+              set -e
+              echo 'Starting deployment process...'
+
+              echo
+              echo 'Updating .env file...'
+              echo '${{ secrets.DEV_ENV }}' > /home/ubuntu/.env
+              echo 'Environment variables updated'
+
+              echo
+              echo 'Logging in to Amazon ECR...'
+              aws ecr get-login-password --region ${{ env.AWS_REGION }} | \
+                docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }}
+              echo 'ECR login successful'
+
+              echo
+              echo 'Pulling Docker image: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}'
+              docker pull ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+              echo 'Image pulled successfully'
+
+              echo
+              echo 'Starting deployment...'
+
+              # Determine current and target slots
+              if docker ps --format '{{.Names}}' | grep -q '^${{ env.CONTAINER_NAME }}-blue$'; then
+                CURRENT_SLOT=blue
+                CURRENT_PORT=${{ env.BLUE_PORT }}
+                TARGET_SLOT=green
+                TARGET_PORT=${{ env.GREEN_PORT }}
+                echo \"Current: Blue (port ${{ env.BLUE_PORT }}) -> Deploying to: Green (port ${{ env.GREEN_PORT }})\"
+              else
+                CURRENT_SLOT=green
+                CURRENT_PORT=${{ env.GREEN_PORT }}
+                TARGET_SLOT=blue
+                TARGET_PORT=${{ env.BLUE_PORT }}
+                echo \"Current: Green (port ${{ env.GREEN_PORT }}) -> Deploying to: Blue (port ${{ env.BLUE_PORT }})\"
+              fi
+
+              echo
+              echo \"Step 1: Starting new container (\$TARGET_SLOT) on port \$TARGET_PORT...\"
+
+              # Remove old target slot container if exists
+              if docker ps -a --format '{{.Names}}' | grep -q \"^${{ env.CONTAINER_NAME }}-\$TARGET_SLOT$\"; then
+                docker stop ${{ env.CONTAINER_NAME }}-\$TARGET_SLOT || true
+                docker rm ${{ env.CONTAINER_NAME }}-\$TARGET_SLOT || true
+                echo \"Old \$TARGET_SLOT container removed\"
+              fi
+
+              docker run -d \
+                --name ${{ env.CONTAINER_NAME }}-\$TARGET_SLOT \
+                -p \$TARGET_PORT:8080 \
+                -v /home/ubuntu/secrets:/etc/credentials:ro \
+                -v /home/ubuntu/certs:/etc/certs:ro \
+                --env-file /home/ubuntu/.env \
+                --restart unless-stopped \
+                ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+              echo \"\$TARGET_SLOT container started on port \$TARGET_PORT\"
+
+              echo
+              echo \"Step 2: Health checking \$TARGET_SLOT container...\"
+              MAX_RETRIES=${{ env.HEALTH_CHECK_MAX_RETRIES }}
+              RETRY_INTERVAL=${{ env.HEALTH_CHECK_INTERVAL }}
+              RETRY_COUNT=0
+              HEALTH_OK=false
+
+              while [ \$RETRY_COUNT -lt \$MAX_RETRIES ]; do
+                echo \"Health check attempt \$((RETRY_COUNT + 1))/\$MAX_RETRIES\"
+
+                if curl -f -s http://localhost:\$TARGET_PORT/actuator/health > /dev/null 2>&1; then
+                  echo \"\$TARGET_SLOT container is healthy!\"
+                  HEALTH_OK=true
+                  break
+                fi
+
+                RETRY_COUNT=\$((RETRY_COUNT + 1))
+                if [ \$RETRY_COUNT -lt \$MAX_RETRIES ]; then
+                  sleep \$RETRY_INTERVAL
+                fi
+              done
+
+              if [ \"\$HEALTH_OK\" = false ]; then
+                echo
+                echo \"ERROR: \$TARGET_SLOT container health check failed after \$MAX_RETRIES attempts\"
+                echo \"\$TARGET_SLOT container logs:\"
+                docker logs ${{ env.CONTAINER_NAME }}-\$TARGET_SLOT --tail 100
+
+                echo
+                echo \"Removing failed \$TARGET_SLOT container...\"
+                docker stop ${{ env.CONTAINER_NAME }}-\$TARGET_SLOT
+                docker rm ${{ env.CONTAINER_NAME }}-\$TARGET_SLOT
+                echo \"\$CURRENT_SLOT container remains running - ZERO downtime maintained\"
+
+                exit 1
+              fi
+
+              echo
+              echo 'Step 3: Switching nginx proxy_pass...'
+
+              # Update nginx proxy_pass to point to new target
+              NGINX_SITE=\"/etc/nginx/sites-available/dev-api.deepple.co.kr\"
+
+              echo \"Before change:\"
+              sudo grep \"proxy_pass\" \$NGINX_SITE
+
+              # Replace proxy_pass port (8081 or 8082)
+              sudo sed -i \"s|proxy_pass http://127.0.0.1:[0-9]\+;|proxy_pass http://127.0.0.1:\$TARGET_PORT;|g\" \$NGINX_SITE
+
+              echo \"After change:\"
+              sudo grep \"proxy_pass\" \$NGINX_SITE
+
+              # Test nginx configuration
+              if sudo nginx -t 2>&1; then
+                echo 'Nginx configuration is valid'
+                sudo nginx -s reload
+                echo \"Nginx reloaded - traffic switched to \$TARGET_SLOT on port \$TARGET_PORT\"
+              else
+                echo 'ERROR: Nginx configuration test failed'
+                sudo cat \$NGINX_SITE | grep -A 5 -B 5 proxy_pass
+                exit 1
+              fi
+
+              echo 'Verifying traffic through nginx...'
+              sleep 2
+              if curl -f https://dev-api.deepple.co.kr/actuator/health 2>&1; then
+                echo 'Traffic is flowing through nginx to new container!'
+              else
+                echo 'WARNING: HTTPS health check failed, trying HTTP...'
+                if curl -f http://localhost/actuator/health 2>&1; then
+                  echo 'HTTP health check passed'
+                else
+                  echo 'WARNING: Health check failed, but deployment completed'
+                fi
+              fi
+
+              echo
+              echo \"Step 4: Cleaning up old \$CURRENT_SLOT container...\"
+              if docker ps --format '{{.Names}}' | grep -q \"^${{ env.CONTAINER_NAME }}-\$CURRENT_SLOT$\"; then
+                docker stop ${{ env.CONTAINER_NAME }}-\$CURRENT_SLOT
+                docker rm ${{ env.CONTAINER_NAME }}-\$CURRENT_SLOT
+                echo \"Old \$CURRENT_SLOT container removed\"
+              else
+                echo 'No current container found (possibly first deployment)'
+              fi
+
+              echo
+              echo 'Cleaning up old images...'
+              docker image prune -af --filter 'until=24h' || true
+              echo 'Cleanup completed'
+
+              echo
+              echo 'Deployment completed successfully!'
+            " \
+            --output text \
+            --query "Command.CommandId")
+
+          echo "Command sent: $COMMAND_ID"
+          echo "Waiting for deployment to complete..."
+
+          # Wait for command completion
+          aws ssm wait command-executed \
+            --command-id $COMMAND_ID \
+            --instance-id ${{ secrets.DEV_EC2_INSTANCE_ID }}
+
+          # Get command output
+          echo ""
+          echo "Deployment output:"
+          aws ssm get-command-invocation \
+            --command-id $COMMAND_ID \
+            --instance-id ${{ secrets.DEV_EC2_INSTANCE_ID }} \
+            --query 'StandardOutputContent' \
+            --output text
+
+          # Check if command succeeded
+          STATUS=$(aws ssm get-command-invocation \
+            --command-id $COMMAND_ID \
+            --instance-id ${{ secrets.DEV_EC2_INSTANCE_ID }} \
+            --query 'Status' \
+            --output text)
+
+          if [ "$STATUS" != "Success" ]; then
+            exit 1
+          fi
+
+          echo ""
+          echo "Deployment completed successfully!"
