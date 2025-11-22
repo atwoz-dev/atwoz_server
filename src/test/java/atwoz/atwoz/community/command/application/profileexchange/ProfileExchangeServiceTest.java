@@ -151,7 +151,7 @@ class ProfileExchangeServiceTest {
                 .thenReturn(Optional.of(responder));
             when(blockRepository.existsByBlockerIdAndBlockedId(requesterId, responderId))
                 .thenReturn(false);
-            when(blockRepository.existsByBlockerIdAndBlockedId(requesterId, responderId))
+            when(blockRepository.existsByBlockerIdAndBlockedId(responderId, requesterId))
                 .thenReturn(true);
 
             Mockito.doAnswer(invocation -> {
@@ -182,7 +182,7 @@ class ProfileExchangeServiceTest {
                 .thenReturn(Optional.of(sender));
             when(blockRepository.existsByBlockerIdAndBlockedId(requesterId, responderId))
                 .thenReturn(false);
-            when(blockRepository.existsByBlockerIdAndBlockedId(requesterId, responderId))
+            when(blockRepository.existsByBlockerIdAndBlockedId(responderId, requesterId))
                 .thenReturn(false);
 
             Mockito.doAnswer(invocation -> {
