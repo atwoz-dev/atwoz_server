@@ -1,12 +1,12 @@
 package atwoz.atwoz.community.command.application.profileexchange;
 
+import atwoz.atwoz.block.application.required.BlockRepository;
 import atwoz.atwoz.common.repository.LockRepository;
-import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeAlreadyExistsException;
-import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeNotFoundException;
-import atwoz.atwoz.community.command.application.profileexchange.exception.ProfileExchangeResponderMismatchException;
+import atwoz.atwoz.community.command.application.profileexchange.exception.*;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchange;
 import atwoz.atwoz.community.command.domain.profileexchange.ProfileExchangeRepository;
 import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
+import atwoz.atwoz.member.command.domain.member.Member;
 import atwoz.atwoz.member.command.domain.member.MemberCommandRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +19,7 @@ public class ProfileExchangeService {
     private final ProfileExchangeRepository profileExchangeRepository;
     private final LockRepository lockRepository;
     private final MemberCommandRepository memberCommandRepository;
+    private final BlockRepository blockRepository;
 
     @Transactional
     public void request(Long requesterId, Long responderId) {
@@ -69,6 +70,16 @@ public class ProfileExchangeService {
     private void validateProfileExchangeRequest(Long requesterId, Long responderId) {
         if (profileExchangeRepository.existsProfileExchangeBetween(requesterId, responderId)) {
             throw new ProfileExchangeAlreadyExistsException();
+        }
+        Member responder = memberCommandRepository.findById(responderId).orElseThrow(MemberNotFoundException::new);
+        if (!responder.isActive()) {
+            throw new ProfileExchangeResponderNotActiveException();
+        }
+        if (blockRepository.existsByBlockerIdAndBlockedId(requesterId, responderId)) {
+            throw new ProfileExchangeHasBlockedException();
+        }
+        if (blockRepository.existsByBlockerIdAndBlockedId(responderId, requesterId)) {
+            throw new ProfileExchangeHasBlockedException();
         }
     }
 }
