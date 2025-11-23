@@ -15,7 +15,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import static atwoz.atwoz.block.domain.QBlock.block;
 import static atwoz.atwoz.community.command.domain.profileexchange.QProfileExchange.profileExchange;
 import static atwoz.atwoz.community.command.domain.selfintroduction.QSelfIntroduction.selfIntroduction;
 import static atwoz.atwoz.like.command.domain.QLike.like;
@@ -33,8 +36,9 @@ public class SelfIntroductionQueryRepository {
 
     public List<SelfIntroductionSummaryView> findSelfIntroductions(SelfIntroductionSearchCondition searchCondition,
         Long lastId, Long memberId) {
+        Set<Long> blockedIds = getBlockedIds(memberId);
 
-        BooleanExpression condition = getSearchCondition(searchCondition, lastId, memberId);
+        BooleanExpression condition = getSearchCondition(searchCondition, lastId, memberId, blockedIds);
 
         return queryFactory
             .select(
@@ -108,17 +112,30 @@ public class SelfIntroductionQueryRepository {
         return view.values().stream().findFirst();
     }
 
+    private Set<Long> getBlockedIds(long blockerId) {
+        return queryFactory
+            .select(block.blockedId)
+            .from(block)
+            .where(block.blockerId.eq(blockerId))
+            .fetch()
+            .stream()
+            .collect(Collectors.toSet());
+    }
+
     private BooleanExpression getProfileExchangeJoinCondition(Long memberId) {
         return (profileExchange.requesterId.eq(member.id).and(profileExchange.responderId.eq(memberId)))
             .or(profileExchange.requesterId.eq(memberId).and(profileExchange.responderId.eq(member.id)));
     }
 
     private BooleanExpression getSearchCondition(SelfIntroductionSearchCondition searchCondition, Long lastId,
-        Long memberId) {
+        Long memberId, Set<Long> blockedIds) {
         BooleanExpression condition = selfIntroduction.deletedAt.isNull()
             .and(selfIntroduction.isOpened.eq(true).or(selfIntroduction.memberId.eq(memberId)));
         if (lastId != null) {
             condition = condition.and(selfIntroduction.id.lt(lastId));
+        }
+        if (!blockedIds.isEmpty()) {
+            condition = condition.and(member.id.notIn(blockedIds));
         }
 
         condition = addYearOfBirthCondition(condition, searchCondition);
