@@ -24,12 +24,13 @@ public record SelfIntroductionView(
         String district,
         String mbti,
         Set<String> hobbies,
+        String gender,
         String like,
         String title,
         String content,
         String profileExchangeStatus
     ) {
         this(new MemberBasicInfo(memberId, nickname, AgeConverter.toAge(yearOfBirth), profileImageUrl, city, district,
-            mbti, hobbies), like, title, content, profileExchangeStatus);
+            mbti, hobbies, gender), like, title, content, profileExchangeStatus);
     }
 }

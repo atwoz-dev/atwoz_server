@@ -1,8 +1,6 @@
 package atwoz.atwoz.community.query.selfintroduction.view;
 
-import atwoz.atwoz.member.command.domain.member.City;
-import atwoz.atwoz.member.command.domain.member.District;
-import atwoz.atwoz.member.command.domain.member.Hobby;
+import atwoz.atwoz.member.command.domain.member.*;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -17,9 +15,11 @@ public record MemberBasicInfo(
     String city,
     @Schema(implementation = District.class)
     String district,
-    @Schema(implementation = String.class)
+    @Schema(implementation = Mbti.class)
     String mbti,
     @ArraySchema(schema = @Schema(implementation = Hobby.class))
-    Set<String> hobbies
+    Set<String> hobbies,
+    @Schema(implementation = Gender.class)
+    String gender
 ) {
 }

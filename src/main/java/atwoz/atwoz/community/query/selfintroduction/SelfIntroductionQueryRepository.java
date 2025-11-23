@@ -96,6 +96,7 @@ public class SelfIntroductionQueryRepository {
                         member.profile.region.district.stringValue(),
                         member.profile.mbti.stringValue(),
                         set(hobby.stringValue()),
+                        member.profile.gender.stringValue(),
                         like.level.stringValue(),
                         selfIntroduction.title,
                         selfIntroduction.content,
