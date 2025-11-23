@@ -1,5 +1,8 @@
 package atwoz.atwoz.like.command.application;
 
+import atwoz.atwoz.block.application.required.BlockRepository;
+import atwoz.atwoz.like.command.application.exception.LikeReceiverInactiveException;
+import atwoz.atwoz.like.command.application.exception.LikeSameGenderException;
 import atwoz.atwoz.like.command.domain.Like;
 import atwoz.atwoz.like.command.domain.LikeCommandRepository;
 import atwoz.atwoz.like.presentation.LikeLevelRequest;
@@ -36,6 +39,9 @@ class LikeSendServiceTest {
     @Mock
     MemberMissionService memberMissionService;
 
+    @Mock
+    BlockRepository blockRepository;
+
     @InjectMocks
     LikeSendService likeSendService;
 
@@ -56,10 +62,19 @@ class LikeSendServiceTest {
         var mockProfile = mock(MemberProfile.class);
         when(mockProfile.getNickname()).thenReturn(mockNickname);
 
-        var mockMember = mock(Member.class);
-        when(mockMember.getProfile()).thenReturn(mockProfile);
+        var sender = mock(Member.class);
+        when(sender.getProfile()).thenReturn(mockProfile);
+        when(sender.getId()).thenReturn(senderId);
+        var receiver = mock(Member.class);
+        when(receiver.isActive()).thenReturn(true);
+        when(sender.hasSameGender(receiver)).thenReturn(false);
+        when(receiver.getId()).thenReturn(receiverId);
 
-        when(memberCommandRepository.findById(senderId)).thenReturn(Optional.of(mockMember));
+        when(memberCommandRepository.findById(senderId)).thenReturn(Optional.of(sender));
+        when(memberCommandRepository.findById(receiverId)).thenReturn(Optional.of(receiver));
+
+        when(blockRepository.existsByBlockerIdAndBlockedId(senderId, receiverId)).thenReturn(false);
+        when(blockRepository.existsByBlockerIdAndBlockedId(receiverId, senderId)).thenReturn(false);
 
         boolean expectedMissionProcessed = true;
         when(memberMissionService.executeMissionsByAction(senderId, ActionType.LIKE.name()))
@@ -88,5 +103,109 @@ class LikeSendServiceTest {
         // when & then
         assertThatThrownBy(() -> likeSendService.send(senderId, request))
             .isInstanceOf(LikeAlreadyExistsException.class);
+    }
+
+    @Test
+    @DisplayName("상대가 비활성 상태인 경우 예외가 발생한다.")
+    void throwExceptionWhenReceiverInactive() {
+        // given
+        var senderId = 1L;
+        var receiverId = 2L;
+        var likeLevel = LikeLevelRequest.INTERESTED;
+        var request = new LikeSendRequest(receiverId, likeLevel);
+
+        when(likeCommandRepository.existsBySenderIdAndReceiverId(senderId, receiverId)).thenReturn(false);
+
+        var sender = mock(Member.class);
+        var receiver = mock(Member.class);
+        when(receiver.isActive()).thenReturn(false);
+
+        when(memberCommandRepository.findById(senderId)).thenReturn(Optional.of(sender));
+        when(memberCommandRepository.findById(receiverId)).thenReturn(Optional.of(receiver));
+
+        // when && then
+        assertThatThrownBy(() -> likeSendService.send(senderId, request))
+            .isInstanceOf(LikeReceiverInactiveException.class);
+    }
+
+    @Test
+    @DisplayName("상대와 같은 성별이면 예외가 발생한다.")
+    void throwExceptionWhenSameGender() {
+        // given
+        var senderId = 1L;
+        var receiverId = 2L;
+        var likeLevel = LikeLevelRequest.INTERESTED;
+        var request = new LikeSendRequest(receiverId, likeLevel);
+
+        when(likeCommandRepository.existsBySenderIdAndReceiverId(senderId, receiverId)).thenReturn(false);
+
+        var sender = mock(Member.class);
+        var receiver = mock(Member.class);
+        when(receiver.isActive()).thenReturn(true);
+        when(sender.hasSameGender(receiver)).thenReturn(true);
+
+        when(memberCommandRepository.findById(senderId)).thenReturn(Optional.of(sender));
+        when(memberCommandRepository.findById(receiverId)).thenReturn(Optional.of(receiver));
+
+        // when && then
+        assertThatThrownBy(() -> likeSendService.send(senderId, request))
+            .isInstanceOf(LikeSameGenderException.class);
+    }
+
+    @Test
+    @DisplayName("상대를 차단한 경우 예외가 발생한다.")
+    void throwExceptionWhenSenderBlockedReceiver() {
+        // given
+        var senderId = 1L;
+        var receiverId = 2L;
+        var likeLevel = LikeLevelRequest.INTERESTED;
+        var request = new LikeSendRequest(receiverId, likeLevel);
+
+        when(likeCommandRepository.existsBySenderIdAndReceiverId(senderId, receiverId)).thenReturn(false);
+
+        var sender = mock(Member.class);
+        when(sender.getId()).thenReturn(senderId);
+        var receiver = mock(Member.class);
+        when(receiver.isActive()).thenReturn(true);
+        when(sender.hasSameGender(receiver)).thenReturn(false);
+        when(receiver.getId()).thenReturn(receiverId);
+
+        when(memberCommandRepository.findById(senderId)).thenReturn(Optional.of(sender));
+        when(memberCommandRepository.findById(receiverId)).thenReturn(Optional.of(receiver));
+
+        when(blockRepository.existsByBlockerIdAndBlockedId(senderId, receiverId)).thenReturn(true);
+
+        // when && then
+        assertThatThrownBy(() -> likeSendService.send(senderId, request))
+            .isInstanceOf(LikeBlockedException.class);
+    }
+
+    @Test
+    @DisplayName("상대에게 차단당한 경우 예외가 발생한다.")
+    void throwExceptionWhenReceiverBlockedSender() {
+        // given
+        var senderId = 1L;
+        var receiverId = 2L;
+        var likeLevel = LikeLevelRequest.INTERESTED;
+        var request = new LikeSendRequest(receiverId, likeLevel);
+
+        when(likeCommandRepository.existsBySenderIdAndReceiverId(senderId, receiverId)).thenReturn(false);
+
+        var sender = mock(Member.class);
+        when(sender.getId()).thenReturn(senderId);
+        var receiver = mock(Member.class);
+        when(receiver.isActive()).thenReturn(true);
+        when(sender.hasSameGender(receiver)).thenReturn(false);
+        when(receiver.getId()).thenReturn(receiverId);
+
+        when(memberCommandRepository.findById(senderId)).thenReturn(Optional.of(sender));
+        when(memberCommandRepository.findById(receiverId)).thenReturn(Optional.of(receiver));
+
+        when(blockRepository.existsByBlockerIdAndBlockedId(senderId, receiverId)).thenReturn(false);
+        when(blockRepository.existsByBlockerIdAndBlockedId(receiverId, senderId)).thenReturn(true);
+
+        // when && then
+        assertThatThrownBy(() -> likeSendService.send(senderId, request))
+            .isInstanceOf(LikeBlockedException.class);
     }
 }
