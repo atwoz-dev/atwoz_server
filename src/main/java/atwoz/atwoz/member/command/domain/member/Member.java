@@ -203,8 +203,13 @@ public class Member extends SoftDeleteBaseEntity {
         return isDatingExamSubmitted;
     }
 
+    @Override
     public void delete() {
         this.activityStatus = ActivityStatus.DELETED;
         super.delete();
+    }
+
+    public boolean hasSameGender(Member other) {
+        return this.getGender() == other.getGender();
     }
 }

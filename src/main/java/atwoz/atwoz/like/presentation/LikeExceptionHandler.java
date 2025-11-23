@@ -4,7 +4,10 @@ import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.like.command.application.InvalidLikeLevelException;
 import atwoz.atwoz.like.command.application.LikeAlreadyExistsException;
+import atwoz.atwoz.like.command.application.LikeBlockedException;
 import atwoz.atwoz.like.command.application.MemberNotFoundException;
+import atwoz.atwoz.like.command.application.exception.LikeReceiverInactiveException;
+import atwoz.atwoz.like.command.application.exception.LikeSameGenderException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -36,5 +39,26 @@ public class LikeExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(404).body(BaseResponse.of(StatusType.NOT_FOUND, e.getMessage()));
+    }
+
+    @ExceptionHandler(LikeReceiverInactiveException.class)
+    public ResponseEntity<BaseResponse<Void>> handleLikeReceiverInactiveException(LikeReceiverInactiveException e) {
+        log.warn(e.getMessage());
+
+        return ResponseEntity.status(403).body(BaseResponse.of(StatusType.FORBIDDEN, e.getMessage()));
+    }
+
+    @ExceptionHandler(LikeBlockedException.class)
+    public ResponseEntity<BaseResponse<Void>> handleLikeBlockedException(LikeBlockedException e) {
+        log.warn(e.getMessage());
+
+        return ResponseEntity.status(403).body(BaseResponse.of(StatusType.FORBIDDEN, e.getMessage()));
+    }
+
+    @ExceptionHandler(LikeSameGenderException.class)
+    public ResponseEntity<BaseResponse<Void>> handleLikeSameGenderException(LikeSameGenderException e) {
+        log.warn(e.getMessage());
+
+        return ResponseEntity.badRequest().body(BaseResponse.of(StatusType.BAD_REQUEST, e.getMessage()));
     }
 }
