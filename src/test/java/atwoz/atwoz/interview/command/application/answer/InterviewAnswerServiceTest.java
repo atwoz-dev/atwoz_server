@@ -11,6 +11,8 @@ import atwoz.atwoz.interview.command.domain.question.InterviewQuestion;
 import atwoz.atwoz.interview.command.domain.question.InterviewQuestionCommandRepository;
 import atwoz.atwoz.interview.presentation.answer.dto.InterviewAnswerSaveRequest;
 import atwoz.atwoz.interview.presentation.answer.dto.InterviewAnswerUpdateRequest;
+import atwoz.atwoz.mission.command.application.memberMission.MemberMissionService;
+import atwoz.atwoz.mission.command.domain.mission.ActionType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
@@ -32,6 +35,9 @@ class InterviewAnswerServiceTest {
 
     @Mock
     private InterviewAnswerCommandRepository interviewAnswerCommandRepository;
+
+    @Mock
+    private MemberMissionService memberMissionService;
 
     @InjectMocks
     private InterviewAnswerService interviewAnswerService;
@@ -97,8 +103,8 @@ class InterviewAnswerServiceTest {
         }
 
         @Test
-        @DisplayName("다른 인터뷰 답변이 존재하지 않으면 submitFirstInterviewAnswer를 호출한다.")
-        void callsSubmitFirstInterviewAnswerWhenOtherInterviewAnswerDoesNotExist() {
+        @DisplayName("다른 인터뷰 답변이 존재하지 않으면 미션 서비스를 호출한다.")
+        void callsMemberMissionServiceWhenNoOtherInterviewAnswerExists() {
             // given
             Long interviewQuestionId = 1L;
             String answerContent = "content";
@@ -114,24 +120,27 @@ class InterviewAnswerServiceTest {
                 memberId)).thenReturn(
                 false);
 
+            when(memberMissionService.executeMissionsByAction(memberId, ActionType.INTERVIEW.name()))
+                .thenReturn(true);
+
             InterviewAnswer interviewAnswer = mock(InterviewAnswer.class);
             try (MockedStatic<InterviewAnswer> mockedStatic = mockStatic(InterviewAnswer.class)) {
                 mockedStatic.when(() -> InterviewAnswer.of(eq(interviewQuestionId), eq(memberId), eq(answerContent)))
                     .thenReturn(interviewAnswer);
 
                 // when
-                interviewAnswerService.saveAnswer(request, memberId);
+                boolean result = interviewAnswerService.saveAnswer(request, memberId);
 
                 // then
-                verify(interviewAnswer, times(1)).submitFirstInterviewAnswer();
+                assertThat(result).isTrue();
             }
             verify(interviewAnswerCommandRepository).save(interviewAnswer);
-
+            verify(memberMissionService).executeMissionsByAction(memberId, ActionType.INTERVIEW.name());
         }
 
         @Test
-        @DisplayName("다른 인터뷰 답변이 존재하면 submitFirstInterviewAnswer를 호출하지 않는다.")
-        void doesNotCallSubmitFirstInterviewAnswerWhenOtherInterviewAnswerExists() {
+        @DisplayName("다른 인터뷰 답변이 존재하면 MemberMissionService를 호출하지 않는다.")
+        void doesNotCallMemberMissionServiceWhenOtherInterviewAnswerExists() {
             // given
             Long interviewQuestionId = 1L;
             String answerContent = "content";
@@ -153,12 +162,13 @@ class InterviewAnswerServiceTest {
                     .thenReturn(interviewAnswer);
 
                 // when
-                interviewAnswerService.saveAnswer(request, memberId);
+                boolean result = interviewAnswerService.saveAnswer(request, memberId);
 
                 // then
-                verify(interviewAnswer, never()).submitFirstInterviewAnswer();
+                assertThat(result).isFalse();
             }
             verify(interviewAnswerCommandRepository).save(interviewAnswer);
+            verify(memberMissionService, never()).executeMissionsByAction(anyLong(), anyString());
         }
     }
 

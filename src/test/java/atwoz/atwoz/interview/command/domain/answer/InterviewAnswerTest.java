@@ -1,20 +1,14 @@
 package atwoz.atwoz.interview.command.domain.answer;
 
-import atwoz.atwoz.common.event.Events;
-import atwoz.atwoz.interview.command.domain.answer.event.FirstInterviewSubmittedEvent;
 import atwoz.atwoz.interview.command.domain.answer.exception.InvalidInterviewAnswerContentException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.MockedStatic;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
 
 class InterviewAnswerTest {
 
@@ -62,31 +56,6 @@ class InterviewAnswerTest {
 
             // then
             assertThat(interviewAnswer).isNotNull();
-        }
-    }
-
-    @Nested
-    @DisplayName("submitFirstInterviewAnswer 메서드 테스트")
-    class SubmitFirstInterviewAnswerMethodTest {
-
-        @Test
-        @DisplayName("첫 번째 면접 답변을 제출하면 FirstInterviewSubmittedEvent를 발생시킨다.")
-        void raiseFirstInterviewSubmittedEventWhenSubmitFirstInterviewAnswer() {
-            // given
-            Long questionId = 1L;
-            Long memberId = 2L;
-            InterviewAnswer interviewAnswer = InterviewAnswer.of(questionId, memberId, "body");
-
-            try (MockedStatic<Events> eventsMockedStatic = mockStatic(Events.class)) {
-                // When
-                interviewAnswer.submitFirstInterviewAnswer();
-
-                // Then
-                eventsMockedStatic.verify(() ->
-                    Events.raise(argThat((FirstInterviewSubmittedEvent event) ->
-                        event.getMemberId().equals(memberId)
-                    )), times(1));
-            }
         }
     }
 
