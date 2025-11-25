@@ -139,8 +139,8 @@ class InterviewAnswerServiceTest {
         }
 
         @Test
-        @DisplayName("다른 인터뷰 답변이 존재하면 submitFirstInterviewAnswer를 호출하지 않는다.")
-        void doesNotCallSubmitFirstInterviewAnswerWhenOtherInterviewAnswerExists() {
+        @DisplayName("다른 인터뷰 답변이 존재하면 MemberMissionService를 호출하지 않는다.")
+        void doesNotCallMemberMissionServiceWhenOtherInterviewAnswerExists() {
             // given
             Long interviewQuestionId = 1L;
             String answerContent = "content";
