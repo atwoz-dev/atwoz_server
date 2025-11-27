@@ -12,6 +12,8 @@ spring:
     properties:
       hibernate:
         format_sql: ${JPA_FORMAT_SQL:true}
+        jdbc:
+          timezone: Asia/Seoul
 
   data:
     redis:
@@ -92,4 +94,3 @@ bizgo:
 
 scheduler:
   cron: "0 0 0 * * *"
-
