@@ -74,16 +74,15 @@ public class Report extends BaseEntity {
         validateResult();
         setAdminId(adminId);
         setResult(ReportResult.WARNED);
-        Events.raise(ReportWarnedEvent.of(reporteeId, reason.name()));
+        Events.raise(ReportWarnedEvent.of(adminId, reporteeId, reason.name()));
     }
 
     public void suspend(long adminId) {
         validateResult();
         setAdminId(adminId);
         setResult(ReportResult.SUSPENDED);
-        Events.raise(ReportSuspendedEvent.from(this.reporteeId));
+        Events.raise(ReportSuspendedEvent.of(adminId, reporteeId));
     }
-
 
     public boolean hasVersionConflict(long version) {
         return this.version != version;
