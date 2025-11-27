@@ -32,7 +32,7 @@ public class MemberExceptionHandler {
     public ResponseEntity<BaseResponse<TemporarySuspensionLoginResponse>> handleTemporarilySuspendedMemberException(
         TemporarilySuspendedMemberException e
     ) {
-        if (e.getSuspensionExpireAt() != null) {
+        if (e.getSuspensionExpireAt() == null) {
             log.error("일시 정지 만료일이 존재하지 않습니다.", e);
         }
         log.warn("멤버 로그인에 실패하였습니다. {}", e.getMessage());
