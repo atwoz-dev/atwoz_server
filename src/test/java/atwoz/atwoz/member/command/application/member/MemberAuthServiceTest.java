@@ -1,15 +1,15 @@
 package atwoz.atwoz.member.command.application.member;
 
+import atwoz.atwoz.admin.command.domain.suspension.Suspension;
+import atwoz.atwoz.admin.command.domain.suspension.SuspensionCommandRepository;
+import atwoz.atwoz.admin.command.domain.suspension.SuspensionStatus;
 import atwoz.atwoz.auth.domain.TokenParser;
 import atwoz.atwoz.auth.domain.TokenRepository;
 import atwoz.atwoz.auth.infra.JwtProvider;
 import atwoz.atwoz.common.MockEventsExtension;
 import atwoz.atwoz.common.enums.Role;
 import atwoz.atwoz.member.command.application.member.dto.MemberLoginServiceDto;
-import atwoz.atwoz.member.command.application.member.exception.MemberDeletedException;
-import atwoz.atwoz.member.command.application.member.exception.MemberLoginConflictException;
-import atwoz.atwoz.member.command.application.member.exception.MemberNotFoundException;
-import atwoz.atwoz.member.command.application.member.exception.PermanentlySuspendedMemberException;
+import atwoz.atwoz.member.command.application.member.exception.*;
 import atwoz.atwoz.member.command.application.member.sms.AuthMessageService;
 import atwoz.atwoz.member.command.domain.member.ActivityStatus;
 import atwoz.atwoz.member.command.domain.member.Member;
@@ -30,13 +30,20 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Optional;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith({MockitoExtension.class, MockEventsExtension.class})
 class MemberAuthServiceTest {
 
     @Mock
     private MemberCommandRepository memberCommandRepository;
+
+    @Mock
+    private SuspensionCommandRepository suspensionRepository;
 
     @Mock
     private JwtProvider jwtProvider;
@@ -72,7 +79,43 @@ class MemberAuthServiceTest {
             ReflectionTestUtils.setField(permanentStoppedMember, "id", 2L);
             ReflectionTestUtils.setField(permanentStoppedMember, "activityStatus",
                 ActivityStatus.SUSPENDED_PERMANENTLY);
+        }
 
+        @Test
+        @DisplayName("일시 정지된 사용자가 로그인할 경우 예외 처리")
+        void shouldThrowExceptionWhenLoginAttemptedByTemporarilyStoppedMember() {
+            // Given
+            memberId = 100L;
+            String phoneNumber = "01012341234";
+            String code = "012345";
+
+            Member temporarySuspensionMember = mock(Member.class);
+            when(temporarySuspensionMember.getId()).thenReturn(memberId);
+            when(temporarySuspensionMember.isDeleted()).thenReturn(false);
+            when(temporarySuspensionMember.getActivityStatus()).thenReturn(ActivityStatus.SUSPENDED_TEMPORARILY);
+
+            Instant suspensionExpireAt = Instant.now().plus(3, java.time.temporal.ChronoUnit.DAYS);
+
+            Suspension suspension = mock(Suspension.class);
+            when(suspension.getExpireAt()).thenReturn(suspensionExpireAt);
+
+            when(memberCommandRepository.findByPhoneNumber(phoneNumber))
+                .thenReturn(Optional.of(temporarySuspensionMember));
+            Mockito.doNothing().when(authMessageService).authenticate(phoneNumber, code);
+            when(suspensionRepository.findByMemberIdAndStatusOrderByExpireAtDesc(memberId, SuspensionStatus.TEMPORARY))
+                .thenReturn(Optional.of(suspension));
+
+            // When
+            Exception exception = Assertions.catchException(
+                () -> memberAuthService.login(phoneNumber, code)
+            );
+
+            // Then
+            Assertions.assertThat(exception).isInstanceOf(TemporarilySuspendedMemberException.class);
+            TemporarilySuspendedMemberException suspensionException = (TemporarilySuspendedMemberException) exception;
+            Assertions.assertThat(suspensionException.getSuspensionExpireAt()).isEqualTo(
+                LocalDateTime.ofInstant(suspensionExpireAt, java.time.ZoneId.systemDefault())
+            );
         }
 
         @Test
@@ -82,7 +125,7 @@ class MemberAuthServiceTest {
             String phoneNumber = "01012345678";
             String code = "01012345678";
 
-            Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber))
+            when(memberCommandRepository.findByPhoneNumber(phoneNumber))
                 .thenReturn(Optional.of(permanentStoppedMember));
             Mockito.doNothing().when(authMessageService).authenticate(phoneNumber, code);
 
@@ -100,7 +143,7 @@ class MemberAuthServiceTest {
             Member deletedMember = Member.fromPhoneNumber("01012345678");
             deletedMember.delete();
 
-            Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber))
+            when(memberCommandRepository.findByPhoneNumber(phoneNumber))
                 .thenReturn(Optional.of(deletedMember));
             Mockito.doNothing().when(authMessageService).authenticate(phoneNumber, code);
 
@@ -119,7 +162,7 @@ class MemberAuthServiceTest {
             ReflectionTestUtils.setField(inactiveMember, "id", 3L);
             inactiveMember.changeToDormant();
 
-            Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber))
+            when(memberCommandRepository.findByPhoneNumber(phoneNumber))
                 .thenReturn(Optional.of(inactiveMember));
             Mockito.doNothing().when(authMessageService).authenticate(phoneNumber, code);
 
@@ -138,9 +181,9 @@ class MemberAuthServiceTest {
             try (MockedStatic<Instant> mockedInstant = Mockito.mockStatic(Instant.class)) {
                 mockedInstant.when(Instant::now).thenReturn(fixedInstant);
 
-                Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.of(member));
-                Mockito.when(
-                        jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
+                when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.of(member));
+                when(
+                    jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
                     .thenReturn("accessToken");
                 Mockito.doNothing().when(authMessageService).authenticate(phoneNumber, code);
 
@@ -164,11 +207,11 @@ class MemberAuthServiceTest {
             try (MockedStatic<Instant> mockedInstant = Mockito.mockStatic(Instant.class)) {
                 mockedInstant.when(Instant::now).thenReturn(fixedInstant);
 
-                Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
-                Mockito.when(
-                        jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
+                when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
+                when(
+                    jwtProvider.createAccessToken(Mockito.anyLong(), Mockito.eq(Role.MEMBER), Mockito.eq(fixedInstant)))
                     .thenReturn("accessToken");
-                Mockito.when(memberCommandRepository.save(Mockito.any())).thenReturn(member);
+                when(memberCommandRepository.save(Mockito.any())).thenReturn(member);
                 Mockito.doNothing().when(authMessageService).authenticate(phoneNumber, code);
 
                 // When
@@ -189,8 +232,8 @@ class MemberAuthServiceTest {
             String code = "01012345678";
 
             // When
-            Mockito.when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
-            Mockito.when(memberCommandRepository.save(Mockito.any())).thenThrow(DataIntegrityViolationException.class);
+            when(memberCommandRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
+            when(memberCommandRepository.save(Mockito.any())).thenThrow(DataIntegrityViolationException.class);
             Mockito.doNothing().when(authMessageService).authenticate(phoneNumber, code);
 
             // When & Then
@@ -208,7 +251,7 @@ class MemberAuthServiceTest {
             // Given
             Long memberId = 1L;
             String refreshToken = "refreshToken";
-            Mockito.when(memberCommandRepository.findById(memberId)).thenReturn(Optional.empty());
+            when(memberCommandRepository.findById(memberId)).thenReturn(Optional.empty());
 
             // When & Then
             Assertions.assertThatThrownBy(() -> memberAuthService.delete(memberId, refreshToken))
@@ -222,7 +265,7 @@ class MemberAuthServiceTest {
             Long memberId = 1L;
             String refreshToken = "refreshToken";
             Member member = Member.fromPhoneNumber("01012345678");
-            Mockito.when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(member));
+            when(memberCommandRepository.findById(memberId)).thenReturn(Optional.of(member));
 
             // When
             memberAuthService.delete(memberId, refreshToken);
