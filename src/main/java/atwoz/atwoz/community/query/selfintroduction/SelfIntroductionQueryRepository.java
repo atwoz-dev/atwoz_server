@@ -42,8 +42,14 @@ public class SelfIntroductionQueryRepository {
 
         return queryFactory
             .select(
-                new QSelfIntroductionSummaryView(selfIntroduction.id, member.profile.nickname.value,
-                    profileImage.imageUrl.value, member.profile.yearOfBirth.value, selfIntroduction.title)
+                new QSelfIntroductionSummaryView(
+                    selfIntroduction.id,
+                    member.profile.nickname.value,
+                    profileImage.imageUrl.value,
+                    member.profile.yearOfBirth.value,
+                    selfIntroduction.title,
+                    selfIntroduction.createdAt
+                )
             )
             .from(selfIntroduction)
             .join(member).on(member.id.eq(selfIntroduction.memberId))
@@ -63,8 +69,14 @@ public class SelfIntroductionQueryRepository {
 
         return queryFactory
             .select(
-                new QSelfIntroductionSummaryView(selfIntroduction.id, member.profile.nickname.value,
-                    profileImage.imageUrl.value, member.profile.yearOfBirth.value, selfIntroduction.title)
+                new QSelfIntroductionSummaryView(
+                    selfIntroduction.id,
+                    member.profile.nickname.value,
+                    profileImage.imageUrl.value,
+                    member.profile.yearOfBirth.value,
+                    selfIntroduction.title,
+                    selfIntroduction.createdAt
+                )
             )
             .from(selfIntroduction)
             .join(member).on(member.id.eq(selfIntroduction.memberId))
@@ -104,7 +116,8 @@ public class SelfIntroductionQueryRepository {
                         like.level.stringValue(),
                         selfIntroduction.title,
                         selfIntroduction.content,
-                        profileExchange.status.stringValue()
+                        profileExchange.status.stringValue(),
+                        selfIntroduction.createdAt
                     )
                 )
             );

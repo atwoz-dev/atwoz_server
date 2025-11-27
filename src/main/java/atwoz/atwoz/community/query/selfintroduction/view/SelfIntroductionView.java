@@ -5,6 +5,7 @@ import atwoz.atwoz.member.query.member.AgeConverter;
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 public record SelfIntroductionView(
@@ -13,7 +14,8 @@ public record SelfIntroductionView(
     String like,
     String title,
     String content,
-    String profileExchangeStatus
+    String profileExchangeStatus,
+    LocalDateTime createdAt
 ) {
     @QueryProjection
     public SelfIntroductionView(Long memberId,
@@ -28,9 +30,10 @@ public record SelfIntroductionView(
         String like,
         String title,
         String content,
-        String profileExchangeStatus
+        String profileExchangeStatus,
+        LocalDateTime createdAt
     ) {
         this(new MemberBasicInfo(memberId, nickname, AgeConverter.toAge(yearOfBirth), profileImageUrl, city, district,
-            mbti, hobbies, gender), like, title, content, profileExchangeStatus);
+            mbti, hobbies, gender), like, title, content, profileExchangeStatus, createdAt);
     }
 }
