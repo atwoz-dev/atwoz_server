@@ -4,6 +4,7 @@ import atwoz.atwoz.common.enums.StatusType;
 import atwoz.atwoz.common.response.BaseResponse;
 import atwoz.atwoz.member.command.application.member.exception.*;
 import atwoz.atwoz.member.command.domain.member.exception.MemberNotActiveException;
+import atwoz.atwoz.member.presentation.member.dto.TemporarySuspensionLoginResponse;
 import atwoz.atwoz.member.query.member.application.exception.ProfileAccessDeniedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -28,13 +29,19 @@ public class MemberExceptionHandler {
     }
 
     @ExceptionHandler(TemporarilySuspendedMemberException.class)
-    public ResponseEntity<BaseResponse<Void>> handleTemporarilySuspendedMemberException(
+    public ResponseEntity<BaseResponse<TemporarySuspensionLoginResponse>> handleTemporarilySuspendedMemberException(
         TemporarilySuspendedMemberException e
     ) {
+        if (e.getSuspensionExpireAt() == null) {
+            log.error("일시 정지 만료일이 존재하지 않습니다.", e);
+        }
         log.warn("멤버 로그인에 실패하였습니다. {}", e.getMessage());
 
+        TemporarySuspensionLoginResponse response = new TemporarySuspensionLoginResponse(
+            e.getMessage(), e.getSuspensionExpireAt());
+
         return ResponseEntity.status(403)
-            .body(BaseResponse.of(StatusType.TEMPORARILY_FORBIDDEN, e.getMessage()));
+            .body(BaseResponse.of(StatusType.TEMPORARILY_FORBIDDEN, response));
     }
 
     @ExceptionHandler(MemberDeletedException.class)

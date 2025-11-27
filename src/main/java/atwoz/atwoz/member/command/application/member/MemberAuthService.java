@@ -1,5 +1,8 @@
 package atwoz.atwoz.member.command.application.member;
 
+import atwoz.atwoz.admin.command.domain.suspension.Suspension;
+import atwoz.atwoz.admin.command.domain.suspension.SuspensionCommandRepository;
+import atwoz.atwoz.admin.command.domain.suspension.SuspensionStatus;
 import atwoz.atwoz.auth.domain.TokenParser;
 import atwoz.atwoz.auth.domain.TokenProvider;
 import atwoz.atwoz.auth.domain.TokenRepository;
@@ -22,7 +25,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +37,7 @@ public class MemberAuthService {
     private final static List<ActivityStatus> ALLOWED_ACTIVITY_STATUS = List.of(ActivityStatus.ACTIVE,
         ActivityStatus.INITIAL, ActivityStatus.WAITING_SCREENING, ActivityStatus.REJECTED_SCREENING);
     private final MemberCommandRepository memberCommandRepository;
+    private final SuspensionCommandRepository suspensionRepository;
     private final AuthMessageService authMessageService;
     private final TokenProvider tokenProvider;
     private final TokenParser tokenParser;
@@ -122,12 +129,22 @@ public class MemberAuthService {
         if (activityStatus == ActivityStatus.SUSPENDED_PERMANENTLY) { // 영구 정지일 경우.
             throw new PermanentlySuspendedMemberException();
         } else if (activityStatus == ActivityStatus.SUSPENDED_TEMPORARILY) { // 일시 정지일 경우.
-            throw new TemporarilySuspendedMemberException();
+            LocalDateTime suspensionExpireAt = getTemporarySuspensionExpireAt(member.getId());
+            throw new TemporarilySuspendedMemberException(suspensionExpireAt);
         } else if (!ALLOWED_ACTIVITY_STATUS.contains(activityStatus)) {
             /**
              * 2025/11/18 변경 : 이외의 상태 (활동중, 심사 대기중, 심사 거절) 는 로그인 허용.
              */
             throw new MemberNotActiveException();
         }
+    }
+
+    private LocalDateTime getTemporarySuspensionExpireAt(Long memberId) {
+        Optional<Suspension> optionalSuspension = suspensionRepository.findByMemberIdAndStatusOrderByExpireAtDesc(
+            memberId, SuspensionStatus.TEMPORARY);
+        return optionalSuspension
+            .map(Suspension::getExpireAt)
+            .map(instant -> LocalDateTime.ofInstant(instant, ZoneId.systemDefault()))
+            .orElse(null);
     }
 }
