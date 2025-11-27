@@ -1,6 +1,5 @@
 package atwoz.atwoz;
 
-import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
@@ -17,12 +16,7 @@ import java.util.TimeZone;
 @EnableFeignClients
 public class AtwozApplication {
     public static void main(String[] args) {
-        SpringApplication.run(AtwozApplication.class, args);
-    }
-
-    @PostConstruct
-    public void started() {
-        // set timezone
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
+        SpringApplication.run(AtwozApplication.class, args);
     }
 }
