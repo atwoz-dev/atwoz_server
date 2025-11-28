@@ -17,6 +17,11 @@ concurrency:
 env:
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY: deepple
+  CONTAINER_NAME: deepple-app
+  BLUE_PORT: "8081"
+  GREEN_PORT: "8082"
+  HEALTH_CHECK_MAX_RETRIES: "50"
+  HEALTH_CHECK_INTERVAL: "2"
 
 jobs:
   deploy:
@@ -44,140 +49,79 @@ jobs:
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}
-          tags: |
-            type=raw,value=dev-latest
-            type=sha,prefix=dev-
-
       - name: Build and push Docker image
-        id: build-image
         uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:dev-${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:dev-latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Deploy to EC2 via SSM
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: dev-latest
-          CONTAINER_NAME: deepple-app
-          BLUE_PORT: 8081
-          GREEN_PORT: 8082
-          HEALTH_CHECK_MAX_RETRIES: 50
-          HEALTH_CHECK_INTERVAL: 2
         run: |
-          echo "Preparing deployment script..."
-
-          # Encode .env content to base64
-          ENV_CONTENT_B64=$(echo "${{ secrets.DEV_ENV }}" | base64 | tr -d '\n')
-
-          # Prepare deployment script with environment variables
-          export ENV_CONTENT_B64
-          export AWS_REGION="${{ env.AWS_REGION }}"
-          export ECR_REGISTRY="${{ env.ECR_REGISTRY }}"
-          export ECR_REPOSITORY="${{ env.ECR_REPOSITORY }}"
-          export IMAGE_TAG="${{ env.IMAGE_TAG }}"
-          export CONTAINER_NAME="${{ env.CONTAINER_NAME }}"
-          export BLUE_PORT="${{ env.BLUE_PORT }}"
-          export GREEN_PORT="${{ env.GREEN_PORT }}"
-          export HEALTH_CHECK_MAX_RETRIES="${{ env.HEALTH_CHECK_MAX_RETRIES }}"
-          export HEALTH_CHECK_INTERVAL="${{ env.HEALTH_CHECK_INTERVAL }}"
-
-          # Substitute variables in deploy script
-          envsubst < .github/scripts/deploy-dev.sh > /tmp/deploy-rendered.sh
-          chmod +x /tmp/deploy-rendered.sh
-
-          echo "Uploading deployment script to EC2 via SSM..."
-
-          # Upload script to EC2
-          SCRIPT_CONTENT=$(cat /tmp/deploy-rendered.sh | base64 | tr -d '\n')
-
-          UPLOAD_CMD_ID=$(aws ssm send-command \
-            --instance-ids "${{ secrets.DEV_EC2_INSTANCE_ID }}" \
-            --document-name "AWS-RunShellScript" \
-            --timeout-seconds 60 \
-            --parameters commands="[\"echo ${SCRIPT_CONTENT} | base64 -d > /tmp/deploy.sh\",\"chmod +x /tmp/deploy.sh\"]" \
-            --output text \
-            --query "Command.CommandId")
-
-          echo "Upload command ID: $UPLOAD_CMD_ID"
-
-          # Wait for upload to complete
-          aws ssm wait command-executed \
-            --command-id $UPLOAD_CMD_ID \
-            --instance-id "${{ secrets.DEV_EC2_INSTANCE_ID }}"
-
-          UPLOAD_STATUS=$(aws ssm get-command-invocation \
-            --command-id $UPLOAD_CMD_ID \
-            --instance-id "${{ secrets.DEV_EC2_INSTANCE_ID }}" \
-            --query 'Status' \
-            --output text)
-
-          if [ "$UPLOAD_STATUS" != "Success" ]; then
-            echo "Failed to upload deployment script"
-            exit 1
-          fi
-
-          echo "Script uploaded successfully. Executing deployment..."
-
-          # Execute deployment script
-          DEPLOY_CMD_ID=$(aws ssm send-command \
+          # 배포 스크립트 base64 인코딩
+          DEPLOY_SCRIPT_B64=$(base64 -w 0 .github/scripts/deploy-dev.sh)
+          
+          # 환경변수 파일 base64 인코딩
+          ENV_CONTENT_B64=$(echo -n '${{ secrets.DEV_ENV }}' | base64 -w 0)
+          
+          # SSM 명령 실행
+          COMMAND_ID=$(aws ssm send-command \
             --instance-ids "${{ secrets.DEV_EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
             --timeout-seconds 600 \
-            --parameters commands='["bash /tmp/deploy.sh"]' \
-            --output text \
-            --query "Command.CommandId")
-
-          echo "Deployment command ID: $DEPLOY_CMD_ID"
-          echo "Waiting for deployment to complete..."
-
-          # Wait for deployment to complete
-          aws ssm wait command-executed \
-            --command-id $DEPLOY_CMD_ID \
-            --instance-id "${{ secrets.DEV_EC2_INSTANCE_ID }}"
-
-          # Get deployment output
-          echo ""
-          echo "=========================================="
-          echo "Deployment Output:"
-          echo "=========================================="
-          aws ssm get-command-invocation \
-            --command-id $DEPLOY_CMD_ID \
-            --instance-id "${{ secrets.DEV_EC2_INSTANCE_ID }}" \
-            --query 'StandardOutputContent' \
-            --output text
-
-          # Check deployment status
-          DEPLOY_STATUS=$(aws ssm get-command-invocation \
-            --command-id $DEPLOY_CMD_ID \
-            --instance-id "${{ secrets.DEV_EC2_INSTANCE_ID }}" \
-            --query 'Status' \
+            --parameters commands="[
+              \"echo ${DEPLOY_SCRIPT_B64} | base64 -d > /tmp/deploy.sh\",
+              \"chmod +x /tmp/deploy.sh\",
+              \"/tmp/deploy.sh '${ENV_CONTENT_B64}' '${{ env.AWS_REGION }}' '${{ steps.login-ecr.outputs.registry }}' '${{ env.ECR_REPOSITORY }}' 'dev-${{ github.sha }}' '${{ env.CONTAINER_NAME }}' '${{ env.BLUE_PORT }}' '${{ env.GREEN_PORT }}' '${{ env.HEALTH_CHECK_MAX_RETRIES }}' '${{ env.HEALTH_CHECK_INTERVAL }}'\"
+            ]" \
+            --query "Command.CommandId" \
             --output text)
-
-          if [ "$DEPLOY_STATUS" != "Success" ]; then
-            echo ""
-            echo "=========================================="
-            echo "Deployment Error Output:"
-            echo "=========================================="
-            aws ssm get-command-invocation \
-              --command-id $DEPLOY_CMD_ID \
-              --instance-id "${{ secrets.DEV_EC2_INSTANCE_ID }}" \
-              --query 'StandardErrorContent' \
-              --output text
-            exit 1
-          fi
-
-          echo ""
-          echo "=========================================="
-          echo "Deployment Completed Successfully!"
-          echo "=========================================="
+          
+          echo "Command ID: $COMMAND_ID"
+          echo "Waiting for deployment..."
+          
+          # 결과 폴링
+          for i in {1..120}; do
+            sleep 5
+          
+            RESULT=$(aws ssm get-command-invocation \
+              --command-id "$COMMAND_ID" \
+              --instance-id "${{ secrets.DEV_EC2_INSTANCE_ID }}" 2>/dev/null) || continue
+          
+            STATUS=$(echo "$RESULT" | jq -r '.Status')
+          
+            case "$STATUS" in
+              Success)
+                echo ""
+                echo "===== Deployment Output ====="
+                echo "$RESULT" | jq -r '.StandardOutputContent // empty'
+                echo ""
+                echo "Deployment completed successfully!"
+                exit 0
+                ;;
+              Failed|TimedOut|Cancelled)
+                echo ""
+                echo "===== Deployment Output ====="
+                echo "$RESULT" | jq -r '.StandardOutputContent // empty'
+                echo ""
+                echo "===== Error Output ====="
+                echo "$RESULT" | jq -r '.StandardErrorContent // empty'
+                echo ""
+                echo "Deployment failed with status: $STATUS"
+                exit 1
+                ;;
+              *)
+                if [ $((i % 6)) -eq 0 ]; then
+                  echo "Status: $STATUS... (${i}s elapsed)"
+                fi
+                ;;
+            esac
+          done
+          
+          echo "Timeout waiting for deployment result"
+          exit 1
