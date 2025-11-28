@@ -67,7 +67,7 @@ jobs:
           DEPLOY_SCRIPT_B64=$(base64 -w 0 .github/scripts/deploy-dev.sh)
           
           # 환경변수 파일 base64 인코딩
-          ENV_CONTENT_B64=$(echo -n '${{ secrets.DEV_ENV }}' | base64 -w 0)
+          ENV_CONTENT_B64=$(echo -n '${{ secrets.ENV }}' | base64 -w 0)
           
           # SSM 명령 실행
           COMMAND_ID=$(aws ssm send-command \
