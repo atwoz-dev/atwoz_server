@@ -77,6 +77,9 @@ jobs:
         run: |
           echo "Sending deployment command via SSM..."
 
+          # Encode .env content to base64 for safe JSON transmission
+          ENV_CONTENT_B64=$(echo "${{ secrets.DEV_ENV }}" | base64 | tr -d '\n')
+
           # Create SSM command JSON
           cat > /tmp/ssm-command.json <<EOF
           {
@@ -90,9 +93,7 @@ jobs:
                 "",
                 "echo",
                 "echo 'Updating .env file...'",
-                "cat > /home/ubuntu/.env <<'ENVFILE'",
-                "${{ secrets.DEV_ENV }}",
-                "ENVFILE",
+                "echo '$ENV_CONTENT_B64' | base64 -d > /home/ubuntu/.env",
                 "echo 'Environment variables updated'",
                 "",
                 "echo",
