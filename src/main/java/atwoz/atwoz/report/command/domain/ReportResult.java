@@ -13,8 +13,7 @@ import lombok.NonNull;
 public enum ReportResult {
     PENDING("대기"),
     REJECTED("기각"),
-    WARNED("경고"),
-    SUSPENDED("일시 정지");
+    WARNED("경고");
 
     private final String description;
 
