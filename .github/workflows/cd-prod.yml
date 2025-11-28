@@ -1,5 +1,13 @@
 name: CD - Production
 
 on:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
+      - '.env.example'
 
 jobs:
