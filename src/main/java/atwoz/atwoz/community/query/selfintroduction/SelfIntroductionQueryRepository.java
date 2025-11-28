@@ -48,6 +48,7 @@ public class SelfIntroductionQueryRepository {
                     profileImage.imageUrl.value,
                     member.profile.yearOfBirth.value,
                     selfIntroduction.title,
+                    selfIntroduction.content,
                     selfIntroduction.createdAt
                 )
             )
@@ -75,6 +76,7 @@ public class SelfIntroductionQueryRepository {
                     profileImage.imageUrl.value,
                     member.profile.yearOfBirth.value,
                     selfIntroduction.title,
+                    selfIntroduction.content,
                     selfIntroduction.createdAt
                 )
             )

@@ -10,6 +10,7 @@ public record SelfIntroductionSummaryView(
     String profileUrl,
     Integer yearOfBirth,
     String title,
+    String content,
     LocalDateTime createdAt
 ) {
     @QueryProjection
