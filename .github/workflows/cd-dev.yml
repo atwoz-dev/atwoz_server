@@ -117,7 +117,7 @@ jobs:
                 ;;
               *)
                 if [ $((i % 6)) -eq 0 ]; then
-                  echo "Status: $STATUS... (${i}s elapsed)"
+                  echo "Status: $STATUS... (${i * 5}s elapsed)"
                 fi
                 ;;
             esac
