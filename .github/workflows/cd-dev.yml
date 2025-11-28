@@ -72,7 +72,7 @@ jobs:
           CONTAINER_NAME: deepple-app
           BLUE_PORT: 8081
           GREEN_PORT: 8082
-          HEALTH_CHECK_MAX_RETRIES: 30
+          HEALTH_CHECK_MAX_RETRIES: 50
           HEALTH_CHECK_INTERVAL: 2
         run: |
           echo "Sending deployment command via SSM..."
