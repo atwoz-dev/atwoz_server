@@ -38,7 +38,6 @@ public class AdminReportService {
         switch (reportResult) {
             case REJECTED -> report.reject(adminId);
             case WARNED -> report.warn(adminId);
-            case SUSPENDED -> report.suspend(adminId);
             case PENDING -> throw new InvalidReportResultException("PENDING 으로 결과를 설정할 수 없습니다.");
             default -> throw new InvalidReportResultException("Invalid report result: " + request.result());
         }

@@ -57,7 +57,6 @@ class AdminReportServiceTest {
             // then
             verify(mockReport).reject(adminId);
             verify(mockReport, never()).warn(anyLong());
-            verify(mockReport, never()).suspend(anyLong());
             verify(reportCommandRepository, never()).save(any());
         }
 
@@ -75,25 +74,6 @@ class AdminReportServiceTest {
             // then
             verify(mockReport).warn(adminId);
             verify(mockReport, never()).reject(anyLong());
-            verify(mockReport, never()).suspend(anyLong());
-            verify(reportCommandRepository, never()).save(any());
-        }
-
-        @Test
-        @DisplayName("정상 케이스: 결과가 SUSPENDED일 때 report.suspend 호출")
-        void shouldSuspendReportWhenResultIsSuspended() {
-            // given
-            stubFindReport();
-            var request = new ReportResultUpdateRequest(version, SUSPENDED.name());
-            when(mockReport.hasVersionConflict(version)).thenReturn(false);
-
-            // when
-            adminReportService.updateResult(reportId, request, adminId);
-
-            // then
-            verify(mockReport).suspend(adminId);
-            verify(mockReport, never()).reject(anyLong());
-            verify(mockReport, never()).warn(anyLong());
             verify(reportCommandRepository, never()).save(any());
         }
 
@@ -113,7 +93,6 @@ class AdminReportServiceTest {
 
             verify(mockReport, never()).reject(anyLong());
             verify(mockReport, never()).warn(anyLong());
-            verify(mockReport, never()).suspend(anyLong());
             verify(reportCommandRepository, never()).save(any());
         }
 
@@ -133,7 +112,6 @@ class AdminReportServiceTest {
 
             verify(mockReport, never()).reject(anyLong());
             verify(mockReport, never()).warn(anyLong());
-            verify(mockReport, never()).suspend(anyLong());
             verify(reportCommandRepository, never()).save(any());
         }
 
@@ -153,7 +131,6 @@ class AdminReportServiceTest {
 
             verify(mockReport, never()).reject(anyLong());
             verify(mockReport, never()).warn(anyLong());
-            verify(mockReport, never()).suspend(anyLong());
             verify(reportCommandRepository, never()).save(any());
         }
 

@@ -3,7 +3,6 @@ package atwoz.atwoz.report.command.domain;
 import atwoz.atwoz.common.entity.BaseEntity;
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.report.command.domain.event.ReportCreatedEvent;
-import atwoz.atwoz.report.command.domain.event.ReportSuspendedEvent;
 import atwoz.atwoz.report.command.domain.event.ReportWarnedEvent;
 import atwoz.atwoz.report.command.domain.exception.InvalidReportResultException;
 import jakarta.persistence.*;
@@ -74,16 +73,8 @@ public class Report extends BaseEntity {
         validateResult();
         setAdminId(adminId);
         setResult(ReportResult.WARNED);
-        Events.raise(ReportWarnedEvent.of(reporteeId, reason.name()));
+        Events.raise(ReportWarnedEvent.of(adminId, reporteeId, reason.name()));
     }
-
-    public void suspend(long adminId) {
-        validateResult();
-        setAdminId(adminId);
-        setResult(ReportResult.SUSPENDED);
-        Events.raise(ReportSuspendedEvent.from(this.reporteeId));
-    }
-
 
     public boolean hasVersionConflict(long version) {
         return this.version != version;

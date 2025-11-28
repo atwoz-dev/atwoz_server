@@ -2,7 +2,6 @@ package atwoz.atwoz.report.command.domain;
 
 import atwoz.atwoz.common.event.Events;
 import atwoz.atwoz.report.command.domain.event.ReportCreatedEvent;
-import atwoz.atwoz.report.command.domain.event.ReportSuspendedEvent;
 import atwoz.atwoz.report.command.domain.event.ReportWarnedEvent;
 import atwoz.atwoz.report.command.domain.exception.InvalidReportResultException;
 import org.junit.jupiter.api.*;
@@ -132,51 +131,6 @@ class ReportTest {
 
             // when, then
             assertThatThrownBy(() -> report.reject(adminId)).isInstanceOf(NullPointerException.class);
-        }
-    }
-
-    @Nested
-    @DisplayName("approve 메서드 테스트")
-    class SuspendTest {
-        @Test
-        @DisplayName("Pending 상태의 report로 approve 호출 시 결과가 BANNED로 변경되고 이벤트를 발행한다.")
-        void shouldChangeResultToBannedAndRaiseEvent() {
-            // given
-            Long adminId = 1L;
-            Report report = Report.of(1L, 2L, ReportReasonType.ETC, "content");
-
-            // when
-            report.suspend(adminId);
-
-            // then
-            eventsMockedStatic.verify(() -> Events.raise(argThat(
-                event -> event instanceof ReportSuspendedEvent
-                    && ((ReportSuspendedEvent) event).getReporteeId() == report.getReporteeId()
-            )), times(1));
-            assertThat(report.getResult()).isEqualTo(ReportResult.SUSPENDED);
-        }
-
-        @Test
-        @DisplayName("ReportResult가 PENDING이 아닌 경우 approve 메서드를 호출하면 예외가 발생한다.")
-        void throwsExceptionWhenReportResultIsNotPending() {
-            // given
-            Long adminId = 1L;
-            Report report = Report.of(1L, 2L, ReportReasonType.ETC, "content");
-            report.suspend(adminId);
-
-            // when, then
-            assertThatThrownBy(() -> report.suspend(adminId)).isInstanceOf(InvalidReportResultException.class);
-        }
-
-        @Test
-        @DisplayName("adminId가 null인 경우 approve 호출 시 예외가 발생한다.")
-        void throwsExceptionWhenAdminIdIsNull() {
-            // given
-            Long adminId = null;
-            Report report = Report.of(1L, 2L, ReportReasonType.ETC, "content");
-
-            // when, then
-            assertThatThrownBy(() -> report.suspend(adminId)).isInstanceOf(NullPointerException.class);
         }
     }
 
