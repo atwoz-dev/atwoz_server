@@ -1,5 +1,5 @@
 # 빌드를 위한 베이스 이미지
-FROM eclipse-temurin:21-jdk-jammy as build
+FROM eclipse-temurin:21-jdk-jammy AS build
 
 # 작업 디렉토리 설정
 WORKDIR /workspace/app

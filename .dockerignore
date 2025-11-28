@@ -1,0 +1,57 @@
+# Git
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# 환경 변수 및 시크릿
+.env
+.env.*
+*.pem
+*.key
+secrets/
+certs/
+
+# 로그
+*.log
+logs/
+
+# 테스트 결과
+build/reports/
+build/test-results/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 문서
+*.md
+docs/
+
+# Docker 관련
+docker-compose.yml
+Dockerfile*
+
+# 기타
+*.tmp
+*.bak
+*.swp
+*~
+.cache/
+temp/
+tmp/
