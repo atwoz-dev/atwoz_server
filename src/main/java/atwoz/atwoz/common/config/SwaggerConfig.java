@@ -31,7 +31,8 @@ public class SwaggerConfig {
 
             .servers(List.of(
                 new Server().url("http://localhost:8080").description("Local environment"),
-                new Server().url("https://api.atwoz.kr").description("Production environment")
+                new Server().url("https://dev-api.deepple.co.kr").description("Development environment"),
+                new Server().url("https://api.atwoz.kr").description("Development environment")
             ));
 
     }
