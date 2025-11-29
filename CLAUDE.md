@@ -41,7 +41,7 @@ This project uses GitHub Actions for automated deployment with zero-downtime Blu
     5. Graceful nginx reload (no dropped connections)
     6. Remove old container
 - **Rollback**: Automatic on health check failure - old container keeps running
-- **Monitoring**: GitHub Actions logs at `https://github.com/atwoz-dev/atwoz_server/actions`
+- **Monitoring**: GitHub Actions logs at `https://github.com/deepple-dev/deepple_server/actions`
 
 #### Production Server
 
