@@ -1,0 +1,21 @@
+package deepple.deepple.heart.query.hearttransaction.view;
+
+import com.querydsl.core.annotations.QueryProjection;
+import deepple.deepple.heart.command.domain.hearttransaction.vo.TransactionType;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.time.LocalDateTime;
+
+public record AdminHeartTransactionView(
+    Long id,
+    LocalDateTime createdAt,
+    @Schema(implementation = TransactionType.class)
+    String transactionType,
+    String content,
+    Long heartAmount,
+    Long heartBalance
+) {
+    @QueryProjection
+    public AdminHeartTransactionView {
+    }
+}
