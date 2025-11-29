@@ -27,14 +27,14 @@
 ## 시스템 아키텍처 및 인프라
 
 AWS 기반 클라우드 인프라와 GitHub Actions 기반 CI/CD 파이프라인을 구축했습니다.  
-자세한 내용은 [여기](https://github.com/atwoz-dev/atwoz_server/wiki)를 참고하세요.
+자세한 내용은 [여기](https://github.com/deepple-dev/deepple_server/wiki)를 참고하세요.
 
 <br>
 
 ## 소프트웨어 아키텍처
 
 도메인 주도 설계와 코드 레벨 CQRS를 적용하여 비즈니스 로직을 명확히 분리했습니다.  
-자세한 내용은 [여기](https://github.com/atwoz-dev/atwoz_server/wiki)를 참고하세요.
+자세한 내용은 [여기](https://github.com/deepple-dev/deepple_server/wiki)를 참고하세요.
 
 <br>
 

@@ -1,0 +1,19 @@
+package deepple.deepple.datingexam.application.dto;
+
+import deepple.deepple.common.event.Event;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
+@Getter
+@EqualsAndHashCode
+public class AllRequiredSubjectSubmittedEvent extends Event {
+    private final Long memberId;
+
+    private AllRequiredSubjectSubmittedEvent(Long memberId) {
+        this.memberId = memberId;
+    }
+
+    public static AllRequiredSubjectSubmittedEvent of(Long memberId) {
+        return new AllRequiredSubjectSubmittedEvent(memberId);
+    }
+}
